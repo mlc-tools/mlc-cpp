@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "Lexer::read_word:parser.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "text[pos]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "Lexer::read_string:parser.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "text[pos-1]">
+            </PersistentString>
+            <PersistentString
+               value = "text[pos]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "Parser::parse_method:parser.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "Parser::parse:parser.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "result.back().name">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "Parser::parse_constructor:parser.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "Parser::parse_member:parser.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "Lexer::next:parser.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "text[pos]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "Parser::parse_method_args:parser.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "Lexer::skip_ws:parser.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "text[pos]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "main:main.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "Parser::read_body:parser.cpp">
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>
