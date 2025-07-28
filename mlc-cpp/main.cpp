@@ -1,10 +1,9 @@
-#include "parser_.hpp"
 #include <iostream>
 #include <fstream>
-#include "Model.hpp"
-#include "Parser.hpp"
-#include "Linker.hpp"
-#include "FileUtils.hpp"
+#include "models/Model.hpp"
+#include "core/Parser.hpp"
+#include "core/Linker.hpp"
+#include "utils/FileUtils.hpp"
 
 std::string getFileContent(const std::string& path)
 {

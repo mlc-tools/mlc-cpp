@@ -7,14 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		EFFB708A2E36168C0081BF5E /* parser_.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFB70882E36168C0081BF5E /* parser_.cpp */; };
-		EFFB708B2E36168C0081BF5E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFB70812E36168C0081BF5E /* main.cpp */; };
-		EFFB708C2E36168C0081BF5E /* Object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFB70832E36168C0081BF5E /* Object.cpp */; };
-		EFFB708D2E36168C0081BF5E /* Function.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFB70852E36168C0081BF5E /* Function.cpp */; };
-		EFFB708E2E36168C0081BF5E /* Class.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFB70802E36168C0081BF5E /* Class.cpp */; };
-		EFFB70972E3643CD0081BF5E /* Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFB70962E3643CD0081BF5E /* Model.cpp */; };
-		EFFB709A2E3644BA0081BF5E /* Linker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFB70992E3644BA0081BF5E /* Linker.cpp */; };
-		EFFB709D2E3648100081BF5E /* Parser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFB709C2E3648100081BF5E /* Parser.cpp */; };
+		EF0F7E8D2E37190D0039F169 /* Function.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0F7E7F2E37190D0039F169 /* Function.cpp */; };
+		EF0F7E8E2E37190D0039F169 /* Linker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0F7E772E37190D0039F169 /* Linker.cpp */; };
+		EF0F7E8F2E37190D0039F169 /* Object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0F7E842E37190D0039F169 /* Object.cpp */; };
+		EF0F7E902E37190D0039F169 /* Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0F7E812E37190D0039F169 /* Model.cpp */; };
+		EF0F7E912E37190D0039F169 /* Lexer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0F7E872E37190D0039F169 /* Lexer.cpp */; };
+		EF0F7E922E37190D0039F169 /* Parser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0F7E792E37190D0039F169 /* Parser.cpp */; };
+		EF0F7E932E37190D0039F169 /* ParserLexem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0F7E892E37190D0039F169 /* ParserLexem.cpp */; };
+		EF0F7E942E37190D0039F169 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0F7E7B2E37190D0039F169 /* main.cpp */; };
+		EF0F7E952E37190D0039F169 /* Class.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0F7E7D2E37190D0039F169 /* Class.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -30,24 +31,26 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		EF0F7E6A2E365A2D0039F169 /* FileUtils.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FileUtils.hpp; sourceTree = "<group>"; };
+		EF0F7E762E37190D0039F169 /* Linker.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Linker.hpp; sourceTree = "<group>"; };
+		EF0F7E772E37190D0039F169 /* Linker.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Linker.cpp; sourceTree = "<group>"; };
+		EF0F7E782E37190D0039F169 /* Parser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Parser.hpp; sourceTree = "<group>"; };
+		EF0F7E792E37190D0039F169 /* Parser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Parser.cpp; sourceTree = "<group>"; };
+		EF0F7E7B2E37190D0039F169 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		EF0F7E7C2E37190D0039F169 /* Class.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Class.hpp; sourceTree = "<group>"; };
+		EF0F7E7D2E37190D0039F169 /* Class.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Class.cpp; sourceTree = "<group>"; };
+		EF0F7E7E2E37190D0039F169 /* Function.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Function.hpp; sourceTree = "<group>"; };
+		EF0F7E7F2E37190D0039F169 /* Function.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Function.cpp; sourceTree = "<group>"; };
+		EF0F7E802E37190D0039F169 /* Model.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Model.hpp; sourceTree = "<group>"; };
+		EF0F7E812E37190D0039F169 /* Model.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Model.cpp; sourceTree = "<group>"; };
+		EF0F7E822E37190D0039F169 /* Modifier.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Modifier.h; sourceTree = "<group>"; };
+		EF0F7E832E37190D0039F169 /* Object.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Object.hpp; sourceTree = "<group>"; };
+		EF0F7E842E37190D0039F169 /* Object.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Object.cpp; sourceTree = "<group>"; };
+		EF0F7E862E37190D0039F169 /* Lexer.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Lexer.hpp; sourceTree = "<group>"; };
+		EF0F7E872E37190D0039F169 /* Lexer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Lexer.cpp; sourceTree = "<group>"; };
+		EF0F7E882E37190D0039F169 /* ParserLexem.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ParserLexem.hpp; sourceTree = "<group>"; };
+		EF0F7E892E37190D0039F169 /* ParserLexem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ParserLexem.cpp; sourceTree = "<group>"; };
+		EF0F7E8B2E37190D0039F169 /* FileUtils.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FileUtils.hpp; sourceTree = "<group>"; };
 		EF9A0EDE2E35B55500D4FCEA /* mlc-cpp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "mlc-cpp"; sourceTree = BUILT_PRODUCTS_DIR; };
-		EFFB707F2E36168C0081BF5E /* Class.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Class.hpp; sourceTree = "<group>"; };
-		EFFB70802E36168C0081BF5E /* Class.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Class.cpp; sourceTree = "<group>"; };
-		EFFB70812E36168C0081BF5E /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		EFFB70822E36168C0081BF5E /* Object.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Object.hpp; sourceTree = "<group>"; };
-		EFFB70832E36168C0081BF5E /* Object.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Object.cpp; sourceTree = "<group>"; };
-		EFFB70842E36168C0081BF5E /* Function.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Function.hpp; sourceTree = "<group>"; };
-		EFFB70852E36168C0081BF5E /* Function.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Function.cpp; sourceTree = "<group>"; };
-		EFFB70862E36168C0081BF5E /* Modifier.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Modifier.h; sourceTree = "<group>"; };
-		EFFB70872E36168C0081BF5E /* parser_.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = parser_.hpp; sourceTree = "<group>"; };
-		EFFB70882E36168C0081BF5E /* parser_.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = parser_.cpp; sourceTree = "<group>"; };
-		EFFB70952E3643CD0081BF5E /* Model.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Model.hpp; sourceTree = "<group>"; };
-		EFFB70962E3643CD0081BF5E /* Model.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Model.cpp; sourceTree = "<group>"; };
-		EFFB70982E3644A40081BF5E /* Linker.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Linker.hpp; sourceTree = "<group>"; };
-		EFFB70992E3644BA0081BF5E /* Linker.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Linker.cpp; sourceTree = "<group>"; };
-		EFFB709B2E3648100081BF5E /* Parser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Parser.hpp; sourceTree = "<group>"; };
-		EFFB709C2E3648100081BF5E /* Parser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Parser.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,10 +64,55 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		EF0F7E7A2E37190D0039F169 /* core */ = {
+			isa = PBXGroup;
+			children = (
+				EF0F7E762E37190D0039F169 /* Linker.hpp */,
+				EF0F7E772E37190D0039F169 /* Linker.cpp */,
+				EF0F7E782E37190D0039F169 /* Parser.hpp */,
+				EF0F7E792E37190D0039F169 /* Parser.cpp */,
+			);
+			path = core;
+			sourceTree = "<group>";
+		};
+		EF0F7E852E37190D0039F169 /* models */ = {
+			isa = PBXGroup;
+			children = (
+				EF0F7E7C2E37190D0039F169 /* Class.hpp */,
+				EF0F7E7D2E37190D0039F169 /* Class.cpp */,
+				EF0F7E7E2E37190D0039F169 /* Function.hpp */,
+				EF0F7E7F2E37190D0039F169 /* Function.cpp */,
+				EF0F7E802E37190D0039F169 /* Model.hpp */,
+				EF0F7E812E37190D0039F169 /* Model.cpp */,
+				EF0F7E822E37190D0039F169 /* Modifier.h */,
+				EF0F7E832E37190D0039F169 /* Object.hpp */,
+				EF0F7E842E37190D0039F169 /* Object.cpp */,
+			);
+			path = models;
+			sourceTree = "<group>";
+		};
+		EF0F7E8A2E37190D0039F169 /* parser */ = {
+			isa = PBXGroup;
+			children = (
+				EF0F7E862E37190D0039F169 /* Lexer.hpp */,
+				EF0F7E872E37190D0039F169 /* Lexer.cpp */,
+				EF0F7E882E37190D0039F169 /* ParserLexem.hpp */,
+				EF0F7E892E37190D0039F169 /* ParserLexem.cpp */,
+			);
+			path = parser;
+			sourceTree = "<group>";
+		};
+		EF0F7E8C2E37190D0039F169 /* utils */ = {
+			isa = PBXGroup;
+			children = (
+				EF0F7E8B2E37190D0039F169 /* FileUtils.hpp */,
+			);
+			path = utils;
+			sourceTree = "<group>";
+		};
 		EF9A0ED52E35B55500D4FCEA = {
 			isa = PBXGroup;
 			children = (
-				EF0F7E6A2E365A2D0039F169 /* FileUtils.hpp */,
 				EFFB70892E36168C0081BF5E /* mlc-cpp */,
 				EF9A0EDF2E35B55500D4FCEA /* Products */,
 			);
@@ -81,22 +129,11 @@
 		EFFB70892E36168C0081BF5E /* mlc-cpp */ = {
 			isa = PBXGroup;
 			children = (
-				EFFB70982E3644A40081BF5E /* Linker.hpp */,
-				EFFB70992E3644BA0081BF5E /* Linker.cpp */,
-				EFFB70952E3643CD0081BF5E /* Model.hpp */,
-				EFFB70962E3643CD0081BF5E /* Model.cpp */,
-				EFFB707F2E36168C0081BF5E /* Class.hpp */,
-				EFFB70802E36168C0081BF5E /* Class.cpp */,
-				EFFB70812E36168C0081BF5E /* main.cpp */,
-				EFFB709B2E3648100081BF5E /* Parser.hpp */,
-				EFFB709C2E3648100081BF5E /* Parser.cpp */,
-				EFFB70822E36168C0081BF5E /* Object.hpp */,
-				EFFB70832E36168C0081BF5E /* Object.cpp */,
-				EFFB70842E36168C0081BF5E /* Function.hpp */,
-				EFFB70852E36168C0081BF5E /* Function.cpp */,
-				EFFB70862E36168C0081BF5E /* Modifier.h */,
-				EFFB70872E36168C0081BF5E /* parser_.hpp */,
-				EFFB70882E36168C0081BF5E /* parser_.cpp */,
+				EF0F7E7B2E37190D0039F169 /* main.cpp */,
+				EF0F7E7A2E37190D0039F169 /* core */,
+				EF0F7E852E37190D0039F169 /* models */,
+				EF0F7E8A2E37190D0039F169 /* parser */,
+				EF0F7E8C2E37190D0039F169 /* utils */,
 			);
 			path = "mlc-cpp";
 			sourceTree = "<group>";
@@ -161,14 +198,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EFFB709D2E3648100081BF5E /* Parser.cpp in Sources */,
-				EFFB708A2E36168C0081BF5E /* parser_.cpp in Sources */,
-				EFFB708B2E36168C0081BF5E /* main.cpp in Sources */,
-				EFFB708C2E36168C0081BF5E /* Object.cpp in Sources */,
-				EFFB70972E3643CD0081BF5E /* Model.cpp in Sources */,
-				EFFB708D2E36168C0081BF5E /* Function.cpp in Sources */,
-				EFFB709A2E3644BA0081BF5E /* Linker.cpp in Sources */,
-				EFFB708E2E36168C0081BF5E /* Class.cpp in Sources */,
+				EF0F7E8D2E37190D0039F169 /* Function.cpp in Sources */,
+				EF0F7E8E2E37190D0039F169 /* Linker.cpp in Sources */,
+				EF0F7E8F2E37190D0039F169 /* Object.cpp in Sources */,
+				EF0F7E902E37190D0039F169 /* Model.cpp in Sources */,
+				EF0F7E912E37190D0039F169 /* Lexer.cpp in Sources */,
+				EF0F7E922E37190D0039F169 /* Parser.cpp in Sources */,
+				EF0F7E932E37190D0039F169 /* ParserLexem.cpp in Sources */,
+				EF0F7E942E37190D0039F169 /* main.cpp in Sources */,
+				EF0F7E952E37190D0039F169 /* Class.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
