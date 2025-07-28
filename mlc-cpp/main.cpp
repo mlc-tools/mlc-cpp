@@ -4,6 +4,7 @@
 #include "core/Parser.hpp"
 #include "core/Linker.hpp"
 #include "utils/FileUtils.hpp"
+#include "tests/tests.hpp"
 
 std::string getFileContent(const std::string& path)
 {
@@ -15,8 +16,10 @@ std::string getFileContent(const std::string& path)
 }
 
 int main() {
+    tests::run();
     
-    auto files = FileUtils::listFilesRecursive("config", {".mlc"});
+    auto files = FileUtils::listFilesRecursive("/Users/vladimirtolmachev/work/archero/configs", {".mlc"});
+//    auto files = FileUtils::listFilesRecursive("configs", {".mlc"});
     
     Model model;
     model.create_std_types();

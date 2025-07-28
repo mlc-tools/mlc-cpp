@@ -36,7 +36,8 @@ private:
 public:
     Object parse_member(bool with_name, bool is_enum);
     void parse_constructor(Class &cls);
-    void parse_method(Class &cls);
+    Function parse_method();
     std::vector<Object> parse_method_args();
 };
-Object parse_object(const std::string& str);
+Object parse_object(const std::string& str, bool with_name=false);
+Function parse_function(const std::string& str);

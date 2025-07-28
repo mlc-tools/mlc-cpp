@@ -1,9 +1,9 @@
-class ecs/FooEnum
+class ecs/Vector
 {
-    FooEnum enumFoo = FooEnum::foo
-
-    fn float operator/(float t)
+    fn Vector:ref operator+=(Vector:ref:const v):cpp
     {
-
+        this->x += v.x;
+        this->y += v.y;
+        return *this;
     }
 }

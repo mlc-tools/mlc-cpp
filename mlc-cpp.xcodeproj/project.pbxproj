@@ -16,6 +16,7 @@
 		EF0F7E932E37190D0039F169 /* ParserLexem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0F7E892E37190D0039F169 /* ParserLexem.cpp */; };
 		EF0F7E942E37190D0039F169 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0F7E7B2E37190D0039F169 /* main.cpp */; };
 		EF0F7E952E37190D0039F169 /* Class.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0F7E7D2E37190D0039F169 /* Class.cpp */; };
+		EF0F7E992E371A140039F169 /* tests_parser_lexer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0F7E982E371A140039F169 /* tests_parser_lexer.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -50,6 +51,8 @@
 		EF0F7E882E37190D0039F169 /* ParserLexem.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = ParserLexem.hpp; sourceTree = "<group>"; };
 		EF0F7E892E37190D0039F169 /* ParserLexem.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ParserLexem.cpp; sourceTree = "<group>"; };
 		EF0F7E8B2E37190D0039F169 /* FileUtils.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FileUtils.hpp; sourceTree = "<group>"; };
+		EF0F7E972E371A140039F169 /* tests.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = tests.hpp; sourceTree = "<group>"; };
+		EF0F7E982E371A140039F169 /* tests_parser_lexer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tests_parser_lexer.cpp; sourceTree = "<group>"; };
 		EF9A0EDE2E35B55500D4FCEA /* mlc-cpp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "mlc-cpp"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -110,6 +113,15 @@
 			path = utils;
 			sourceTree = "<group>";
 		};
+		EF0F7E962E3719F70039F169 /* tests */ = {
+			isa = PBXGroup;
+			children = (
+				EF0F7E972E371A140039F169 /* tests.hpp */,
+				EF0F7E982E371A140039F169 /* tests_parser_lexer.cpp */,
+			);
+			path = tests;
+			sourceTree = "<group>";
+		};
 		EF9A0ED52E35B55500D4FCEA = {
 			isa = PBXGroup;
 			children = (
@@ -129,6 +141,7 @@
 		EFFB70892E36168C0081BF5E /* mlc-cpp */ = {
 			isa = PBXGroup;
 			children = (
+				EF0F7E962E3719F70039F169 /* tests */,
 				EF0F7E7B2E37190D0039F169 /* main.cpp */,
 				EF0F7E7A2E37190D0039F169 /* core */,
 				EF0F7E852E37190D0039F169 /* models */,
@@ -207,6 +220,7 @@
 				EF0F7E932E37190D0039F169 /* ParserLexem.cpp in Sources */,
 				EF0F7E942E37190D0039F169 /* main.cpp in Sources */,
 				EF0F7E952E37190D0039F169 /* Class.cpp in Sources */,
+				EF0F7E992E371A140039F169 /* tests_parser_lexer.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

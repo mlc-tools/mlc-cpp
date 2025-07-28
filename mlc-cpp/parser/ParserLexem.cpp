@@ -11,6 +11,11 @@
 #include "Class.hpp"
 #include "Function.hpp"
 
+template <class T>
+bool in(const T& string, const std::set<T>& variants) {
+    return variants.count(string) > 0;
+}
+
 ParserLexem::ParserLexem(const std::string &src) : lexer(src) {
     advance();
 }
@@ -85,7 +90,7 @@ void ParserLexem::parse(const std::shared_ptr<Class>& cls) {
     int depth = 0;
     // ищем class
     while (cur.type != TokenType::Eof) {
-        if (cur.type == TokenType::Keyword && cur.value == "class") {
+        if (cur.type == TokenType::Keyword && (cur.value == "class" || cur.value == "enum" || cur.value == "interface")) {
             auto inner = parse_dict(true);
             cls->inner_classes.insert(cls->inner_classes.end(), inner.begin(), inner.end());
         }
@@ -98,7 +103,7 @@ void ParserLexem::parse(const std::shared_ptr<Class>& cls) {
         } else if (cur.type == TokenType::Keyword && cur.value == "constructor") {
             parse_constructor(*cls); // пока игнорируем тело конструктора
         } else if (cur.type == TokenType::Keyword && cur.value == "fn") {
-            parse_method(*cls);
+            cls->functions.push_back(parse_method());
         } else if (cur.type == TokenType::Identifier) {
             cls->members.push_back(parse_member(true, cls->is_enum));
         } else if (cur.type == TokenType::Symbol && cur.value == "{") {
@@ -108,6 +113,9 @@ void ParserLexem::parse(const std::shared_ptr<Class>& cls) {
             --depth;
             advance();
             assert(depth >= 0);
+        } else if(cur.type == TokenType::Symbol && cur.value == ";") {
+            //log unused ;
+            advance();
         } else {
             std::cout << "Skip: " << cur.value << std::endl;
             advance();
@@ -210,6 +218,11 @@ Object ParserLexem::parse_member(bool with_name, bool is_enum) {
     Object member;
     member.type = std::move(cur.value);
     advance();
+    if (cur.type == TokenType::Symbol && cur.value == "*") {
+        member.is_pointer = true;
+        advance();
+    }
+
     member.template_args = read_templates();
     read_modifier(member);
     
@@ -234,6 +247,14 @@ Object ParserLexem::parse_member(bool with_name, bool is_enum) {
             else
                 member.value = prefix + cur.value;
             advance();
+            if(cur.type == TokenType::Symbol && in(cur.value, {"+", "-", "*", "/"}))
+            {
+                member.value += cur.value;
+                advance();
+                assert (cur.type == TokenType::Identifier);
+                member.value += cur.value;
+                advance();
+            }
             if(cur.type == TokenType::Symbol && cur.value == ":")
             {
                 advance();
@@ -260,12 +281,12 @@ void ParserLexem::parse_constructor(Class &cls) {
     cls.constructors.push_back(std::move(method));
 }
 
-void ParserLexem::parse_method(Class &cls) {
+Function ParserLexem::parse_method() {
     Function method;
     
     advance(); // fn
     method.template_args = read_templates();
-    method.return_type = parse_member(false, cls.is_enum);
+    method.return_type = parse_member(false, false);
     method.name = std::move(cur.value);
     advance();
     if(method.name == "operator") {
@@ -277,7 +298,7 @@ void ParserLexem::parse_method(Class &cls) {
     method.args = parse_method_args();
     read_modifier(method);
     method.body = read_body();
-    cls.functions.push_back(std::move(method));
+    return method;
 }
 
 std::vector<Object> ParserLexem::parse_method_args(){
@@ -293,9 +314,17 @@ std::vector<Object> ParserLexem::parse_method_args(){
     return args;
 }
 
-Object parse_object(const std::string& str)
+Object parse_object(const std::string& str, bool with_name)
 {
     ParserLexem parser(str);
-    auto object = parser.parse_member(false, false);
+    auto object = parser.parse_member(with_name, false);
     return object;
+}
+
+Function parse_function(const std::string& str)
+{
+    ParserLexem parser(str);
+    auto object = parser.parse_method();
+    return object;
+    
 }

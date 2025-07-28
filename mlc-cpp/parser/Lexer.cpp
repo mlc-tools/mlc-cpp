@@ -24,7 +24,7 @@ Token Lexer::next() {
     }
 
     // символы
-    else if (is_symbol(c) || is_special(c)) {
+    else if (is_symbol(c) || (is_special(c) && c != '_')) {
         pos++;
         return {TokenType::Symbol, std::string(1, c)};
     }
@@ -96,7 +96,7 @@ constexpr std::string Lexer::read_string(char quote) {
     return lit;
 }
 constexpr bool Lexer::is_special(char c) {
-    return std::string_view("_@*&[]+!|.#?-").find(c) != std::string_view::npos;
+    return std::string_view("_@&[]!|.#?").find(c) != std::string_view::npos;
 }
 constexpr bool Lexer::is_symbol(char c) {
     return
@@ -107,12 +107,14 @@ constexpr bool Lexer::is_symbol(char c) {
     c == ';' ||
     c == '.' ||
     c == ',' ||
-    c == '=' ||
     c == ':' ||
     c == '<' ||
     c == '>' ||
-    c == ',' ||
+    c == '+' ||
+    c == '-' ||
+    c == '*' ||
     c == '/' ||
+    c == '=' ||
     false
     ;
 }

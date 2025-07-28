@@ -6,6 +6,9 @@
          contextName = "ParserLexem::read_templates:Parser.cpp">
       </ContextState>
       <ContextState
+         contextName = "tests::test_parse_members()::$_0::operator()(Object const&amp;, std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt;&gt; const&amp;, std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt;&gt; const&amp;, std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt;&gt; const&amp;) const:tests_parser_lexer.cpp">
+      </ContextState>
+      <ContextState
          contextName = "Parser::parse_member:parser.cpp">
       </ContextState>
       <ContextState
@@ -148,6 +151,20 @@
          <PersistentStrings>
             <PersistentString
                value = "cls-&gt;name">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "ParserLexem::parse_member:ParserLexem.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "ParserLexem::parse:ParserLexem.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "(char*)(&amp;lexer.text[lexer.pos+0])">
+            </PersistentString>
+            <PersistentString
+               value = "*cls">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
