@@ -5,11 +5,11 @@
 //  Created by Vladimir Tolmachev on 27.07.2025.
 //
 
-#include "Member.hpp"
+#include "Object.hpp"
 #include "Modifier.h"
 #include <cassert>
 
-Member::Member()
+Object::Object()
 : is_pointer(false)
 , is_ref(false)
 , is_runtime(false)
@@ -21,7 +21,7 @@ Member::Member()
 , access(AccessSpecifier::m_public) {
 }
 
-Member::Member(const std::string& type_, const std::string& name_, const std::string& value_)
+Object::Object(const std::string& type_, const std::string& name_, const std::string& value_)
 : type(type_)
 , name(name_)
 , value(value_)
@@ -37,7 +37,7 @@ Member::Member(const std::string& type_, const std::string& name_, const std::st
 }
 
 
-void Member::set_modifier(const std::string& modifier)
+void Object::set_modifier(const std::string& modifier)
 {
     if(modifier == Modifier::m_private) access = AccessSpecifier::m_private;
     else if(modifier == Modifier::m_protected) access = AccessSpecifier::m_protected;
@@ -52,5 +52,12 @@ void Member::set_modifier(const std::string& modifier)
     else if(modifier == Modifier::m_link) this->is_link = true;
     else if(modifier == Modifier::m_client) this->side = modifier;
     else if(modifier == Modifier::m_server) this->side = modifier;
+    else if(modifier == Modifier::m_test) this->is_test = true;
+    
+    else if(modifier == Modifier::l_cpp) this->lang_specific.insert(Modifier::l_cpp);
+    else if(modifier == Modifier::l_py) this->lang_specific.insert(Modifier::l_py);
+    else if(modifier == Modifier::l_php) this->lang_specific.insert(Modifier::l_php);
+    else if(modifier == Modifier::l_js) this->lang_specific.insert(Modifier::l_js);
+    
     else assert(0);
 }

@@ -3,12 +3,96 @@
    version = "1.0">
    <ContextStates>
       <ContextState
-         contextName = "Lexer::read_word:parser.cpp">
+         contextName = "ParserLexem::read_templates:Parser.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "Parser::parse_member:parser.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "ParserLexem::parse_dict:Parser.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "Parser::read_body:parser.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "Lexer::skip_block:Parser.cpp">
          <PersistentStrings>
             <PersistentString
                value = "text[pos]">
             </PersistentString>
          </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "main:main.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "Parser::parse_method_args:parser.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "ParserLexem::read_class_name_and_group:Parser.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "ParserLexem::parse_member:Parser.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "ParserLexem::parse:Parser.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "this-&gt;lexer.text[lexer.pos+4]">
+            </PersistentString>
+            <PersistentString
+               value = "this-&gt;lexer.text[lexer.pos+7]">
+            </PersistentString>
+            <PersistentString
+               value = "this-&gt;lexer.text[lexer.pos+2]">
+            </PersistentString>
+            <PersistentString
+               value = "this-&gt;lexer.text[lexer.pos+5]">
+            </PersistentString>
+            <PersistentString
+               value = "this-&gt;lexer.text[lexer.pos+8]">
+            </PersistentString>
+            <PersistentString
+               value = "this-&gt;lexer.text[lexer.pos+3]">
+            </PersistentString>
+            <PersistentString
+               value = "this-&gt;lexer.text[lexer.pos+6]">
+            </PersistentString>
+            <PersistentString
+               value = "this-&gt;lexer.text[lexer.pos+1]">
+            </PersistentString>
+            <PersistentString
+               value = "this-&gt;lexer.text[lexer.pos]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "Parser::parse:parser.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "result.back().name">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "ParserLexem::read_modifier:Parser.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "ParserLexem::read_parent_class:Parser.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "Parser::parseFiles:Parser.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "Parser::parse_method:parser.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "Parser::parse_constructor:parser.cpp">
       </ContextState>
       <ContextState
          contextName = "Lexer::read_string:parser.cpp">
@@ -22,32 +106,7 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "Parser::parse_method:parser.cpp">
-      </ContextState>
-      <ContextState
-         contextName = "Parser::parse:parser.cpp">
-         <PersistentStrings>
-            <PersistentString
-               value = "result.back().name">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "Parser::parse_constructor:parser.cpp">
-      </ContextState>
-      <ContextState
-         contextName = "Parser::parse_member:parser.cpp">
-      </ContextState>
-      <ContextState
-         contextName = "Lexer::next:parser.cpp">
-         <PersistentStrings>
-            <PersistentString
-               value = "text[pos]">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "Parser::parse_method_args:parser.cpp">
+         contextName = "ParserLexem::parse_method:Parser.cpp">
       </ContextState>
       <ContextState
          contextName = "Lexer::skip_ws:parser.cpp">
@@ -58,10 +117,47 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "main:main.cpp">
+         contextName = "ParserLexem::read_body:Parser.cpp">
       </ContextState>
       <ContextState
-         contextName = "Parser::read_body:parser.cpp">
+         contextName = "Lexer::read_word:parser.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "text[pos]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "Lexer::next:parser.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "text[pos]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "Linker::convertSuperclasses:Linker.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "cls-&gt;parent_class_name">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "Parser::parse_class:Parser.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "cls-&gt;name">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "Parser::parseText:Parser.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "cls-&gt;name">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
    </ContextStates>
 </VariablesViewState>

@@ -7,11 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		EFFB708A2E36168C0081BF5E /* parser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFB70882E36168C0081BF5E /* parser.cpp */; };
+		EFFB708A2E36168C0081BF5E /* parser_.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFB70882E36168C0081BF5E /* parser_.cpp */; };
 		EFFB708B2E36168C0081BF5E /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFB70812E36168C0081BF5E /* main.cpp */; };
-		EFFB708C2E36168C0081BF5E /* Member.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFB70832E36168C0081BF5E /* Member.cpp */; };
-		EFFB708D2E36168C0081BF5E /* Method.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFB70852E36168C0081BF5E /* Method.cpp */; };
+		EFFB708C2E36168C0081BF5E /* Object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFB70832E36168C0081BF5E /* Object.cpp */; };
+		EFFB708D2E36168C0081BF5E /* Function.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFB70852E36168C0081BF5E /* Function.cpp */; };
 		EFFB708E2E36168C0081BF5E /* Class.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFB70802E36168C0081BF5E /* Class.cpp */; };
+		EFFB70972E3643CD0081BF5E /* Model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFB70962E3643CD0081BF5E /* Model.cpp */; };
+		EFFB709A2E3644BA0081BF5E /* Linker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFB70992E3644BA0081BF5E /* Linker.cpp */; };
+		EFFB709D2E3648100081BF5E /* Parser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EFFB709C2E3648100081BF5E /* Parser.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -27,17 +30,24 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		EF0F7E6A2E365A2D0039F169 /* FileUtils.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FileUtils.hpp; sourceTree = "<group>"; };
 		EF9A0EDE2E35B55500D4FCEA /* mlc-cpp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "mlc-cpp"; sourceTree = BUILT_PRODUCTS_DIR; };
 		EFFB707F2E36168C0081BF5E /* Class.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Class.hpp; sourceTree = "<group>"; };
 		EFFB70802E36168C0081BF5E /* Class.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Class.cpp; sourceTree = "<group>"; };
 		EFFB70812E36168C0081BF5E /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		EFFB70822E36168C0081BF5E /* Member.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Member.hpp; sourceTree = "<group>"; };
-		EFFB70832E36168C0081BF5E /* Member.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Member.cpp; sourceTree = "<group>"; };
-		EFFB70842E36168C0081BF5E /* Method.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Method.hpp; sourceTree = "<group>"; };
-		EFFB70852E36168C0081BF5E /* Method.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Method.cpp; sourceTree = "<group>"; };
+		EFFB70822E36168C0081BF5E /* Object.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Object.hpp; sourceTree = "<group>"; };
+		EFFB70832E36168C0081BF5E /* Object.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Object.cpp; sourceTree = "<group>"; };
+		EFFB70842E36168C0081BF5E /* Function.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Function.hpp; sourceTree = "<group>"; };
+		EFFB70852E36168C0081BF5E /* Function.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Function.cpp; sourceTree = "<group>"; };
 		EFFB70862E36168C0081BF5E /* Modifier.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Modifier.h; sourceTree = "<group>"; };
-		EFFB70872E36168C0081BF5E /* parser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = parser.hpp; sourceTree = "<group>"; };
-		EFFB70882E36168C0081BF5E /* parser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = parser.cpp; sourceTree = "<group>"; };
+		EFFB70872E36168C0081BF5E /* parser_.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = parser_.hpp; sourceTree = "<group>"; };
+		EFFB70882E36168C0081BF5E /* parser_.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = parser_.cpp; sourceTree = "<group>"; };
+		EFFB70952E3643CD0081BF5E /* Model.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Model.hpp; sourceTree = "<group>"; };
+		EFFB70962E3643CD0081BF5E /* Model.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Model.cpp; sourceTree = "<group>"; };
+		EFFB70982E3644A40081BF5E /* Linker.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Linker.hpp; sourceTree = "<group>"; };
+		EFFB70992E3644BA0081BF5E /* Linker.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Linker.cpp; sourceTree = "<group>"; };
+		EFFB709B2E3648100081BF5E /* Parser.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Parser.hpp; sourceTree = "<group>"; };
+		EFFB709C2E3648100081BF5E /* Parser.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Parser.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +64,7 @@
 		EF9A0ED52E35B55500D4FCEA = {
 			isa = PBXGroup;
 			children = (
+				EF0F7E6A2E365A2D0039F169 /* FileUtils.hpp */,
 				EFFB70892E36168C0081BF5E /* mlc-cpp */,
 				EF9A0EDF2E35B55500D4FCEA /* Products */,
 			);
@@ -70,16 +81,22 @@
 		EFFB70892E36168C0081BF5E /* mlc-cpp */ = {
 			isa = PBXGroup;
 			children = (
+				EFFB70982E3644A40081BF5E /* Linker.hpp */,
+				EFFB70992E3644BA0081BF5E /* Linker.cpp */,
+				EFFB70952E3643CD0081BF5E /* Model.hpp */,
+				EFFB70962E3643CD0081BF5E /* Model.cpp */,
 				EFFB707F2E36168C0081BF5E /* Class.hpp */,
 				EFFB70802E36168C0081BF5E /* Class.cpp */,
 				EFFB70812E36168C0081BF5E /* main.cpp */,
-				EFFB70822E36168C0081BF5E /* Member.hpp */,
-				EFFB70832E36168C0081BF5E /* Member.cpp */,
-				EFFB70842E36168C0081BF5E /* Method.hpp */,
-				EFFB70852E36168C0081BF5E /* Method.cpp */,
+				EFFB709B2E3648100081BF5E /* Parser.hpp */,
+				EFFB709C2E3648100081BF5E /* Parser.cpp */,
+				EFFB70822E36168C0081BF5E /* Object.hpp */,
+				EFFB70832E36168C0081BF5E /* Object.cpp */,
+				EFFB70842E36168C0081BF5E /* Function.hpp */,
+				EFFB70852E36168C0081BF5E /* Function.cpp */,
 				EFFB70862E36168C0081BF5E /* Modifier.h */,
-				EFFB70872E36168C0081BF5E /* parser.hpp */,
-				EFFB70882E36168C0081BF5E /* parser.cpp */,
+				EFFB70872E36168C0081BF5E /* parser_.hpp */,
+				EFFB70882E36168C0081BF5E /* parser_.cpp */,
 			);
 			path = "mlc-cpp";
 			sourceTree = "<group>";
@@ -144,10 +161,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EFFB708A2E36168C0081BF5E /* parser.cpp in Sources */,
+				EFFB709D2E3648100081BF5E /* Parser.cpp in Sources */,
+				EFFB708A2E36168C0081BF5E /* parser_.cpp in Sources */,
 				EFFB708B2E36168C0081BF5E /* main.cpp in Sources */,
-				EFFB708C2E36168C0081BF5E /* Member.cpp in Sources */,
-				EFFB708D2E36168C0081BF5E /* Method.cpp in Sources */,
+				EFFB708C2E36168C0081BF5E /* Object.cpp in Sources */,
+				EFFB70972E3643CD0081BF5E /* Model.cpp in Sources */,
+				EFFB708D2E36168C0081BF5E /* Function.cpp in Sources */,
+				EFFB709A2E3644BA0081BF5E /* Linker.cpp in Sources */,
 				EFFB708E2E36168C0081BF5E /* Class.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

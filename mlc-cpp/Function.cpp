@@ -5,10 +5,10 @@
 //  Created by Vladimir Tolmachev on 27.07.2025.
 //
 
-#include "Method.hpp"
+#include "Function.hpp"
 #include "Modifier.h"
 
-Method::Method()
+Function::Function()
 : is_external(false)
 , is_abstract(false)
 , is_template(false)
@@ -18,10 +18,11 @@ Method::Method()
 , translated(false){
 }
 
-void Method::set_modifier(const std::string& modifier)
+void Function::set_modifier(const std::string& modifier)
 {
     if(modifier == Modifier::m_external) this->is_external = true;
     else if(modifier == Modifier::m_abstract) this->is_abstract = true;
     else if(modifier == Modifier::m_virtual) this->is_virtual = true;
-    else Member::set_modifier(modifier);
+    else if(modifier == Modifier::m_generate) this->is_generate = true;
+    else Object::set_modifier(modifier);
 }

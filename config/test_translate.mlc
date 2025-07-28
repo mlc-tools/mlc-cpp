@@ -1,0 +1,519 @@
+class Translates
+{
+    function void dummy_function()
+    {
+
+    }
+    function void new_function()
+    {
+
+    }
+}
+class Point
+{
+    int x
+    int y
+
+    function Point create(int x, int y):static
+    {
+        Point point;
+        point.x = x;
+        point.y = y;
+        return point;
+    }
+}
+class TestTranslates<ITestTranslates>
+{
+    class Model
+    {
+        DataUnit:link data
+    }
+    map<string, Model*> test_map_models
+    list<int> test_list_lambda
+    list<Model*> test_list_lambda2
+    list<int> test_list_swap1
+    list<int> test_list_swap2
+
+    function void test_map_remove_if():cpp:py
+    {
+        map_clear(this->test_map_models);
+        this->test_map_models["1"] = new TestTranslatesModel();
+        this->test_map_models["1"]->data = DataStorage::shared().get<DataUnit>("unitname1");
+        this->test_map_models["2"] = new TestTranslatesModel();
+        this->test_map_models["2"]->data = nullptr;
+
+        map_remove_if(this->test_map_models, (key, value :> value->data == nullptr));
+
+        this->assertEqual(map_size(this->test_map_models), 1);
+        this->assertTrue(in_map("1", this->test_map_models));
+    }
+
+    function void test_map_do_if():cpp:py
+    {
+        map_clear(this->test_map_models);
+        this->test_map_models["1"] = new TestTranslatesModel();
+        this->test_map_models["1"]->data = DataStorage::shared().get<DataUnit>("unitname1");
+        this->test_map_models["2"] = new TestTranslatesModel();
+        this->test_map_models["2"]->data = nullptr;
+
+        map_do_if(this->test_map_models, (key, value :> value->data == nullptr :> value->data = DataStorage::shared().get<DataUnit>("unitname1")));
+
+        this->assertEqual(map_size(this->test_map_models), 2);
+        this->assertTrue(in_map("1", this->test_map_models));
+        this->assertTrue(in_map("2", this->test_map_models));
+        this->assertTrue(this->test_map_models["2"]->data != nullptr);
+
+
+        this->test_map_models["2"]->data = nullptr;
+        map_do_if(this->test_map_models, (key, value :> value->data == nullptr :> map_remove(this->test_map_models, key)));
+
+        this->assertEqual(map_size(this->test_map_models), 1);
+        this->assertTrue(in_map("1", this->test_map_models));
+        this->assertFalse(in_map("2", this->test_map_models));
+    }
+    function void test_list_remove_if():cpp:py
+    {
+        list_clear(this->test_list_lambda);
+        list_push(this->test_list_lambda, 3);
+        list_push(this->test_list_lambda, 4);
+        list_remove_if(this->test_list_lambda, (val :> val == 3));
+
+        this->assertEqual(list_size(this->test_list_lambda), 1);
+        this->assertEqual(this->test_list_lambda[0], 4);
+    }
+    function void test_list_do_if():cpp:py
+    {
+        list_clear(this->test_list_lambda);
+        list_push(this->test_list_lambda, 3);
+        list_push(this->test_list_lambda, 4);
+        list_do_if(this->test_list_lambda, (value :> value == 3 :> list_remove(this->test_list_lambda, 3)));
+
+        this->assertEqual(list_size(this->test_list_lambda), 1);
+        this->assertEqual(this->test_list_lambda[0], 4);
+    }
+    function void test_list_do():cpp:py
+    {
+        list_clear(this->test_list_lambda2);
+        list_push(this->test_list_lambda2, new Model());
+        list_push(this->test_list_lambda2, new Model());
+        std::string name = "unitname1";
+        list_do(this->test_list_lambda2, (model :> model->data = DataStorage::shared().get<DataUnit>(name)));
+
+        this->assertEqual(this->test_list_lambda2[0]->data->name, name);
+        this->assertEqual(this->test_list_lambda2[1]->data->name, name);
+    }
+    function void test_dummy_function()
+    {
+    }
+    function void test_strcat()
+    {
+        std::string a = "a";
+        std::string b = "b";
+        std::string c = std::strcat(a, b);
+        this->assertTrue(c == "ab", "std::strcat correct");
+    }
+    function void test_strcat2()
+    {
+        std::string c = std::strcat("a", "b");
+        this->assertTrue(c == "ab", "std::strcat correct");
+    }
+    function void test_create_objects()
+    {
+        auto object = new Translates();
+        this->assertTrue(object != nullptr, "Create object by new");
+    }
+    function void test_list()
+    {
+        list<int> l0;
+        list<int*> l1;
+        list<std::string> l2;
+        list<intrusive_ptr<Translates>> l3;
+
+        list_push(l0, 1);
+        list_push(l1, nullptr);
+        list_push(l2, "");
+        list_push(l3, new Translates());
+
+        this->assertTrue(in_list(1, l0));
+        this->assertTrue(in_list(nullptr, l1));
+        this->assertTrue(in_list("", l2));
+        this->assertTrue(list_size(l3) == 1);
+    }
+    function void test_list_index()
+    {
+        list<int> l;
+        list_push(l, 1);
+        list_push(l, 2);
+        list_push(l, 5);
+        list_push(l, 4);
+        list_push(l, 3);
+
+        this->assertTrue(list_index(l, 1) == 0);
+        this->assertTrue(list_index(l, 2) == 1);
+        this->assertTrue(list_index(l, 5) == 2);
+        this->assertTrue(list_index(l, 4) == 3);
+        this->assertTrue(list_index(l, 3) == 4);
+        this->assertTrue(list_index(l, 0) == -1);
+    }
+
+    function void test_map()
+    {
+        map<int, int> m0;
+        map<int, int*> m1;
+        map<std::string, std::string> m2;
+        map<std::string, Translates*> m3;
+
+        m0[0] = 1;
+        m1[0] = nullptr;
+        m2[""] = "";
+        m3[""] = new Translates();
+
+        this->assertTrue(in_map(0, m0));
+        this->assertTrue(m0[0] == 1);
+
+        this->assertTrue(in_map(0, m1));
+        this->assertTrue(m1[0] == nullptr);
+
+        this->assertTrue(in_map("", m2));
+        this->assertTrue(m2[""] == "");
+
+        this->assertTrue(map_size(m3) == 1);
+    }
+    function void test_to_str()
+    {
+        int a = 1;
+        std::string s = "1";
+        this->assertTrue(toStr(a) == s);
+    }
+    function void test_str_to():py:cpp
+    {
+        std::string s = "1";
+        this->assertTrue(strTo<int>(s) == 1);
+        this->assertTrue(strTo<float>(s) == 1.f);
+        this->assertTrue(strTo<bool>("yes") == true);
+        this->assertTrue(strTo<bool>("true") == true);
+        this->assertTrue(strTo<bool>("no") == false);
+        this->assertTrue(strTo<bool>("false") == false);
+        this->assertTrue(strTo<bool>("") == false);
+    }
+    function void test_at()
+    {
+        list<int> vector;
+        list_push(vector, 1);
+        this->assertTrue(vector.at(0) == 1);
+
+        map<int, int> map;
+        map[0] = 1;
+        this->assertTrue(map.at(0) == 1);
+    }
+    function void test_list_remove()
+    {
+        list<int> vector;
+        list_push(vector, 1);
+        list_push(vector, 2);
+        list_push(vector, 3);
+        list_push(vector, 4);
+
+        list_remove(vector, 2);
+        this->assertTrue(list_size(vector) == 3);
+        this->assertTrue(vector[0] == 1);
+        this->assertTrue(vector[1] == 3);
+        this->assertTrue(vector[2] == 4);
+    }
+    function void test_list_clear()
+    {
+        list<int> vector;
+        list_push(vector, 1);
+        list_push(vector, 2);
+        list_push(vector, 3);
+        list_push(vector, 4);
+
+        list_clear(vector);
+        this->assertTrue(list_size(vector) == 0);
+    }
+    function void test_list_resize()
+    {
+        list<int> vector;
+
+        list_resize(vector, 1);
+        this->assertTrue(list_size(vector) == 1);
+        list_resize(vector, 2);
+        this->assertTrue(list_size(vector) == 2);
+        list_resize(vector, 10);
+        this->assertTrue(list_size(vector) == 10);
+
+        vector[0] = 123;
+        list_resize(vector, 1);
+        this->assertTrue(list_size(vector) == 1);
+        this->assertTrue(vector[0] == 123);
+    }
+    function void test_string_size()
+    {
+        this->assertTrue(string_size("") == 0);
+        this->assertTrue(string_size("s") == 1);
+        this->assertTrue(string_size("1") == 1);
+        this->assertTrue(string_size("00") == 2);
+
+        std::string s = "123";
+        this->assertTrue(string_size(s) == 3);
+    }
+    function void test_string_empty()
+    {
+        this->assertTrue(string_empty(""));
+        this->assertFalse(string_empty("s"));
+        this->assertFalse(string_empty("1"));
+        this->assertFalse(string_empty("."));
+    }
+    function void test_map_clear()
+    {
+        map<int, int> map;
+        map[1] = 2;
+        map[2] = 3;
+        map_clear(map);
+        this->assertEqual(map_size(map), 0, "Map is empty");
+    }
+    function void test_map_remove()
+    {
+        map<int, int> map;
+        map[1] = 2;
+        map[2] = 3;
+        map_remove(map, 1);
+
+        this->assertTrue(in_map(2, map));
+        this->assertFalse(in_map(1, map));
+    }
+
+    function void test_list_push()
+    {
+        // https://trello.com/c/86FPV2aa/21-fixes.
+        list<Point> result;
+        Point point;
+        point.x = 1;
+        point.y = 2;
+        list_push(result, Point::create(point.x, point.y-1));
+    }
+
+    function void test_list_insert()
+    {
+        list<int> vector;
+
+        list_insert(vector, 0, 1);
+        this->assertTrue(list_size(vector) == 1);
+        this->assertTrue(vector[0] == 1);
+
+        list_insert(vector, 0, 2);
+        this->assertTrue(list_size(vector) == 2);
+        this->assertTrue(vector[0] == 2);
+        this->assertTrue(vector[1] == 1);
+
+        list_insert(vector, 1, 3);
+        this->assertTrue(list_size(vector) == 3);
+        this->assertTrue(vector[0] == 2);
+        this->assertTrue(vector[1] == 3);
+        this->assertTrue(vector[2] == 1);
+    }
+
+    function void test_list_erase()
+    {
+        list<int> vector;
+        list_push(vector, 1);
+        list_push(vector, 2);
+        list_push(vector, 3);
+        list_push(vector, 4);
+
+        list_erase(vector, 0);
+        this->assertTrue(list_size(vector) == 3);
+        this->assertTrue(vector[0] == 2);
+        this->assertTrue(vector[1] == 3);
+        this->assertTrue(vector[2] == 4);
+
+        list_erase(vector, 1);
+        this->assertTrue(list_size(vector) == 2);
+        this->assertTrue(vector[0] == 2);
+        this->assertTrue(vector[1] == 4);
+
+        list_erase(vector, 1);
+        this->assertTrue(list_size(vector) == 1);
+        this->assertTrue(vector[0] == 2);
+    }
+
+    function void test_list_truncate()
+    {
+        list<int> vector;
+        list_push(vector, 1);
+        list_push(vector, 2);
+        list_push(vector, 3);
+        list_push(vector, 4);
+
+        list_truncate(vector, 3);
+        this->assertTrue(list_size(vector) == 3);
+        this->assertTrue(vector[0] == 1);
+        this->assertTrue(vector[1] == 2);
+        this->assertTrue(vector[2] == 3);
+
+        list_truncate(vector, 1);
+        this->assertTrue(list_size(vector) == 1);
+        this->assertTrue(vector[0] == 1);
+
+        list_truncate(vector, 0);
+        this->assertTrue(list_size(vector) == 0);
+    }
+
+    function void test_translate_declare_empty_string()
+    {
+        //mock data
+        map<int, std::string> possible_objects;
+        possible_objects[1] = "1";
+        list<int> indexes;
+        list_push(indexes, 1);
+
+        //from production code
+        for(auto index : indexes)
+        {
+            std::string object_name;
+            for(auto&& [key, value] : possible_objects)
+            {
+                object_name = key;
+                break;
+            }
+        }
+    }
+    function void test_translate_for_with_size_t()
+    {
+        size_t count = 1;
+        for(size_t i=0; i<count; ++i)
+        {
+            i += 1;
+        }
+    }
+    function void test_translate_dynamic_pointer_cast_intrusive()
+    {
+        auto request = new RequestBar();
+
+        auto request_base = request;
+        this->assertTrue(request_base != nullptr);
+        this->assertEqual(request_base->get_type(), RequestBar::TYPE, "");
+
+        auto request_bar = dynamic_pointer_cast_intrusive<RequestBar>(request_base);
+        this->assertTrue(request_bar != nullptr);
+        this->assertEqual(request_bar->get_type(), RequestBar::TYPE, "");
+
+        auto request_bar2 = dynamic_pointer_cast_intrusive<RequestBar, Request>(request_base);
+        this->assertTrue(request_bar2 != nullptr);
+        this->assertEqual(request_bar2->get_type(), RequestBar::TYPE, "");
+    }
+    function void test_min_max()
+    {
+        this->assertEqual(std::min(1, 2), 1);
+        this->assertEqual(std::max(1, 2), 2);
+        this->assertEqual(std::min<int>(1, 2), 1);
+        this->assertEqual(std::max<int>(1, 2), 2);
+        this->assertEqual(std::min<float>(1, 2), 1.f);
+        this->assertEqual(std::max<float>(1, 2), 2.f);
+    }
+
+    function void test_swap()
+    {
+        list_push(this->test_list_swap1, 1);
+        list_push(this->test_list_swap1, 2);
+        list_push(this->test_list_swap2, 3);
+        mg_swap(this->test_list_swap1, this->test_list_swap2);
+        this->assertEqual(list_size(this->test_list_swap1), 1);
+        this->assertEqual(list_size(this->test_list_swap2), 2);
+        this->assertEqual(this->test_list_swap1[0], 3);
+        this->assertEqual(this->test_list_swap2[0], 1);
+        this->assertEqual(this->test_list_swap2[1], 2);
+
+        int a = 1;
+        int b = 2;
+        mg_swap(a, b);
+        this->assertEqual(a, 2);
+        this->assertEqual(b, 1);
+
+        std::string sa = "1";
+        std::string sb = "2";
+        mg_swap(sa, sb);
+        this->assertTrue(sa == "2");
+        this->assertTrue(sb == "1");
+    }
+
+    function void test_split()
+    {
+        auto string = "123x4568";
+        auto values = split(string, 'x');
+        this->assertEqual(list_size(values), 2);
+        this->assertTrue(values[0] == "123");
+        this->assertTrue(values[1] == "4568");
+        this->assertTrue(join(values, 'x') == string);
+
+        string = "123x";
+        values = split(string, 'x');
+        this->assertEqual(list_size(values), 2);
+        this->assertTrue(values[0] == "123");
+        this->assertTrue(values[1] == "");
+        this->assertTrue(join(values, 'x') == string);
+
+        string = "x123";
+        values = split(string, 'x');
+        this->assertEqual(list_size(values), 2);
+        this->assertTrue(values[0] == "");
+        this->assertTrue(values[1] == "123");
+        this->assertTrue(join(values, 'x') == string);
+
+        string = "x";
+        values = split(string, 'x');
+        this->assertEqual(list_size(values), 2);
+        this->assertTrue(values[0] == "");
+        this->assertTrue(values[1] == "");
+        this->assertTrue(join(values, 'x') == string);
+
+        string = "";
+        values = split(string, 'x');
+        this->assertEqual(list_size(values), 1);
+        this->assertTrue(join(values, 'x') == string);
+
+        string = "1,,2,,3";
+        values = split(string, ',');
+        this->assertEqual(list_size(values), 5);
+        this->assertTrue(values[0] == "1");
+        this->assertTrue(values[1] == "");
+        this->assertTrue(values[2] == "2");
+        this->assertTrue(values[3] == "");
+        this->assertTrue(values[4] == "3");
+        this->assertTrue(join(values, ',') == string);
+    }
+
+}
+
+class NullishOperator
+{
+    Point* point_a
+    Point* point_b
+
+    function void dummy_function()
+    {
+
+    }
+}
+
+class TestNullishOperator<ITestNullishOperator>
+{
+    function void test_dummy_function()
+    {
+    }
+
+    function void test_nullish_coalescing_operator()
+    {
+        auto test = new NullishOperator();
+        test->point_a = nullptr;
+        test->point_b = new Point();
+        test->point_b->x = 10;
+        test->point_b->y = 20;
+
+        Point* point_c = test->point_a ?? test->point_b;
+
+        this->assertNotNull(point_c);
+        this->assertEqual(point_c->x, 10);
+        this->assertEqual(point_c->y, 20);
+    }
+}

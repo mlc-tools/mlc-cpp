@@ -1,0 +1,103 @@
+class FunctionTemplates
+{
+    function<T> T add(T a, T b)
+    {
+        return a + b;
+    }
+
+    fn<T> void use_other_class(T t)
+    {
+        FunctionTemplatesSomeOtherClass obj;
+        obj.some_method();
+    }
+}
+
+class FunctionTemplatesSomeOtherClass
+{
+    function void some_method()
+    {
+    }
+}
+
+class TestFunctionTemplates<ITestFunctionTemplates>:test
+{
+    function void test_add()
+    {
+        FunctionTemplates f;
+
+        this->assertEqual(f.add(1, 2), 3, "add(1, 2) == 3");
+        this->assertEqual(f.add(-1.f, -2.f), -3.f, "add(-1, -2) == -3");
+    }
+    function void test_add_strings():cpp:py
+    {
+        FunctionTemplates f;
+        std::string a = "a";
+        std::string b = "b";
+        std::string c = "ab";
+        this->assertEqual(f.add(a, b), c, "add('a', 'b') == 'ab'");
+    }
+    function void test_use_other_class()
+    {
+        FunctionTemplates f;
+        f.use_other_class(0);
+    }
+}
+
+
+class TemplateMethod
+{
+    map<string, BaseClass*> members
+
+    function<T> T* get(string name)
+    {
+        for(auto&& [member_name, member] : this->members)
+        {
+            if(member_name == name)
+            {
+                return dynamic_pointer_cast_intrusive<T>(member);
+            }
+        }
+        return nullptr;
+    }
+}
+
+class BaseClass
+{
+}
+class FooClassFromBase<BaseClass>
+{
+}
+class BarClassFromBase<BaseClass>
+{
+}
+class TestTemplateMethod<ITestTemplateMethod>:test
+{
+    function void test_get()
+    {
+        auto test = new TemplateMethod();
+        test->members["base"] = new BaseClass();
+        test->members["foo"] = new FooClassFromBase();
+        test->members["bar"] = new BarClassFromBase();
+
+        this->assertNotNull(test->get<BaseClass>("base"), "test->get<BaseClass>'base'");
+        this->assertNotNull(test->get<BaseClass>("foo"), "test->get<BaseClass>'foo'");
+        this->assertNotNull(test->get<BaseClass>("bar"), "test->get<BaseClass>'bar'");
+        this->assertNotNull(test->get<FooClassFromBase>("foo"), "test->get<FooClassFromBase>'foo'");
+        this->assertNotNull(test->get<BarClassFromBase>("bar"), "test->get<BarClassFromBase>'bar'");
+        this->assertNull(test->get<FooClassFromBase>("base"), "test->get<FooClassFromBase>'base'");
+        this->assertNull(test->get<FooClassFromBase>("bar"), "test->get<FooClassFromBase>'bar'");
+        this->assertNull(test->get<BarClassFromBase>("base"), "test->get<BarClassFromBase>'base'");
+        this->assertNull(test->get<BarClassFromBase>("foo"), "test->get<BarClassFromBase>'foo'");
+    }
+
+    fn void test_default():cpp
+    {
+        this->assertEqual(Default<int>::value, 0);
+        this->assertEqual(Default<unsigned int>::value, 0u);
+        this->assertEqual(Default<int64_t>::value, 0ll);
+        this->assertEqual(Default<float>::value, 0.f);
+        this->assertEqual(Default<bool>::value, false);
+        this->assertEqual(Default<std::string>::value, std::string(""));
+    }
+
+}

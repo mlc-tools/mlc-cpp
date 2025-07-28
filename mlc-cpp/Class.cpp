@@ -37,5 +37,11 @@ void Class::set_modifier(const std::string& modifier)
     else if(modifier == Modifier::m_inline) this->is_inline = true;
     else if(modifier == Modifier::m_virtual) this->is_virtual = true;
     else if(modifier == Modifier::m_prefer_use_forward_declarations) this->prefer_use_forward_declarations = true;
-    else Member::set_modifier(modifier);
+    else Object::set_modifier(modifier);
+}
+
+
+void Class::onLinked(Model& model)
+{
+    
 }

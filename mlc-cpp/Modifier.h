@@ -34,5 +34,10 @@ namespace Modifier {
     const std::string m_prefer_use_forward_declarations = "prefer_use_forward_declarations";
     const std::string m_client = "client";
     const std::string m_server = "server";
+
+    const std::string l_cpp = "cpp";
+    const std::string l_py = "py";
+    const std::string l_php = "php";
+    const std::string l_js = "js";
 }
 

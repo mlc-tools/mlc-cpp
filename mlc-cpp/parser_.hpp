@@ -14,6 +14,6 @@
 #include <memory>
 #include "Class.hpp"
 
-std::vector<Class> parse_class(const std::string &code);
+//std::vector<std::shared_ptr<Class>> parse_class(const std::string &code);
 
 #endif /* parser_hpp */

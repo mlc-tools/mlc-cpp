@@ -1,0 +1,47 @@
+class inner/OuterClass
+{
+    class InnerClass
+    {
+        function bool func()
+        {
+            return true;
+        }
+    }
+
+    function InnerClass func()
+    {
+        InnerClass inner;
+        return inner;
+    }
+
+    function void func2(InnerClass arg)
+    {
+        arg.func();
+    }
+
+    InnerClass inner
+    list<InnerClass> test_list
+    map<int, InnerClass> test_map
+}
+
+class inner/TestOuterClass<ITestOuterClass>:test
+{
+    function void test_func()
+    {
+        OuterClass cls;
+        cls.func();
+    }
+    function void test_func2()
+    {
+        OuterClassInnerClass inner;
+        OuterClass cls;
+        cls.func2(inner);
+    }
+}
+
+class inner/TestOuterClassInnerClass<ITestOuterClassInnerClass>:test
+{
+    function void test_func()
+    {
+    }
+}

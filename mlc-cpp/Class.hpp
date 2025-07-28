@@ -6,21 +6,24 @@
 //
 #pragma once
 
-#include "Member.hpp"
-#include "Method.hpp"
+#include "Object.hpp"
+#include "Function.hpp"
 #include <set>
+#include <memory>
 
+class Model;
 
-struct Class : public Member {
+struct Class : public Object {
     std::string group;
     std::vector<std::string> includes;
-    std::vector<Member> members;
-    std::vector<Method> methods;
-    std::vector<Method> constructors;
+    std::vector<Object> members;
+    std::vector<Function> functions;
+    std::vector<Function> constructors;
 
-    Class* parent = nullptr;
-    std::vector<Class*> subclasses;
-    std::vector<Class*> inner_classes;
+    std::string parent_class_name;
+    std::weak_ptr<Class> parent;
+    std::vector<std::weak_ptr<Class>> subclasses;
+    std::vector<std::shared_ptr<Class>> inner_classes;
     std::set<std::string> user_includes;
     bool is_abstract = false;
     bool is_serialized = false;
@@ -30,10 +33,13 @@ struct Class : public Member {
     bool is_test = false;
     bool is_inline = false;
     bool is_virtual = false;
+    bool is_enum = false;
     bool generate_set_function = false;
     bool auto_generated = true;
     bool _linked = false;
     bool prefer_use_forward_declarations = false;
+    
+    std::string inner_body;
 
     Class() = default;
     Class(const Class &other) = default;
@@ -42,4 +48,6 @@ struct Class : public Member {
     Class& operator=(Class &&other) noexcept  = default;
     
     virtual void set_modifier(const std::string& modifier) override;
+    
+    void onLinked(Model& model);
 };

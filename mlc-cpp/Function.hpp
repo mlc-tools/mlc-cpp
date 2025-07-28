@@ -6,11 +6,11 @@
 //
 #pragma once
 
-#include "Member.hpp"
+#include "Object.hpp"
 
-struct Method : public Member {
-    Member return_type;
-    std::vector<Member> args;
+struct Function : public Object {
+    Object return_type;
+    std::vector<Object> args;
     std::vector<std::string> body;
     
     bool is_external;
@@ -22,11 +22,11 @@ struct Method : public Member {
     bool translated;
     std::string specific_implementations;
 
-    Method();
-    Method(const Method &other) = default;
-    Method(Method &&other) noexcept = default;
-    Method& operator=(const Method &other)  = default;
-    Method& operator=(Method &&other) noexcept  = default;
+    Function();
+    Function(const Function &other) = default;
+    Function(Function &&other) noexcept = default;
+    Function& operator=(const Function &other)  = default;
+    Function& operator=(Function &&other) noexcept  = default;
     
     virtual void set_modifier(const std::string& modifier) override;
 };

@@ -1,0 +1,9 @@
+class ecs/FooEnum
+{
+    FooEnum enumFoo = FooEnum::foo
+
+    fn float operator/(float t)
+    {
+
+    }
+}

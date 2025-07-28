@@ -1,0 +1,276 @@
+enum UnitType
+{
+    attack
+    defend
+    support
+}
+
+class data/DataNonExist:storage
+{
+    string name
+}
+class SkillBase
+{}
+class SkillFoo<SkillBase>
+{
+    int foo = -1
+}
+class data/LadderLevels:storage
+{
+    string name
+}
+
+class data/DataUnit:storage
+{
+	string name
+	UnitType unit_type
+	VisualUnit visual
+	DataUnit*:link link_to_data
+	list<DataUnit*:link> all_units
+	map<string, int> map_units
+	map<DataUnit:link, int>:cpp:py map_units_data
+	EnumWithIntValue enum_with_int_value
+	int64_t int64_value = 0
+	int64_t int64_value_without_default_value
+	uint64_t uint64_value = 0
+	unsigned uns_int_value
+	double double_value = 0
+	double double_value_without_default_value
+	float float_value = 0
+	float float_value_without_default_value
+	SkillBase* skill
+	DataNonExist:link empty
+
+	int convert_float_to_int = 0
+
+	function bool tests(Logger* logger):static
+	{
+	    auto data = DataStorage::shared().get<DataUnit>("unitname1");
+
+	    auto result = true;
+	    result = DataUnit::test_0(data) && result;
+	    result = DataUnit::test_links(logger) && result;
+	    result = DataUnit::test_enums(logger) && result;
+	    result = DataUnit::test_list_links(logger) && result;
+	    result = DataUnit::test_map_links(logger) && result;
+	    result = DataUnit::test_map_data_links(logger) && result;
+	    result = DataUnit::test_convert_float_to_int(logger) && result;
+
+	    return result;
+	}
+
+	function bool test_0(DataUnit:link data):static
+	{
+	    return true;
+	}
+
+	function bool test_1(Logger* logger):static
+	{
+	    auto result = true;
+	    auto units = DataStorage::shared().get_units();
+        for (auto&& [name, unit] : units)
+        {
+            result = result && name == unit.name;
+        }
+        return result;
+	}
+
+	function bool test_links(Logger* logger):static
+	{
+        bool result = true;
+
+        auto units = DataStorage::shared().get_units_keys();
+        result = (2 == list_size(units)) && result;
+
+        auto unit1 = DataStorage::shared().get<DataUnit>("unitname1");
+        auto unit2 = DataStorage::shared().get<DataUnit>("unitname2");
+
+        result = result && unit1->link_to_data->name == unit2->name;
+        result = result && unit2->link_to_data->name == unit1->name;
+
+        result = result && map_size(unit2->link_to_data->map_units) == map_size(unit1->map_units);
+        result = result && map_size(unit1->link_to_data->map_units) == map_size(unit2->map_units);
+
+        result = result && unit1 != unit2;
+        return result;
+	}
+
+
+    function bool test_enums(Logger* logger):static
+    {
+        bool result = true;
+
+        auto unit1 = DataStorage::shared().get<DataUnit>("unitname1");
+        auto unit2 = DataStorage::shared().get<DataUnit>("unitname2");
+
+        result = result && unit1->unit_type == UnitType::attack;
+        result = result && unit1->unit_type != UnitType::defend;
+        result = result && unit1->unit_type != UnitType::support;
+
+        result = result && unit2->unit_type == UnitType::defend;
+        result = result && unit2->unit_type != UnitType::attack;
+        result = result && unit2->unit_type != UnitType::support;
+        return result;
+    }
+
+
+    function bool test_list_links(Logger* logger):static
+    {
+        bool result = true;
+
+        auto unit1 = DataStorage::shared().get<DataUnit>("unitname1");
+        auto unit2 = DataStorage::shared().get<DataUnit>("unitname2");
+
+        result = result && list_size(unit1->all_units) == 2;
+        result = result && list_size(unit2->all_units) == 2;
+        for (auto unit : unit1->all_units)
+        {
+            result = result && (unit->name == unit1->name || unit->name == unit2->name);
+        }
+        for (auto unit : unit2->all_units)
+        {
+            result = result && (unit->name == unit1->name || unit->name == unit2->name);
+        }
+
+        return result;
+    }
+
+    function bool test_map_links(Logger* logger):static
+    {
+        bool result = true;
+
+        auto unit1 = DataStorage::shared().get<DataUnit>("unitname1");
+        auto unit2 = DataStorage::shared().get<DataUnit>("unitname2");
+
+        result = result && map_size(unit1->map_units) == 2;
+        result = result && map_size(unit2->map_units) == 2;
+        for (auto&& [name, count] : unit1->map_units)
+        {
+            result = result && (name == unit1->name || name == unit2->name);
+            result = result && (count == 1 || count == 2);
+        }
+        for (auto&& [name, count] : unit2->map_units)
+        {
+            result = result && (name == unit1->name || name == unit2->name);
+            result = result && (count == 1 || count == 2);
+        }
+        return result;
+    }
+    function bool test_map_data_links(Logger* logger):static:js:php
+    {
+        return true;
+    }
+    function bool test_map_data_links(Logger* logger):static:cpp:py
+    {
+        bool result = true;
+
+        auto unit1 = DataStorage::shared().get<DataUnit>("unitname1");
+        auto unit2 = DataStorage::shared().get<DataUnit>("unitname2");
+
+        result = result && map_size(unit1->map_units_data) == 2;
+        result = result && map_size(unit2->map_units_data) == 2;
+        for (auto&& [data, count] : unit1->map_units_data)
+        {
+            result = result && (data == unit1 || data == unit2);
+            result = result && (count == 1 || count == 2);
+        }
+        for (auto&& [data, count] : unit2->map_units_data)
+        {
+            result = result && (data == unit1 || data == unit2);
+            result = result && (count == 1 || count == 2);
+        }
+
+        return result;
+    }
+
+    function bool test_convert_float_to_int(Logger* logger):static
+    {
+        bool result = true;
+        auto unit1 = DataStorage::shared().get<DataUnit>("unitname1");
+        auto unit2 = DataStorage::shared().get<DataUnit>("unitname2");
+
+        result = result && unit1->convert_float_to_int == 1;
+        result = result && unit2->convert_float_to_int == 1;
+        if(!result)
+        {
+            logger->message("Fail: DataUnit test_convert_float_to_int");
+            logger->message("      unit1 value = " + toStr(unit1->convert_float_to_int));
+            logger->message("      unit2 value = " + toStr(unit2->convert_float_to_int));
+        }
+        return result;
+    }
+
+}
+class data/VisualUnit
+{
+	string name
+	string icon
+}
+
+class TestDataAdd<ITestDataAdd>:test
+{
+    function void test_test()
+    {
+        DataStorage::shared().get<DataAdd>("add_data");
+        auto keys = DataStorage::shared().get_adds_keys();
+        this->assertTrue(in_list("add_data", keys), "Additional data in DataStorage");
+
+        auto unit = DataStorage::shared().get<DataUnit>("unitname1");
+        this->assertTrue(unit->empty == nullptr, "empty is null");
+    }
+}
+
+
+enum Resource:py:cpp
+{
+    gold
+    gems
+}
+class data/DataDict:storage:py:cpp
+{
+    string name
+	string string_with_def_value = "default"
+    map<Resource, int> resources
+}
+
+class data/TestDataDict<ITestDataDict>:py:cpp
+{
+    map<Resource, int> resources
+
+    function void test_resources_in_map()
+    {
+        auto data = DataStorage::shared().get<DataDict>("default");
+        this->assertTrue(in_map(Resource::gold, data->resources));
+        this->assertTrue(in_map(Resource::gems, data->resources));
+        this->assertTrue(data->resources.at(Resource::gold) == 10);
+        this->assertTrue(data->resources.at(Resource::gems) == 20);
+
+        map_clear(this->resources);
+        for(auto&& [res, count] : data->resources)
+        {
+            this->resources[res] = count;
+        }
+
+        this->assertTrue(in_map(Resource::gold, this->resources));
+        this->assertTrue(in_map(Resource::gems, this->resources));
+        this->assertTrue(this->resources.at(Resource::gold) == 10);
+        this->assertTrue(this->resources.at(Resource::gems) == 20);
+    }
+
+    function void test_resources_def_value()
+    {
+        auto data = DataStorage::shared().get<DataDict>("default");
+        this->assertTrue(data->string_with_def_value == "default");
+    }
+
+    function void test_skills()
+    {
+        auto unit1 = DataStorage::shared().get<DataUnit>("unitname1");
+        auto unit2 = DataStorage::shared().get<DataUnit>("unitname2");
+        this->assertTrue(unit1->skill->get_type() == SkillFoo::TYPE);
+        auto skill = dynamic_pointer_cast_intrusive<SkillFoo>(unit1->skill);
+        this->assertTrue(skill->foo == 1);
+        this->assertTrue(unit2->skill->get_type() == SkillBase::TYPE);
+
+    }
+}
