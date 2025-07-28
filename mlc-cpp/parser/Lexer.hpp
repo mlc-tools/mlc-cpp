@@ -19,7 +19,7 @@ enum class TokenType {
 
 struct Token {
     TokenType type;
-    std::string value;
+    std::string_view value;
 };
 
 class Lexer {
@@ -28,12 +28,12 @@ public:
     Token next();
 
     constexpr void skip_ws();
-    constexpr std::string read_word() ;
-    constexpr std::string read_string(char quote) ;
+    constexpr std::string_view read_word() ;
+    constexpr std::string_view read_string(char quote) ;
     constexpr bool is_special(char c);
     constexpr bool is_symbol(char c);
 
-    std::string skip_block();
+    std::string_view skip_block();
 private:
     const std::string &text;
     size_t pos;

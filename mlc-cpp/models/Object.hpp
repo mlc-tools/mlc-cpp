@@ -24,6 +24,7 @@ public:
     std::string value;
     std::set<std::string> lang_specific;
     std::vector<Object> template_args;
+    std::vector<Object> callable_args;
     bool is_pointer = false;
     bool is_ref = false;
     bool is_runtime = false;
@@ -44,5 +45,5 @@ public:
     Object& operator=(const Object &other) = default;
     Object& operator=(Object &&other) noexcept = default;
     
-    virtual void set_modifier(const std::string& modifier);
+    virtual void set_modifier(const std::string_view& modifier);
 };

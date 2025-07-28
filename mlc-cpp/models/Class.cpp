@@ -27,7 +27,7 @@ bool _linked = false;
 bool prefer_use_forward_declarations = false;
 */
 
-void Class::set_modifier(const std::string& modifier)
+void Class::set_modifier(const std::string_view& modifier)
 {
     if(modifier == Modifier::m_abstract) this->is_abstract = true;
     else if(modifier == Modifier::m_visitor) this->is_visitor = true;

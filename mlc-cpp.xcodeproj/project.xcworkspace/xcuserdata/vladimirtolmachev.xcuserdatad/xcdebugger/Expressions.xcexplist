@@ -3,22 +3,13 @@
    version = "1.0">
    <ContextStates>
       <ContextState
-         contextName = "ParserLexem::read_templates:Parser.cpp">
+         contextName = "ParserLexem::parse_member:Parser.cpp">
       </ContextState>
       <ContextState
-         contextName = "tests::test_parse_members()::$_0::operator()(Object const&amp;, std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt;&gt; const&amp;, std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt;&gt; const&amp;, std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt;&gt; const&amp;) const:tests_parser_lexer.cpp">
+         contextName = "ParserLexem::read_modifier:Parser.cpp">
       </ContextState>
       <ContextState
-         contextName = "Parser::parse_member:parser.cpp">
-      </ContextState>
-      <ContextState
-         contextName = "ParserLexem::parse_dict:Parser.cpp">
-      </ContextState>
-      <ContextState
-         contextName = "Parser::read_body:parser.cpp">
-      </ContextState>
-      <ContextState
-         contextName = "Lexer::skip_block:Parser.cpp">
+         contextName = "Lexer::read_word:parser.cpp">
          <PersistentStrings>
             <PersistentString
                value = "text[pos]">
@@ -26,21 +17,46 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "main:main.cpp">
+         contextName = "ParserLexem::parse_dict:Parser.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "Parser::parse_method:parser.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "Lexer::skip_ws:parser.cpp">
          <PersistentStrings>
             <PersistentString
-               value = "">
+               value = "text[pos]">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "Parser::parse_method_args:parser.cpp">
+         contextName = "Parser::parseText:Parser.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "cls-&gt;name">
+            </PersistentString>
+            <PersistentString
+               value = "model.classes">
+            </PersistentString>
+            <PersistentString
+               value = "cls-&gt;inner_classes">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "Parser::parse_class:Parser.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "cls-&gt;name">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "ParserLexem::read_class_name_and_group:Parser.cpp">
       </ContextState>
       <ContextState
-         contextName = "ParserLexem::parse_member:Parser.cpp">
+         contextName = "ParserLexem::read_modifier:ParserLexem.cpp">
       </ContextState>
       <ContextState
          contextName = "ParserLexem::parse:Parser.cpp">
@@ -75,6 +91,57 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "ParserLexem::parse:ParserLexem.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "(char*)(&amp;lexer.text[lexer.pos+0])">
+            </PersistentString>
+            <PersistentString
+               value = "*cls">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "tests::test_parse_members()::$_0::operator()(Object const&amp;, std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt;&gt; const&amp;, std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt;&gt; const&amp;, std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt;&gt; const&amp;) const:tests_parser_lexer.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "ParserLexem::read_callable_args:ParserLexem.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "ParserLexem::read_body:Parser.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "Parser::parse_constructor:parser.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "Linker::convertSuperclasses:Linker.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "cls-&gt;parent_class_name">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "ParserLexem::parse_method:ParserLexem.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "Lexer::skip_ws:Lexer.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "ParserLexem::parse_member:ParserLexem.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "Lexer::skip_block:Parser.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "text[pos]">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "Lexer::next:Lexer.cpp">
+      </ContextState>
+      <ContextState
          contextName = "Parser::parse:parser.cpp">
          <PersistentStrings>
             <PersistentString
@@ -83,19 +150,19 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "ParserLexem::read_modifier:Parser.cpp">
+         contextName = "ParserLexem::read_templates:ParserLexem.cpp">
       </ContextState>
       <ContextState
-         contextName = "ParserLexem::read_parent_class:Parser.cpp">
+         contextName = "ParserLexem::parse_method_args:ParserLexem.cpp">
       </ContextState>
       <ContextState
-         contextName = "Parser::parseFiles:Parser.cpp">
+         contextName = "ParserLexem::read_templates:Parser.cpp">
       </ContextState>
       <ContextState
-         contextName = "Parser::parse_method:parser.cpp">
+         contextName = "Parser::read_body:parser.cpp">
       </ContextState>
       <ContextState
-         contextName = "Parser::parse_constructor:parser.cpp">
+         contextName = "Parser::parse_method_args:parser.cpp">
       </ContextState>
       <ContextState
          contextName = "Lexer::read_string:parser.cpp">
@@ -109,26 +176,24 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "ParserLexem::parse_method:Parser.cpp">
+         contextName = "tests::test_lexer_basic_tokens:tests_parser_lexer.cpp">
       </ContextState>
       <ContextState
-         contextName = "Lexer::skip_ws:parser.cpp">
+         contextName = "main:main.cpp">
          <PersistentStrings>
             <PersistentString
-               value = "text[pos]">
+               value = "">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "ParserLexem::read_body:Parser.cpp">
+         contextName = "Lexer::skip_block:Lexer.cpp">
       </ContextState>
       <ContextState
-         contextName = "Lexer::read_word:parser.cpp">
-         <PersistentStrings>
-            <PersistentString
-               value = "text[pos]">
-            </PersistentString>
-         </PersistentStrings>
+         contextName = "ParserLexem::read_parent_class:Parser.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "Parser::parse_member:parser.cpp">
       </ContextState>
       <ContextState
          contextName = "Lexer::next:parser.cpp">
@@ -139,42 +204,13 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "Linker::convertSuperclasses:Linker.cpp">
-         <PersistentStrings>
-            <PersistentString
-               value = "cls-&gt;parent_class_name">
-            </PersistentString>
-         </PersistentStrings>
+         contextName = "tests::test_parse_members:tests_parser_lexer.cpp">
       </ContextState>
       <ContextState
-         contextName = "Parser::parse_class:Parser.cpp">
-         <PersistentStrings>
-            <PersistentString
-               value = "cls-&gt;name">
-            </PersistentString>
-         </PersistentStrings>
+         contextName = "ParserLexem::parse_method:Parser.cpp">
       </ContextState>
       <ContextState
-         contextName = "ParserLexem::parse_member:ParserLexem.cpp">
-      </ContextState>
-      <ContextState
-         contextName = "ParserLexem::parse:ParserLexem.cpp">
-         <PersistentStrings>
-            <PersistentString
-               value = "(char*)(&amp;lexer.text[lexer.pos+0])">
-            </PersistentString>
-            <PersistentString
-               value = "*cls">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "Parser::parseText:Parser.cpp">
-         <PersistentStrings>
-            <PersistentString
-               value = "cls-&gt;name">
-            </PersistentString>
-         </PersistentStrings>
+         contextName = "tests::test_parse_functions:tests_parser_lexer.cpp">
       </ContextState>
    </ContextStates>
 </VariablesViewState>

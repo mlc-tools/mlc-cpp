@@ -37,7 +37,7 @@ Object::Object(const std::string& type_, const std::string& name_, const std::st
 }
 
 
-void Object::set_modifier(const std::string& modifier)
+void Object::set_modifier(const std::string_view& modifier)
 {
     if(modifier == Modifier::m_private) access = AccessSpecifier::m_private;
     else if(modifier == Modifier::m_protected) access = AccessSpecifier::m_protected;

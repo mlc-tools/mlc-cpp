@@ -1,9 +1,6 @@
-class ecs/Vector
+
+class model/ModelUser<ModelUserBase>
 {
-    fn Vector:ref operator+=(Vector:ref:const v):cpp
-    {
-        this->x += v.x;
-        this->y += v.y;
-        return *this;
-    }
+    Observable<void(DataUnit:link, DataSkin:link)>:runtime:client event_current_skin_changed
+
 }

@@ -30,14 +30,13 @@ private:
     void advance();
     
     std::vector<std::string> read_body();
-    std::string skip_body();
-    std::string read_until(const std::set<std::string>& symbols);
+    std::string_view skip_body();
     std::vector<Object> read_templates();
 public:
     Object parse_member(bool with_name, bool is_enum);
     void parse_constructor(Class &cls);
     Function parse_method();
-    std::vector<Object> parse_method_args();
+    std::vector<Object> read_callable_args();
 };
 Object parse_object(const std::string& str, bool with_name=false);
 Function parse_function(const std::string& str);

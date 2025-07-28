@@ -47,7 +47,7 @@ struct Class : public Object {
     Class& operator=(const Class &other) = default;
     Class& operator=(Class &&other) noexcept  = default;
     
-    virtual void set_modifier(const std::string& modifier) override;
+    virtual void set_modifier(const std::string_view& modifier) override;
     
     void onLinked(Model& model);
 };

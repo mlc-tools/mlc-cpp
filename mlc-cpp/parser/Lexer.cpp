@@ -9,7 +9,11 @@
 #include <iostream>
 
 
-Lexer::Lexer(const std::string &src) : text(src), pos(0) {}
+Lexer::Lexer(const std::string &src)
+: text(src)
+, pos(0) {
+    
+}
 
 Token Lexer::next() {
     skip_ws();
@@ -19,19 +23,17 @@ Token Lexer::next() {
 
     // include (@include)
     if (c == '@') {
-        std::string word = read_word();
-        return {TokenType::Include, word};
+        return {TokenType::Include, read_word()};
     }
 
     // символы
     else if (is_symbol(c) || (is_special(c) && c != '_')) {
-        pos++;
-        return {TokenType::Symbol, std::string(1, c)};
+        return {TokenType::Symbol, std::string_view(&text[pos++], 1)};
     }
 
     // слово
     else  if (std::isalnum(c) || c == '_' || c == ':' || c == '/') {
-        std::string word = read_word();
+        auto word = read_word();
         if (word == "class" || word == "fn" || word == "function" || word == "constructor" || word == "enum" || word == "interface") {
             if(word == "function")
                 word = "fn";
@@ -60,11 +62,10 @@ constexpr void Lexer::skip_ws() {
     while (pos < text.size() && std::isspace(text[pos]))
         ++pos;
 }
-std::string Lexer::skip_block(){
+std::string_view Lexer::skip_block(){
     int depth = 1;
     bool in_string = false;
-    std::string result;
-    size_t begin = pos;
+    size_t start = pos;
     while(pos < text.size()){
         if(!in_string && text[pos] == '{') ++depth;
         if(!in_string && text[pos] == '}' && --depth == 0) {
@@ -76,27 +77,30 @@ std::string Lexer::skip_block(){
             in_string = false;
         ++pos;
     }
-    result = text.substr(begin, pos-begin);
-    ++pos;
+    std::string_view result;
+    if(pos > start)
+        result = std::string_view(&text[start], pos - start);
+    if(pos < text.size())
+        ++pos;
     return result;
 }
-constexpr std::string Lexer::read_word() {
+constexpr std::string_view Lexer::read_word() {
     size_t start = pos;
     while (pos < text.size() && (std::isalnum(text[pos]) || is_special(text[pos])))
         pos++;
-    return text.substr(start, pos - start);
+    return std::string_view(&text[start], pos - start);
 }
-constexpr std::string Lexer::read_string(char quote) {
-    std::string lit = std::string(1, quote);
+constexpr std::string_view Lexer::read_string(char quote) {
+    size_t start = pos;
     pos++;
     while (pos < text.size() && (text[pos] != quote || text[pos-1] == '\\'))
-        lit += text[pos++];
+        pos++;
     if (pos < text.size())
-        lit += text[pos++];
-    return lit;
+        pos++;
+    return std::string_view(&text[start], pos - start);
 }
 constexpr bool Lexer::is_special(char c) {
-    return std::string_view("_@&[]!|.#?").find(c) != std::string_view::npos;
+    return std::string("_@&[]!|.#?").find(c) != std::string::npos;
 }
 constexpr bool Lexer::is_symbol(char c) {
     return
@@ -115,6 +119,7 @@ constexpr bool Lexer::is_symbol(char c) {
     c == '*' ||
     c == '/' ||
     c == '=' ||
+    c == '%' ||
     false
     ;
 }

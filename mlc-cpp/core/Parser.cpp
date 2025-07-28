@@ -36,10 +36,9 @@ void Parser::parseText(const std::string &input) {
     std::string text = removeComments(input);
     ParserLexem parser(text);
     auto classes = parser.parse_dict();
-    model.classes.insert(model.classes.end(), classes.begin(), classes.end());
     
     std::vector<std::shared_ptr<Class>> inner_classes;
-    for(auto& cls : model.classes){
+    for(auto& cls : classes){
         parse_class(cls);
         for(auto& inner : cls->inner_classes){
             inner->name = cls->name + inner->name;
@@ -51,6 +50,8 @@ void Parser::parseText(const std::string &input) {
         parse_class(cls);
         assert(cls->inner_classes.empty());
     }
+    
+    model.classes.insert(model.classes.end(), classes.begin(), classes.end());
     model.classes.insert(model.classes.end(), inner_classes.begin(), inner_classes.end());
 }
 

@@ -18,7 +18,7 @@ Function::Function()
 , translated(false){
 }
 
-void Function::set_modifier(const std::string& modifier)
+void Function::set_modifier(const std::string_view& modifier)
 {
     if(modifier == Modifier::m_external) this->is_external = true;
     else if(modifier == Modifier::m_abstract) this->is_abstract = true;

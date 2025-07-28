@@ -10,8 +10,7 @@
 
 struct Function : public Object {
     Object return_type;
-    std::vector<Object> args;
-    std::vector<std::string> body;
+    std::string body;
     
     bool is_external;
     bool is_abstract;
@@ -28,5 +27,5 @@ struct Function : public Object {
     Function& operator=(const Function &other)  = default;
     Function& operator=(Function &&other) noexcept  = default;
     
-    virtual void set_modifier(const std::string& modifier) override;
+    virtual void set_modifier(const std::string_view& modifier) override;
 };

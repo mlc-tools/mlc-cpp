@@ -7,6 +7,7 @@
 
 #include <cassert>
 #include <iostream>
+#include <map>
 #include "tests.hpp"
 #include "../parser/ParserLexem.hpp"
 #include "../models/Class.hpp"
@@ -18,7 +19,7 @@
 namespace tests
 {
 void test_lexer_basic_tokens() {
-    std::string code = "@include class MyClass :public { }";
+    std::string code = "@include class MyClass:public { }";
     Lexer lexer(code);
 
     Token t = lexer.next();
@@ -135,6 +136,19 @@ void test_parse_members() {
     check_object(obj, "ModelEcsBase", "model");
     assert(obj.is_pointer);
     
+    obj = parse_object("Observable<void(DataUnit:link, DataSkin:link)>:runtime:client event_current_skin_changed", true);
+    check_object(obj, "Observable", "event_current_skin_changed");
+    assert(obj.template_args.size() == 1 && obj.template_args.at(0).callable_args.size() == 2);
+    assert(obj.template_args.at(0).callable_args.at(0).type == "DataUnit" && obj.template_args.at(0).callable_args.at(0).is_link);
+    assert(obj.template_args.at(0).callable_args.at(1).type == "DataSkin" && obj.template_args.at(0).callable_args.at(1).is_link);
+    
+    obj = parse_object("Observable<void(Vector:ref:const pos, float lifet_time, float radius, string name)>:runtime event_create_marker", true);
+    check_object(obj, "Observable", "event_create_marker");
+    assert(obj.template_args.size() == 1 && obj.template_args.at(0).callable_args.size() == 4);
+    assert(obj.template_args.at(0).callable_args.at(0).type == "Vector" && obj.template_args.at(0).callable_args.at(0).is_ref);
+    assert(obj.template_args.at(0).callable_args.at(1).type == "float" && obj.template_args.at(0).callable_args.at(1).name == "lifet_time");
+    assert(obj.template_args.at(0).callable_args.at(2).type == "float" && obj.template_args.at(0).callable_args.at(2).name == "radius");
+    assert(obj.template_args.at(0).callable_args.at(3).type == "string" && obj.template_args.at(0).callable_args.at(3).name == "name");
 }
 
 
@@ -142,6 +156,14 @@ void test_parse_functions() {
     auto check_func = [](const Function& func, const std::string& return_type, const std::string& name){
         assert(func.return_type.type == return_type);
         assert(func.name == name);
+        return func;
+    };
+    auto check_args = [](const Function& func, const std::map<std::string, std::string>& args){
+        assert(func.callable_args.size() == args.size());
+        for(size_t i=0; i<args.size();++i) {
+            assert(args.count(func.callable_args[i].type) > 0);
+            assert(func.callable_args[i].name == args.at(func.callable_args[i].type));
+        }
         return func;
     };
     check_func(parse_function("fn void foo(){}"), "void", "foo");
@@ -154,12 +176,18 @@ void test_parse_functions() {
     check_func(parse_function("fn void operator*(){}"), "void", "operator*");
     check_func(parse_function("fn void operator/(){}"), "void", "operator/");
     
+    check_args(parse_function("fn void foo(int a, float b){}"), {std::make_pair("int", "a"), std::make_pair("float", "b")});
+    
     
     auto func = parse_function("fn Vector:ref operator+=(Vector:ref:const v):cpp");
     check_func(func, "Vector", "operator+=");
-    assert(func.args.size() == 1 && func.args[0].type == "Vector" && func.args[0].name == "v" && func.args[0].is_ref && func.args[0].is_const);
+    assert(func.callable_args.size() == 1 && func.callable_args[0].type == "Vector" && func.callable_args[0].name == "v" && func.callable_args[0].is_ref && func.callable_args[0].is_const);
     assert(func.return_type.is_ref);
     
+    
+    func = parse_function("fn void copy_hero(int other_id, int self_id) { auto self_hp = this->get<Health>(self_id); auto other_hp = this->model_inner->get<Health>(other_id); self_hp->value = other_hp->value; }");
+    check_func(func, "void", "copy_hero");
+
 }
 
 void run() {
