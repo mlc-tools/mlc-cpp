@@ -28,29 +28,30 @@ int main() {
     Parser parser(model);
     parser.parseFiles(files);
     
-//    Linker().link(model);
+    Linker().link(model);
     auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
     std::cout << "parsed on " << elapsed.count() << "ms";
 
-//    auto classes = parse_class(code);
-//    auto cls = model.classes.at(0);
-//    
-//    std::cout << "Group: " << cls->group << "\n";
-//    std::cout << "Class: " << cls->name << "\n";
-//    std::cout << "Includes:\n";
-//    for (auto &i : cls->includes) std::cout << "  " << i << "\n";
-//    std::cout << "Members:\n";
-//    for (auto &m : cls->members) std::cout << "  " << m.type << " " << m.name << "\n";
-//    std::cout << "Methods:\n";
-//    for (auto &m : cls->functions) {
-//        std::cout << "  " << m.return_type.type << " " << m.name << "(";
-//        for (auto &a : m.callable_args) std::cout << a.type << " " << a.name << " ";
-//        std::cout << ")\n";
-//    }
-//    std::cout << "Constructors:\n";
-//    for (auto &m : cls->constructors) {
-//        std::cout << "  " << m.name << "(";
-//        for (auto &a : m.callable_args) std::cout << a.type << " " << a.name << " ";
-//        std::cout << ")\n";
-//    }
+    auto cls = model.get_class("ModelEcsBase");
+    if(cls)
+    {
+        std::cout << "Group: " << cls->group << "\n";
+        std::cout << "Class: " << cls->name << "\n";
+        std::cout << "Includes:\n";
+        for (auto &i : cls->includes) std::cout << "  " << i << "\n";
+        std::cout << "Members:\n";
+        for (auto &m : cls->members) std::cout << "  " << m.type << " " << m.name << "\n";
+        std::cout << "Methods:\n";
+        for (auto &m : cls->functions) {
+            std::cout << "  " << m.return_type.type << " " << m.name << "(";
+            for (auto &a : m.callable_args) std::cout << a.type << " " << a.name << " ";
+            std::cout << ")\n";
+        }
+        std::cout << "Constructors:\n";
+        for (auto &m : cls->constructors) {
+            std::cout << "  " << m.name << "(";
+            for (auto &a : m.callable_args) std::cout << a.type << " " << a.name << " ";
+            std::cout << ")\n";
+        }
+    }
 }
