@@ -210,7 +210,7 @@ std::vector<int> TranslatorCpp::convertToEnum(Class &cls) {
     {
         auto method = addMethod(Objects::BOOL, "operator ==", true);
         method->callable_args.push_back(Object("string", "rhs"));
-        method->body += "return " + cls.name + "(rhs) == rhs;";  // simple delegating;
+        method->body += "return *this == " + cls.name + "(rhs); ";
     }
     //   friend operator==(const std::string&, const Enum&)
     {
