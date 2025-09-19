@@ -177,6 +177,7 @@ void GeneratorVisitor::addAcceptMethod(
     m.return_type = Objects::VOID;
     m.callable_args.emplace_back(Object("IVisitor" + baseName, "visitor"));
     m.callable_args.back().is_pointer = true;
+    m.is_virtual = true;
     m.body += "visitor->visit(this);";
     cls->functions.push_back(std::move(m));
 }
