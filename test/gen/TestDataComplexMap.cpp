@@ -13,81 +13,78 @@ namespace mg
 {
     const std::string TestDataComplexMap::TYPE("TestDataComplexMap");
 
-    
     TestDataComplexMap::TestDataComplexMap()
     {
-    
+
     }
 
     TestDataComplexMap::~TestDataComplexMap(){}
 
+    void TestDataComplexMap::test_foo()
+    {
 
-void TestDataComplexMap::test_foo()
-{
+    }
 
-    
-}
-
-void TestDataComplexMap::test_deserialize()
-{
+    void TestDataComplexMap::test_deserialize()
+    {
 
         auto data = DataStorage::shared().get<DataComplexMap>("test");
         this->assertTrue(map_size(data->complex_map) == 1);
         this->assertTrue(list_size(data->complex_map.at(1)) == 2);
         this->assertTrue(data->complex_map.at(1)[0] == 1);
         this->assertTrue(data->complex_map.at(1)[1] == 2);
-    
-}
 
-bool TestDataComplexMap::operator ==(const TestDataComplexMap& rhs) const
-{
+    }
 
-bool result = this->ITestDataComplexMap::operator ==(rhs);
-return result;
-}
+    bool TestDataComplexMap::operator ==(const TestDataComplexMap& rhs) const
+    {
 
-bool TestDataComplexMap::operator !=(const TestDataComplexMap& rhs) const
-{
+        bool result = this->ITestDataComplexMap::operator ==(rhs);
+        return result;
+    }
 
-return !(*this == rhs);
-}
+    bool TestDataComplexMap::operator !=(const TestDataComplexMap& rhs) const
+    {
 
- TestDataComplexMap::TestDataComplexMap(const TestDataComplexMap& rhs)
-{
+        return !(*this == rhs);
+    }
 
-this->operator=(rhs);
-}
+    TestDataComplexMap::TestDataComplexMap(const TestDataComplexMap& rhs)
+    {
 
-const TestDataComplexMap& TestDataComplexMap::operator =(const TestDataComplexMap& rhs)
-{
+        this->operator=(rhs);
+    }
 
-this->ITestDataComplexMap::operator=(rhs);
-return *this;
-}
+    const TestDataComplexMap& TestDataComplexMap::operator =(const TestDataComplexMap& rhs)
+    {
 
-std::string TestDataComplexMap::get_type() const
-{
-return TestDataComplexMap::TYPE;
-}
+        this->ITestDataComplexMap::operator=(rhs);
+        return *this;
+    }
 
-void TestDataComplexMap::serialize_xml(SerializerXml& serializer) const
-{
+    std::string TestDataComplexMap::get_type() const
+    {
+        return TestDataComplexMap::TYPE;
+    }
 
-}
+    void TestDataComplexMap::serialize_xml(SerializerXml& serializer) const
+    {
 
-void TestDataComplexMap::deserialize_xml(DeserializerXml& deserializer)
-{
+    }
 
-}
+    void TestDataComplexMap::deserialize_xml(DeserializerXml& deserializer)
+    {
 
-void TestDataComplexMap::serialize_json(SerializerJson& serializer) const
-{
+    }
 
-}
+    void TestDataComplexMap::serialize_json(SerializerJson& serializer) const
+    {
 
-void TestDataComplexMap::deserialize_json(DeserializerJson& deserializer)
-{
+    }
 
-}
+    void TestDataComplexMap::deserialize_json(DeserializerJson& deserializer)
+    {
+
+    }
 
 } // namespace mg

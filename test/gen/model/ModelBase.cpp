@@ -7,58 +7,56 @@
 
 namespace mg
 {
-    
-    
+
     ModelBase::ModelBase()
     {
-    
+
     }
 
     ModelBase::~ModelBase(){}
 
+    bool ModelBase::operator ==(const ModelBase& rhs) const
+    {
+        bool result = true;
+        return result;
+    }
 
-bool ModelBase::operator ==(const ModelBase& rhs) const
-{
-bool result = true;
-return result;
-}
+    bool ModelBase::operator !=(const ModelBase& rhs) const
+    {
 
-bool ModelBase::operator !=(const ModelBase& rhs) const
-{
+        return !(*this == rhs);
+    }
 
-return !(*this == rhs);
-}
+    ModelBase::ModelBase(const ModelBase& rhs)
+    {
 
- ModelBase::ModelBase(const ModelBase& rhs)
-{
+        this->operator=(rhs);
+    }
 
-this->operator=(rhs);
-}
+    const ModelBase& ModelBase::operator =(const ModelBase& rhs)
+    {
 
-const ModelBase& ModelBase::operator =(const ModelBase& rhs)
-{
+        return *this;
+    }
 
-return *this;
-}
+    void ModelBase::serialize_xml(SerializerXml& serializer) const
+    {
 
-void ModelBase::serialize_xml(SerializerXml& serializer) const
-{
+    }
 
-}
+    void ModelBase::deserialize_xml(DeserializerXml& deserializer)
+    {
 
-void ModelBase::deserialize_xml(DeserializerXml& deserializer)
-{
+    }
 
-}
+    void ModelBase::serialize_json(SerializerJson& serializer) const
+    {
 
-void ModelBase::serialize_json(SerializerJson& serializer) const
-{
+    }
 
-}
+    void ModelBase::deserialize_json(DeserializerJson& deserializer)
+    {
 
-void ModelBase::deserialize_json(DeserializerJson& deserializer)
-{
-
-}
+    }
 
 } // namespace mg

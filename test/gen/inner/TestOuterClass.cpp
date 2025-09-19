@@ -13,81 +13,79 @@ namespace mg
 {
     const std::string TestOuterClass::TYPE("TestOuterClass");
 
-    
     TestOuterClass::TestOuterClass()
     {
-    
+
     }
 
     TestOuterClass::~TestOuterClass(){}
 
-
-void TestOuterClass::test_func()
-{
+    void TestOuterClass::test_func()
+    {
 
         OuterClass cls;
         cls.func();
-    
-}
 
-void TestOuterClass::test_func2()
-{
+    }
+
+    void TestOuterClass::test_func2()
+    {
 
         OuterClassInnerClass inner;
         OuterClass cls;
         cls.func2(inner);
-    
-}
 
-bool TestOuterClass::operator ==(const TestOuterClass& rhs) const
-{
+    }
 
-bool result = this->ITestOuterClass::operator ==(rhs);
-return result;
-}
+    bool TestOuterClass::operator ==(const TestOuterClass& rhs) const
+    {
 
-bool TestOuterClass::operator !=(const TestOuterClass& rhs) const
-{
+        bool result = this->ITestOuterClass::operator ==(rhs);
+        return result;
+    }
 
-return !(*this == rhs);
-}
+    bool TestOuterClass::operator !=(const TestOuterClass& rhs) const
+    {
 
- TestOuterClass::TestOuterClass(const TestOuterClass& rhs)
-{
+        return !(*this == rhs);
+    }
 
-this->operator=(rhs);
-}
+    TestOuterClass::TestOuterClass(const TestOuterClass& rhs)
+    {
 
-const TestOuterClass& TestOuterClass::operator =(const TestOuterClass& rhs)
-{
+        this->operator=(rhs);
+    }
 
-this->ITestOuterClass::operator=(rhs);
-return *this;
-}
+    const TestOuterClass& TestOuterClass::operator =(const TestOuterClass& rhs)
+    {
 
-std::string TestOuterClass::get_type() const
-{
-return TestOuterClass::TYPE;
-}
+        this->ITestOuterClass::operator=(rhs);
+        return *this;
+    }
 
-void TestOuterClass::serialize_xml(SerializerXml& serializer) const
-{
+    std::string TestOuterClass::get_type() const
+    {
+        return TestOuterClass::TYPE;
+    }
 
-}
+    void TestOuterClass::serialize_xml(SerializerXml& serializer) const
+    {
 
-void TestOuterClass::deserialize_xml(DeserializerXml& deserializer)
-{
+    }
 
-}
+    void TestOuterClass::deserialize_xml(DeserializerXml& deserializer)
+    {
 
-void TestOuterClass::serialize_json(SerializerJson& serializer) const
-{
+    }
 
-}
+    void TestOuterClass::serialize_json(SerializerJson& serializer) const
+    {
 
-void TestOuterClass::deserialize_json(DeserializerJson& deserializer)
-{
+    }
 
-}
+    void TestOuterClass::deserialize_json(DeserializerJson& deserializer)
+    {
+
+    }
 
 } // namespace mg

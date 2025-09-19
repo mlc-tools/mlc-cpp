@@ -13,17 +13,15 @@ namespace mg
 {
     const std::string TestDataListListBool::TYPE("TestDataListListBool");
 
-    
     TestDataListListBool::TestDataListListBool()
     {
-    
+
     }
 
     TestDataListListBool::~TestDataListListBool(){}
 
-
-void TestDataListListBool::test_foo()
-{
+    void TestDataListListBool::test_foo()
+    {
 
         auto data = DataStorage::shared().get<DataListListBool>("test");
         this->assertTrue(list_size(data->list_list_bool) == 2);
@@ -33,58 +31,58 @@ void TestDataListListBool::test_foo()
         this->assertTrue(data->list_list_bool[0][1] == false);
         this->assertTrue(data->list_list_bool[1][0] == false);
         this->assertTrue(data->list_list_bool[1][1] == true);
-    
-}
 
-bool TestDataListListBool::operator ==(const TestDataListListBool& rhs) const
-{
+    }
 
-bool result = this->ITestDataListListBool::operator ==(rhs);
-return result;
-}
+    bool TestDataListListBool::operator ==(const TestDataListListBool& rhs) const
+    {
 
-bool TestDataListListBool::operator !=(const TestDataListListBool& rhs) const
-{
+        bool result = this->ITestDataListListBool::operator ==(rhs);
+        return result;
+    }
 
-return !(*this == rhs);
-}
+    bool TestDataListListBool::operator !=(const TestDataListListBool& rhs) const
+    {
 
- TestDataListListBool::TestDataListListBool(const TestDataListListBool& rhs)
-{
+        return !(*this == rhs);
+    }
 
-this->operator=(rhs);
-}
+    TestDataListListBool::TestDataListListBool(const TestDataListListBool& rhs)
+    {
 
-const TestDataListListBool& TestDataListListBool::operator =(const TestDataListListBool& rhs)
-{
+        this->operator=(rhs);
+    }
 
-this->ITestDataListListBool::operator=(rhs);
-return *this;
-}
+    const TestDataListListBool& TestDataListListBool::operator =(const TestDataListListBool& rhs)
+    {
 
-std::string TestDataListListBool::get_type() const
-{
-return TestDataListListBool::TYPE;
-}
+        this->ITestDataListListBool::operator=(rhs);
+        return *this;
+    }
 
-void TestDataListListBool::serialize_xml(SerializerXml& serializer) const
-{
+    std::string TestDataListListBool::get_type() const
+    {
+        return TestDataListListBool::TYPE;
+    }
 
-}
+    void TestDataListListBool::serialize_xml(SerializerXml& serializer) const
+    {
 
-void TestDataListListBool::deserialize_xml(DeserializerXml& deserializer)
-{
+    }
 
-}
+    void TestDataListListBool::deserialize_xml(DeserializerXml& deserializer)
+    {
 
-void TestDataListListBool::serialize_json(SerializerJson& serializer) const
-{
+    }
 
-}
+    void TestDataListListBool::serialize_json(SerializerJson& serializer) const
+    {
 
-void TestDataListListBool::deserialize_json(DeserializerJson& deserializer)
-{
+    }
 
-}
+    void TestDataListListBool::deserialize_json(DeserializerJson& deserializer)
+    {
+
+    }
 
 } // namespace mg

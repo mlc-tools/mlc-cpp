@@ -13,23 +13,20 @@ namespace mg
 {
     const std::string TestNullishOperator::TYPE("TestNullishOperator");
 
-    
     TestNullishOperator::TestNullishOperator()
     {
-    
+
     }
 
     TestNullishOperator::~TestNullishOperator(){}
 
+    void TestNullishOperator::test_dummy_function()
+    {
 
-void TestNullishOperator::test_dummy_function()
-{
+    }
 
-    
-}
-
-void TestNullishOperator::test_nullish_coalescing_operator()
-{
+    void TestNullishOperator::test_nullish_coalescing_operator()
+    {
 
         auto test = make_intrusive<NullishOperator>();
         test->point_a = nullptr;
@@ -42,58 +39,58 @@ void TestNullishOperator::test_nullish_coalescing_operator()
         this->assertNotNull(point_c);
         this->assertEqual(point_c->x, 10);
         this->assertEqual(point_c->y, 20);
-    
-}
 
-bool TestNullishOperator::operator ==(const TestNullishOperator& rhs) const
-{
+    }
 
-bool result = this->ITestNullishOperator::operator ==(rhs);
-return result;
-}
+    bool TestNullishOperator::operator ==(const TestNullishOperator& rhs) const
+    {
 
-bool TestNullishOperator::operator !=(const TestNullishOperator& rhs) const
-{
+        bool result = this->ITestNullishOperator::operator ==(rhs);
+        return result;
+    }
 
-return !(*this == rhs);
-}
+    bool TestNullishOperator::operator !=(const TestNullishOperator& rhs) const
+    {
 
- TestNullishOperator::TestNullishOperator(const TestNullishOperator& rhs)
-{
+        return !(*this == rhs);
+    }
 
-this->operator=(rhs);
-}
+    TestNullishOperator::TestNullishOperator(const TestNullishOperator& rhs)
+    {
 
-const TestNullishOperator& TestNullishOperator::operator =(const TestNullishOperator& rhs)
-{
+        this->operator=(rhs);
+    }
 
-this->ITestNullishOperator::operator=(rhs);
-return *this;
-}
+    const TestNullishOperator& TestNullishOperator::operator =(const TestNullishOperator& rhs)
+    {
 
-std::string TestNullishOperator::get_type() const
-{
-return TestNullishOperator::TYPE;
-}
+        this->ITestNullishOperator::operator=(rhs);
+        return *this;
+    }
 
-void TestNullishOperator::serialize_xml(SerializerXml& serializer) const
-{
+    std::string TestNullishOperator::get_type() const
+    {
+        return TestNullishOperator::TYPE;
+    }
 
-}
+    void TestNullishOperator::serialize_xml(SerializerXml& serializer) const
+    {
 
-void TestNullishOperator::deserialize_xml(DeserializerXml& deserializer)
-{
+    }
 
-}
+    void TestNullishOperator::deserialize_xml(DeserializerXml& deserializer)
+    {
 
-void TestNullishOperator::serialize_json(SerializerJson& serializer) const
-{
+    }
 
-}
+    void TestNullishOperator::serialize_json(SerializerJson& serializer) const
+    {
 
-void TestNullishOperator::deserialize_json(DeserializerJson& deserializer)
-{
+    }
 
-}
+    void TestNullishOperator::deserialize_json(DeserializerJson& deserializer)
+    {
+
+    }
 
 } // namespace mg

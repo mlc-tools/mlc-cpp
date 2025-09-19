@@ -15,17 +15,15 @@ namespace mg
 {
     const std::string TestTemplateMethod::TYPE("TestTemplateMethod");
 
-    
     TestTemplateMethod::TestTemplateMethod()
     {
-    
+
     }
 
     TestTemplateMethod::~TestTemplateMethod(){}
 
-
-void TestTemplateMethod::test_get()
-{
+    void TestTemplateMethod::test_get()
+    {
 
         auto test = make_intrusive<TemplateMethod>();
         test->members["base"] = make_intrusive<BaseClass>();
@@ -41,11 +39,11 @@ void TestTemplateMethod::test_get()
         this->assertNull(test->get<FooClassFromBase>("bar"), "test->get<FooClassFromBase>'bar'");
         this->assertNull(test->get<BarClassFromBase>("base"), "test->get<BarClassFromBase>'base'");
         this->assertNull(test->get<BarClassFromBase>("foo"), "test->get<BarClassFromBase>'foo'");
-    
-}
 
-void TestTemplateMethod::test_default()
-{
+    }
+
+    void TestTemplateMethod::test_default()
+    {
 
         this->assertEqual(Default<int>::value, 0);
         this->assertEqual(Default<unsigned int>::value, 0u);
@@ -53,58 +51,58 @@ void TestTemplateMethod::test_default()
         this->assertEqual(Default<float>::value, 0.f);
         this->assertEqual(Default<bool>::value, false);
         this->assertEqual(Default<std::string>::value, std::string(""));
-    
-}
 
-bool TestTemplateMethod::operator ==(const TestTemplateMethod& rhs) const
-{
+    }
 
-bool result = this->ITestTemplateMethod::operator ==(rhs);
-return result;
-}
+    bool TestTemplateMethod::operator ==(const TestTemplateMethod& rhs) const
+    {
 
-bool TestTemplateMethod::operator !=(const TestTemplateMethod& rhs) const
-{
+        bool result = this->ITestTemplateMethod::operator ==(rhs);
+        return result;
+    }
 
-return !(*this == rhs);
-}
+    bool TestTemplateMethod::operator !=(const TestTemplateMethod& rhs) const
+    {
 
- TestTemplateMethod::TestTemplateMethod(const TestTemplateMethod& rhs)
-{
+        return !(*this == rhs);
+    }
 
-this->operator=(rhs);
-}
+    TestTemplateMethod::TestTemplateMethod(const TestTemplateMethod& rhs)
+    {
 
-const TestTemplateMethod& TestTemplateMethod::operator =(const TestTemplateMethod& rhs)
-{
+        this->operator=(rhs);
+    }
 
-this->ITestTemplateMethod::operator=(rhs);
-return *this;
-}
+    const TestTemplateMethod& TestTemplateMethod::operator =(const TestTemplateMethod& rhs)
+    {
 
-std::string TestTemplateMethod::get_type() const
-{
-return TestTemplateMethod::TYPE;
-}
+        this->ITestTemplateMethod::operator=(rhs);
+        return *this;
+    }
 
-void TestTemplateMethod::serialize_xml(SerializerXml& serializer) const
-{
+    std::string TestTemplateMethod::get_type() const
+    {
+        return TestTemplateMethod::TYPE;
+    }
 
-}
+    void TestTemplateMethod::serialize_xml(SerializerXml& serializer) const
+    {
 
-void TestTemplateMethod::deserialize_xml(DeserializerXml& deserializer)
-{
+    }
 
-}
+    void TestTemplateMethod::deserialize_xml(DeserializerXml& deserializer)
+    {
 
-void TestTemplateMethod::serialize_json(SerializerJson& serializer) const
-{
+    }
 
-}
+    void TestTemplateMethod::serialize_json(SerializerJson& serializer) const
+    {
 
-void TestTemplateMethod::deserialize_json(DeserializerJson& deserializer)
-{
+    }
 
-}
+    void TestTemplateMethod::deserialize_json(DeserializerJson& deserializer)
+    {
+
+    }
 
 } // namespace mg

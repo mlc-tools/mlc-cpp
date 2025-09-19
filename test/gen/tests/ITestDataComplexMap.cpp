@@ -11,71 +11,69 @@ namespace mg
 {
     const std::string ITestDataComplexMap::TYPE("ITestDataComplexMap");
 
-    
     ITestDataComplexMap::ITestDataComplexMap()
     {
-    
+
     }
 
     ITestDataComplexMap::~ITestDataComplexMap(){}
 
+    void ITestDataComplexMap::execute()
+    {
+        this->test_foo();
+        this->test_deserialize();
 
-void ITestDataComplexMap::execute()
-{
-this->test_foo();
-this->test_deserialize();
+    }
 
-}
+    bool ITestDataComplexMap::operator ==(const ITestDataComplexMap& rhs) const
+    {
 
-bool ITestDataComplexMap::operator ==(const ITestDataComplexMap& rhs) const
-{
+        bool result = true;
+        return result;
+    }
 
-bool result = true;
-return result;
-}
+    bool ITestDataComplexMap::operator !=(const ITestDataComplexMap& rhs) const
+    {
 
-bool ITestDataComplexMap::operator !=(const ITestDataComplexMap& rhs) const
-{
+        return !(*this == rhs);
+    }
 
-return !(*this == rhs);
-}
+    ITestDataComplexMap::ITestDataComplexMap(const ITestDataComplexMap& rhs)
+    {
 
- ITestDataComplexMap::ITestDataComplexMap(const ITestDataComplexMap& rhs)
-{
+        this->operator=(rhs);
+    }
 
-this->operator=(rhs);
-}
+    const ITestDataComplexMap& ITestDataComplexMap::operator =(const ITestDataComplexMap& rhs)
+    {
 
-const ITestDataComplexMap& ITestDataComplexMap::operator =(const ITestDataComplexMap& rhs)
-{
+        this->TestCase::operator=(rhs);
+        return *this;
+    }
 
-this->TestCase::operator=(rhs);
-return *this;
-}
+    std::string ITestDataComplexMap::get_type() const
+    {
+        return ITestDataComplexMap::TYPE;
+    }
 
-std::string ITestDataComplexMap::get_type() const
-{
-return ITestDataComplexMap::TYPE;
-}
+    void ITestDataComplexMap::serialize_xml(SerializerXml& serializer) const
+    {
 
-void ITestDataComplexMap::serialize_xml(SerializerXml& serializer) const
-{
+    }
 
-}
+    void ITestDataComplexMap::deserialize_xml(DeserializerXml& deserializer)
+    {
 
-void ITestDataComplexMap::deserialize_xml(DeserializerXml& deserializer)
-{
+    }
 
-}
+    void ITestDataComplexMap::serialize_json(SerializerJson& serializer) const
+    {
 
-void ITestDataComplexMap::serialize_json(SerializerJson& serializer) const
-{
+    }
 
-}
+    void ITestDataComplexMap::deserialize_json(DeserializerJson& deserializer)
+    {
 
-void ITestDataComplexMap::deserialize_json(DeserializerJson& deserializer)
-{
-
-}
+    }
 
 } // namespace mg

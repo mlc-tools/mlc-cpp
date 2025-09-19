@@ -13,90 +13,88 @@ namespace mg
 {
     const std::string TestConstructableClass::TYPE("TestConstructableClass");
 
-    
     TestConstructableClass::TestConstructableClass()
     {
-    
+
     }
 
     TestConstructableClass::~TestConstructableClass(){}
 
-
-void TestConstructableClass::test_constructor()
-{
+    void TestConstructableClass::test_constructor()
+    {
 
         auto cls = make_intrusive<ConstructableClass>();
         this->assertTrue(cls->a == 1);
-    
-}
 
-void TestConstructableClass::test_constructor_with_args()
-{
+    }
+
+    void TestConstructableClass::test_constructor_with_args()
+    {
 
         auto cls = make_intrusive<ConstructableClassWithParameters>();
         this->assertTrue(cls->a == 0);
         this->assertTrue(cls->b == 0);
-    
-}
 
-void TestConstructableClass::test_constructor_with_args_2()
-{
+    }
+
+    void TestConstructableClass::test_constructor_with_args_2()
+    {
 
         auto cls = make_intrusive<ConstructableClassWithParameters>(1, 2);
         this->assertTrue(cls->a == 1);
         this->assertTrue(cls->b == 2);
-    
-}
 
-bool TestConstructableClass::operator ==(const TestConstructableClass& rhs) const
-{
+    }
 
-bool result = this->ITestConstructableClass::operator ==(rhs);
-return result;
-}
+    bool TestConstructableClass::operator ==(const TestConstructableClass& rhs) const
+    {
 
-bool TestConstructableClass::operator !=(const TestConstructableClass& rhs) const
-{
+        bool result = this->ITestConstructableClass::operator ==(rhs);
+        return result;
+    }
 
-return !(*this == rhs);
-}
+    bool TestConstructableClass::operator !=(const TestConstructableClass& rhs) const
+    {
 
- TestConstructableClass::TestConstructableClass(const TestConstructableClass& rhs)
-{
+        return !(*this == rhs);
+    }
 
-this->operator=(rhs);
-}
+    TestConstructableClass::TestConstructableClass(const TestConstructableClass& rhs)
+    {
 
-const TestConstructableClass& TestConstructableClass::operator =(const TestConstructableClass& rhs)
-{
+        this->operator=(rhs);
+    }
 
-this->ITestConstructableClass::operator=(rhs);
-return *this;
-}
+    const TestConstructableClass& TestConstructableClass::operator =(const TestConstructableClass& rhs)
+    {
 
-std::string TestConstructableClass::get_type() const
-{
-return TestConstructableClass::TYPE;
-}
+        this->ITestConstructableClass::operator=(rhs);
+        return *this;
+    }
 
-void TestConstructableClass::serialize_xml(SerializerXml& serializer) const
-{
+    std::string TestConstructableClass::get_type() const
+    {
+        return TestConstructableClass::TYPE;
+    }
 
-}
+    void TestConstructableClass::serialize_xml(SerializerXml& serializer) const
+    {
 
-void TestConstructableClass::deserialize_xml(DeserializerXml& deserializer)
-{
+    }
 
-}
+    void TestConstructableClass::deserialize_xml(DeserializerXml& deserializer)
+    {
 
-void TestConstructableClass::serialize_json(SerializerJson& serializer) const
-{
+    }
 
-}
+    void TestConstructableClass::serialize_json(SerializerJson& serializer) const
+    {
 
-void TestConstructableClass::deserialize_json(DeserializerJson& deserializer)
-{
+    }
 
-}
+    void TestConstructableClass::deserialize_json(DeserializerJson& deserializer)
+    {
+
+    }
 
 } // namespace mg

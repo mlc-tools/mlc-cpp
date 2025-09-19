@@ -7,7 +7,6 @@
 #include "../tests/ITestOuterClass.h"
 #include <string>
 
-
 namespace mg
 {
     class SerializerXml;
@@ -15,25 +14,24 @@ namespace mg
     class SerializerJson;
     class DeserializerJson;
 
-
     class TestOuterClass : public ITestOuterClass
     {
     public:
         TestOuterClass();
         ~TestOuterClass();
-void test_func();
-void test_func2();
-bool operator ==(const TestOuterClass& rhs) const;
-bool operator !=(const TestOuterClass& rhs) const;
- TestOuterClass(const TestOuterClass& rhs);
-const TestOuterClass& operator =(const TestOuterClass& rhs);
-virtual std::string get_type() const override;
-virtual void serialize_xml(SerializerXml& serializer) const override;
-virtual void deserialize_xml(DeserializerXml& deserializer) override;
-virtual void serialize_json(SerializerJson& serializer) const override;
-virtual void deserialize_json(DeserializerJson& deserializer) override;
+        void test_func();
+        void test_func2();
+        bool operator ==(const TestOuterClass& rhs) const;
+        bool operator !=(const TestOuterClass& rhs) const;
+        TestOuterClass(const TestOuterClass& rhs);
+        const TestOuterClass& operator =(const TestOuterClass& rhs);
+        virtual std::string get_type() const override;
+        virtual void serialize_xml(SerializerXml& serializer) const override;
+        virtual void deserialize_xml(DeserializerXml& deserializer) override;
+        virtual void serialize_json(SerializerJson& serializer) const override;
+        virtual void deserialize_json(DeserializerJson& deserializer) override;
 
-static const std::string TYPE;
+        static const std::string TYPE;
 
     };
 } // namespace mg

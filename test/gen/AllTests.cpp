@@ -16,18 +16,16 @@ namespace mg
 {
     const std::string AllTests::TYPE("AllTests");
 
-    
     AllTests::AllTests()
     : _reference_counter(1)
-{
-    
+    {
+
     }
 
     AllTests::~AllTests(){}
 
-
-bool AllTests::run(Logger* logger)
-{
+    bool AllTests::run(Logger* logger)
+    {
 
         bool result = true;
         result = FunctionTest::tests(logger) && result;
@@ -37,75 +35,75 @@ bool AllTests::run(Logger* logger)
         result = ExceptionTest::test() && result;
 
         return result;
-    
-}
 
-void AllTests::retain()
-{
-++this->_reference_counter;
-}
+    }
 
-int AllTests::release()
-{
+    void AllTests::retain()
+    {
+        ++this->_reference_counter;
+    }
 
---this->_reference_counter;
-auto counter = this->_reference_counter;
-if(counter == 0)
-{
-    delete this;
-}
-return counter;
+    int AllTests::release()
+    {
 
-}
+        --this->_reference_counter;
+        auto counter = this->_reference_counter;
+        if(counter == 0)
+        {
+            delete this;
+        }
+        return counter;
 
-bool AllTests::operator ==(const AllTests& rhs) const
-{
-bool result = true;
-return result;
-}
+    }
 
-bool AllTests::operator !=(const AllTests& rhs) const
-{
+    bool AllTests::operator ==(const AllTests& rhs) const
+    {
+        bool result = true;
+        return result;
+    }
 
-return !(*this == rhs);
-}
+    bool AllTests::operator !=(const AllTests& rhs) const
+    {
 
- AllTests::AllTests(const AllTests& rhs)
-{
+        return !(*this == rhs);
+    }
 
-this->operator=(rhs);
-}
+    AllTests::AllTests(const AllTests& rhs)
+    {
 
-const AllTests& AllTests::operator =(const AllTests& rhs)
-{
+        this->operator=(rhs);
+    }
 
-this->_reference_counter = rhs._reference_counter;
-return *this;
-}
+    const AllTests& AllTests::operator =(const AllTests& rhs)
+    {
 
-std::string AllTests::get_type() const
-{
-return AllTests::TYPE;
-}
+        this->_reference_counter = rhs._reference_counter;
+        return *this;
+    }
 
-void AllTests::serialize_xml(SerializerXml& serializer) const
-{
+    std::string AllTests::get_type() const
+    {
+        return AllTests::TYPE;
+    }
 
-}
+    void AllTests::serialize_xml(SerializerXml& serializer) const
+    {
 
-void AllTests::deserialize_xml(DeserializerXml& deserializer)
-{
+    }
 
-}
+    void AllTests::deserialize_xml(DeserializerXml& deserializer)
+    {
 
-void AllTests::serialize_json(SerializerJson& serializer) const
-{
+    }
 
-}
+    void AllTests::serialize_json(SerializerJson& serializer) const
+    {
 
-void AllTests::deserialize_json(DeserializerJson& deserializer)
-{
+    }
 
-}
+    void AllTests::deserialize_json(DeserializerJson& deserializer)
+    {
+
+    }
 
 } // namespace mg

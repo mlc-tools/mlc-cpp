@@ -14,17 +14,15 @@ namespace mg
 {
     const std::string TestDataAdd::TYPE("TestDataAdd");
 
-    
     TestDataAdd::TestDataAdd()
     {
-    
+
     }
 
     TestDataAdd::~TestDataAdd(){}
 
-
-void TestDataAdd::test_test()
-{
+    void TestDataAdd::test_test()
+    {
 
         DataStorage::shared().get<DataAdd>("add_data");
         auto keys = DataStorage::shared().get_adds_keys();
@@ -32,58 +30,58 @@ void TestDataAdd::test_test()
 
         auto unit = DataStorage::shared().get<DataUnit>("unitname1");
         this->assertTrue(unit->empty == nullptr, "empty is null");
-    
-}
 
-bool TestDataAdd::operator ==(const TestDataAdd& rhs) const
-{
+    }
 
-bool result = this->ITestDataAdd::operator ==(rhs);
-return result;
-}
+    bool TestDataAdd::operator ==(const TestDataAdd& rhs) const
+    {
 
-bool TestDataAdd::operator !=(const TestDataAdd& rhs) const
-{
+        bool result = this->ITestDataAdd::operator ==(rhs);
+        return result;
+    }
 
-return !(*this == rhs);
-}
+    bool TestDataAdd::operator !=(const TestDataAdd& rhs) const
+    {
 
- TestDataAdd::TestDataAdd(const TestDataAdd& rhs)
-{
+        return !(*this == rhs);
+    }
 
-this->operator=(rhs);
-}
+    TestDataAdd::TestDataAdd(const TestDataAdd& rhs)
+    {
 
-const TestDataAdd& TestDataAdd::operator =(const TestDataAdd& rhs)
-{
+        this->operator=(rhs);
+    }
 
-this->ITestDataAdd::operator=(rhs);
-return *this;
-}
+    const TestDataAdd& TestDataAdd::operator =(const TestDataAdd& rhs)
+    {
 
-std::string TestDataAdd::get_type() const
-{
-return TestDataAdd::TYPE;
-}
+        this->ITestDataAdd::operator=(rhs);
+        return *this;
+    }
 
-void TestDataAdd::serialize_xml(SerializerXml& serializer) const
-{
+    std::string TestDataAdd::get_type() const
+    {
+        return TestDataAdd::TYPE;
+    }
 
-}
+    void TestDataAdd::serialize_xml(SerializerXml& serializer) const
+    {
 
-void TestDataAdd::deserialize_xml(DeserializerXml& deserializer)
-{
+    }
 
-}
+    void TestDataAdd::deserialize_xml(DeserializerXml& deserializer)
+    {
 
-void TestDataAdd::serialize_json(SerializerJson& serializer) const
-{
+    }
 
-}
+    void TestDataAdd::serialize_json(SerializerJson& serializer) const
+    {
 
-void TestDataAdd::deserialize_json(DeserializerJson& deserializer)
-{
+    }
 
-}
+    void TestDataAdd::deserialize_json(DeserializerJson& deserializer)
+    {
+
+    }
 
 } // namespace mg

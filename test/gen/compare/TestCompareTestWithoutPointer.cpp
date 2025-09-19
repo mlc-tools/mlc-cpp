@@ -13,22 +13,20 @@ namespace mg
 {
     const std::string TestCompareTestWithoutPointer::TYPE("TestCompareTestWithoutPointer");
 
-    
     TestCompareTestWithoutPointer::TestCompareTestWithoutPointer()
     {
-    
+
     }
 
     TestCompareTestWithoutPointer::~TestCompareTestWithoutPointer(){}
 
+    void TestCompareTestWithoutPointer::test_test()
+    {
 
-void TestCompareTestWithoutPointer::test_test()
-{
+    }
 
-}
-
-void TestCompareTestWithoutPointer::test_operator_copy()
-{
+    void TestCompareTestWithoutPointer::test_operator_copy()
+    {
 
         CompareTestWithoutPointer o1;
         CompareTestWithoutPointer o2;
@@ -40,11 +38,11 @@ void TestCompareTestWithoutPointer::test_operator_copy()
         o2 = o1;
         this->assertTrue(o1 == o2, "test_operator_copy. o1 == o2");
         this->assertEqual(o1, o2, "test_operator_copy. equal");
-    
-}
 
-void TestCompareTestWithoutPointer::test_without_pointer_compare()
-{
+    }
+
+    void TestCompareTestWithoutPointer::test_without_pointer_compare()
+    {
 
         CompareTestWithoutPointer o1;
         CompareTestWithoutPointer o2;
@@ -91,11 +89,11 @@ void TestCompareTestWithoutPointer::test_without_pointer_compare()
         this->assertTrue(o1 != o2, "TestCompare. !=");
         this->assertFalse(o1 == o2, "TestCompare false. ==");
         this->assertNotEqual(o1, o2, "TestCompare. not equal 6");
-    
-}
 
-void TestCompareTestWithoutPointer::test_with_pointer_compare()
-{
+    }
+
+    void TestCompareTestWithoutPointer::test_with_pointer_compare()
+    {
 
         CompareTestWithPointer o1;
         CompareTestWithPointer o2;
@@ -103,14 +101,12 @@ void TestCompareTestWithoutPointer::test_with_pointer_compare()
         this->assertTrue(o1 == o2, "TestCompare with null pointer. ==");
         this->assertTrue(o2 == o1, "TestCompare with null pointer. ==");
 
-
         o1.pointer = make_intrusive<CompareTestWithoutPointer>();
         o1.pointer->a = 1;
         o1.pointer->b = "string";
 
         this->assertTrue(o1 != o2, "TestCompare with null pointer. !=");
         this->assertTrue(o2 != o1, "TestCompare with null pointer. !=");
-
 
         o2.pointer = make_intrusive<CompareTestWithoutPointer>();
         o2.pointer->a = 1;
@@ -127,58 +123,58 @@ void TestCompareTestWithoutPointer::test_with_pointer_compare()
         this->assertFalse(o2 == o1, "TestCompare with pointer false. ==");
         this->assertNotEqual(o1, o2, "TestCompare with pointer. not equal");
         this->assertNotEqual(o2, o1, "TestCompare with pointer. not equal");
-    
-}
 
-bool TestCompareTestWithoutPointer::operator ==(const TestCompareTestWithoutPointer& rhs) const
-{
+    }
 
-bool result = this->ITestCompareTestWithoutPointer::operator ==(rhs);
-return result;
-}
+    bool TestCompareTestWithoutPointer::operator ==(const TestCompareTestWithoutPointer& rhs) const
+    {
 
-bool TestCompareTestWithoutPointer::operator !=(const TestCompareTestWithoutPointer& rhs) const
-{
+        bool result = this->ITestCompareTestWithoutPointer::operator ==(rhs);
+        return result;
+    }
 
-return !(*this == rhs);
-}
+    bool TestCompareTestWithoutPointer::operator !=(const TestCompareTestWithoutPointer& rhs) const
+    {
 
- TestCompareTestWithoutPointer::TestCompareTestWithoutPointer(const TestCompareTestWithoutPointer& rhs)
-{
+        return !(*this == rhs);
+    }
 
-this->operator=(rhs);
-}
+    TestCompareTestWithoutPointer::TestCompareTestWithoutPointer(const TestCompareTestWithoutPointer& rhs)
+    {
 
-const TestCompareTestWithoutPointer& TestCompareTestWithoutPointer::operator =(const TestCompareTestWithoutPointer& rhs)
-{
+        this->operator=(rhs);
+    }
 
-this->ITestCompareTestWithoutPointer::operator=(rhs);
-return *this;
-}
+    const TestCompareTestWithoutPointer& TestCompareTestWithoutPointer::operator =(const TestCompareTestWithoutPointer& rhs)
+    {
 
-std::string TestCompareTestWithoutPointer::get_type() const
-{
-return TestCompareTestWithoutPointer::TYPE;
-}
+        this->ITestCompareTestWithoutPointer::operator=(rhs);
+        return *this;
+    }
 
-void TestCompareTestWithoutPointer::serialize_xml(SerializerXml& serializer) const
-{
+    std::string TestCompareTestWithoutPointer::get_type() const
+    {
+        return TestCompareTestWithoutPointer::TYPE;
+    }
 
-}
+    void TestCompareTestWithoutPointer::serialize_xml(SerializerXml& serializer) const
+    {
 
-void TestCompareTestWithoutPointer::deserialize_xml(DeserializerXml& deserializer)
-{
+    }
 
-}
+    void TestCompareTestWithoutPointer::deserialize_xml(DeserializerXml& deserializer)
+    {
 
-void TestCompareTestWithoutPointer::serialize_json(SerializerJson& serializer) const
-{
+    }
 
-}
+    void TestCompareTestWithoutPointer::serialize_json(SerializerJson& serializer) const
+    {
 
-void TestCompareTestWithoutPointer::deserialize_json(DeserializerJson& deserializer)
-{
+    }
 
-}
+    void TestCompareTestWithoutPointer::deserialize_json(DeserializerJson& deserializer)
+    {
+
+    }
 
 } // namespace mg

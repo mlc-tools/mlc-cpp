@@ -11,70 +11,68 @@ namespace mg
 {
     const std::string ITestSerializeTest::TYPE("ITestSerializeTest");
 
-    
     ITestSerializeTest::ITestSerializeTest()
     {
-    
+
     }
 
     ITestSerializeTest::~ITestSerializeTest(){}
 
+    void ITestSerializeTest::execute()
+    {
+        this->test_serialize_python();
 
-void ITestSerializeTest::execute()
-{
-this->test_serialize_python();
+    }
 
-}
+    bool ITestSerializeTest::operator ==(const ITestSerializeTest& rhs) const
+    {
 
-bool ITestSerializeTest::operator ==(const ITestSerializeTest& rhs) const
-{
+        bool result = true;
+        return result;
+    }
 
-bool result = true;
-return result;
-}
+    bool ITestSerializeTest::operator !=(const ITestSerializeTest& rhs) const
+    {
 
-bool ITestSerializeTest::operator !=(const ITestSerializeTest& rhs) const
-{
+        return !(*this == rhs);
+    }
 
-return !(*this == rhs);
-}
+    ITestSerializeTest::ITestSerializeTest(const ITestSerializeTest& rhs)
+    {
 
- ITestSerializeTest::ITestSerializeTest(const ITestSerializeTest& rhs)
-{
+        this->operator=(rhs);
+    }
 
-this->operator=(rhs);
-}
+    const ITestSerializeTest& ITestSerializeTest::operator =(const ITestSerializeTest& rhs)
+    {
 
-const ITestSerializeTest& ITestSerializeTest::operator =(const ITestSerializeTest& rhs)
-{
+        this->TestCase::operator=(rhs);
+        return *this;
+    }
 
-this->TestCase::operator=(rhs);
-return *this;
-}
+    std::string ITestSerializeTest::get_type() const
+    {
+        return ITestSerializeTest::TYPE;
+    }
 
-std::string ITestSerializeTest::get_type() const
-{
-return ITestSerializeTest::TYPE;
-}
+    void ITestSerializeTest::serialize_xml(SerializerXml& serializer) const
+    {
 
-void ITestSerializeTest::serialize_xml(SerializerXml& serializer) const
-{
+    }
 
-}
+    void ITestSerializeTest::deserialize_xml(DeserializerXml& deserializer)
+    {
 
-void ITestSerializeTest::deserialize_xml(DeserializerXml& deserializer)
-{
+    }
 
-}
+    void ITestSerializeTest::serialize_json(SerializerJson& serializer) const
+    {
 
-void ITestSerializeTest::serialize_json(SerializerJson& serializer) const
-{
+    }
 
-}
+    void ITestSerializeTest::deserialize_json(DeserializerJson& deserializer)
+    {
 
-void ITestSerializeTest::deserialize_json(DeserializerJson& deserializer)
-{
-
-}
+    }
 
 } // namespace mg

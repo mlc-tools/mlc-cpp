@@ -18,18 +18,16 @@ namespace mg
 {
     const std::string TestDataDict::TYPE("TestDataDict");
 
-    
     TestDataDict::TestDataDict()
     : resources()
-{
-    
+    {
+
     }
 
     TestDataDict::~TestDataDict(){}
 
-
-void TestDataDict::test_resources_in_map()
-{
+    void TestDataDict::test_resources_in_map()
+    {
 
         auto data = DataStorage::shared().get<DataDict>("default");
         this->assertTrue(in_map(Resource::gold, data->resources));
@@ -39,11 +37,11 @@ void TestDataDict::test_resources_in_map()
 
         map_clear(this->resources);
         for (auto&& pair : data->resources)
-{
-    auto& res = pair.first;
-    auto& count = pair.second;
-    (void)res; // don't generate 'Unused variable' warning
-    (void)count; // don't generate 'Unused variable' warning
+        {
+            auto& res = pair.first;
+            auto& count = pair.second;
+            (void)res; // don't generate 'Unused variable' warning
+            (void)count; // don't generate 'Unused variable' warning
             this->resources[res] = count;
         }
 
@@ -51,19 +49,19 @@ void TestDataDict::test_resources_in_map()
         this->assertTrue(in_map(Resource::gems, this->resources));
         this->assertTrue(this->resources.at(Resource::gold) == 10);
         this->assertTrue(this->resources.at(Resource::gems) == 20);
-    
-}
 
-void TestDataDict::test_resources_def_value()
-{
+    }
+
+    void TestDataDict::test_resources_def_value()
+    {
 
         auto data = DataStorage::shared().get<DataDict>("default");
         this->assertTrue(data->string_with_def_value == "default");
-    
-}
 
-void TestDataDict::test_skills()
-{
+    }
+
+    void TestDataDict::test_skills()
+    {
 
         auto unit1 = DataStorage::shared().get<DataUnit>("unitname1");
         auto unit2 = DataStorage::shared().get<DataUnit>("unitname2");
@@ -72,60 +70,59 @@ void TestDataDict::test_skills()
         this->assertTrue(skill->foo == 1);
         this->assertTrue(unit2->skill->get_type() == SkillBase::TYPE);
 
-    
-}
+    }
 
-bool TestDataDict::operator ==(const TestDataDict& rhs) const
-{
+    bool TestDataDict::operator ==(const TestDataDict& rhs) const
+    {
 
-bool result = this->ITestDataDict::operator ==(rhs);
-result = result && this->resources == rhs.resources;
-return result;
-}
+        bool result = this->ITestDataDict::operator ==(rhs);
+        result = result && this->resources == rhs.resources;
+        return result;
+    }
 
-bool TestDataDict::operator !=(const TestDataDict& rhs) const
-{
+    bool TestDataDict::operator !=(const TestDataDict& rhs) const
+    {
 
-return !(*this == rhs);
-}
+        return !(*this == rhs);
+    }
 
- TestDataDict::TestDataDict(const TestDataDict& rhs)
-{
+    TestDataDict::TestDataDict(const TestDataDict& rhs)
+    {
 
-this->operator=(rhs);
-}
+        this->operator=(rhs);
+    }
 
-const TestDataDict& TestDataDict::operator =(const TestDataDict& rhs)
-{
+    const TestDataDict& TestDataDict::operator =(const TestDataDict& rhs)
+    {
 
-this->ITestDataDict::operator=(rhs);
-this->resources = rhs.resources;
-return *this;
-}
+        this->ITestDataDict::operator=(rhs);
+        this->resources = rhs.resources;
+        return *this;
+    }
 
-std::string TestDataDict::get_type() const
-{
-return TestDataDict::TYPE;
-}
+    std::string TestDataDict::get_type() const
+    {
+        return TestDataDict::TYPE;
+    }
 
-void TestDataDict::serialize_xml(SerializerXml& serializer) const
-{
-serializer.serialize(resources, "resources");
-}
+    void TestDataDict::serialize_xml(SerializerXml& serializer) const
+    {
+        serializer.serialize(resources, "resources");
+    }
 
-void TestDataDict::deserialize_xml(DeserializerXml& deserializer)
-{
-deserializer.deserialize(resources, "resources");
-}
+    void TestDataDict::deserialize_xml(DeserializerXml& deserializer)
+    {
+        deserializer.deserialize(resources, "resources");
+    }
 
-void TestDataDict::serialize_json(SerializerJson& serializer) const
-{
-serializer.serialize(resources, "resources");
-}
+    void TestDataDict::serialize_json(SerializerJson& serializer) const
+    {
+        serializer.serialize(resources, "resources");
+    }
 
-void TestDataDict::deserialize_json(DeserializerJson& deserializer)
-{
-deserializer.deserialize(resources, "resources");
-}
+    void TestDataDict::deserialize_json(DeserializerJson& deserializer)
+    {
+        deserializer.deserialize(resources, "resources");
+    }
 
 } // namespace mg

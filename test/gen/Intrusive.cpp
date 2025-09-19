@@ -11,98 +11,96 @@ namespace mg
 {
     const std::string Intrusive::TYPE("Intrusive");
 
-    
     Intrusive::Intrusive()
     : _reference_counter(1)
-{
-    
+    {
+
     }
 
     Intrusive::~Intrusive(){}
 
-
-void Intrusive::add_self_to_list(std::vector<intrusive_ptr<Intrusive>>& list)
-{
+    void Intrusive::add_self_to_list(std::vector<intrusive_ptr<Intrusive>>& list)
+    {
 
         auto r = this;
         list_push(list, r);
-    
-}
 
-void Intrusive::remove_self_from_list(std::vector<intrusive_ptr<Intrusive>>& list)
-{
+    }
+
+    void Intrusive::remove_self_from_list(std::vector<intrusive_ptr<Intrusive>>& list)
+    {
 
         auto r = this;
         list_remove(list, r);
-    
-}
 
-void Intrusive::retain()
-{
-++this->_reference_counter;
-}
+    }
 
-int Intrusive::release()
-{
+    void Intrusive::retain()
+    {
+        ++this->_reference_counter;
+    }
 
---this->_reference_counter;
-auto counter = this->_reference_counter;
-if(counter == 0)
-{
-    delete this;
-}
-return counter;
+    int Intrusive::release()
+    {
 
-}
+        --this->_reference_counter;
+        auto counter = this->_reference_counter;
+        if(counter == 0)
+        {
+            delete this;
+        }
+        return counter;
 
-bool Intrusive::operator ==(const Intrusive& rhs) const
-{
-bool result = true;
-return result;
-}
+    }
 
-bool Intrusive::operator !=(const Intrusive& rhs) const
-{
+    bool Intrusive::operator ==(const Intrusive& rhs) const
+    {
+        bool result = true;
+        return result;
+    }
 
-return !(*this == rhs);
-}
+    bool Intrusive::operator !=(const Intrusive& rhs) const
+    {
 
- Intrusive::Intrusive(const Intrusive& rhs)
-{
+        return !(*this == rhs);
+    }
 
-this->operator=(rhs);
-}
+    Intrusive::Intrusive(const Intrusive& rhs)
+    {
 
-const Intrusive& Intrusive::operator =(const Intrusive& rhs)
-{
+        this->operator=(rhs);
+    }
 
-this->_reference_counter = rhs._reference_counter;
-return *this;
-}
+    const Intrusive& Intrusive::operator =(const Intrusive& rhs)
+    {
 
-std::string Intrusive::get_type() const
-{
-return Intrusive::TYPE;
-}
+        this->_reference_counter = rhs._reference_counter;
+        return *this;
+    }
 
-void Intrusive::serialize_xml(SerializerXml& serializer) const
-{
+    std::string Intrusive::get_type() const
+    {
+        return Intrusive::TYPE;
+    }
 
-}
+    void Intrusive::serialize_xml(SerializerXml& serializer) const
+    {
 
-void Intrusive::deserialize_xml(DeserializerXml& deserializer)
-{
+    }
 
-}
+    void Intrusive::deserialize_xml(DeserializerXml& deserializer)
+    {
 
-void Intrusive::serialize_json(SerializerJson& serializer) const
-{
+    }
 
-}
+    void Intrusive::serialize_json(SerializerJson& serializer) const
+    {
 
-void Intrusive::deserialize_json(DeserializerJson& deserializer)
-{
+    }
 
-}
+    void Intrusive::deserialize_json(DeserializerJson& deserializer)
+    {
+
+    }
 
 } // namespace mg

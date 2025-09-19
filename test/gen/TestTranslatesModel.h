@@ -7,7 +7,6 @@
 #include "data/DataUnit.h"
 #include <string>
 
-
 namespace mg
 {
     class SerializerXml;
@@ -15,29 +14,28 @@ namespace mg
     class SerializerJson;
     class DeserializerJson;
 
-
     class TestTranslatesModel
     {
     public:
         TestTranslatesModel();
         ~TestTranslatesModel();
-void retain();
-int release();
-bool operator ==(const TestTranslatesModel& rhs) const;
-bool operator !=(const TestTranslatesModel& rhs) const;
- TestTranslatesModel(const TestTranslatesModel& rhs);
-const TestTranslatesModel& operator =(const TestTranslatesModel& rhs);
-std::string get_type() const;
-void serialize_xml(SerializerXml& serializer) const;
-void deserialize_xml(DeserializerXml& deserializer);
-void serialize_json(SerializerJson& serializer) const;
-void deserialize_json(DeserializerJson& deserializer);
+        void retain();
+        int release();
+        bool operator ==(const TestTranslatesModel& rhs) const;
+        bool operator !=(const TestTranslatesModel& rhs) const;
+        TestTranslatesModel(const TestTranslatesModel& rhs);
+        const TestTranslatesModel& operator =(const TestTranslatesModel& rhs);
+        std::string get_type() const;
+        void serialize_xml(SerializerXml& serializer) const;
+        void deserialize_xml(DeserializerXml& deserializer);
+        void serialize_json(SerializerJson& serializer) const;
+        void deserialize_json(DeserializerJson& deserializer);
 
-const DataUnit* data;
-private:
-int _reference_counter;
-public:
-static const std::string TYPE;
+        const DataUnit* data;
+    private:
+        int _reference_counter;
+    public:
+        static const std::string TYPE;
 
     };
 } // namespace mg

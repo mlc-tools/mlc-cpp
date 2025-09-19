@@ -10,99 +10,97 @@ namespace mg
 {
     const std::string ExceptionTest::TYPE("ExceptionTest");
 
-    
     ExceptionTest::ExceptionTest()
     : _reference_counter(1)
-{
-    
+    {
+
     }
 
     ExceptionTest::~ExceptionTest(){}
 
-
-bool ExceptionTest::test()
-{
+    bool ExceptionTest::test()
+    {
 
         int k = -1;
         try
-{
+        {
             k=0;
             throw std::exception();;
         }
-catch(const std::exception& e)
-{
+        catch(const std::exception& e)
+        {
             k=1;
         }
         return k == 1;
-    
-}
 
-void ExceptionTest::retain()
-{
-++this->_reference_counter;
-}
+    }
 
-int ExceptionTest::release()
-{
+    void ExceptionTest::retain()
+    {
+        ++this->_reference_counter;
+    }
 
---this->_reference_counter;
-auto counter = this->_reference_counter;
-if(counter == 0)
-{
-    delete this;
-}
-return counter;
+    int ExceptionTest::release()
+    {
 
-}
+        --this->_reference_counter;
+        auto counter = this->_reference_counter;
+        if(counter == 0)
+        {
+            delete this;
+        }
+        return counter;
 
-bool ExceptionTest::operator ==(const ExceptionTest& rhs) const
-{
-bool result = true;
-return result;
-}
+    }
 
-bool ExceptionTest::operator !=(const ExceptionTest& rhs) const
-{
+    bool ExceptionTest::operator ==(const ExceptionTest& rhs) const
+    {
+        bool result = true;
+        return result;
+    }
 
-return !(*this == rhs);
-}
+    bool ExceptionTest::operator !=(const ExceptionTest& rhs) const
+    {
 
- ExceptionTest::ExceptionTest(const ExceptionTest& rhs)
-{
+        return !(*this == rhs);
+    }
 
-this->operator=(rhs);
-}
+    ExceptionTest::ExceptionTest(const ExceptionTest& rhs)
+    {
 
-const ExceptionTest& ExceptionTest::operator =(const ExceptionTest& rhs)
-{
+        this->operator=(rhs);
+    }
 
-this->_reference_counter = rhs._reference_counter;
-return *this;
-}
+    const ExceptionTest& ExceptionTest::operator =(const ExceptionTest& rhs)
+    {
 
-std::string ExceptionTest::get_type() const
-{
-return ExceptionTest::TYPE;
-}
+        this->_reference_counter = rhs._reference_counter;
+        return *this;
+    }
 
-void ExceptionTest::serialize_xml(SerializerXml& serializer) const
-{
+    std::string ExceptionTest::get_type() const
+    {
+        return ExceptionTest::TYPE;
+    }
 
-}
+    void ExceptionTest::serialize_xml(SerializerXml& serializer) const
+    {
 
-void ExceptionTest::deserialize_xml(DeserializerXml& deserializer)
-{
+    }
 
-}
+    void ExceptionTest::deserialize_xml(DeserializerXml& deserializer)
+    {
 
-void ExceptionTest::serialize_json(SerializerJson& serializer) const
-{
+    }
 
-}
+    void ExceptionTest::serialize_json(SerializerJson& serializer) const
+    {
 
-void ExceptionTest::deserialize_json(DeserializerJson& deserializer)
-{
+    }
 
-}
+    void ExceptionTest::deserialize_json(DeserializerJson& deserializer)
+    {
+
+    }
 
 } // namespace mg

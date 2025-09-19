@@ -11,70 +11,68 @@ namespace mg
 {
     const std::string ITestRequestAcceptor::TYPE("ITestRequestAcceptor");
 
-    
     ITestRequestAcceptor::ITestRequestAcceptor()
     {
-    
+
     }
 
     ITestRequestAcceptor::~ITestRequestAcceptor(){}
 
+    void ITestRequestAcceptor::execute()
+    {
+        this->test_visitor();
 
-void ITestRequestAcceptor::execute()
-{
-this->test_visitor();
+    }
 
-}
+    bool ITestRequestAcceptor::operator ==(const ITestRequestAcceptor& rhs) const
+    {
 
-bool ITestRequestAcceptor::operator ==(const ITestRequestAcceptor& rhs) const
-{
+        bool result = true;
+        return result;
+    }
 
-bool result = true;
-return result;
-}
+    bool ITestRequestAcceptor::operator !=(const ITestRequestAcceptor& rhs) const
+    {
 
-bool ITestRequestAcceptor::operator !=(const ITestRequestAcceptor& rhs) const
-{
+        return !(*this == rhs);
+    }
 
-return !(*this == rhs);
-}
+    ITestRequestAcceptor::ITestRequestAcceptor(const ITestRequestAcceptor& rhs)
+    {
 
- ITestRequestAcceptor::ITestRequestAcceptor(const ITestRequestAcceptor& rhs)
-{
+        this->operator=(rhs);
+    }
 
-this->operator=(rhs);
-}
+    const ITestRequestAcceptor& ITestRequestAcceptor::operator =(const ITestRequestAcceptor& rhs)
+    {
 
-const ITestRequestAcceptor& ITestRequestAcceptor::operator =(const ITestRequestAcceptor& rhs)
-{
+        this->TestCase::operator=(rhs);
+        return *this;
+    }
 
-this->TestCase::operator=(rhs);
-return *this;
-}
+    std::string ITestRequestAcceptor::get_type() const
+    {
+        return ITestRequestAcceptor::TYPE;
+    }
 
-std::string ITestRequestAcceptor::get_type() const
-{
-return ITestRequestAcceptor::TYPE;
-}
+    void ITestRequestAcceptor::serialize_xml(SerializerXml& serializer) const
+    {
 
-void ITestRequestAcceptor::serialize_xml(SerializerXml& serializer) const
-{
+    }
 
-}
+    void ITestRequestAcceptor::deserialize_xml(DeserializerXml& deserializer)
+    {
 
-void ITestRequestAcceptor::deserialize_xml(DeserializerXml& deserializer)
-{
+    }
 
-}
+    void ITestRequestAcceptor::serialize_json(SerializerJson& serializer) const
+    {
 
-void ITestRequestAcceptor::serialize_json(SerializerJson& serializer) const
-{
+    }
 
-}
+    void ITestRequestAcceptor::deserialize_json(DeserializerJson& deserializer)
+    {
 
-void ITestRequestAcceptor::deserialize_json(DeserializerJson& deserializer)
-{
-
-}
+    }
 
 } // namespace mg

@@ -11,76 +11,74 @@ namespace mg
 {
     const std::string ITestObservableClass::TYPE("ITestObservableClass");
 
-    
     ITestObservableClass::ITestObservableClass()
     {
-    
+
     }
 
     ITestObservableClass::~ITestObservableClass(){}
 
+    void ITestObservableClass::execute()
+    {
+        this->test_1();
+        this->test_notify_with_unsubscribe();
+        this->test_listen_with_two();
+        this->test_with_arg_int();
+        this->test_with_arg_int_two();
+        this->test_with_data();
+        this->test_with_pointer();
 
-void ITestObservableClass::execute()
-{
-this->test_1();
-this->test_notify_with_unsubscribe();
-this->test_listen_with_two();
-this->test_with_arg_int();
-this->test_with_arg_int_two();
-this->test_with_data();
-this->test_with_pointer();
+    }
 
-}
+    bool ITestObservableClass::operator ==(const ITestObservableClass& rhs) const
+    {
 
-bool ITestObservableClass::operator ==(const ITestObservableClass& rhs) const
-{
+        bool result = true;
+        return result;
+    }
 
-bool result = true;
-return result;
-}
+    bool ITestObservableClass::operator !=(const ITestObservableClass& rhs) const
+    {
 
-bool ITestObservableClass::operator !=(const ITestObservableClass& rhs) const
-{
+        return !(*this == rhs);
+    }
 
-return !(*this == rhs);
-}
+    ITestObservableClass::ITestObservableClass(const ITestObservableClass& rhs)
+    {
 
- ITestObservableClass::ITestObservableClass(const ITestObservableClass& rhs)
-{
+        this->operator=(rhs);
+    }
 
-this->operator=(rhs);
-}
+    const ITestObservableClass& ITestObservableClass::operator =(const ITestObservableClass& rhs)
+    {
 
-const ITestObservableClass& ITestObservableClass::operator =(const ITestObservableClass& rhs)
-{
+        this->TestCase::operator=(rhs);
+        return *this;
+    }
 
-this->TestCase::operator=(rhs);
-return *this;
-}
+    std::string ITestObservableClass::get_type() const
+    {
+        return ITestObservableClass::TYPE;
+    }
 
-std::string ITestObservableClass::get_type() const
-{
-return ITestObservableClass::TYPE;
-}
+    void ITestObservableClass::serialize_xml(SerializerXml& serializer) const
+    {
 
-void ITestObservableClass::serialize_xml(SerializerXml& serializer) const
-{
+    }
 
-}
+    void ITestObservableClass::deserialize_xml(DeserializerXml& deserializer)
+    {
 
-void ITestObservableClass::deserialize_xml(DeserializerXml& deserializer)
-{
+    }
 
-}
+    void ITestObservableClass::serialize_json(SerializerJson& serializer) const
+    {
 
-void ITestObservableClass::serialize_json(SerializerJson& serializer) const
-{
+    }
 
-}
+    void ITestObservableClass::deserialize_json(DeserializerJson& deserializer)
+    {
 
-void ITestObservableClass::deserialize_json(DeserializerJson& deserializer)
-{
-
-}
+    }
 
 } // namespace mg

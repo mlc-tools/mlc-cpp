@@ -13,120 +13,118 @@ namespace mg
 {
     const std::string ListenerClass::TYPE("ListenerClass");
 
-    
     ListenerClass::ListenerClass()
     : test(nullptr)
-, _reference_counter(1)
-{
-    
+    , _reference_counter(1)
+    {
+
     }
 
     ListenerClass::~ListenerClass(){}
 
+    void ListenerClass::listen()
+    {
 
-void ListenerClass::listen()
-{
+        this->test->value += 1;
 
-	    this->test->value += 1;
-	
-}
+    }
 
-void ListenerClass::listen_int(int value)
-{
+    void ListenerClass::listen_int(int value)
+    {
 
-	    this->test->value = value;
-	
-}
+        this->test->value = value;
 
-void ListenerClass::listen_int_2(int a, int b)
-{
+    }
 
-	    this->test->value = a + b;
-	
-}
+    void ListenerClass::listen_int_2(int a, int b)
+    {
 
-void ListenerClass::listen_link(const DataUnit* data)
-{
+        this->test->value = a + b;
 
-	    this->test->value = 1;
-	
-}
+    }
 
-void ListenerClass::listen_pointer(DataUnit* data)
-{
+    void ListenerClass::listen_link(const DataUnit* data)
+    {
 
-	    this->test->value = 1;
-	
-}
+        this->test->value = 1;
 
-void ListenerClass::retain()
-{
-++this->_reference_counter;
-}
+    }
 
-int ListenerClass::release()
-{
+    void ListenerClass::listen_pointer(DataUnit* data)
+    {
 
---this->_reference_counter;
-auto counter = this->_reference_counter;
-if(counter == 0)
-{
-    delete this;
-}
-return counter;
+        this->test->value = 1;
 
-}
+    }
 
-bool ListenerClass::operator ==(const ListenerClass& rhs) const
-{
-bool result = true;
-result = result && ((this->test == rhs.test) || (this->test != nullptr && rhs.test != nullptr && *this->test == *rhs.test));
-return result;
-}
+    void ListenerClass::retain()
+    {
+        ++this->_reference_counter;
+    }
 
-bool ListenerClass::operator !=(const ListenerClass& rhs) const
-{
+    int ListenerClass::release()
+    {
 
-return !(*this == rhs);
-}
+        --this->_reference_counter;
+        auto counter = this->_reference_counter;
+        if(counter == 0)
+        {
+            delete this;
+        }
+        return counter;
 
- ListenerClass::ListenerClass(const ListenerClass& rhs)
-{
+    }
 
-this->operator=(rhs);
-}
+    bool ListenerClass::operator ==(const ListenerClass& rhs) const
+    {
+        bool result = true;
+        result = result && ((this->test == rhs.test) || (this->test != nullptr && rhs.test != nullptr && *this->test == *rhs.test));
+        return result;
+    }
 
-const ListenerClass& ListenerClass::operator =(const ListenerClass& rhs)
-{
+    bool ListenerClass::operator !=(const ListenerClass& rhs) const
+    {
 
-this->test = rhs.test;
-this->_reference_counter = rhs._reference_counter;
-return *this;
-}
+        return !(*this == rhs);
+    }
 
-std::string ListenerClass::get_type() const
-{
-return ListenerClass::TYPE;
-}
+    ListenerClass::ListenerClass(const ListenerClass& rhs)
+    {
 
-void ListenerClass::serialize_xml(SerializerXml& serializer) const
-{
-serializer.serialize(test, "test");
-}
+        this->operator=(rhs);
+    }
 
-void ListenerClass::deserialize_xml(DeserializerXml& deserializer)
-{
-deserializer.deserialize(test, "test");
-}
+    const ListenerClass& ListenerClass::operator =(const ListenerClass& rhs)
+    {
 
-void ListenerClass::serialize_json(SerializerJson& serializer) const
-{
-serializer.serialize(test, "test");
-}
+        this->test = rhs.test;
+        this->_reference_counter = rhs._reference_counter;
+        return *this;
+    }
 
-void ListenerClass::deserialize_json(DeserializerJson& deserializer)
-{
-deserializer.deserialize(test, "test");
-}
+    std::string ListenerClass::get_type() const
+    {
+        return ListenerClass::TYPE;
+    }
+
+    void ListenerClass::serialize_xml(SerializerXml& serializer) const
+    {
+        serializer.serialize(test, "test");
+    }
+
+    void ListenerClass::deserialize_xml(DeserializerXml& deserializer)
+    {
+        deserializer.deserialize(test, "test");
+    }
+
+    void ListenerClass::serialize_json(SerializerJson& serializer) const
+    {
+        serializer.serialize(test, "test");
+    }
+
+    void ListenerClass::deserialize_json(DeserializerJson& deserializer)
+    {
+        deserializer.deserialize(test, "test");
+    }
 
 } // namespace mg

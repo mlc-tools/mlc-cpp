@@ -17,30 +17,28 @@ namespace mg
 {
     const std::string FunctionTest::TYPE("FunctionTest");
 
-    
     FunctionTest::FunctionTest()
     : initialized(false)
-, data_unit(nullptr)
-, list()
-, map()
-, _reference_counter(1)
-{
-    
+    , data_unit(nullptr)
+    , list()
+    , map()
+    , _reference_counter(1)
+    {
+
     }
 
     FunctionTest::~FunctionTest(){}
 
-
-void FunctionTest::initialize()
-{
+    void FunctionTest::initialize()
+    {
 
         this->initialized = true;
         this->data_unit = DataStorage::shared().get<DataUnit>("unitname1");
-    
-}
 
-bool FunctionTest::tests(Logger* logger)
-{
+    }
+
+    bool FunctionTest::tests(Logger* logger)
+    {
 
         auto result = true;
         result = FunctionTest::test_create_objects(logger) && result;
@@ -50,22 +48,22 @@ bool FunctionTest::tests(Logger* logger)
         result = FunctionTest::test_1(logger) && result;
         result = FunctionTest::test_while(logger) && result;
         return result;
-    
-}
 
-bool FunctionTest::test_create_objects(Logger* logger)
-{
+    }
+
+    bool FunctionTest::test_create_objects(Logger* logger)
+    {
 
         auto pointer = make_intrusive<FunctionTest>();
         pointer->initialize();
         auto result = pointer->initialized;
         result = result && pointer->data_unit != nullptr;
         return result;
-    
-}
 
-bool FunctionTest::test_for(Logger* logger)
-{
+    }
+
+    bool FunctionTest::test_for(Logger* logger)
+    {
 
         auto result = true;
         auto units = DataStorage::shared().get_units_keys();
@@ -117,11 +115,11 @@ bool FunctionTest::test_for(Logger* logger)
         result = result && index == test_value.some_count;
 
         return result;
-    
-}
 
-bool FunctionTest::test_while(Logger* logger)
-{
+    }
+
+    bool FunctionTest::test_while(Logger* logger)
+    {
 
         auto result = true;
         std::vector<int> test_vector;
@@ -134,11 +132,11 @@ bool FunctionTest::test_while(Logger* logger)
         }
         result = list_size(test_vector) == 10;
         return result;
-    
-}
 
-bool FunctionTest::test_if_(Logger* logger)
-{
+    }
+
+    bool FunctionTest::test_if_(Logger* logger)
+    {
 
         bool result = true;
         if(true)
@@ -160,139 +158,138 @@ bool FunctionTest::test_if_(Logger* logger)
             result = false;
         }
         if(true)
-            result = result && true;
+        result = result && true;
         else
-            result = false;
+        result = false;
 
         if(true)
-            result = result && true;
+        result = result && true;
         else if(false)
-            result = false;
+        result = false;
         return result;
-    
-}
 
-bool FunctionTest::std_functions(Logger* logger)
-{
+    }
+
+    bool FunctionTest::std_functions(Logger* logger)
+    {
 
         auto result = true;
         auto pointer = make_intrusive<FunctionTest>();
 
         list_push(pointer->list, 1);
         result = result && list_size(pointer->list) == 1;
-        
 
         pointer->map[1] = 1;
         result = result && map_size(pointer->map) == 1;
         result = result && in_map(1, pointer->map);
 
         return result;
-    
-}
 
-bool FunctionTest::test_1(Logger* logger)
-{
+    }
+
+    bool FunctionTest::test_1(Logger* logger)
+    {
 
         auto user = make_intrusive<TestUser1>();
-		auto result = FunctionTest::test_1_1(user);
-		return result;
-	
-}
+        auto result = FunctionTest::test_1_1(user);
+        return result;
 
-bool FunctionTest::test_1_1(TestUser1* user)
-{
+    }
 
-		auto result = user->result;
-		return result;
-	
-}
+    bool FunctionTest::test_1_1(TestUser1* user)
+    {
 
-void FunctionTest::retain()
-{
-++this->_reference_counter;
-}
+        auto result = user->result;
+        return result;
 
-int FunctionTest::release()
-{
+    }
 
---this->_reference_counter;
-auto counter = this->_reference_counter;
-if(counter == 0)
-{
-    delete this;
-}
-return counter;
+    void FunctionTest::retain()
+    {
+        ++this->_reference_counter;
+    }
 
-}
+    int FunctionTest::release()
+    {
 
-bool FunctionTest::operator ==(const FunctionTest& rhs) const
-{
-bool result = true;
-result = result && this->initialized == rhs.initialized;
-result = result && ((this->data_unit == rhs.data_unit) || (this->data_unit != nullptr && rhs.data_unit != nullptr && *this->data_unit == *rhs.data_unit));
-result = result && this->list == rhs.list;
-result = result && this->map == rhs.map;
-return result;
-}
+        --this->_reference_counter;
+        auto counter = this->_reference_counter;
+        if(counter == 0)
+        {
+            delete this;
+        }
+        return counter;
 
-bool FunctionTest::operator !=(const FunctionTest& rhs) const
-{
+    }
 
-return !(*this == rhs);
-}
+    bool FunctionTest::operator ==(const FunctionTest& rhs) const
+    {
+        bool result = true;
+        result = result && this->initialized == rhs.initialized;
+        result = result && ((this->data_unit == rhs.data_unit) || (this->data_unit != nullptr && rhs.data_unit != nullptr && *this->data_unit == *rhs.data_unit));
+        result = result && this->list == rhs.list;
+        result = result && this->map == rhs.map;
+        return result;
+    }
 
- FunctionTest::FunctionTest(const FunctionTest& rhs)
-{
+    bool FunctionTest::operator !=(const FunctionTest& rhs) const
+    {
 
-this->operator=(rhs);
-}
+        return !(*this == rhs);
+    }
 
-const FunctionTest& FunctionTest::operator =(const FunctionTest& rhs)
-{
+    FunctionTest::FunctionTest(const FunctionTest& rhs)
+    {
 
-this->initialized = rhs.initialized;
-this->data_unit = rhs.data_unit;
-this->list = rhs.list;
-this->map = rhs.map;
-this->_reference_counter = rhs._reference_counter;
-return *this;
-}
+        this->operator=(rhs);
+    }
 
-std::string FunctionTest::get_type() const
-{
-return FunctionTest::TYPE;
-}
+    const FunctionTest& FunctionTest::operator =(const FunctionTest& rhs)
+    {
 
-void FunctionTest::serialize_xml(SerializerXml& serializer) const
-{
-serializer.serialize(initialized, "initialized", bool(false));
-serializer.serialize(data_unit, "data_unit");
-serializer.serialize(list, "list");
-serializer.serialize(map, "map");
-}
+        this->initialized = rhs.initialized;
+        this->data_unit = rhs.data_unit;
+        this->list = rhs.list;
+        this->map = rhs.map;
+        this->_reference_counter = rhs._reference_counter;
+        return *this;
+    }
 
-void FunctionTest::deserialize_xml(DeserializerXml& deserializer)
-{
-deserializer.deserialize(initialized, "initialized", bool(false));
-deserializer.deserialize(data_unit, "data_unit");
-deserializer.deserialize(list, "list");
-deserializer.deserialize(map, "map");
-}
+    std::string FunctionTest::get_type() const
+    {
+        return FunctionTest::TYPE;
+    }
 
-void FunctionTest::serialize_json(SerializerJson& serializer) const
-{
-serializer.serialize(initialized, "initialized", bool(false));
-serializer.serialize(data_unit, "data_unit");
-serializer.serialize(list, "list");
-serializer.serialize(map, "map");
-}
+    void FunctionTest::serialize_xml(SerializerXml& serializer) const
+    {
+        serializer.serialize(initialized, "initialized", bool(false));
+        serializer.serialize(data_unit, "data_unit");
+        serializer.serialize(list, "list");
+        serializer.serialize(map, "map");
+    }
 
-void FunctionTest::deserialize_json(DeserializerJson& deserializer)
-{
-deserializer.deserialize(initialized, "initialized", bool(false));
-deserializer.deserialize(data_unit, "data_unit");
-deserializer.deserialize(list, "list");
-deserializer.deserialize(map, "map");
-}
+    void FunctionTest::deserialize_xml(DeserializerXml& deserializer)
+    {
+        deserializer.deserialize(initialized, "initialized", bool(false));
+        deserializer.deserialize(data_unit, "data_unit");
+        deserializer.deserialize(list, "list");
+        deserializer.deserialize(map, "map");
+    }
+
+    void FunctionTest::serialize_json(SerializerJson& serializer) const
+    {
+        serializer.serialize(initialized, "initialized", bool(false));
+        serializer.serialize(data_unit, "data_unit");
+        serializer.serialize(list, "list");
+        serializer.serialize(map, "map");
+    }
+
+    void FunctionTest::deserialize_json(DeserializerJson& deserializer)
+    {
+        deserializer.deserialize(initialized, "initialized", bool(false));
+        deserializer.deserialize(data_unit, "data_unit");
+        deserializer.deserialize(list, "list");
+        deserializer.deserialize(map, "map");
+    }
 
 } // namespace mg

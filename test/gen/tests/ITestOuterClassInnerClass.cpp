@@ -11,70 +11,68 @@ namespace mg
 {
     const std::string ITestOuterClassInnerClass::TYPE("ITestOuterClassInnerClass");
 
-    
     ITestOuterClassInnerClass::ITestOuterClassInnerClass()
     {
-    
+
     }
 
     ITestOuterClassInnerClass::~ITestOuterClassInnerClass(){}
 
+    void ITestOuterClassInnerClass::execute()
+    {
+        this->test_func();
 
-void ITestOuterClassInnerClass::execute()
-{
-this->test_func();
+    }
 
-}
+    bool ITestOuterClassInnerClass::operator ==(const ITestOuterClassInnerClass& rhs) const
+    {
 
-bool ITestOuterClassInnerClass::operator ==(const ITestOuterClassInnerClass& rhs) const
-{
+        bool result = true;
+        return result;
+    }
 
-bool result = true;
-return result;
-}
+    bool ITestOuterClassInnerClass::operator !=(const ITestOuterClassInnerClass& rhs) const
+    {
 
-bool ITestOuterClassInnerClass::operator !=(const ITestOuterClassInnerClass& rhs) const
-{
+        return !(*this == rhs);
+    }
 
-return !(*this == rhs);
-}
+    ITestOuterClassInnerClass::ITestOuterClassInnerClass(const ITestOuterClassInnerClass& rhs)
+    {
 
- ITestOuterClassInnerClass::ITestOuterClassInnerClass(const ITestOuterClassInnerClass& rhs)
-{
+        this->operator=(rhs);
+    }
 
-this->operator=(rhs);
-}
+    const ITestOuterClassInnerClass& ITestOuterClassInnerClass::operator =(const ITestOuterClassInnerClass& rhs)
+    {
 
-const ITestOuterClassInnerClass& ITestOuterClassInnerClass::operator =(const ITestOuterClassInnerClass& rhs)
-{
+        this->TestCase::operator=(rhs);
+        return *this;
+    }
 
-this->TestCase::operator=(rhs);
-return *this;
-}
+    std::string ITestOuterClassInnerClass::get_type() const
+    {
+        return ITestOuterClassInnerClass::TYPE;
+    }
 
-std::string ITestOuterClassInnerClass::get_type() const
-{
-return ITestOuterClassInnerClass::TYPE;
-}
+    void ITestOuterClassInnerClass::serialize_xml(SerializerXml& serializer) const
+    {
 
-void ITestOuterClassInnerClass::serialize_xml(SerializerXml& serializer) const
-{
+    }
 
-}
+    void ITestOuterClassInnerClass::deserialize_xml(DeserializerXml& deserializer)
+    {
 
-void ITestOuterClassInnerClass::deserialize_xml(DeserializerXml& deserializer)
-{
+    }
 
-}
+    void ITestOuterClassInnerClass::serialize_json(SerializerJson& serializer) const
+    {
 
-void ITestOuterClassInnerClass::serialize_json(SerializerJson& serializer) const
-{
+    }
 
-}
+    void ITestOuterClassInnerClass::deserialize_json(DeserializerJson& deserializer)
+    {
 
-void ITestOuterClassInnerClass::deserialize_json(DeserializerJson& deserializer)
-{
-
-}
+    }
 
 } // namespace mg

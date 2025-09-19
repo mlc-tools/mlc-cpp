@@ -7,7 +7,6 @@
 #include "SkillBase.h"
 #include <string>
 
-
 namespace mg
 {
     class SerializerXml;
@@ -15,24 +14,23 @@ namespace mg
     class SerializerJson;
     class DeserializerJson;
 
-
     class SkillFoo : public SkillBase
     {
     public:
         SkillFoo();
         ~SkillFoo();
-bool operator ==(const SkillFoo& rhs) const;
-bool operator !=(const SkillFoo& rhs) const;
- SkillFoo(const SkillFoo& rhs);
-const SkillFoo& operator =(const SkillFoo& rhs);
-virtual std::string get_type() const override;
-virtual void serialize_xml(SerializerXml& serializer) const override;
-virtual void deserialize_xml(DeserializerXml& deserializer) override;
-virtual void serialize_json(SerializerJson& serializer) const override;
-virtual void deserialize_json(DeserializerJson& deserializer) override;
+        bool operator ==(const SkillFoo& rhs) const;
+        bool operator !=(const SkillFoo& rhs) const;
+        SkillFoo(const SkillFoo& rhs);
+        const SkillFoo& operator =(const SkillFoo& rhs);
+        virtual std::string get_type() const override;
+        virtual void serialize_xml(SerializerXml& serializer) const override;
+        virtual void deserialize_xml(DeserializerXml& deserializer) override;
+        virtual void serialize_json(SerializerJson& serializer) const override;
+        virtual void deserialize_json(DeserializerJson& deserializer) override;
 
-int foo;
-static const std::string TYPE;
+        int foo;
+        static const std::string TYPE;
 
     };
 } // namespace mg

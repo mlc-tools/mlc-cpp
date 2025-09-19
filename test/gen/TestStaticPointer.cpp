@@ -11,71 +11,69 @@ namespace mg
 {
     const std::string TestStaticPointer::TYPE("TestStaticPointer");
 
-    
     TestStaticPointer::TestStaticPointer()
     {
-    
+
     }
 
     TestStaticPointer::~TestStaticPointer(){}
 
-
-void TestStaticPointer::test_foo()
-{
+    void TestStaticPointer::test_foo()
+    {
 
         this->assertTrue(true);
-    
-}
 
-bool TestStaticPointer::operator ==(const TestStaticPointer& rhs) const
-{
+    }
 
-bool result = this->ITestStaticPointer::operator ==(rhs);
-return result;
-}
+    bool TestStaticPointer::operator ==(const TestStaticPointer& rhs) const
+    {
 
-bool TestStaticPointer::operator !=(const TestStaticPointer& rhs) const
-{
+        bool result = this->ITestStaticPointer::operator ==(rhs);
+        return result;
+    }
 
-return !(*this == rhs);
-}
+    bool TestStaticPointer::operator !=(const TestStaticPointer& rhs) const
+    {
 
- TestStaticPointer::TestStaticPointer(const TestStaticPointer& rhs)
-{
+        return !(*this == rhs);
+    }
 
-this->operator=(rhs);
-}
+    TestStaticPointer::TestStaticPointer(const TestStaticPointer& rhs)
+    {
 
-const TestStaticPointer& TestStaticPointer::operator =(const TestStaticPointer& rhs)
-{
+        this->operator=(rhs);
+    }
 
-this->ITestStaticPointer::operator=(rhs);
-return *this;
-}
+    const TestStaticPointer& TestStaticPointer::operator =(const TestStaticPointer& rhs)
+    {
 
-std::string TestStaticPointer::get_type() const
-{
-return TestStaticPointer::TYPE;
-}
+        this->ITestStaticPointer::operator=(rhs);
+        return *this;
+    }
 
-void TestStaticPointer::serialize_xml(SerializerXml& serializer) const
-{
+    std::string TestStaticPointer::get_type() const
+    {
+        return TestStaticPointer::TYPE;
+    }
 
-}
+    void TestStaticPointer::serialize_xml(SerializerXml& serializer) const
+    {
 
-void TestStaticPointer::deserialize_xml(DeserializerXml& deserializer)
-{
+    }
 
-}
+    void TestStaticPointer::deserialize_xml(DeserializerXml& deserializer)
+    {
 
-void TestStaticPointer::serialize_json(SerializerJson& serializer) const
-{
+    }
 
-}
+    void TestStaticPointer::serialize_json(SerializerJson& serializer) const
+    {
 
-void TestStaticPointer::deserialize_json(DeserializerJson& deserializer)
-{
+    }
 
-}
+    void TestStaticPointer::deserialize_json(DeserializerJson& deserializer)
+    {
+
+    }
 
 } // namespace mg

@@ -7,7 +7,6 @@
 #include "CompareTestBase.h"
 #include <string>
 
-
 namespace mg
 {
     class SerializerXml;
@@ -15,26 +14,25 @@ namespace mg
     class SerializerJson;
     class DeserializerJson;
 
-
     class CompareTestWithoutPointer : public CompareTestBase
     {
     public:
         CompareTestWithoutPointer();
         ~CompareTestWithoutPointer();
-void test();
-bool operator ==(const CompareTestWithoutPointer& rhs) const;
-bool operator !=(const CompareTestWithoutPointer& rhs) const;
- CompareTestWithoutPointer(const CompareTestWithoutPointer& rhs);
-const CompareTestWithoutPointer& operator =(const CompareTestWithoutPointer& rhs);
-virtual std::string get_type() const override;
-virtual void serialize_xml(SerializerXml& serializer) const override;
-virtual void deserialize_xml(DeserializerXml& deserializer) override;
-virtual void serialize_json(SerializerJson& serializer) const override;
-virtual void deserialize_json(DeserializerJson& deserializer) override;
+        void test();
+        bool operator ==(const CompareTestWithoutPointer& rhs) const;
+        bool operator !=(const CompareTestWithoutPointer& rhs) const;
+        CompareTestWithoutPointer(const CompareTestWithoutPointer& rhs);
+        const CompareTestWithoutPointer& operator =(const CompareTestWithoutPointer& rhs);
+        virtual std::string get_type() const override;
+        virtual void serialize_xml(SerializerXml& serializer) const override;
+        virtual void deserialize_xml(DeserializerXml& deserializer) override;
+        virtual void serialize_json(SerializerJson& serializer) const override;
+        virtual void deserialize_json(DeserializerJson& deserializer) override;
 
-int a;
-std::string b;
-static const std::string TYPE;
+        int a;
+        std::string b;
+        static const std::string TYPE;
 
     };
 } // namespace mg

@@ -6,7 +6,6 @@
 #include "pugixml/pugixml.hpp"
 #include <string>
 
-
 namespace mg
 {
     class SerializerXml;
@@ -14,29 +13,28 @@ namespace mg
     class SerializerJson;
     class DeserializerJson;
 
-
     class AbstractClass
     {
     public:
         AbstractClass();
         virtual ~AbstractClass();
-virtual void foo() = 0;
-void retain();
-int release();
-bool operator ==(const AbstractClass& rhs) const;
-bool operator !=(const AbstractClass& rhs) const;
- AbstractClass(const AbstractClass& rhs);
-const AbstractClass& operator =(const AbstractClass& rhs);
-std::string get_type() const;
-void serialize_xml(SerializerXml& serializer) const;
-void deserialize_xml(DeserializerXml& deserializer);
-void serialize_json(SerializerJson& serializer) const;
-void deserialize_json(DeserializerJson& deserializer);
+        virtual void foo() = 0;
+        void retain();
+        int release();
+        bool operator ==(const AbstractClass& rhs) const;
+        bool operator !=(const AbstractClass& rhs) const;
+        AbstractClass(const AbstractClass& rhs);
+        const AbstractClass& operator =(const AbstractClass& rhs);
+        std::string get_type() const;
+        void serialize_xml(SerializerXml& serializer) const;
+        void deserialize_xml(DeserializerXml& deserializer);
+        void serialize_json(SerializerJson& serializer) const;
+        void deserialize_json(DeserializerJson& deserializer);
 
-private:
-int _reference_counter;
-public:
-static const std::string TYPE;
+    private:
+        int _reference_counter;
+    public:
+        static const std::string TYPE;
 
     };
 } // namespace mg

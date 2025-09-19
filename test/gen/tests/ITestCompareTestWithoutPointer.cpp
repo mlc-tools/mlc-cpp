@@ -11,73 +11,71 @@ namespace mg
 {
     const std::string ITestCompareTestWithoutPointer::TYPE("ITestCompareTestWithoutPointer");
 
-    
     ITestCompareTestWithoutPointer::ITestCompareTestWithoutPointer()
     {
-    
+
     }
 
     ITestCompareTestWithoutPointer::~ITestCompareTestWithoutPointer(){}
 
+    void ITestCompareTestWithoutPointer::execute()
+    {
+        this->test_test();
+        this->test_operator_copy();
+        this->test_without_pointer_compare();
+        this->test_with_pointer_compare();
 
-void ITestCompareTestWithoutPointer::execute()
-{
-this->test_test();
-this->test_operator_copy();
-this->test_without_pointer_compare();
-this->test_with_pointer_compare();
+    }
 
-}
+    bool ITestCompareTestWithoutPointer::operator ==(const ITestCompareTestWithoutPointer& rhs) const
+    {
 
-bool ITestCompareTestWithoutPointer::operator ==(const ITestCompareTestWithoutPointer& rhs) const
-{
+        bool result = true;
+        return result;
+    }
 
-bool result = true;
-return result;
-}
+    bool ITestCompareTestWithoutPointer::operator !=(const ITestCompareTestWithoutPointer& rhs) const
+    {
 
-bool ITestCompareTestWithoutPointer::operator !=(const ITestCompareTestWithoutPointer& rhs) const
-{
+        return !(*this == rhs);
+    }
 
-return !(*this == rhs);
-}
+    ITestCompareTestWithoutPointer::ITestCompareTestWithoutPointer(const ITestCompareTestWithoutPointer& rhs)
+    {
 
- ITestCompareTestWithoutPointer::ITestCompareTestWithoutPointer(const ITestCompareTestWithoutPointer& rhs)
-{
+        this->operator=(rhs);
+    }
 
-this->operator=(rhs);
-}
+    const ITestCompareTestWithoutPointer& ITestCompareTestWithoutPointer::operator =(const ITestCompareTestWithoutPointer& rhs)
+    {
 
-const ITestCompareTestWithoutPointer& ITestCompareTestWithoutPointer::operator =(const ITestCompareTestWithoutPointer& rhs)
-{
+        this->TestCase::operator=(rhs);
+        return *this;
+    }
 
-this->TestCase::operator=(rhs);
-return *this;
-}
+    std::string ITestCompareTestWithoutPointer::get_type() const
+    {
+        return ITestCompareTestWithoutPointer::TYPE;
+    }
 
-std::string ITestCompareTestWithoutPointer::get_type() const
-{
-return ITestCompareTestWithoutPointer::TYPE;
-}
+    void ITestCompareTestWithoutPointer::serialize_xml(SerializerXml& serializer) const
+    {
 
-void ITestCompareTestWithoutPointer::serialize_xml(SerializerXml& serializer) const
-{
+    }
 
-}
+    void ITestCompareTestWithoutPointer::deserialize_xml(DeserializerXml& deserializer)
+    {
 
-void ITestCompareTestWithoutPointer::deserialize_xml(DeserializerXml& deserializer)
-{
+    }
 
-}
+    void ITestCompareTestWithoutPointer::serialize_json(SerializerJson& serializer) const
+    {
 
-void ITestCompareTestWithoutPointer::serialize_json(SerializerJson& serializer) const
-{
+    }
 
-}
+    void ITestCompareTestWithoutPointer::deserialize_json(DeserializerJson& deserializer)
+    {
 
-void ITestCompareTestWithoutPointer::deserialize_json(DeserializerJson& deserializer)
-{
-
-}
+    }
 
 } // namespace mg

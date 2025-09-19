@@ -6,7 +6,6 @@
 #include "pugixml/pugixml.hpp"
 #include <string>
 
-
 namespace mg
 {
     class SerializerXml;
@@ -14,30 +13,29 @@ namespace mg
     class SerializerJson;
     class DeserializerJson;
 
-
     class ClassMissingTestMethod
     {
     public:
         ClassMissingTestMethod();
         ~ClassMissingTestMethod();
-void foo();
-void bar();
-void retain();
-int release();
-bool operator ==(const ClassMissingTestMethod& rhs) const;
-bool operator !=(const ClassMissingTestMethod& rhs) const;
- ClassMissingTestMethod(const ClassMissingTestMethod& rhs);
-const ClassMissingTestMethod& operator =(const ClassMissingTestMethod& rhs);
-std::string get_type() const;
-void serialize_xml(SerializerXml& serializer) const;
-void deserialize_xml(DeserializerXml& deserializer);
-void serialize_json(SerializerJson& serializer) const;
-void deserialize_json(DeserializerJson& deserializer);
+        void foo();
+        void bar();
+        void retain();
+        int release();
+        bool operator ==(const ClassMissingTestMethod& rhs) const;
+        bool operator !=(const ClassMissingTestMethod& rhs) const;
+        ClassMissingTestMethod(const ClassMissingTestMethod& rhs);
+        const ClassMissingTestMethod& operator =(const ClassMissingTestMethod& rhs);
+        std::string get_type() const;
+        void serialize_xml(SerializerXml& serializer) const;
+        void deserialize_xml(DeserializerXml& deserializer);
+        void serialize_json(SerializerJson& serializer) const;
+        void deserialize_json(DeserializerJson& deserializer);
 
-private:
-int _reference_counter;
-public:
-static const std::string TYPE;
+    private:
+        int _reference_counter;
+    public:
+        static const std::string TYPE;
 
     };
 } // namespace mg

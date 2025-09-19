@@ -6,7 +6,6 @@
 #include "pugixml/pugixml.hpp"
 #include <string>
 
-
 namespace mg
 {
     class SerializerXml;
@@ -14,30 +13,29 @@ namespace mg
     class SerializerJson;
     class DeserializerJson;
 
-
     class VisualUnit
     {
     public:
         VisualUnit();
         ~VisualUnit();
-void retain();
-int release();
-bool operator ==(const VisualUnit& rhs) const;
-bool operator !=(const VisualUnit& rhs) const;
- VisualUnit(const VisualUnit& rhs);
-const VisualUnit& operator =(const VisualUnit& rhs);
-std::string get_type() const;
-void serialize_xml(SerializerXml& serializer) const;
-void deserialize_xml(DeserializerXml& deserializer);
-void serialize_json(SerializerJson& serializer) const;
-void deserialize_json(DeserializerJson& deserializer);
+        void retain();
+        int release();
+        bool operator ==(const VisualUnit& rhs) const;
+        bool operator !=(const VisualUnit& rhs) const;
+        VisualUnit(const VisualUnit& rhs);
+        const VisualUnit& operator =(const VisualUnit& rhs);
+        std::string get_type() const;
+        void serialize_xml(SerializerXml& serializer) const;
+        void deserialize_xml(DeserializerXml& deserializer);
+        void serialize_json(SerializerJson& serializer) const;
+        void deserialize_json(DeserializerJson& deserializer);
 
-std::string name;
-std::string icon;
-private:
-int _reference_counter;
-public:
-static const std::string TYPE;
+        std::string name;
+        std::string icon;
+    private:
+        int _reference_counter;
+    public:
+        static const std::string TYPE;
 
     };
 } // namespace mg

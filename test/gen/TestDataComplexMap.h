@@ -7,7 +7,6 @@
 #include "tests/ITestDataComplexMap.h"
 #include <string>
 
-
 namespace mg
 {
     class SerializerXml;
@@ -15,25 +14,24 @@ namespace mg
     class SerializerJson;
     class DeserializerJson;
 
-
     class TestDataComplexMap : public ITestDataComplexMap
     {
     public:
         TestDataComplexMap();
         ~TestDataComplexMap();
-void test_foo();
-void test_deserialize();
-bool operator ==(const TestDataComplexMap& rhs) const;
-bool operator !=(const TestDataComplexMap& rhs) const;
- TestDataComplexMap(const TestDataComplexMap& rhs);
-const TestDataComplexMap& operator =(const TestDataComplexMap& rhs);
-virtual std::string get_type() const override;
-virtual void serialize_xml(SerializerXml& serializer) const override;
-virtual void deserialize_xml(DeserializerXml& deserializer) override;
-virtual void serialize_json(SerializerJson& serializer) const override;
-virtual void deserialize_json(DeserializerJson& deserializer) override;
+        void test_foo();
+        void test_deserialize();
+        bool operator ==(const TestDataComplexMap& rhs) const;
+        bool operator !=(const TestDataComplexMap& rhs) const;
+        TestDataComplexMap(const TestDataComplexMap& rhs);
+        const TestDataComplexMap& operator =(const TestDataComplexMap& rhs);
+        virtual std::string get_type() const override;
+        virtual void serialize_xml(SerializerXml& serializer) const override;
+        virtual void deserialize_xml(DeserializerXml& deserializer) override;
+        virtual void serialize_json(SerializerJson& serializer) const override;
+        virtual void deserialize_json(DeserializerJson& deserializer) override;
 
-static const std::string TYPE;
+        static const std::string TYPE;
 
     };
 } // namespace mg

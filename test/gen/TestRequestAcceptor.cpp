@@ -17,18 +17,16 @@ namespace mg
 {
     const std::string TestRequestAcceptor::TYPE("TestRequestAcceptor");
 
-    
     TestRequestAcceptor::TestRequestAcceptor()
     : request(nullptr)
-{
-    
+    {
+
     }
 
     TestRequestAcceptor::~TestRequestAcceptor(){}
 
-
-void TestRequestAcceptor::test_visitor()
-{
+    void TestRequestAcceptor::test_visitor()
+    {
 
         RequestAcceptor acceptor;
 
@@ -55,60 +53,60 @@ void TestRequestAcceptor::test_visitor()
         this->assertTrue(acceptor.bar2 == 1);
         this->assertTrue(acceptor.base == 0);
         acceptor.bar2 = 0;
-    
-}
 
-bool TestRequestAcceptor::operator ==(const TestRequestAcceptor& rhs) const
-{
+    }
 
-bool result = this->ITestRequestAcceptor::operator ==(rhs);
-result = result && ((this->request == rhs.request) || (this->request != nullptr && rhs.request != nullptr && *this->request == *rhs.request));
-return result;
-}
+    bool TestRequestAcceptor::operator ==(const TestRequestAcceptor& rhs) const
+    {
 
-bool TestRequestAcceptor::operator !=(const TestRequestAcceptor& rhs) const
-{
+        bool result = this->ITestRequestAcceptor::operator ==(rhs);
+        result = result && ((this->request == rhs.request) || (this->request != nullptr && rhs.request != nullptr && *this->request == *rhs.request));
+        return result;
+    }
 
-return !(*this == rhs);
-}
+    bool TestRequestAcceptor::operator !=(const TestRequestAcceptor& rhs) const
+    {
 
- TestRequestAcceptor::TestRequestAcceptor(const TestRequestAcceptor& rhs)
-{
+        return !(*this == rhs);
+    }
 
-this->operator=(rhs);
-}
+    TestRequestAcceptor::TestRequestAcceptor(const TestRequestAcceptor& rhs)
+    {
 
-const TestRequestAcceptor& TestRequestAcceptor::operator =(const TestRequestAcceptor& rhs)
-{
+        this->operator=(rhs);
+    }
 
-this->ITestRequestAcceptor::operator=(rhs);
-this->request = rhs.request;
-return *this;
-}
+    const TestRequestAcceptor& TestRequestAcceptor::operator =(const TestRequestAcceptor& rhs)
+    {
 
-std::string TestRequestAcceptor::get_type() const
-{
-return TestRequestAcceptor::TYPE;
-}
+        this->ITestRequestAcceptor::operator=(rhs);
+        this->request = rhs.request;
+        return *this;
+    }
 
-void TestRequestAcceptor::serialize_xml(SerializerXml& serializer) const
-{
-serializer.serialize(request, "request");
-}
+    std::string TestRequestAcceptor::get_type() const
+    {
+        return TestRequestAcceptor::TYPE;
+    }
 
-void TestRequestAcceptor::deserialize_xml(DeserializerXml& deserializer)
-{
-deserializer.deserialize(request, "request");
-}
+    void TestRequestAcceptor::serialize_xml(SerializerXml& serializer) const
+    {
+        serializer.serialize(request, "request");
+    }
 
-void TestRequestAcceptor::serialize_json(SerializerJson& serializer) const
-{
-serializer.serialize(request, "request");
-}
+    void TestRequestAcceptor::deserialize_xml(DeserializerXml& deserializer)
+    {
+        deserializer.deserialize(request, "request");
+    }
 
-void TestRequestAcceptor::deserialize_json(DeserializerJson& deserializer)
-{
-deserializer.deserialize(request, "request");
-}
+    void TestRequestAcceptor::serialize_json(SerializerJson& serializer) const
+    {
+        serializer.serialize(request, "request");
+    }
+
+    void TestRequestAcceptor::deserialize_json(DeserializerJson& deserializer)
+    {
+        deserializer.deserialize(request, "request");
+    }
 
 } // namespace mg

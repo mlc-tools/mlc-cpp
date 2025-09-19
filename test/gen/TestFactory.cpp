@@ -13,114 +13,112 @@ namespace mg
 {
     const std::string TestFactory::TYPE("TestFactory");
 
-    
     TestFactory::TestFactory()
     : _reference_counter(1)
-{
-    
+    {
+
     }
 
     TestFactory::~TestFactory(){}
 
-
-bool TestFactory::tests(Logger* logger)
-{
+    bool TestFactory::tests(Logger* logger)
+    {
 
         bool result = true;
         result = TestFactory::test(logger) && result;
         return result;
-    
-}
 
-bool TestFactory::test(Logger* logger)
-{
+    }
+
+    bool TestFactory::test(Logger* logger)
+    {
 
         bool result = true;
 
         auto command = make_intrusive<RequestBar>();
-#if SERIALIZE_FORMAT == JSON
+        #if SERIALIZE_FORMAT == JSON
         auto string = serialize_command_to_json<RequestBar>(command);
         auto command2 = create_command_from_json<Request>(string);
-#endif
-#if SERIALIZE_FORMAT == XML
+        #endif
+        #if SERIALIZE_FORMAT == XML
         auto string = serialize_command_to_xml<RequestBar>(command);
         auto command2 = create_command_from_xml<Request>(string);
-#endif
+        #endif
         result = (command2 != nullptr) && result;
         if(result)
         {
             result = (command2->get_type() == command->get_type()) && result;
         }
         return result;
-    
-}
 
-void TestFactory::retain()
-{
-++this->_reference_counter;
-}
+    }
 
-int TestFactory::release()
-{
+    void TestFactory::retain()
+    {
+        ++this->_reference_counter;
+    }
 
---this->_reference_counter;
-auto counter = this->_reference_counter;
-if(counter == 0)
-{
-    delete this;
-}
-return counter;
+    int TestFactory::release()
+    {
 
-}
+        --this->_reference_counter;
+        auto counter = this->_reference_counter;
+        if(counter == 0)
+        {
+            delete this;
+        }
+        return counter;
 
-bool TestFactory::operator ==(const TestFactory& rhs) const
-{
-bool result = true;
-return result;
-}
+    }
 
-bool TestFactory::operator !=(const TestFactory& rhs) const
-{
+    bool TestFactory::operator ==(const TestFactory& rhs) const
+    {
+        bool result = true;
+        return result;
+    }
 
-return !(*this == rhs);
-}
+    bool TestFactory::operator !=(const TestFactory& rhs) const
+    {
 
- TestFactory::TestFactory(const TestFactory& rhs)
-{
+        return !(*this == rhs);
+    }
 
-this->operator=(rhs);
-}
+    TestFactory::TestFactory(const TestFactory& rhs)
+    {
 
-const TestFactory& TestFactory::operator =(const TestFactory& rhs)
-{
+        this->operator=(rhs);
+    }
 
-this->_reference_counter = rhs._reference_counter;
-return *this;
-}
+    const TestFactory& TestFactory::operator =(const TestFactory& rhs)
+    {
 
-std::string TestFactory::get_type() const
-{
-return TestFactory::TYPE;
-}
+        this->_reference_counter = rhs._reference_counter;
+        return *this;
+    }
 
-void TestFactory::serialize_xml(SerializerXml& serializer) const
-{
+    std::string TestFactory::get_type() const
+    {
+        return TestFactory::TYPE;
+    }
 
-}
+    void TestFactory::serialize_xml(SerializerXml& serializer) const
+    {
 
-void TestFactory::deserialize_xml(DeserializerXml& deserializer)
-{
+    }
 
-}
+    void TestFactory::deserialize_xml(DeserializerXml& deserializer)
+    {
 
-void TestFactory::serialize_json(SerializerJson& serializer) const
-{
+    }
 
-}
+    void TestFactory::serialize_json(SerializerJson& serializer) const
+    {
 
-void TestFactory::deserialize_json(DeserializerJson& deserializer)
-{
+    }
 
-}
+    void TestFactory::deserialize_json(DeserializerJson& deserializer)
+    {
+
+    }
 
 } // namespace mg

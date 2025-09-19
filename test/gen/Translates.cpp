@@ -10,96 +10,90 @@ namespace mg
 {
     const std::string Translates::TYPE("Translates");
 
-    
     Translates::Translates()
     : _reference_counter(1)
-{
-    
+    {
+
     }
 
     Translates::~Translates(){}
 
+    void Translates::dummy_function()
+    {
 
-void Translates::dummy_function()
-{
+    }
 
+    void Translates::new_function()
+    {
 
-    
-}
+    }
 
-void Translates::new_function()
-{
+    void Translates::retain()
+    {
+        ++this->_reference_counter;
+    }
 
+    int Translates::release()
+    {
 
-    
-}
+        --this->_reference_counter;
+        auto counter = this->_reference_counter;
+        if(counter == 0)
+        {
+            delete this;
+        }
+        return counter;
 
-void Translates::retain()
-{
-++this->_reference_counter;
-}
+    }
 
-int Translates::release()
-{
+    bool Translates::operator ==(const Translates& rhs) const
+    {
+        bool result = true;
+        return result;
+    }
 
---this->_reference_counter;
-auto counter = this->_reference_counter;
-if(counter == 0)
-{
-    delete this;
-}
-return counter;
+    bool Translates::operator !=(const Translates& rhs) const
+    {
 
-}
+        return !(*this == rhs);
+    }
 
-bool Translates::operator ==(const Translates& rhs) const
-{
-bool result = true;
-return result;
-}
+    Translates::Translates(const Translates& rhs)
+    {
 
-bool Translates::operator !=(const Translates& rhs) const
-{
+        this->operator=(rhs);
+    }
 
-return !(*this == rhs);
-}
+    const Translates& Translates::operator =(const Translates& rhs)
+    {
 
- Translates::Translates(const Translates& rhs)
-{
+        this->_reference_counter = rhs._reference_counter;
+        return *this;
+    }
 
-this->operator=(rhs);
-}
+    std::string Translates::get_type() const
+    {
+        return Translates::TYPE;
+    }
 
-const Translates& Translates::operator =(const Translates& rhs)
-{
+    void Translates::serialize_xml(SerializerXml& serializer) const
+    {
 
-this->_reference_counter = rhs._reference_counter;
-return *this;
-}
+    }
 
-std::string Translates::get_type() const
-{
-return Translates::TYPE;
-}
+    void Translates::deserialize_xml(DeserializerXml& deserializer)
+    {
 
-void Translates::serialize_xml(SerializerXml& serializer) const
-{
+    }
 
-}
+    void Translates::serialize_json(SerializerJson& serializer) const
+    {
 
-void Translates::deserialize_xml(DeserializerXml& deserializer)
-{
+    }
 
-}
+    void Translates::deserialize_json(DeserializerJson& deserializer)
+    {
 
-void Translates::serialize_json(SerializerJson& serializer) const
-{
-
-}
-
-void Translates::deserialize_json(DeserializerJson& deserializer)
-{
-
-}
+    }
 
 } // namespace mg

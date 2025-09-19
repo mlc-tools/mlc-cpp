@@ -13,17 +13,15 @@ namespace mg
 {
     const std::string TestSerializeTest::TYPE("TestSerializeTest");
 
-    
     TestSerializeTest::TestSerializeTest()
     {
-    
+
     }
 
     TestSerializeTest::~TestSerializeTest(){}
 
-
-void TestSerializeTest::test_serialize_python()
-{
+    void TestSerializeTest::test_serialize_python()
+    {
 
         auto obj = make_intrusive<SerializeTest>();
         auto data = make_intrusive<DataUnit>();
@@ -34,58 +32,58 @@ void TestSerializeTest::test_serialize_python()
         this->assertEqual(list_size(obj2->list_of_data), 1);
         this->assertNotNull(obj2->list_of_data.at(0));
         this->assertEqual(obj2->list_of_data.at(0)->name, data->name);
-    
-}
 
-bool TestSerializeTest::operator ==(const TestSerializeTest& rhs) const
-{
+    }
 
-bool result = this->ITestSerializeTest::operator ==(rhs);
-return result;
-}
+    bool TestSerializeTest::operator ==(const TestSerializeTest& rhs) const
+    {
 
-bool TestSerializeTest::operator !=(const TestSerializeTest& rhs) const
-{
+        bool result = this->ITestSerializeTest::operator ==(rhs);
+        return result;
+    }
 
-return !(*this == rhs);
-}
+    bool TestSerializeTest::operator !=(const TestSerializeTest& rhs) const
+    {
 
- TestSerializeTest::TestSerializeTest(const TestSerializeTest& rhs)
-{
+        return !(*this == rhs);
+    }
 
-this->operator=(rhs);
-}
+    TestSerializeTest::TestSerializeTest(const TestSerializeTest& rhs)
+    {
 
-const TestSerializeTest& TestSerializeTest::operator =(const TestSerializeTest& rhs)
-{
+        this->operator=(rhs);
+    }
 
-this->ITestSerializeTest::operator=(rhs);
-return *this;
-}
+    const TestSerializeTest& TestSerializeTest::operator =(const TestSerializeTest& rhs)
+    {
 
-std::string TestSerializeTest::get_type() const
-{
-return TestSerializeTest::TYPE;
-}
+        this->ITestSerializeTest::operator=(rhs);
+        return *this;
+    }
 
-void TestSerializeTest::serialize_xml(SerializerXml& serializer) const
-{
+    std::string TestSerializeTest::get_type() const
+    {
+        return TestSerializeTest::TYPE;
+    }
 
-}
+    void TestSerializeTest::serialize_xml(SerializerXml& serializer) const
+    {
 
-void TestSerializeTest::deserialize_xml(DeserializerXml& deserializer)
-{
+    }
 
-}
+    void TestSerializeTest::deserialize_xml(DeserializerXml& deserializer)
+    {
 
-void TestSerializeTest::serialize_json(SerializerJson& serializer) const
-{
+    }
 
-}
+    void TestSerializeTest::serialize_json(SerializerJson& serializer) const
+    {
 
-void TestSerializeTest::deserialize_json(DeserializerJson& deserializer)
-{
+    }
 
-}
+    void TestSerializeTest::deserialize_json(DeserializerJson& deserializer)
+    {
+
+    }
 
 } // namespace mg

@@ -9,7 +9,6 @@
 #include <atomic>
 #include <string>
 
-
 namespace mg
 {
     class SerializerXml;
@@ -17,25 +16,24 @@ namespace mg
     class SerializerJson;
     class DeserializerJson;
 
-
     class TestRequestAcceptor : public ITestRequestAcceptor
     {
     public:
         TestRequestAcceptor();
         ~TestRequestAcceptor();
-void test_visitor();
-bool operator ==(const TestRequestAcceptor& rhs) const;
-bool operator !=(const TestRequestAcceptor& rhs) const;
- TestRequestAcceptor(const TestRequestAcceptor& rhs);
-const TestRequestAcceptor& operator =(const TestRequestAcceptor& rhs);
-virtual std::string get_type() const override;
-virtual void serialize_xml(SerializerXml& serializer) const override;
-virtual void deserialize_xml(DeserializerXml& deserializer) override;
-virtual void serialize_json(SerializerJson& serializer) const override;
-virtual void deserialize_json(DeserializerJson& deserializer) override;
+        void test_visitor();
+        bool operator ==(const TestRequestAcceptor& rhs) const;
+        bool operator !=(const TestRequestAcceptor& rhs) const;
+        TestRequestAcceptor(const TestRequestAcceptor& rhs);
+        const TestRequestAcceptor& operator =(const TestRequestAcceptor& rhs);
+        virtual std::string get_type() const override;
+        virtual void serialize_xml(SerializerXml& serializer) const override;
+        virtual void deserialize_xml(DeserializerXml& deserializer) override;
+        virtual void serialize_json(SerializerJson& serializer) const override;
+        virtual void deserialize_json(DeserializerJson& deserializer) override;
 
-intrusive_ptr<Request> request;
-static const std::string TYPE;
+        intrusive_ptr<Request> request;
+        static const std::string TYPE;
 
     };
 } // namespace mg

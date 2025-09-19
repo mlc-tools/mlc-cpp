@@ -11,89 +11,87 @@ namespace mg
 {
     const std::string TestIncludesGet::TYPE("TestIncludesGet");
 
-    
     TestIncludesGet::TestIncludesGet()
     : _reference_counter(1)
-{
-    
+    {
+
     }
 
     TestIncludesGet::~TestIncludesGet(){}
 
-
-intrusive_ptr<CommandBase> TestIncludesGet::get()
-{
+    intrusive_ptr<CommandBase> TestIncludesGet::get()
+    {
 
         return make_intrusive<CommandBase>();
-    
-}
 
-void TestIncludesGet::retain()
-{
-++this->_reference_counter;
-}
+    }
 
-int TestIncludesGet::release()
-{
+    void TestIncludesGet::retain()
+    {
+        ++this->_reference_counter;
+    }
 
---this->_reference_counter;
-auto counter = this->_reference_counter;
-if(counter == 0)
-{
-    delete this;
-}
-return counter;
+    int TestIncludesGet::release()
+    {
 
-}
+        --this->_reference_counter;
+        auto counter = this->_reference_counter;
+        if(counter == 0)
+        {
+            delete this;
+        }
+        return counter;
 
-bool TestIncludesGet::operator ==(const TestIncludesGet& rhs) const
-{
-bool result = true;
-return result;
-}
+    }
 
-bool TestIncludesGet::operator !=(const TestIncludesGet& rhs) const
-{
+    bool TestIncludesGet::operator ==(const TestIncludesGet& rhs) const
+    {
+        bool result = true;
+        return result;
+    }
 
-return !(*this == rhs);
-}
+    bool TestIncludesGet::operator !=(const TestIncludesGet& rhs) const
+    {
 
- TestIncludesGet::TestIncludesGet(const TestIncludesGet& rhs)
-{
+        return !(*this == rhs);
+    }
 
-this->operator=(rhs);
-}
+    TestIncludesGet::TestIncludesGet(const TestIncludesGet& rhs)
+    {
 
-const TestIncludesGet& TestIncludesGet::operator =(const TestIncludesGet& rhs)
-{
+        this->operator=(rhs);
+    }
 
-this->_reference_counter = rhs._reference_counter;
-return *this;
-}
+    const TestIncludesGet& TestIncludesGet::operator =(const TestIncludesGet& rhs)
+    {
 
-std::string TestIncludesGet::get_type() const
-{
-return TestIncludesGet::TYPE;
-}
+        this->_reference_counter = rhs._reference_counter;
+        return *this;
+    }
 
-void TestIncludesGet::serialize_xml(SerializerXml& serializer) const
-{
+    std::string TestIncludesGet::get_type() const
+    {
+        return TestIncludesGet::TYPE;
+    }
 
-}
+    void TestIncludesGet::serialize_xml(SerializerXml& serializer) const
+    {
 
-void TestIncludesGet::deserialize_xml(DeserializerXml& deserializer)
-{
+    }
 
-}
+    void TestIncludesGet::deserialize_xml(DeserializerXml& deserializer)
+    {
 
-void TestIncludesGet::serialize_json(SerializerJson& serializer) const
-{
+    }
 
-}
+    void TestIncludesGet::serialize_json(SerializerJson& serializer) const
+    {
 
-void TestIncludesGet::deserialize_json(DeserializerJson& deserializer)
-{
+    }
 
-}
+    void TestIncludesGet::deserialize_json(DeserializerJson& deserializer)
+    {
+
+    }
 
 } // namespace mg

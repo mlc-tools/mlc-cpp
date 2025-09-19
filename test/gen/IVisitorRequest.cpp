@@ -14,62 +14,60 @@ namespace mg
 {
     const std::string IVisitorRequest::TYPE("IVisitorRequest");
 
-    
     IVisitorRequest::IVisitorRequest()
     {
-    
+
     }
 
     IVisitorRequest::~IVisitorRequest(){}
 
+    bool IVisitorRequest::operator ==(const IVisitorRequest& rhs) const
+    {
+        bool result = true;
+        return result;
+    }
 
-bool IVisitorRequest::operator ==(const IVisitorRequest& rhs) const
-{
-bool result = true;
-return result;
-}
+    bool IVisitorRequest::operator !=(const IVisitorRequest& rhs) const
+    {
 
-bool IVisitorRequest::operator !=(const IVisitorRequest& rhs) const
-{
+        return !(*this == rhs);
+    }
 
-return !(*this == rhs);
-}
+    IVisitorRequest::IVisitorRequest(const IVisitorRequest& rhs)
+    {
 
- IVisitorRequest::IVisitorRequest(const IVisitorRequest& rhs)
-{
+        this->operator=(rhs);
+    }
 
-this->operator=(rhs);
-}
+    const IVisitorRequest& IVisitorRequest::operator =(const IVisitorRequest& rhs)
+    {
 
-const IVisitorRequest& IVisitorRequest::operator =(const IVisitorRequest& rhs)
-{
+        return *this;
+    }
 
-return *this;
-}
+    std::string IVisitorRequest::get_type() const
+    {
+        return IVisitorRequest::TYPE;
+    }
 
-std::string IVisitorRequest::get_type() const
-{
-return IVisitorRequest::TYPE;
-}
+    void IVisitorRequest::serialize_xml(SerializerXml& serializer) const
+    {
 
-void IVisitorRequest::serialize_xml(SerializerXml& serializer) const
-{
+    }
 
-}
+    void IVisitorRequest::deserialize_xml(DeserializerXml& deserializer)
+    {
 
-void IVisitorRequest::deserialize_xml(DeserializerXml& deserializer)
-{
+    }
 
-}
+    void IVisitorRequest::serialize_json(SerializerJson& serializer) const
+    {
 
-void IVisitorRequest::serialize_json(SerializerJson& serializer) const
-{
+    }
 
-}
+    void IVisitorRequest::deserialize_json(DeserializerJson& deserializer)
+    {
 
-void IVisitorRequest::deserialize_json(DeserializerJson& deserializer)
-{
-
-}
+    }
 
 } // namespace mg

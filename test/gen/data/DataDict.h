@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-
 namespace mg
 {
     class SerializerXml;
@@ -16,31 +15,30 @@ namespace mg
     class SerializerJson;
     class DeserializerJson;
 
-
     class DataDict
     {
     public:
         DataDict();
         ~DataDict();
-void retain();
-int release();
-bool operator ==(const DataDict& rhs) const;
-bool operator !=(const DataDict& rhs) const;
- DataDict(const DataDict& rhs);
-const DataDict& operator =(const DataDict& rhs);
-std::string get_type() const;
-void serialize_xml(SerializerXml& serializer) const;
-void deserialize_xml(DeserializerXml& deserializer);
-void serialize_json(SerializerJson& serializer) const;
-void deserialize_json(DeserializerJson& deserializer);
+        void retain();
+        int release();
+        bool operator ==(const DataDict& rhs) const;
+        bool operator !=(const DataDict& rhs) const;
+        DataDict(const DataDict& rhs);
+        const DataDict& operator =(const DataDict& rhs);
+        std::string get_type() const;
+        void serialize_xml(SerializerXml& serializer) const;
+        void deserialize_xml(DeserializerXml& deserializer);
+        void serialize_json(SerializerJson& serializer) const;
+        void deserialize_json(DeserializerJson& deserializer);
 
-std::string name;
-std::string string_with_def_value;
-std::map<Resource, int> resources;
-private:
-int _reference_counter;
-public:
-static const std::string TYPE;
+        std::string name;
+        std::string string_with_def_value;
+        std::map<Resource, int> resources;
+    private:
+        int _reference_counter;
+    public:
+        static const std::string TYPE;
 
     };
 } // namespace mg

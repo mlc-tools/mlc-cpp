@@ -14,27 +14,25 @@ namespace mg
 {
     const std::string TestCase::TYPE("TestCase");
 
-    
     TestCase::TestCase()
     : logger(nullptr)
-, result(true)
-, _reference_counter(1)
-{
-    
+    , result(true)
+    , _reference_counter(1)
+    {
+
     }
 
     TestCase::~TestCase(){}
 
-
-void TestCase::initialize(Logger* logger)
-{
+    void TestCase::initialize(Logger* logger)
+    {
 
         this->logger = logger;
-    
-}
 
-void TestCase::add_result(bool result, const std::string& message)
-{
+    }
+
+    void TestCase::add_result(bool result, const std::string& message)
+    {
 
         if(this->result && !result)
         {
@@ -45,93 +43,93 @@ void TestCase::add_result(bool result, const std::string& message)
             this->logger->message(" - Failed: " + message);
         }
         this->result = this->result && result;
-    
-}
 
-void TestCase::assertTrue(bool expression, const std::string& message)
-{
+    }
+
+    void TestCase::assertTrue(bool expression, const std::string& message)
+    {
 
         this->add_result(expression, message);
-    
-}
 
-void TestCase::assertFalse(bool expression, const std::string& message)
-{
+    }
+
+    void TestCase::assertFalse(bool expression, const std::string& message)
+    {
 
         this->add_result(!expression, message);
-    
-}
 
-void TestCase::retain()
-{
-++this->_reference_counter;
-}
+    }
 
-int TestCase::release()
-{
+    void TestCase::retain()
+    {
+        ++this->_reference_counter;
+    }
 
---this->_reference_counter;
-auto counter = this->_reference_counter;
-if(counter == 0)
-{
-    delete this;
-}
-return counter;
+    int TestCase::release()
+    {
 
-}
+        --this->_reference_counter;
+        auto counter = this->_reference_counter;
+        if(counter == 0)
+        {
+            delete this;
+        }
+        return counter;
 
-bool TestCase::operator ==(const TestCase& rhs) const
-{
-bool result = true;
-result = result && ((this->logger == rhs.logger) || (this->logger != nullptr && rhs.logger != nullptr && *this->logger == *rhs.logger));
-result = result && this->result == rhs.result;
-return result;
-}
+    }
 
-bool TestCase::operator !=(const TestCase& rhs) const
-{
+    bool TestCase::operator ==(const TestCase& rhs) const
+    {
+        bool result = true;
+        result = result && ((this->logger == rhs.logger) || (this->logger != nullptr && rhs.logger != nullptr && *this->logger == *rhs.logger));
+        result = result && this->result == rhs.result;
+        return result;
+    }
 
-return !(*this == rhs);
-}
+    bool TestCase::operator !=(const TestCase& rhs) const
+    {
 
- TestCase::TestCase(const TestCase& rhs)
-{
+        return !(*this == rhs);
+    }
 
-this->operator=(rhs);
-}
+    TestCase::TestCase(const TestCase& rhs)
+    {
 
-const TestCase& TestCase::operator =(const TestCase& rhs)
-{
+        this->operator=(rhs);
+    }
 
-this->logger = rhs.logger;
-this->result = rhs.result;
-this->_reference_counter = rhs._reference_counter;
-return *this;
-}
+    const TestCase& TestCase::operator =(const TestCase& rhs)
+    {
 
-std::string TestCase::get_type() const
-{
-return TestCase::TYPE;
-}
+        this->logger = rhs.logger;
+        this->result = rhs.result;
+        this->_reference_counter = rhs._reference_counter;
+        return *this;
+    }
 
-void TestCase::serialize_xml(SerializerXml& serializer) const
-{
+    std::string TestCase::get_type() const
+    {
+        return TestCase::TYPE;
+    }
 
-}
+    void TestCase::serialize_xml(SerializerXml& serializer) const
+    {
 
-void TestCase::deserialize_xml(DeserializerXml& deserializer)
-{
+    }
 
-}
+    void TestCase::deserialize_xml(DeserializerXml& deserializer)
+    {
 
-void TestCase::serialize_json(SerializerJson& serializer) const
-{
+    }
 
-}
+    void TestCase::serialize_json(SerializerJson& serializer) const
+    {
 
-void TestCase::deserialize_json(DeserializerJson& deserializer)
-{
+    }
 
-}
+    void TestCase::deserialize_json(DeserializerJson& deserializer)
+    {
+
+    }
 
 } // namespace mg

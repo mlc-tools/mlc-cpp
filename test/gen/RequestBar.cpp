@@ -12,69 +12,67 @@ namespace mg
 {
     const std::string RequestBar::TYPE("RequestBar");
 
-    
     RequestBar::RequestBar()
     {
-    
+
     }
 
     RequestBar::~RequestBar(){}
 
+    void RequestBar::accept(IVisitorRequest* visitor)
+    {
+        visitor->visit(this);
+    }
 
-void RequestBar::accept(IVisitorRequest* visitor)
-{
-visitor->visit(this);
-}
+    bool RequestBar::operator ==(const RequestBar& rhs) const
+    {
 
-bool RequestBar::operator ==(const RequestBar& rhs) const
-{
+        bool result = this->Request::operator ==(rhs);
+        return result;
+    }
 
-bool result = this->Request::operator ==(rhs);
-return result;
-}
+    bool RequestBar::operator !=(const RequestBar& rhs) const
+    {
 
-bool RequestBar::operator !=(const RequestBar& rhs) const
-{
+        return !(*this == rhs);
+    }
 
-return !(*this == rhs);
-}
+    RequestBar::RequestBar(const RequestBar& rhs)
+    {
 
- RequestBar::RequestBar(const RequestBar& rhs)
-{
+        this->operator=(rhs);
+    }
 
-this->operator=(rhs);
-}
+    const RequestBar& RequestBar::operator =(const RequestBar& rhs)
+    {
 
-const RequestBar& RequestBar::operator =(const RequestBar& rhs)
-{
+        this->Request::operator=(rhs);
+        return *this;
+    }
 
-this->Request::operator=(rhs);
-return *this;
-}
+    std::string RequestBar::get_type() const
+    {
+        return RequestBar::TYPE;
+    }
 
-std::string RequestBar::get_type() const
-{
-return RequestBar::TYPE;
-}
+    void RequestBar::serialize_xml(SerializerXml& serializer) const
+    {
 
-void RequestBar::serialize_xml(SerializerXml& serializer) const
-{
+    }
 
-}
+    void RequestBar::deserialize_xml(DeserializerXml& deserializer)
+    {
 
-void RequestBar::deserialize_xml(DeserializerXml& deserializer)
-{
+    }
 
-}
+    void RequestBar::serialize_json(SerializerJson& serializer) const
+    {
 
-void RequestBar::serialize_json(SerializerJson& serializer) const
-{
+    }
 
-}
+    void RequestBar::deserialize_json(DeserializerJson& deserializer)
+    {
 
-void RequestBar::deserialize_json(DeserializerJson& deserializer)
-{
-
-}
+    }
 
 } // namespace mg

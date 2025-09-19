@@ -13,18 +13,16 @@ namespace mg
 {
     const std::string TestIntrusive::TYPE("TestIntrusive");
 
-    
     TestIntrusive::TestIntrusive()
     : pointers()
-{
-    
+    {
+
     }
 
     TestIntrusive::~TestIntrusive(){}
 
-
-void TestIntrusive::test_add_self_to_list()
-{
+    void TestIntrusive::test_add_self_to_list()
+    {
 
         auto a = make_intrusive<Intrusive>();
         auto b = make_intrusive<Intrusive>();
@@ -41,65 +39,65 @@ void TestIntrusive::test_add_self_to_list()
         list_remove(this->pointers, nullptr);
 
         this->assertEqual(list_size(this->pointers), 1, "list size == 1");
-    
-}
 
-void TestIntrusive::test_remove_self_from_list()
-{
+    }
 
-}
+    void TestIntrusive::test_remove_self_from_list()
+    {
 
-bool TestIntrusive::operator ==(const TestIntrusive& rhs) const
-{
+    }
 
-bool result = this->ITestIntrusive::operator ==(rhs);
-result = result && this->pointers == rhs.pointers;
-return result;
-}
+    bool TestIntrusive::operator ==(const TestIntrusive& rhs) const
+    {
 
-bool TestIntrusive::operator !=(const TestIntrusive& rhs) const
-{
+        bool result = this->ITestIntrusive::operator ==(rhs);
+        result = result && this->pointers == rhs.pointers;
+        return result;
+    }
 
-return !(*this == rhs);
-}
+    bool TestIntrusive::operator !=(const TestIntrusive& rhs) const
+    {
 
- TestIntrusive::TestIntrusive(const TestIntrusive& rhs)
-{
+        return !(*this == rhs);
+    }
 
-this->operator=(rhs);
-}
+    TestIntrusive::TestIntrusive(const TestIntrusive& rhs)
+    {
 
-const TestIntrusive& TestIntrusive::operator =(const TestIntrusive& rhs)
-{
+        this->operator=(rhs);
+    }
 
-this->ITestIntrusive::operator=(rhs);
-this->pointers = rhs.pointers;
-return *this;
-}
+    const TestIntrusive& TestIntrusive::operator =(const TestIntrusive& rhs)
+    {
 
-std::string TestIntrusive::get_type() const
-{
-return TestIntrusive::TYPE;
-}
+        this->ITestIntrusive::operator=(rhs);
+        this->pointers = rhs.pointers;
+        return *this;
+    }
 
-void TestIntrusive::serialize_xml(SerializerXml& serializer) const
-{
-serializer.serialize(pointers, "pointers");
-}
+    std::string TestIntrusive::get_type() const
+    {
+        return TestIntrusive::TYPE;
+    }
 
-void TestIntrusive::deserialize_xml(DeserializerXml& deserializer)
-{
-deserializer.deserialize(pointers, "pointers");
-}
+    void TestIntrusive::serialize_xml(SerializerXml& serializer) const
+    {
+        serializer.serialize(pointers, "pointers");
+    }
 
-void TestIntrusive::serialize_json(SerializerJson& serializer) const
-{
-serializer.serialize(pointers, "pointers");
-}
+    void TestIntrusive::deserialize_xml(DeserializerXml& deserializer)
+    {
+        deserializer.deserialize(pointers, "pointers");
+    }
 
-void TestIntrusive::deserialize_json(DeserializerJson& deserializer)
-{
-deserializer.deserialize(pointers, "pointers");
-}
+    void TestIntrusive::serialize_json(SerializerJson& serializer) const
+    {
+        serializer.serialize(pointers, "pointers");
+    }
+
+    void TestIntrusive::deserialize_json(DeserializerJson& deserializer)
+    {
+        deserializer.deserialize(pointers, "pointers");
+    }
 
 } // namespace mg

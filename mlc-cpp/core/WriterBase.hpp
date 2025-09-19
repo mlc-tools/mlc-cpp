@@ -65,4 +65,7 @@ protected:
 public:
     std::string prepareFile(const std::string &text) const;
     std::string prepareFileCodeStylePhp(const std::string &text) const;
+    // Indentation similar to original Python writer (4 spaces per tab),
+    // with handling of 'public:/protected:/private:' blocks and braces.
+    std::string prepareFileCodeStyleCpp(const std::string &text) const;
 };

@@ -11,70 +11,68 @@ namespace mg
 {
     const std::string ITestDataListListBool::TYPE("ITestDataListListBool");
 
-    
     ITestDataListListBool::ITestDataListListBool()
     {
-    
+
     }
 
     ITestDataListListBool::~ITestDataListListBool(){}
 
+    void ITestDataListListBool::execute()
+    {
+        this->test_foo();
 
-void ITestDataListListBool::execute()
-{
-this->test_foo();
+    }
 
-}
+    bool ITestDataListListBool::operator ==(const ITestDataListListBool& rhs) const
+    {
 
-bool ITestDataListListBool::operator ==(const ITestDataListListBool& rhs) const
-{
+        bool result = true;
+        return result;
+    }
 
-bool result = true;
-return result;
-}
+    bool ITestDataListListBool::operator !=(const ITestDataListListBool& rhs) const
+    {
 
-bool ITestDataListListBool::operator !=(const ITestDataListListBool& rhs) const
-{
+        return !(*this == rhs);
+    }
 
-return !(*this == rhs);
-}
+    ITestDataListListBool::ITestDataListListBool(const ITestDataListListBool& rhs)
+    {
 
- ITestDataListListBool::ITestDataListListBool(const ITestDataListListBool& rhs)
-{
+        this->operator=(rhs);
+    }
 
-this->operator=(rhs);
-}
+    const ITestDataListListBool& ITestDataListListBool::operator =(const ITestDataListListBool& rhs)
+    {
 
-const ITestDataListListBool& ITestDataListListBool::operator =(const ITestDataListListBool& rhs)
-{
+        this->TestCase::operator=(rhs);
+        return *this;
+    }
 
-this->TestCase::operator=(rhs);
-return *this;
-}
+    std::string ITestDataListListBool::get_type() const
+    {
+        return ITestDataListListBool::TYPE;
+    }
 
-std::string ITestDataListListBool::get_type() const
-{
-return ITestDataListListBool::TYPE;
-}
+    void ITestDataListListBool::serialize_xml(SerializerXml& serializer) const
+    {
 
-void ITestDataListListBool::serialize_xml(SerializerXml& serializer) const
-{
+    }
 
-}
+    void ITestDataListListBool::deserialize_xml(DeserializerXml& deserializer)
+    {
 
-void ITestDataListListBool::deserialize_xml(DeserializerXml& deserializer)
-{
+    }
 
-}
+    void ITestDataListListBool::serialize_json(SerializerJson& serializer) const
+    {
 
-void ITestDataListListBool::serialize_json(SerializerJson& serializer) const
-{
+    }
 
-}
+    void ITestDataListListBool::deserialize_json(DeserializerJson& deserializer)
+    {
 
-void ITestDataListListBool::deserialize_json(DeserializerJson& deserializer)
-{
-
-}
+    }
 
 } // namespace mg

@@ -11,71 +11,69 @@ namespace mg
 {
     const std::string ITestTemplateMethod::TYPE("ITestTemplateMethod");
 
-    
     ITestTemplateMethod::ITestTemplateMethod()
     {
-    
+
     }
 
     ITestTemplateMethod::~ITestTemplateMethod(){}
 
+    void ITestTemplateMethod::execute()
+    {
+        this->test_get();
+        this->test_default();
 
-void ITestTemplateMethod::execute()
-{
-this->test_get();
-this->test_default();
+    }
 
-}
+    bool ITestTemplateMethod::operator ==(const ITestTemplateMethod& rhs) const
+    {
 
-bool ITestTemplateMethod::operator ==(const ITestTemplateMethod& rhs) const
-{
+        bool result = true;
+        return result;
+    }
 
-bool result = true;
-return result;
-}
+    bool ITestTemplateMethod::operator !=(const ITestTemplateMethod& rhs) const
+    {
 
-bool ITestTemplateMethod::operator !=(const ITestTemplateMethod& rhs) const
-{
+        return !(*this == rhs);
+    }
 
-return !(*this == rhs);
-}
+    ITestTemplateMethod::ITestTemplateMethod(const ITestTemplateMethod& rhs)
+    {
 
- ITestTemplateMethod::ITestTemplateMethod(const ITestTemplateMethod& rhs)
-{
+        this->operator=(rhs);
+    }
 
-this->operator=(rhs);
-}
+    const ITestTemplateMethod& ITestTemplateMethod::operator =(const ITestTemplateMethod& rhs)
+    {
 
-const ITestTemplateMethod& ITestTemplateMethod::operator =(const ITestTemplateMethod& rhs)
-{
+        this->TestCase::operator=(rhs);
+        return *this;
+    }
 
-this->TestCase::operator=(rhs);
-return *this;
-}
+    std::string ITestTemplateMethod::get_type() const
+    {
+        return ITestTemplateMethod::TYPE;
+    }
 
-std::string ITestTemplateMethod::get_type() const
-{
-return ITestTemplateMethod::TYPE;
-}
+    void ITestTemplateMethod::serialize_xml(SerializerXml& serializer) const
+    {
 
-void ITestTemplateMethod::serialize_xml(SerializerXml& serializer) const
-{
+    }
 
-}
+    void ITestTemplateMethod::deserialize_xml(DeserializerXml& deserializer)
+    {
 
-void ITestTemplateMethod::deserialize_xml(DeserializerXml& deserializer)
-{
+    }
 
-}
+    void ITestTemplateMethod::serialize_json(SerializerJson& serializer) const
+    {
 
-void ITestTemplateMethod::serialize_json(SerializerJson& serializer) const
-{
+    }
 
-}
+    void ITestTemplateMethod::deserialize_json(DeserializerJson& deserializer)
+    {
 
-void ITestTemplateMethod::deserialize_json(DeserializerJson& deserializer)
-{
-
-}
+    }
 
 } // namespace mg

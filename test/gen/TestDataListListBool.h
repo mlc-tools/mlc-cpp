@@ -7,7 +7,6 @@
 #include "tests/ITestDataListListBool.h"
 #include <string>
 
-
 namespace mg
 {
     class SerializerXml;
@@ -15,24 +14,23 @@ namespace mg
     class SerializerJson;
     class DeserializerJson;
 
-
     class TestDataListListBool : public ITestDataListListBool
     {
     public:
         TestDataListListBool();
         ~TestDataListListBool();
-void test_foo();
-bool operator ==(const TestDataListListBool& rhs) const;
-bool operator !=(const TestDataListListBool& rhs) const;
- TestDataListListBool(const TestDataListListBool& rhs);
-const TestDataListListBool& operator =(const TestDataListListBool& rhs);
-virtual std::string get_type() const override;
-virtual void serialize_xml(SerializerXml& serializer) const override;
-virtual void deserialize_xml(DeserializerXml& deserializer) override;
-virtual void serialize_json(SerializerJson& serializer) const override;
-virtual void deserialize_json(DeserializerJson& deserializer) override;
+        void test_foo();
+        bool operator ==(const TestDataListListBool& rhs) const;
+        bool operator !=(const TestDataListListBool& rhs) const;
+        TestDataListListBool(const TestDataListListBool& rhs);
+        const TestDataListListBool& operator =(const TestDataListListBool& rhs);
+        virtual std::string get_type() const override;
+        virtual void serialize_xml(SerializerXml& serializer) const override;
+        virtual void deserialize_xml(DeserializerXml& deserializer) override;
+        virtual void serialize_json(SerializerJson& serializer) const override;
+        virtual void deserialize_json(DeserializerJson& deserializer) override;
 
-static const std::string TYPE;
+        static const std::string TYPE;
 
     };
 } // namespace mg

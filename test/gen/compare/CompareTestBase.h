@@ -6,7 +6,6 @@
 #include "pugixml/pugixml.hpp"
 #include <string>
 
-
 namespace mg
 {
     class SerializerXml;
@@ -14,29 +13,28 @@ namespace mg
     class SerializerJson;
     class DeserializerJson;
 
-
     class CompareTestBase
     {
     public:
         CompareTestBase();
         ~CompareTestBase();
-void retain();
-int release();
-bool operator ==(const CompareTestBase& rhs) const;
-bool operator !=(const CompareTestBase& rhs) const;
- CompareTestBase(const CompareTestBase& rhs);
-const CompareTestBase& operator =(const CompareTestBase& rhs);
-virtual std::string get_type() const;
-virtual void serialize_xml(SerializerXml& serializer) const;
-virtual void deserialize_xml(DeserializerXml& deserializer);
-virtual void serialize_json(SerializerJson& serializer) const;
-virtual void deserialize_json(DeserializerJson& deserializer);
+        void retain();
+        int release();
+        bool operator ==(const CompareTestBase& rhs) const;
+        bool operator !=(const CompareTestBase& rhs) const;
+        CompareTestBase(const CompareTestBase& rhs);
+        const CompareTestBase& operator =(const CompareTestBase& rhs);
+        virtual std::string get_type() const;
+        virtual void serialize_xml(SerializerXml& serializer) const;
+        virtual void deserialize_xml(DeserializerXml& deserializer);
+        virtual void serialize_json(SerializerJson& serializer) const;
+        virtual void deserialize_json(DeserializerJson& deserializer);
 
-int id;
-private:
-int _reference_counter;
-public:
-static const std::string TYPE;
+        int id;
+    private:
+        int _reference_counter;
+    public:
+        static const std::string TYPE;
 
     };
 } // namespace mg

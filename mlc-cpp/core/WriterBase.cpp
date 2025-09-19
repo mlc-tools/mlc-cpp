@@ -220,3 +220,64 @@ std::string WriterBase::prepareFileCodeStylePhp(const std::string &text) const {
     }
     return out;
 }
+
+std::string WriterBase::prepareFileCodeStyleCpp(const std::string &text) const {
+    int tabs = 0;
+    std::ostringstream out;
+    std::istringstream iss(text);
+    std::string line;
+
+    auto trim = [](std::string s) {
+        // trim left
+        size_t start = 0;
+        while (start < s.size() && std::isspace(static_cast<unsigned char>(s[start])))
+            ++start;
+        size_t end = s.size();
+        while (end > start && std::isspace(static_cast<unsigned char>(s[end-1])))
+            --end;
+        return s.substr(start, end - start);
+    };
+
+    auto indent = [](int count) {
+        if (count <= 0) return std::string();
+        return std::string(static_cast<size_t>(count) * 4, ' ');
+    };
+
+    while (std::getline(iss, line)) {
+        std::string stripped = trim(line);
+
+        bool backward = false;
+        if (!stripped.empty() && stripped.front() == '}') {
+            --tabs;
+        } else if (stripped.find("public:") != std::string::npos ||
+                   stripped.find("protected:") != std::string::npos ||
+                   stripped.find("private:") != std::string::npos) {
+            backward = true;
+            --tabs;
+        }
+        if (tabs < 0) tabs = 0;
+
+        std::string toWrite;
+        if (!stripped.empty()) {
+            toWrite = indent(tabs) + stripped;
+        } // else keep empty line as is
+        if (backward) ++tabs;
+        if (!stripped.empty() && stripped.front() == '{') ++tabs;
+
+        out << toWrite << '\n';
+    }
+
+    std::string prepared = out.str();
+    // strip leading/trailing whitespace
+    prepared = std::regex_replace(prepared, std::regex("^\\s+|\\s+$"), "");
+    // collapse triple newlines to double
+    for (;;) {
+        auto before = prepared.size();
+        replace_all(prepared, "\n\n\n", "\n\n");
+        if (prepared.size() == before) break;
+    }
+    prepared.push_back('\n');
+
+    // Then apply base prepareFile like the Python code
+    return prepareFile(prepared);
+}
