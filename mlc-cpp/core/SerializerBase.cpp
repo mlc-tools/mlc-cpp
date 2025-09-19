@@ -60,6 +60,9 @@ void SerializerBase::createSerializationFunction(Class &cls,
     if(cls.has_method(methodName))
        return;
     
+    if(cls.name == "CloneObject2")
+        std::cout << "";
+    
     // Prepare new Function
     Function fn;
     fn.name        = methodName;
@@ -78,13 +81,13 @@ void SerializerBase::createSerializationFunction(Class &cls,
         cls.type != "enum" &&
         cls.parent.lock()->type != "enum")
     {
-        // use replace_all
-//        body += fmt::format(
-//            getParentSerializeCall(),
-//            cls.superclasses.front()->name,
-//            methodName,
-//            fn.args.front().first
-//        );
+//         use replace_all
+        body += format_indexes(
+            getParentSerializeCall(),
+            cls.parent_class_name,
+            methodName,
+            fn.callable_args.at(0).name
+        );
     }
 
     // Per-member ops

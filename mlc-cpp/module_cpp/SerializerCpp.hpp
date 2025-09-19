@@ -21,7 +21,7 @@ protected:
     ProtocolMap getProtocolMap(const std::string &format) const;
 
     std::string getParentSerializeCall() const override {
-        return "{}::{}({});\n";
+        return "{0}::{1}({2});\n";
     }
     virtual std::string getProtocolText(const std::string &format) override;
     Object getSerializationFunctionArg(SerializationType t, const std::string &format) const override;
