@@ -41,6 +41,7 @@
 		EF1658D82E3B392800573EEE /* TranslatorCpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1658D72E3B392800573EEE /* TranslatorCpp.cpp */; };
 		EF1658DB2E3B8AB400573EEE /* GeneratorObserverCpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1658DA2E3B8AB400573EEE /* GeneratorObserverCpp.cpp */; };
 		EF1E96782E7D1D6B0090F967 /* tests_regex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1E96772E7D1D640090F967 /* tests_regex.cpp */; };
+		EF1E967B2E7D463C0090F967 /* Registrar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1E967A2E7D463C0090F967 /* Registrar.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -126,6 +127,8 @@
 		EF1658D92E3B8AB400573EEE /* GeneratorObserverCpp.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GeneratorObserverCpp.hpp; sourceTree = "<group>"; };
 		EF1658DA2E3B8AB400573EEE /* GeneratorObserverCpp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GeneratorObserverCpp.cpp; sourceTree = "<group>"; };
 		EF1E96772E7D1D640090F967 /* tests_regex.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tests_regex.cpp; sourceTree = "<group>"; };
+		EF1E96792E7D463C0090F967 /* Registrar.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Registrar.hpp; sourceTree = "<group>"; };
+		EF1E967A2E7D463C0090F967 /* Registrar.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Registrar.cpp; sourceTree = "<group>"; };
 		EF9A0EDE2E35B55500D4FCEA /* mlc-cpp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "mlc-cpp"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -143,6 +146,8 @@
 		EF0F7E7A2E37190D0039F169 /* core */ = {
 			isa = PBXGroup;
 			children = (
+				EF1E96792E7D463C0090F967 /* Registrar.hpp */,
+				EF1E967A2E7D463C0090F967 /* Registrar.cpp */,
 				EF0F7E762E37190D0039F169 /* Linker.hpp */,
 				EF0F7E772E37190D0039F169 /* Linker.cpp */,
 				EF0F7E782E37190D0039F169 /* Parser.hpp */,
@@ -356,6 +361,7 @@
 				EF0F7E9F2E3769610039F169 /* Mlc.cpp in Sources */,
 				EF0F7E8D2E37190D0039F169 /* Function.cpp in Sources */,
 				EF1658D52E3B35AF00573EEE /* TranslatorBase.cpp in Sources */,
+				EF1E967B2E7D463C0090F967 /* Registrar.cpp in Sources */,
 				EF0F7E8E2E37190D0039F169 /* Linker.cpp in Sources */,
 				EF0F7E8F2E37190D0039F169 /* Object.cpp in Sources */,
 				EF0F7E902E37190D0039F169 /* Model.cpp in Sources */,

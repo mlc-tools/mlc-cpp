@@ -8,6 +8,7 @@
 #include "Mlc.hpp"
 
 #include "CircularReference.hpp"
+#include "Registrar.hpp"
 //#include "Validator.hpp"
 //#include "DataParser.hpp"
 //#include "Language.hpp"
@@ -100,9 +101,8 @@ void Mlc::generate() {
     // 6. Пользовательский генератор
 //    runUserGeneratorInternal();
 
-    // 7. Регистрация, если есть
-//    if (auto registrar = language.getRegistrar())
-//        registrar->generate(_model);
+    // 7. Регистрация: создаём Registrar.h/.cpp только когда авто-регистрация выключена
+    Registrar().generate(_model);
 
     // 8. Проверка циклических ссылок
     CircularReference(_model).find();

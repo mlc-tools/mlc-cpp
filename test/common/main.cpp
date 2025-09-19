@@ -21,7 +21,7 @@
 #include "AllTests.h"
 #include "tests/Logger.h"
 #include "tests/RunAllTests.h"
-//#include "Registrar.h"
+#include "Registrar.h"
 #include "SerializerCommon.h"
 #include "Observable.h"
 
@@ -124,7 +124,7 @@ int main(int argc, char ** args)
     {
         root = args[1];
     }
-//    mg::register_classes();
+    mg::register_classes();
 
 	auto result = true;
 	initialize_data_storage();
