@@ -22,6 +22,9 @@ namespace mg
         ITestFooEnumTestParent();
         virtual ~ITestFooEnumTestParent();
 virtual void test_dummy() = 0;
+virtual void test_compare() = 0;
+virtual void test_initialize() = 0;
+virtual void test_enum_with_int_values() = 0;
 void execute();
 bool operator ==(const ITestFooEnumTestParent& rhs) const;
 bool operator !=(const ITestFooEnumTestParent& rhs) const;

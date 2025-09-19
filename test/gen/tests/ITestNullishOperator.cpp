@@ -23,6 +23,8 @@ namespace mg
 void ITestNullishOperator::execute()
 {
 this->test_dummy_function();
+this->test_nullish_coalescing_operator();
+
 }
 
 bool ITestNullishOperator::operator ==(const ITestNullishOperator& rhs) const

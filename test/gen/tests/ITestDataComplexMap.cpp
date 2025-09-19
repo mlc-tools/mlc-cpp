@@ -23,6 +23,8 @@ namespace mg
 void ITestDataComplexMap::execute()
 {
 this->test_foo();
+this->test_deserialize();
+
 }
 
 bool ITestDataComplexMap::operator ==(const ITestDataComplexMap& rhs) const

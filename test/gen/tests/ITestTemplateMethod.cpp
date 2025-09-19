@@ -23,6 +23,8 @@ namespace mg
 void ITestTemplateMethod::execute()
 {
 this->test_get();
+this->test_default();
+
 }
 
 bool ITestTemplateMethod::operator ==(const ITestTemplateMethod& rhs) const

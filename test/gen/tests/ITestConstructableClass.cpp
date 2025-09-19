@@ -22,6 +22,9 @@ namespace mg
 
 void ITestConstructableClass::execute()
 {
+this->test_constructor();
+this->test_constructor_with_args();
+this->test_constructor_with_args_2();
 
 }
 

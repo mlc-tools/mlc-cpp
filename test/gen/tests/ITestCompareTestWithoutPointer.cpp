@@ -23,6 +23,10 @@ namespace mg
 void ITestCompareTestWithoutPointer::execute()
 {
 this->test_test();
+this->test_operator_copy();
+this->test_without_pointer_compare();
+this->test_with_pointer_compare();
+
 }
 
 bool ITestCompareTestWithoutPointer::operator ==(const ITestCompareTestWithoutPointer& rhs) const

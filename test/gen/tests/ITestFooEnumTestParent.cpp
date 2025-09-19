@@ -23,6 +23,10 @@ namespace mg
 void ITestFooEnumTestParent::execute()
 {
 this->test_dummy();
+this->test_compare();
+this->test_initialize();
+this->test_enum_with_int_values();
+
 }
 
 bool ITestFooEnumTestParent::operator ==(const ITestFooEnumTestParent& rhs) const

@@ -20,7 +20,8 @@ namespace mg
     {
     public:
         ITestSerializeTest();
-        ~ITestSerializeTest();
+        virtual ~ITestSerializeTest();
+virtual void test_serialize_python() = 0;
 void execute();
 bool operator ==(const ITestSerializeTest& rhs) const;
 bool operator !=(const ITestSerializeTest& rhs) const;

@@ -7,4 +7,4 @@ namespace mg
     void register_classes();
 }
 
-#endif;
+#endif

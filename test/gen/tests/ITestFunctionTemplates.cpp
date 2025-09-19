@@ -22,7 +22,10 @@ namespace mg
 
 void ITestFunctionTemplates::execute()
 {
-this->test_add();this->test_use_other_class();
+this->test_add();
+this->test_use_other_class();
+this->test_add_strings();
+
 }
 
 bool ITestFunctionTemplates::operator ==(const ITestFunctionTemplates& rhs) const

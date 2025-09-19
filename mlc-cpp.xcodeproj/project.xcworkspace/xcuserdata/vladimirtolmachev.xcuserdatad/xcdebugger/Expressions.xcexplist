@@ -42,6 +42,9 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "TranslatorCpp::replaceByRegex:TranslatorCpp.cpp">
+      </ContextState>
+      <ContextState
          contextName = "ParserLexem::parse_member:ParserLexem.cpp">
       </ContextState>
       <ContextState
@@ -156,7 +159,16 @@
          contextName = "GeneratorUnitTestsInterface::generateTestInterface:GeneratorUnitTestsInterface.cpp">
          <PersistentStrings>
             <PersistentString
+               value = "impl-&gt;functions">
+            </PersistentString>
+            <PersistentString
+               value = "impl-&gt;name">
+            </PersistentString>
+            <PersistentString
                value = "cls-&gt;name">
+            </PersistentString>
+            <PersistentString
+               value = "test-&gt;name">
             </PersistentString>
          </PersistentStrings>
       </ContextState>
@@ -205,6 +217,9 @@
       </ContextState>
       <ContextState
          contextName = "ParserLexem::read_modifier:Parser.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "GeneratorUnitTestsInterface::addMethod:GeneratorUnitTestsInterface.cpp">
       </ContextState>
       <ContextState
          contextName = "Lexer::next:parser.cpp">

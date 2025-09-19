@@ -22,6 +22,13 @@ namespace mg
 
 void ITestObservableClass::execute()
 {
+this->test_1();
+this->test_notify_with_unsubscribe();
+this->test_listen_with_two();
+this->test_with_arg_int();
+this->test_with_arg_int_two();
+this->test_with_data();
+this->test_with_pointer();
 
 }
 

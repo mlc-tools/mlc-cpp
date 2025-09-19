@@ -20,7 +20,8 @@ namespace mg
     {
     public:
         ITestRequestAcceptor();
-        ~ITestRequestAcceptor();
+        virtual ~ITestRequestAcceptor();
+virtual void test_visitor() = 0;
 void execute();
 bool operator ==(const ITestRequestAcceptor& rhs) const;
 bool operator !=(const ITestRequestAcceptor& rhs) const;

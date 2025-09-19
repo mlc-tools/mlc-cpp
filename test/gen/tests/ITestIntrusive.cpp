@@ -22,7 +22,9 @@ namespace mg
 
 void ITestIntrusive::execute()
 {
-this->test_add_self_to_list();this->test_remove_self_from_list();
+this->test_add_self_to_list();
+this->test_remove_self_from_list();
+
 }
 
 bool ITestIntrusive::operator ==(const ITestIntrusive& rhs) const

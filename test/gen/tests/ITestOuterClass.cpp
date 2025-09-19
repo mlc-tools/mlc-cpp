@@ -22,7 +22,9 @@ namespace mg
 
 void ITestOuterClass::execute()
 {
-this->test_func();this->test_func2();
+this->test_func();
+this->test_func2();
+
 }
 
 bool ITestOuterClass::operator ==(const ITestOuterClass& rhs) const

@@ -20,7 +20,14 @@ namespace mg
     {
     public:
         ITestObservableClass();
-        ~ITestObservableClass();
+        virtual ~ITestObservableClass();
+virtual void test_1() = 0;
+virtual void test_notify_with_unsubscribe() = 0;
+virtual void test_listen_with_two() = 0;
+virtual void test_with_arg_int() = 0;
+virtual void test_with_arg_int_two() = 0;
+virtual void test_with_data() = 0;
+virtual void test_with_pointer() = 0;
 void execute();
 bool operator ==(const ITestObservableClass& rhs) const;
 bool operator !=(const ITestObservableClass& rhs) const;

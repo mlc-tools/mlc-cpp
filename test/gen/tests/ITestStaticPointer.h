@@ -20,7 +20,8 @@ namespace mg
     {
     public:
         ITestStaticPointer();
-        ~ITestStaticPointer();
+        virtual ~ITestStaticPointer();
+virtual void test_foo() = 0;
 void execute();
 bool operator ==(const ITestStaticPointer& rhs) const;
 bool operator !=(const ITestStaticPointer& rhs) const;

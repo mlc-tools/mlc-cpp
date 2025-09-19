@@ -22,6 +22,7 @@ namespace mg
         ITestNullishOperator();
         virtual ~ITestNullishOperator();
 virtual void test_dummy_function() = 0;
+virtual void test_nullish_coalescing_operator() = 0;
 void execute();
 bool operator ==(const ITestNullishOperator& rhs) const;
 bool operator !=(const ITestNullishOperator& rhs) const;

@@ -23,6 +23,7 @@ namespace mg
         virtual ~ITestFunctionTemplates();
 virtual void test_add() = 0;
 virtual void test_use_other_class() = 0;
+virtual void test_add_strings() = 0;
 void execute();
 bool operator ==(const ITestFunctionTemplates& rhs) const;
 bool operator !=(const ITestFunctionTemplates& rhs) const;

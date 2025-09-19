@@ -22,6 +22,7 @@ namespace mg
 
 void ITestStaticPointer::execute()
 {
+this->test_foo();
 
 }
 

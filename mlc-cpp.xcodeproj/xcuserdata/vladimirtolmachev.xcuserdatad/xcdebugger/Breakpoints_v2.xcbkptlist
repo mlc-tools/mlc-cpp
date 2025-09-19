@@ -167,52 +167,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "EA0F0007-110C-44B3-A82B-C960D2A2A7C1"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "mlc-cpp/core/GeneratorUnitTestsInterface.cpp"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "290"
-            endingLineNumber = "290"
-            landmarkName = "GeneratorUnitTestsInterface::generateMessagesIfEmpty(cls, method)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "EA0F0007-110C-44B3-A82B-C960D2A2A7C1 - 67c7e668707eebcf"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "GeneratorUnitTestsInterface::generateMessagesIfEmpty(std::__1::shared_ptr&lt;Class&gt; const&amp;, Function&amp;)"
-                  moduleName = "mlc-cpp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/vladimirtolmachev/Documents/xcode/mlc-cpp/mlc-cpp/core/GeneratorUnitTestsInterface.cpp"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "290"
-                  endingLineNumber = "290">
-               </Location>
-               <Location
-                  uuid = "EA0F0007-110C-44B3-A82B-C960D2A2A7C1 - 67c7e668707eebcf"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "GeneratorUnitTestsInterface::generateMessagesIfEmpty(std::__1::shared_ptr&lt;Class&gt; const&amp;, Function&amp;)"
-                  moduleName = "mlc-cpp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/vladimirtolmachev/Documents/xcode/mlc-cpp/mlc-cpp/core/GeneratorUnitTestsInterface.cpp"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "290"
-                  endingLineNumber = "290">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "8BD6580B-5779-4447-BA24-70DDBFDB9CAB"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -368,6 +322,22 @@
             endingLineNumber = "36"
             landmarkName = "build_cpp(ns, factory_header, includes, registrations)"
             landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "7C540EAD-0671-462B-A8DA-742309379092"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "mlc-cpp/core/GeneratorUnitTestsInterface.cpp"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "180"
+            endingLineNumber = "180"
+            landmarkName = "GeneratorUnitTestsInterface::generateTestInterface(cls)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

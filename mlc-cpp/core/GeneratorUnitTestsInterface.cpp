@@ -151,13 +151,9 @@ void GeneratorUnitTestsInterface::generateBaseClasses() {
 shared_ptr<Class>
 GeneratorUnitTestsInterface::generateTestInterface(const shared_ptr<Class>& cls) {
     // Пропускаем уже тестовые интерфейсы сами
-    if (cls->name.rfind("ITest", 0) == 0)
+    if (cls->name.find("ITest", 0) == 0)
         return nullptr;
     
-    if(cls->name == "SystemResources")
-    {
-        std::cout << "\n";
-    }
 
     string testName = "ITest" + cls->name;
     // нет наследников — пропускаем
@@ -178,10 +174,15 @@ GeneratorUnitTestsInterface::generateTestInterface(const shared_ptr<Class>& cls)
             addMethod(test, "test_" + f.name);
         }
     }
-
+    
+    if(cls->name == "ConstructableClass")
+    {
+        std::cout << "\n";
+    }
     // Если есть реальная реализация без I
-    if (_model->hasClass(cls->name)) {
-        auto impl = _model->get_class(cls->name);
+    std::string test_class_name = test->name.substr(1);
+    if (_model->hasClass(test_class_name)) {
+        auto impl = _model->get_class(test_class_name);
         for (auto &f : impl->functions) {
             if (f.name.find("test_", 0) == 0) {
                 // если нет в тестовом интерфейсе
@@ -207,7 +208,7 @@ GeneratorUnitTestsInterface::generateTestInterface(const shared_ptr<Class>& cls)
     exec.return_type = Objects::VOID;
     for (auto &mf : test->functions) {
         if (mf.name != "initialize" && mf.name != "execute") {
-            exec.body += "this->" + mf.name + "();";
+            exec.body += "this->" + mf.name + "();\n";
         }
     }
     test->functions.push_back(std::move(exec));
@@ -249,7 +250,8 @@ shared_ptr<Class> GeneratorUnitTestsInterface::generateAllTestsClass() {
     // Члены для каждого ITestX в tests_
     for (auto &t : tests_) {
         string bare = t->name.substr(1);  // убрать ведущий 'I'
-        if (!_model->hasClass(bare)) continue;
+        if (!_model->hasClass(bare))
+            continue;
         Object m;
         m.type = bare;
         m.name = getMemberName(bare);
@@ -263,7 +265,7 @@ shared_ptr<Class> GeneratorUnitTestsInterface::generateAllTestsClass() {
     init.callable_args.push_back(Object("Logger", "logger"));
     init.callable_args.back().is_pointer = true;
     for (auto &m : testAll->members) {
-        init.body += "this->" + m.name + ".initialize(logger);";
+        init.body += "this->" + m.name + ".initialize(logger);\n";
     }
     testAll->functions.push_back(std::move(init));
 
@@ -272,11 +274,11 @@ shared_ptr<Class> GeneratorUnitTestsInterface::generateAllTestsClass() {
     exec.name       = "execute";
     exec.return_type = Objects::BOOL;
     for (auto &m : testAll->members) {
-        exec.body +=  "this->" + m.name + ".execute();";
+        exec.body +=  "this->" + m.name + ".execute();\n";
     }
-    exec.body += "bool result = true;";
+    exec.body += "bool result = true;\n";
     for (auto &m : testAll->members) {
-        exec.body +=  "result = result && this->" + m.name + ".result;";
+        exec.body +=  "result = result && this->" + m.name + ".result;\n";
     }
     exec.body += "return result;";
     testAll->functions.push_back(std::move(exec));

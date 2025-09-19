@@ -27,7 +27,9 @@ void ITestClassMissingTestMethod::test_bar()
 
 void ITestClassMissingTestMethod::execute()
 {
-this->test_foo();this->test_bar();
+this->test_foo();
+this->test_bar();
+
 }
 
 bool ITestClassMissingTestMethod::operator ==(const ITestClassMissingTestMethod& rhs) const

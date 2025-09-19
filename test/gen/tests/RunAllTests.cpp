@@ -63,12 +63,73 @@ namespace mg
 
 void RunAllTests::initialize(Logger* logger)
 {
-this->test_request_acceptor.initialize(logger);this->test_data_complex_map.initialize(logger);this->test_data_list_list_bool.initialize(logger);this->test_static_pointer.initialize(logger);this->test_class_missing_test_method.initialize(logger);this->test_observable_class.initialize(logger);this->test_constructable_class.initialize(logger);this->test_translates.initialize(logger);this->test_nullish_operator.initialize(logger);this->test_intrusive.initialize(logger);this->test_data_dict.initialize(logger);this->test_serialize_test.initialize(logger);this->test_compare_test_without_pointer.initialize(logger);this->test_foo_enum_test_parent.initialize(logger);this->test_clone_object.initialize(logger);this->test_outer_class.initialize(logger);this->test_outer_class_inner_class.initialize(logger);this->test_function_templates.initialize(logger);this->test_template_method.initialize(logger);this->test_data_add.initialize(logger);
+this->test_request_acceptor.initialize(logger);
+this->test_data_complex_map.initialize(logger);
+this->test_data_list_list_bool.initialize(logger);
+this->test_static_pointer.initialize(logger);
+this->test_class_missing_test_method.initialize(logger);
+this->test_observable_class.initialize(logger);
+this->test_constructable_class.initialize(logger);
+this->test_translates.initialize(logger);
+this->test_nullish_operator.initialize(logger);
+this->test_intrusive.initialize(logger);
+this->test_data_dict.initialize(logger);
+this->test_serialize_test.initialize(logger);
+this->test_compare_test_without_pointer.initialize(logger);
+this->test_foo_enum_test_parent.initialize(logger);
+this->test_clone_object.initialize(logger);
+this->test_outer_class.initialize(logger);
+this->test_outer_class_inner_class.initialize(logger);
+this->test_function_templates.initialize(logger);
+this->test_template_method.initialize(logger);
+this->test_data_add.initialize(logger);
+
 }
 
 bool RunAllTests::execute()
 {
-this->test_request_acceptor.execute();this->test_data_complex_map.execute();this->test_data_list_list_bool.execute();this->test_static_pointer.execute();this->test_class_missing_test_method.execute();this->test_observable_class.execute();this->test_constructable_class.execute();this->test_translates.execute();this->test_nullish_operator.execute();this->test_intrusive.execute();this->test_data_dict.execute();this->test_serialize_test.execute();this->test_compare_test_without_pointer.execute();this->test_foo_enum_test_parent.execute();this->test_clone_object.execute();this->test_outer_class.execute();this->test_outer_class_inner_class.execute();this->test_function_templates.execute();this->test_template_method.execute();this->test_data_add.execute();bool result = true;result = result && this->test_request_acceptor.result;result = result && this->test_data_complex_map.result;result = result && this->test_data_list_list_bool.result;result = result && this->test_static_pointer.result;result = result && this->test_class_missing_test_method.result;result = result && this->test_observable_class.result;result = result && this->test_constructable_class.result;result = result && this->test_translates.result;result = result && this->test_nullish_operator.result;result = result && this->test_intrusive.result;result = result && this->test_data_dict.result;result = result && this->test_serialize_test.result;result = result && this->test_compare_test_without_pointer.result;result = result && this->test_foo_enum_test_parent.result;result = result && this->test_clone_object.result;result = result && this->test_outer_class.result;result = result && this->test_outer_class_inner_class.result;result = result && this->test_function_templates.result;result = result && this->test_template_method.result;result = result && this->test_data_add.result;return result;
+this->test_request_acceptor.execute();
+this->test_data_complex_map.execute();
+this->test_data_list_list_bool.execute();
+this->test_static_pointer.execute();
+this->test_class_missing_test_method.execute();
+this->test_observable_class.execute();
+this->test_constructable_class.execute();
+this->test_translates.execute();
+this->test_nullish_operator.execute();
+this->test_intrusive.execute();
+this->test_data_dict.execute();
+this->test_serialize_test.execute();
+this->test_compare_test_without_pointer.execute();
+this->test_foo_enum_test_parent.execute();
+this->test_clone_object.execute();
+this->test_outer_class.execute();
+this->test_outer_class_inner_class.execute();
+this->test_function_templates.execute();
+this->test_template_method.execute();
+this->test_data_add.execute();
+bool result = true;
+result = result && this->test_request_acceptor.result;
+result = result && this->test_data_complex_map.result;
+result = result && this->test_data_list_list_bool.result;
+result = result && this->test_static_pointer.result;
+result = result && this->test_class_missing_test_method.result;
+result = result && this->test_observable_class.result;
+result = result && this->test_constructable_class.result;
+result = result && this->test_translates.result;
+result = result && this->test_nullish_operator.result;
+result = result && this->test_intrusive.result;
+result = result && this->test_data_dict.result;
+result = result && this->test_serialize_test.result;
+result = result && this->test_compare_test_without_pointer.result;
+result = result && this->test_foo_enum_test_parent.result;
+result = result && this->test_clone_object.result;
+result = result && this->test_outer_class.result;
+result = result && this->test_outer_class_inner_class.result;
+result = result && this->test_function_templates.result;
+result = result && this->test_template_method.result;
+result = result && this->test_data_add.result;
+return result;
 }
 
 void RunAllTests::retain()

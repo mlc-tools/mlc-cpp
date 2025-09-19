@@ -20,7 +20,10 @@ namespace mg
     {
     public:
         ITestDataDict();
-        ~ITestDataDict();
+        virtual ~ITestDataDict();
+virtual void test_resources_in_map() = 0;
+virtual void test_resources_def_value() = 0;
+virtual void test_skills() = 0;
 void execute();
 bool operator ==(const ITestDataDict& rhs) const;
 bool operator !=(const ITestDataDict& rhs) const;

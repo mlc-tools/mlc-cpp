@@ -23,6 +23,7 @@ namespace mg
 void ITestDataListListBool::execute()
 {
 this->test_foo();
+
 }
 
 bool ITestDataListListBool::operator ==(const ITestDataListListBool& rhs) const

@@ -20,7 +20,10 @@ namespace mg
     {
     public:
         ITestConstructableClass();
-        ~ITestConstructableClass();
+        virtual ~ITestConstructableClass();
+virtual void test_constructor() = 0;
+virtual void test_constructor_with_args() = 0;
+virtual void test_constructor_with_args_2() = 0;
 void execute();
 bool operator ==(const ITestConstructableClass& rhs) const;
 bool operator !=(const ITestConstructableClass& rhs) const;

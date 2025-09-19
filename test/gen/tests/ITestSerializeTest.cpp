@@ -22,6 +22,7 @@ namespace mg
 
 void ITestSerializeTest::execute()
 {
+this->test_serialize_python();
 
 }
 

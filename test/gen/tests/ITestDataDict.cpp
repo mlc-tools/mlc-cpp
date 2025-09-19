@@ -22,6 +22,9 @@ namespace mg
 
 void ITestDataDict::execute()
 {
+this->test_resources_in_map();
+this->test_resources_def_value();
+this->test_skills();
 
 }
 

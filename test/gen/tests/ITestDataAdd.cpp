@@ -23,6 +23,7 @@ namespace mg
 void ITestDataAdd::execute()
 {
 this->test_test();
+
 }
 
 bool ITestDataAdd::operator ==(const ITestDataAdd& rhs) const

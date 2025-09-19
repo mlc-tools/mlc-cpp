@@ -22,6 +22,7 @@ namespace mg
         ITestDataComplexMap();
         virtual ~ITestDataComplexMap();
 virtual void test_foo() = 0;
+virtual void test_deserialize() = 0;
 void execute();
 bool operator ==(const ITestDataComplexMap& rhs) const;
 bool operator !=(const ITestDataComplexMap& rhs) const;

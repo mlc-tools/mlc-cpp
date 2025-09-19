@@ -22,6 +22,7 @@ namespace mg
         ITestTemplateMethod();
         virtual ~ITestTemplateMethod();
 virtual void test_get() = 0;
+virtual void test_default() = 0;
 void execute();
 bool operator ==(const ITestTemplateMethod& rhs) const;
 bool operator !=(const ITestTemplateMethod& rhs) const;

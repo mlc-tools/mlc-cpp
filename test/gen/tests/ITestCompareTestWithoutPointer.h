@@ -22,6 +22,9 @@ namespace mg
         ITestCompareTestWithoutPointer();
         virtual ~ITestCompareTestWithoutPointer();
 virtual void test_test() = 0;
+virtual void test_operator_copy() = 0;
+virtual void test_without_pointer_compare() = 0;
+virtual void test_with_pointer_compare() = 0;
 void execute();
 bool operator ==(const ITestCompareTestWithoutPointer& rhs) const;
 bool operator !=(const ITestCompareTestWithoutPointer& rhs) const;

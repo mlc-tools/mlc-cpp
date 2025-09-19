@@ -22,6 +22,7 @@ namespace mg
 
 void ITestRequestAcceptor::execute()
 {
+this->test_visitor();
 
 }
 

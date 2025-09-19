@@ -82,12 +82,6 @@
 #include "BarClassFromBase.h"
 #include "TestTemplateMethod.h"
 #include "DataAdd.h"
-#include "tests/ITestRequestAcceptor.h"
-#include "tests/ITestStaticPointer.h"
-#include "tests/ITestObservableClass.h"
-#include "tests/ITestConstructableClass.h"
-#include "tests/ITestDataDict.h"
-#include "tests/ITestSerializeTest.h"
 #include "tests/RunAllTests.h"
 #include "DataStorage.h"
 
@@ -174,12 +168,6 @@ void mg::register_classes()
     Factory::shared().registrationCommand<BarClassFromBase>(BarClassFromBase::TYPE);
     Factory::shared().registrationCommand<TestTemplateMethod>(TestTemplateMethod::TYPE);
     Factory::shared().registrationCommand<DataAdd>(DataAdd::TYPE);
-    Factory::shared().registrationCommand<ITestRequestAcceptor>(ITestRequestAcceptor::TYPE);
-    Factory::shared().registrationCommand<ITestStaticPointer>(ITestStaticPointer::TYPE);
-    Factory::shared().registrationCommand<ITestObservableClass>(ITestObservableClass::TYPE);
-    Factory::shared().registrationCommand<ITestConstructableClass>(ITestConstructableClass::TYPE);
-    Factory::shared().registrationCommand<ITestDataDict>(ITestDataDict::TYPE);
-    Factory::shared().registrationCommand<ITestSerializeTest>(ITestSerializeTest::TYPE);
     Factory::shared().registrationCommand<RunAllTests>(RunAllTests::TYPE);
     Factory::shared().registrationCommand<DataStorage>(DataStorage::TYPE);
 
