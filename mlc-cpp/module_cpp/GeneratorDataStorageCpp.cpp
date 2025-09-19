@@ -6,7 +6,7 @@
 //
 
 #include "GeneratorDataStorageCpp.hpp"
-//#include "Error.hpp"
+#include "Error.hpp"
 //#include "SerializeFormat.hpp"
 #include "Parser.hpp"
 #include "Object.hpp"

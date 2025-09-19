@@ -1,3 +1,4 @@
 test/build
 *.xcexplist
 *.xcbkptlist
+test/gen/

@@ -7,7 +7,7 @@
 #include "GeneratorVisitor.hpp"
 #include "Parser.hpp"
 #include "../models/Object.hpp"
-//#include "Error.hpp"
+#include "Error.hpp"
 #include <cassert>
 #include <iostream>
 
@@ -84,8 +84,7 @@ std::string GeneratorVisitor::getBaseVisitorName(const std::shared_ptr<Class>& c
         if (supName.rfind("IVisitor", 0) == 0) {
             return std::string(); // это корректный случай
         }
-        //TODO:
-//        Error::exit(Error::UNKNOWN_SUPERCLASS, cls->name, supName);
+        Error::exit(Error::UNKNOWN_SUPERCLASS, cls->name, supName);
     }
     auto supCls = _model->get_class(supName);
     if (supCls && supCls->is_visitor) {

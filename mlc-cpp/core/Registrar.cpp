@@ -83,6 +83,8 @@ void Registrar::generate(Model &model) {
             continue;
         if (!cls->has_method("get_type"))
             continue;
+        if(model.is_skip(*cls.get()))
+            continue;
         includes += "#include " + get_include_path_to_class(mock, cls) + "\n";
         registrations += "    Factory::shared().registrationCommand<" + cls->name
                        + ">(" + cls->name + "::TYPE);\n";

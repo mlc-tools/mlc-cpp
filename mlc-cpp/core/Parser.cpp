@@ -69,8 +69,8 @@ void Parser::parseText(const std::string &input) {
         assert(cls->inner_classes.empty());
     }
     
-    _model.classes.insert(_model.classes.end(), classes.begin(), classes.end());
-    _model.classes.insert(_model.classes.end(), inner_classes.begin(), inner_classes.end());
+    _model.add_classes(classes);
+    _model.add_classes(inner_classes);
 }
 
 void Parser::parse_class(const std::shared_ptr<Class>& cls)

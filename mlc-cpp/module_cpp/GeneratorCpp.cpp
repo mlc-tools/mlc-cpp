@@ -20,7 +20,7 @@ void GeneratorCpp::generate(Model& model){
     GeneratorDataStorageCpp().generate(model);
     GeneratorPredefinedFiles().generate(model);
     GeneratorVisitor().generate(model, true);
+    GeneratorObserverCpp().generate(model);
     GeneratorRefCounterCpp().generate(model);
     GeneratorOperatorEqualsCpp().generate(model);
-    GeneratorObserverCpp().generate(model);
 }

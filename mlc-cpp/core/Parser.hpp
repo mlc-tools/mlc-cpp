@@ -14,7 +14,7 @@
 #include "Object.hpp"
 #include "Class.hpp"
 #include "Function.hpp"
-//#include "Error.hpp"
+#include "Error.hpp"
 //#include "Common.hpp"  // parseObject, smartSplit
 
 

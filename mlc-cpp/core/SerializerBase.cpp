@@ -10,7 +10,7 @@
 #include "Function.hpp"
 #include "Object.hpp"
 #include "Common.hpp"
-//#include "Error.hpp"    // for Error::exit
+#include "Error.hpp"    // for Error::exit
 #include <cassert>
 #include <iostream>
 

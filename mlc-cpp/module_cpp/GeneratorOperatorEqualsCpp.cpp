@@ -7,7 +7,7 @@
 
 #include "GeneratorOperatorEqualsCpp.hpp"
 //#include "AccessSpecifier.hpp"
-//#include "Error.hpp"
+#include "Error.hpp"
 #include "Class.hpp"
 #include "Object.hpp"
 #include "Function.hpp"
@@ -84,4 +84,3 @@ void GeneratorOperatorEqualsCpp::addCopyOperator(
     op.body += "\nreturn *this;";
     cls->functions.push_back(std::move(op));
 }
-

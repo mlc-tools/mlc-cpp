@@ -58,7 +58,7 @@ void remove(const std::string& fullPath){
 }
 
 std::string read(const std::string &path) {
-    std::fstream in(path, std::ios::binary);
+    std::fstream in(path, std::ios::in);
     if (!in) {
         throw std::runtime_error("Cannot open file for reading: " + path);
     }

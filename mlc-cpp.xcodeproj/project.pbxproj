@@ -42,6 +42,7 @@
 		EF1658DB2E3B8AB400573EEE /* GeneratorObserverCpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1658DA2E3B8AB400573EEE /* GeneratorObserverCpp.cpp */; };
 		EF1E96782E7D1D6B0090F967 /* tests_regex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1E96772E7D1D640090F967 /* tests_regex.cpp */; };
 		EF1E967B2E7D463C0090F967 /* Registrar.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1E967A2E7D463C0090F967 /* Registrar.cpp */; };
+		EF1E967E2E7D52980090F967 /* Error.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1E967D2E7D52980090F967 /* Error.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -129,6 +130,8 @@
 		EF1E96772E7D1D640090F967 /* tests_regex.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tests_regex.cpp; sourceTree = "<group>"; };
 		EF1E96792E7D463C0090F967 /* Registrar.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Registrar.hpp; sourceTree = "<group>"; };
 		EF1E967A2E7D463C0090F967 /* Registrar.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Registrar.cpp; sourceTree = "<group>"; };
+		EF1E967C2E7D52980090F967 /* Error.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Error.hpp; sourceTree = "<group>"; };
+		EF1E967D2E7D52980090F967 /* Error.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Error.cpp; sourceTree = "<group>"; };
 		EF9A0EDE2E35B55500D4FCEA /* mlc-cpp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "mlc-cpp"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -205,6 +208,8 @@
 		EF0F7E8C2E37190D0039F169 /* utils */ = {
 			isa = PBXGroup;
 			children = (
+				EF1E967C2E7D52980090F967 /* Error.hpp */,
+				EF1E967D2E7D52980090F967 /* Error.cpp */,
 				EF1658CA2E3A4CA700573EEE /* FileUtils.cpp */,
 				EF0F7E8B2E37190D0039F169 /* FileUtils.hpp */,
 				EF16589D2E39E02900573EEE /* Common.hpp */,
@@ -366,6 +371,7 @@
 				EF0F7E8F2E37190D0039F169 /* Object.cpp in Sources */,
 				EF0F7E902E37190D0039F169 /* Model.cpp in Sources */,
 				EF0F7E9C2E3767FE0039F169 /* CircularReference.cpp in Sources */,
+				EF1E967E2E7D52980090F967 /* Error.cpp in Sources */,
 				EF0F7E912E37190D0039F169 /* Lexer.cpp in Sources */,
 				EF16589F2E39E15300573EEE /* Common.cpp in Sources */,
 				EF1658CE2E3B0EF000573EEE /* SerializerBase.cpp in Sources */,

@@ -8,7 +8,7 @@
 // WriterCpp.cpp
 #include "WriterCpp.hpp"
 #include "RegexPatternCpp.hpp"
-//#include "Error.hpp"
+#include "Error.hpp"
 #include <sstream>
 #include <algorithm>
 #include <iostream>
@@ -504,33 +504,30 @@ bool WriterCpp::isOverride(
             if (fn.name != method.name) continue;
             // return-type check
             if (fn.return_type.type != method.return_type.type) {
-                //TODO: validation
-//                if (!_model->validateAllowDifferentVirtualMethod)
-//                    Error::exit(Error::ERROR_VIRTUAL_METHOD_HAS_DIFFERENT_DECLARATION,
-//                                cls->name, method.name, supName);
+                // validation
+                if (!_model->allowDifferentVirtual)
+                    Error::exit(Error::ERROR_VIRTUAL_METHOD_HAS_DIFFERENT_DECLARATION,
+                                cls->name, method.name, supName);
                 continue;
             }
             // args count check
             if (fn.callable_args.size() != method.callable_args.size()
                 && !allowed.count(method.name))
             {
-                //TODO: validation
-//                if (!_model->validateAllowDifferentVirtualMethod)
-//                    Error::exit(Error::ERROR_VIRTUAL_METHOD_HAS_DIFFERENT_DECLARATION,
-//                                cls->name, method.name, supName);
+                if (!_model->allowDifferentVirtual)
+                    Error::exit(Error::ERROR_VIRTUAL_METHOD_HAS_DIFFERENT_DECLARATION,
+                                cls->name, method.name, supName);
                 continue;
             }
             // each arg type
             bool cont = false;
             for (size_t i = 0; i < fn.callable_args.size(); ++i) {
                 if (fn.callable_args[i].type != method.callable_args[i].type) {
-                    //TODO: validation
-//                    if (!_model->validateAllowDifferentVirtualMethod
-//                        && !allowed.count(method.name))
-//                    {
-//                        Error::exit(Error::ERROR_VIRTUAL_METHOD_HAS_DIFFERENT_DECLARATION,
-//                                    cls->name, method.name, supName);
-//                    }
+                    if (!_model->allowDifferentVirtual && !allowed.count(method.name))
+                    {
+                        Error::exit(Error::ERROR_VIRTUAL_METHOD_HAS_DIFFERENT_DECLARATION,
+                                    cls->name, method.name, supName);
+                    }
                     cont = true;
                     break;
                 }

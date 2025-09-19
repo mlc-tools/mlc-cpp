@@ -6,6 +6,7 @@
 //
 
 #include "Linker.hpp"
+#include "Error.hpp"
 #include <cassert>
 
 
@@ -30,7 +31,7 @@ void Linker::convertSuperclasses(Model &model) {
             auto parent = model.get_class(cls->parent_class_name);
             assert(parent);
             if(!parent){
-//                Error::exit(Error::UNKNOWN_SUPERCLASS, cls->name, superName);
+                Error::exit(Error::UNKNOWN_SUPERCLASS, cls->name, cls->parent_class_name);
             }
             cls->parent = parent;
             parent->subclasses.push_back(cls);

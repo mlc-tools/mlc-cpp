@@ -7,7 +7,7 @@
 #include "SerializerCpp.hpp"
 #include "Model.hpp"
 #include "Common.hpp"
-//#include "Error.hpp"    // for Error::exit
+#include "Error.hpp"    // for Error::exit
 #include <cassert>
 
 
@@ -150,4 +150,3 @@ std::string SerializerCpp::buildMapDeserialization(
         {"value_type",     valInit}})
          + "\n\n";
 }
-

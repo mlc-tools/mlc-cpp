@@ -57,14 +57,7 @@ int main() {
     app.generateData();
     
     auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
-    std::cout << "parsed on " << elapsed.count() << "ms";
+    std::cout << "parsed on " << elapsed.count() << "ms" << std::endl;
 
-//    auto cls = app.get_model().get_class("ModelEcsBase");
-//    if(cls) {
-//        log(cls);
-//    } else {
-//        for(auto& cls : app.get_model().classes){
-//            log(cls);
-//        }
-//    }
+    return 0;
 }

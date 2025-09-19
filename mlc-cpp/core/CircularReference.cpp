@@ -8,7 +8,7 @@
 #include "CircularReference.hpp"
 #include <sstream>
 #include "Model.hpp"
-//#include "Error.hpp"
+#include "Error.hpp"
 
 CircularReference::CircularReference(Model &model)
     : _model(model)
@@ -27,13 +27,12 @@ void CircularReference::find() {
         circularReference_.push_back(circularReference_.front());
 
         // Формируем строку вида A->B->C->A
-        //TODO: Error
-//        std::ostringstream oss;
-//        for (size_t i = 0; i < circularReference_.size(); ++i) {
-//            if (i) oss << "->";
-//            oss << circularReference_[i];
-//        }
-//        Error::exit(Error::CIRCULAR_REFERENCE, oss.str());
+        std::ostringstream oss;
+        for (size_t i = 0; i < circularReference_.size(); ++i) {
+            if (i) oss << "->";
+            oss << circularReference_[i];
+        }
+        Error::exit(Error::CIRCULAR_REFERENCE, oss.str());
     }
 }
 

@@ -19,7 +19,9 @@ file(GLOB_RECURSE SRC
 
 add_definitions(-DXML=1)
 add_definitions(-DJSON=2)
-add_definitions(-Wall -std=c++17 -DTESTS, -DSERIALIZE_FORMAT=XML)
+add_definitions(-DCLIENT=1)
+add_definitions(-DSERVER=2)
+add_definitions(-Wall -std=c++17 -DTESTS -DSERIALIZE_FORMAT=XML -DBUILD_SIDE=CLIENT)
 
 include_directories(
     ${GEN_SRC}

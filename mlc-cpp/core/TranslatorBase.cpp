@@ -10,7 +10,7 @@
 #include "Function.hpp"
 #include "Object.hpp"
 #include "Common.hpp"
-//#include "Error.hpp"
+#include "Error.hpp"
 
 //#include <fmt/core.h>  // если доступно, можно заменить на std::ostringstream
 

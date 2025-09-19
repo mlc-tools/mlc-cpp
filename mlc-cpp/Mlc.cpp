@@ -12,8 +12,7 @@
 //#include "Validator.hpp"
 //#include "DataParser.hpp"
 //#include "Language.hpp"
-//#include "Log.hpp"
-//#include "Error.hpp"
+#include "Error.hpp"
 #include "FileUtils.hpp"
 #include "module_cpp/GeneratorCpp.hpp"
 #include "WriterCpp.hpp"
@@ -25,8 +24,8 @@ Mlc::Mlc(bool use_colors, bool disable_logs)
   : _filter_code(nullptr)
   , _filter_data(nullptr)
 {
-//    Log::useColors = use_colors;
-//    Log::disableLogs = disable_logs;
+    Log::use_colors = use_colors;
+    Log::disable_logs = disable_logs;
     // _model сконструирован с дефолтами
 }
 

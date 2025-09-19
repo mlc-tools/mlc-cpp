@@ -9,6 +9,8 @@
 #include "Class.hpp"    // forward-declared in header
 #include <algorithm>
 #include "FileUtils.hpp"
+#include "Error.hpp"
+#include "Error.hpp"
 
 SavePluginBase::SavePluginBase(Model &m)
   : model(m),
@@ -35,7 +37,7 @@ void SavePluginBase::save_files(bool combineToOne) {
     for (auto *s : streams) {
         if (s && s->is_open()) s->close();
     }
-    removeOldFiles();
+//    removeOldFiles();
 }
 
 std::pair<std::string,std::string>
@@ -102,13 +104,12 @@ void SavePluginBase::saveFile(const std::string &localPath,
     auto [ok, stream] = FileUtils::write(fullPath, content);
     if (ok && stream) {
         streams.push_back(stream);
-        //TODO: log
-//        Log::message(
-//            (existed
-//                ? " Overwriting: " + localPath
-//                : " Create:      " + localPath
-//            )
-//        );
+        Log::message(
+            (existed
+                ? " Overwriting: " + localPath
+                : " Create:      " + localPath
+            )
+        );
     }
 }
 
@@ -143,8 +144,7 @@ void SavePluginBase::removeOldFiles() {
             && !p.ends_with(".pyc"))
         {
             FileUtils::remove(outDir + p);
-            //TODO: log
-//            Log::debug(" Removed: " + p);
+            Log::debug(" Removed: " + p);
         }
     }
 }

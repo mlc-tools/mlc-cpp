@@ -17,7 +17,7 @@
 #include "Object.hpp"
 #include "Function.hpp"
 #include "Common.hpp"     // для smartSplit
-//#include "Error.hpp"
+#include "Error.hpp"
 
 using namespace std;
 
@@ -135,10 +135,7 @@ void GeneratorUnitTestsInterface::generate(Model &model) {
     // 2) Базовые классы TestCase и Logger
     generateBaseClasses();
 
-    // 3) Добавляем сгенеренные тестовые классы
     model.add_classes(test_classes);
-
-    // 4) Класс, запускающий все тесты
     model.add_class(generateAllTestsClass());
 }
 
