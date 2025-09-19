@@ -49,5 +49,11 @@ struct Class : public Object {
     
     virtual void set_modifier(const std::string_view& modifier) override;
     
+    bool has_member(const std::string& name) const;
+    bool has_method(const std::string& name) const;
+    Function* get_method(const std::string& name);
+    bool has_virtual() const;
+    bool has_abstract_method() const;
+
     void onLinked(Model& model);
 };

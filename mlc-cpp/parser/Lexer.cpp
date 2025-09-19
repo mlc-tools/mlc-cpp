@@ -27,10 +27,14 @@ Token Lexer::next() {
     }
 
     // символы
+    else if(c == ':' && text[pos+1] == ':') {
+        Token token = {TokenType::Symbol, std::string_view(&text[pos], 2)};
+        pos += 2;
+        return token;
+    }
     else if (is_symbol(c) || (is_special(c) && c != '_')) {
         return {TokenType::Symbol, std::string_view(&text[pos++], 1)};
     }
-
     // слово
     else  if (std::isalnum(c) || c == '_' || c == ':' || c == '/') {
         auto word = read_word();

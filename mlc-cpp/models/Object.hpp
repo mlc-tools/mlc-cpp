@@ -17,6 +17,14 @@ enum class AccessSpecifier
     m_private,
 };
 
+enum class Side : int{
+    client = 1,
+    server = 2,
+    both = 3,
+};
+
+std::string AccessSpecifierToString(AccessSpecifier value);
+
 class Object {
 public:
     std::string type;
@@ -33,9 +41,9 @@ public:
     bool is_key = false;
     bool is_link = false;
     bool is_test = false;
-    std::string side;
+    Side side;
     AccessSpecifier access;
-//    self.denied_intrusive = False
+    bool denied_intrusive = false;
 
     Object();
     virtual ~Object() = default;
@@ -46,4 +54,20 @@ public:
     Object& operator=(Object &&other) noexcept = default;
     
     virtual void set_modifier(const std::string_view& modifier);
+    void set_default_initial_value();
+public:
 };
+
+namespace Objects
+{
+extern Object VOID;
+extern Object INT;
+extern Object UINT;
+extern Object INT_64;
+extern Object UINT_64;
+extern Object BOOL;
+extern Object FLOAT;
+extern Object DOUBLE;
+extern Object STRING;
+
+}

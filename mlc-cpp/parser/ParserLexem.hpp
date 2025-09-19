@@ -14,10 +14,11 @@
 class Class;
 class Object;
 class Function;
+class Model;
 
 class ParserLexem {
 public:
-    explicit ParserLexem(const std::string &src);
+    explicit ParserLexem(const std::string &src, Model& model);
     void read_class_name_and_group(std::shared_ptr<Class>& cls);
     void read_modifier(Object& object);
     void read_parent_class(std::shared_ptr<Class>& cls);
@@ -33,10 +34,9 @@ private:
     std::string_view skip_body();
     std::vector<Object> read_templates();
 public:
+    Model& _model;
     Object parse_member(bool with_name, bool is_enum);
     void parse_constructor(Class &cls);
     Function parse_method();
     std::vector<Object> read_callable_args();
 };
-Object parse_object(const std::string& str, bool with_name=false);
-Function parse_function(const std::string& str);

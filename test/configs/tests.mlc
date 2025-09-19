@@ -1,0 +1,11 @@
+
+class Request:visitor
+{
+    int a
+}
+class RequestFoo<Request>
+{
+}
+class RequestManager<IVisitorRequest>
+{
+}

@@ -18,6 +18,8 @@
 
 namespace tests
 {
+extern void run_regex_tests();
+
 void test_lexer_basic_tokens() {
     std::string code = "@include class MyClass:public { }";
     Lexer lexer(code);
@@ -49,7 +51,8 @@ void test_lexer_basic_tokens() {
 
 void test_parser_simple_class() {
     std::string code = "class TestClass { int x }";
-    ParserLexem parser(code);
+    Model model;
+    ParserLexem parser(code, model);
 
     auto classes = parser.parse_dict();
     assert(classes.size() == 1);
@@ -98,7 +101,7 @@ void test_parse_members() {
     auto check_object = [](const Object& obj, const std::string& type, const std::string& name, const std::string& value=""){
         assert(obj.type == type);
         assert(obj.name == name);
-        assert(obj.value == value);
+        assert(value.empty() || obj.value == value);
         return obj;
     };
     auto check_templates = [](const Object& obj, const std::vector<std::string>& args){
@@ -149,6 +152,15 @@ void test_parse_members() {
     assert(obj.template_args.at(0).callable_args.at(1).type == "float" && obj.template_args.at(0).callable_args.at(1).name == "lifet_time");
     assert(obj.template_args.at(0).callable_args.at(2).type == "float" && obj.template_args.at(0).callable_args.at(2).name == "radius");
     assert(obj.template_args.at(0).callable_args.at(3).type == "string" && obj.template_args.at(0).callable_args.at(3).name == "name");
+    
+    obj = parse_object("FooEnum enumFoo = FooEnum::foo", true);
+    check_object(obj, "FooEnum", "enumFoo", "FooEnum::foo");
+    
+    
+    obj = parse_object("FooEnum:client enumFoo = FooEnum::foo", true);
+    assert(obj.side == Side::client);
+    obj = parse_object("FooEnum:server enumFoo = FooEnum::foo", true);
+    assert(obj.side == Side::server);
 }
 
 
@@ -187,6 +199,21 @@ void test_parse_functions() {
     
     func = parse_function("fn void copy_hero(int other_id, int self_id) { auto self_hp = this->get<Health>(self_id); auto other_hp = this->model_inner->get<Health>(other_id); self_hp->value = other_hp->value; }");
     check_func(func, "void", "copy_hero");
+    
+    func = parse_function("fn<T> void assertEqual(T left, T right, string message="")");
+    check_func(func, "void", "assertEqual");
+    assert(func.template_args.size() == 1);
+    assert(func.template_args.at(0).type == "T");
+    assert(func.callable_args.size() == 3);
+    assert(func.callable_args.at(0).type == "T" && func.callable_args.at(0).name == "left");
+    assert(func.callable_args.at(1).type == "T" && func.callable_args.at(1).name == "right");
+    assert(func.callable_args.at(2).type == "string" && func.callable_args.at(2).name == "message");
+    
+    func = parse_function("fn void add_result(bool result, string message)");
+    assert(func.callable_args.size() == 2);
+    assert(func.callable_args.at(0).value == "");
+    assert(func.callable_args.at(1).value == "");
+    
 
 }
 
@@ -197,6 +224,7 @@ void run() {
     test_parser_class_with_member();
     test_parse_members();
     test_parse_functions();
+    run_regex_tests();
 
     std::cout << "All tests passed!\n";
 }

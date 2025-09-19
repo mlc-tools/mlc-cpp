@@ -25,15 +25,13 @@ public:
     void parseFiles(const std::vector<std::string> &filePaths);
     void parseText(const std::string &text);
     
-    // Helpers for testing
-    static Object createObject(const std::string &description);
-    static Function createFunction(const std::string &description);
-    
-    
     static std::string removeComments(const std::string &text);
     static std::pair<bool, std::string> checkSkip(const std::string &line, Model &model);
     void parse_class(const std::shared_ptr<Class>& cls);
     
 private:
-    Model &model;
+    Model &_model;
 };
+
+Object parse_object(const std::string& str, bool with_name=false);
+Function parse_function(const std::string& str);

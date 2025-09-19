@@ -12,15 +12,20 @@
 #include <unordered_set>
 #include <tuple>
 #include <memory>
+#include <map>
+#include <array>
 #include "Class.hpp"
 #include "Object.hpp"
 #include "Function.hpp"
 
 // Битовые флаги для форматов сериализации
 enum class SerializeFormat {
-    Xml  = 1 << 0,
-    Json = 1 << 1
+    Xml = 1 << 0,
+    Json = 1 << 1,
+    
 };
+std::array<SerializeFormat, 2> SerializeFormat_getAll();
+std::string SerializeFormat_to_str(SerializeFormat format);
 
 inline int operator|(SerializeFormat a, SerializeFormat b) {
     return static_cast<int>(a) | static_cast<int>(b);
@@ -34,6 +39,8 @@ inline bool hasFlag(int flags, SerializeFormat f) {
 inline std::vector<std::pair<SerializeFormat, std::string>> getAllSerializeFormats() {
     return {{SerializeFormat::Xml, "xml"}, {SerializeFormat::Json, "json"}};
 }
+
+class Parser;
 
 class Model {
 public:
@@ -61,18 +68,18 @@ public:
         classes.clear();
         classesForData.clear();
         classesDict.clear();
-        outDict.clear();
+        out_dict.clear();
         files.clear();
-        createdFiles.clear();
+        created_files.clear();
     }
 
     // Добавление классов
-    void addClass(const std::shared_ptr<Class>& cls) {
+    void add_class(const std::shared_ptr<Class>& cls) {
         classesDict[cls->name] = cls;
         classes.push_back(cls);
     }
 
-    void addClasses(const std::vector<std::shared_ptr<Class>>& clsList) {
+    void add_classes(const std::vector<std::shared_ptr<Class>>& clsList) {
         for (auto& cls : clsList) {
             classesDict[cls->name] = cls;
             classes.push_back(cls);
@@ -89,8 +96,8 @@ public:
     }
 
     // Фильтры по стороне и языку
-    bool isSide(const std::string& s) const {
-        return side == "both" || s == side || s == "both";
+    bool is_side(const Side& s) const {
+        return static_cast<int>(side) & static_cast<int>(s);
     }
     bool isLang(const std::string& lang) const {
         return lang.empty() || lang == language;
@@ -105,7 +112,7 @@ public:
     std::vector<std::shared_ptr<Class>> getSubclassesOfClass(const std::string& superName) const {
         std::vector<std::shared_ptr<Class>> result;
         for (auto& cls : classes) {
-            if (!cls->parent.expired() && cls->parent.lock()->name == superName) {
+            if (cls->parent_class_name == superName || (!cls->parent.expired() && cls->parent.lock()->name == superName)) {
                 result.push_back(cls);
             }
         }
@@ -113,28 +120,32 @@ public:
     }
     
     void create_std_types();
-
+    
+    bool is_simple_type(const std::string& type) const;
+    
+    bool is_skip(const Object& obj);
 public:
     // Парсер
-    std::shared_ptr<void> parser = nullptr; // указатель на конкретный парсер
+    std::shared_ptr<Parser> parser; // указатель на конкретный парсер
 
     // Основные сущности
     std::vector<std::shared_ptr<Class>> classes;
     std::vector<std::shared_ptr<Object>> objects;
     std::vector<std::shared_ptr<Class>> classesForData;
-    std::unordered_map<std::string, std::shared_ptr<Class>> classesDict;
+    std::map<std::string, std::shared_ptr<Class>> classesDict;
     std::unordered_set<std::string> includes;
 
     // Конфигурации и директории
-    std::string modelName;
-    std::string configsDirectory;
-    std::string outDirectory;
-    std::string dataDirectory;
-    std::string outDataDirectory;
+    std::string model_name;
+    std::vector<std::string> configs_directories;
+    std::vector<std::string> data_directories;
+    std::string out_data_directory;
+
+    std::string out_directory;
     std::string language = "cpp";
     bool onlyData = false;
     std::string namespaceName = "mg";
-    std::string side = "both";
+    Side side = Side::both;
     bool phpValidate = true;
     bool allowDifferentVirtual = true;
     std::string testScript;
@@ -145,21 +156,20 @@ public:
     std::function<bool(const std::string&)> filterCode;
     std::function<bool(const std::string&)> filterData;
     std::shared_ptr<void> customGenerator = nullptr;
-    std::vector<std::string> additionalConfigDirs;
-    std::vector<std::string> additionalDataDirs;
     std::vector<SerializeFormat> serializeProtocol;
     bool joinToOneFile = false;
     bool autoRegistration = true;
     bool generateRefCounter = true;
     bool userIncludes = false;
     bool emptyMethods = false;
+    bool auto_registration = false;
 
     // Простые типы
-    std::vector<std::string> simpleTypes = {"int","float","bool","string","int64_t","uint","unsigned","uint64_t","double"};
+    static const std::unordered_set<std::string> simpleTypes;
 
     // Файлы и вывод
-    std::unordered_map<std::string, std::string> outDict;
+    std::unordered_map<std::string, std::string> out_dict;
     std::vector<FileEntry> files;
-    std::vector<std::string> createdFiles;
+    std::vector<std::string> created_files;
     int serializeFormats = static_cast<int>(SerializeFormat::Xml) | static_cast<int>(SerializeFormat::Json);
 };

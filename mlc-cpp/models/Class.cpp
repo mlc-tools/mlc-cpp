@@ -40,8 +40,63 @@ void Class::set_modifier(const std::string_view& modifier)
     else Object::set_modifier(modifier);
 }
 
+bool Class::has_member(const std::string& name) const
+{
+    for(auto& m : this->members){
+        if(m.name == name){
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Class::has_method(const std::string& name) const
+{
+    for(auto& m : this->functions){
+        if(m.name == name){
+            return true;
+        }
+    }
+    return false;
+}
+
+Function* Class::get_method(const std::string& name)
+{
+    for(auto& method : this->functions){
+        if(method.name == name){
+            return &method;
+        }
+    }
+    return nullptr;
+}
 
 void Class::onLinked(Model& model)
 {
     
+}
+
+bool Class::has_virtual() const
+{
+    bool result = false;
+    result = result || this->is_virtual;
+    //TODO: check this code
+//    result = result or this->superclasses;
+//    result = result or this->subclasses;
+    result = result || this->has_abstract_method();
+    if(!result){
+        for(auto cls : this->subclasses){
+            result = result || cls.lock()->has_virtual();
+            if(result)
+                return true;
+        }
+    }
+    return result;
+}
+
+bool Class::has_abstract_method() const
+{
+    for(auto& f : functions)
+        if(f.is_abstract)
+            return true;
+    return false;
 }

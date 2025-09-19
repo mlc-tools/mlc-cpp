@@ -10,13 +10,16 @@
 #include "ParserLexem.hpp"
 #include "Class.hpp"
 #include "Function.hpp"
+#include "../core/Parser.hpp"
 
 template <class T>
 bool in(const T& string, const std::set<T>& variants) {
     return variants.count(string) > 0;
 }
 
-ParserLexem::ParserLexem(const std::string &src) : lexer(src) {
+ParserLexem::ParserLexem(const std::string &src, Model& model)
+: lexer(src)
+, _model(model) {
     advance();
 }
 
@@ -66,6 +69,7 @@ std::vector<std::shared_ptr<Class>> ParserLexem::parse_dict(bool one) {
         if (cur.type == TokenType::Keyword && (cur.value == "class" || cur.value == "enum" || cur.value == "interface")) {
             result.push_back(std::make_shared<Class>());
             auto cls = result.back();
+            cls->type = cur.value;
             cls->is_enum = cur.value == "enum";
             cls->is_abstract = cur.value == "interface";
             advance();
@@ -106,6 +110,7 @@ void ParserLexem::parse(const std::shared_ptr<Class>& cls) {
             cls->functions.push_back(parse_method());
         } else if (cur.type == TokenType::Identifier) {
             cls->members.push_back(parse_member(true, cls->is_enum));
+            cls->members.back().set_default_initial_value();
         } else if (cur.type == TokenType::Symbol && cur.value == "{") {
             ++depth;
             advance();
@@ -260,9 +265,6 @@ Object ParserLexem::parse_member(bool with_name, bool is_enum) {
         advance();
     }
     
-    if(is_enum)
-        member.name = std::move(member.type);
-    
     std::string prefix;
     if (cur.type == TokenType::Symbol && cur.value == "=") {
         advance();
@@ -276,7 +278,8 @@ Object ParserLexem::parse_member(bool with_name, bool is_enum) {
             else
                 member.value = prefix + std::string(cur.value);
             advance();
-            if(cur.type == TokenType::Symbol && in(cur.value, {"+", "-", "*", "/", ">"}))
+            static const std::set<std::string_view> symbols = {"+", "-", "*", "/", ">"};
+            if(cur.type == TokenType::Symbol && in(cur.value, symbols))
             {
                 member.value += cur.value;
                 advance();
@@ -284,10 +287,9 @@ Object ParserLexem::parse_member(bool with_name, bool is_enum) {
                 member.value += cur.value;
                 advance();
             }
-            if(cur.type == TokenType::Symbol && cur.value == ":")
+            if(cur.type == TokenType::Symbol && cur.value == "::")
             {
-                advance();
-                assert(cur.type == TokenType::Symbol && cur.value == ":");
+                member.value += cur.value;
                 advance();
                 assert(cur.type == TokenType::Identifier);
                 member.value += cur.value;
@@ -328,7 +330,14 @@ Function ParserLexem::parse_method() {
     //TODO: throw error
     assert(cur.value != ";");
     read_modifier(method);
-    method.body = skip_body();
+    if(!method.is_abstract){
+        assert(cur.value == "{" || cur.type == TokenType::Eof);
+        method.body = skip_body();
+    } else {
+        if(cur.type == TokenType::Symbol && cur.value == ";"){
+            advance();
+        }
+    }
     return method;
 }
 
@@ -351,14 +360,16 @@ std::vector<Object> ParserLexem::read_callable_args(){
 
 Object parse_object(const std::string& str, bool with_name)
 {
-    ParserLexem parser(str);
+    Model model;
+    ParserLexem parser(str, model);
     auto object = parser.parse_member(with_name, false);
     return object;
 }
 
 Function parse_function(const std::string& str)
 {
-    ParserLexem parser(str);
+    Model model;
+    ParserLexem parser(str, model);
     auto object = parser.parse_method();
     return object;
     

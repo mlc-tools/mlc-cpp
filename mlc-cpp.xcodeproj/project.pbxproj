@@ -17,6 +17,30 @@
 		EF0F7E942E37190D0039F169 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0F7E7B2E37190D0039F169 /* main.cpp */; };
 		EF0F7E952E37190D0039F169 /* Class.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0F7E7D2E37190D0039F169 /* Class.cpp */; };
 		EF0F7E992E371A140039F169 /* tests_parser_lexer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0F7E982E371A140039F169 /* tests_parser_lexer.cpp */; };
+		EF0F7E9C2E3767FE0039F169 /* CircularReference.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0F7E9B2E3767FE0039F169 /* CircularReference.cpp */; };
+		EF0F7E9F2E3769610039F169 /* Mlc.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0F7E9E2E3769610039F169 /* Mlc.cpp */; };
+		EF0F7EA22E376CDE0039F169 /* GeneratorVisitor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF0F7EA12E376CDE0039F169 /* GeneratorVisitor.cpp */; };
+		EF16589C2E38C99400573EEE /* GeneratorUnitTestsInterface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF16589B2E38C99400573EEE /* GeneratorUnitTestsInterface.cpp */; };
+		EF16589F2E39E15300573EEE /* Common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF16589E2E39E15300573EEE /* Common.cpp */; };
+		EF1658A22E39E58900573EEE /* GeneratorDataStorageBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1658A12E39E58900573EEE /* GeneratorDataStorageBase.cpp */; };
+		EF1658A62E39E92100573EEE /* GeneratorDataStorageCpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1658A52E39E92100573EEE /* GeneratorDataStorageCpp.cpp */; };
+		EF1658A92E39EE0300573EEE /* GeneratorCpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1658A82E39EE0300573EEE /* GeneratorCpp.cpp */; };
+		EF1658AF2E39EF3100573EEE /* GeneratorPredefinedFilesCpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1658AE2E39EF3100573EEE /* GeneratorPredefinedFilesCpp.cpp */; };
+		EF1658B42E39F6C700573EEE /* GeneratorRefCounterCpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1658B32E39F6C700573EEE /* GeneratorRefCounterCpp.cpp */; };
+		EF1658B72E39F97200573EEE /* GeneratorOperatorEqualsCpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1658B62E39F97200573EEE /* GeneratorOperatorEqualsCpp.cpp */; };
+		EF1658BA2E39F9E500573EEE /* GeneratorOperatorEqualsBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1658B92E39F9E500573EEE /* GeneratorOperatorEqualsBase.cpp */; };
+		EF1658BD2E39FC7600573EEE /* WriterCpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1658BC2E39FC7600573EEE /* WriterCpp.cpp */; };
+		EF1658C02E39FD3500573EEE /* WriterBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1658BF2E39FD3500573EEE /* WriterBase.cpp */; };
+		EF1658C32E39FDF500573EEE /* RegexPatternCpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1658C22E39FDF500573EEE /* RegexPatternCpp.cpp */; };
+		EF1658C62E3A4BC800573EEE /* SavePluginBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1658C52E3A4BC800573EEE /* SavePluginBase.cpp */; };
+		EF1658C92E3A4BF900573EEE /* SavePluginCpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1658C82E3A4BF900573EEE /* SavePluginCpp.cpp */; };
+		EF1658CB2E3A4CB300573EEE /* FileUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1658CA2E3A4CA700573EEE /* FileUtils.cpp */; };
+		EF1658CE2E3B0EF000573EEE /* SerializerBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1658CD2E3B0EF000573EEE /* SerializerBase.cpp */; };
+		EF1658D12E3B14D900573EEE /* SerializerCpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1658D02E3B14D900573EEE /* SerializerCpp.cpp */; };
+		EF1658D52E3B35AF00573EEE /* TranslatorBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1658D42E3B35AF00573EEE /* TranslatorBase.cpp */; };
+		EF1658D82E3B392800573EEE /* TranslatorCpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1658D72E3B392800573EEE /* TranslatorCpp.cpp */; };
+		EF1658DB2E3B8AB400573EEE /* GeneratorObserverCpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1658DA2E3B8AB400573EEE /* GeneratorObserverCpp.cpp */; };
+		EF1E96782E7D1D6B0090F967 /* tests_regex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1E96772E7D1D640090F967 /* tests_regex.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -53,6 +77,55 @@
 		EF0F7E8B2E37190D0039F169 /* FileUtils.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = FileUtils.hpp; sourceTree = "<group>"; };
 		EF0F7E972E371A140039F169 /* tests.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = tests.hpp; sourceTree = "<group>"; };
 		EF0F7E982E371A140039F169 /* tests_parser_lexer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tests_parser_lexer.cpp; sourceTree = "<group>"; };
+		EF0F7E9A2E3767FE0039F169 /* CircularReference.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CircularReference.hpp; sourceTree = "<group>"; };
+		EF0F7E9B2E3767FE0039F169 /* CircularReference.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CircularReference.cpp; sourceTree = "<group>"; };
+		EF0F7E9D2E3769610039F169 /* Mlc.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Mlc.hpp; sourceTree = "<group>"; };
+		EF0F7E9E2E3769610039F169 /* Mlc.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Mlc.cpp; sourceTree = "<group>"; };
+		EF0F7EA02E376CDE0039F169 /* GeneratorVisitor.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GeneratorVisitor.hpp; sourceTree = "<group>"; };
+		EF0F7EA12E376CDE0039F169 /* GeneratorVisitor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GeneratorVisitor.cpp; sourceTree = "<group>"; };
+		EF16589A2E38C99400573EEE /* GeneratorUnitTestsInterface.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GeneratorUnitTestsInterface.hpp; sourceTree = "<group>"; };
+		EF16589B2E38C99400573EEE /* GeneratorUnitTestsInterface.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GeneratorUnitTestsInterface.cpp; sourceTree = "<group>"; };
+		EF16589D2E39E02900573EEE /* Common.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Common.hpp; sourceTree = "<group>"; };
+		EF16589E2E39E15300573EEE /* Common.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Common.cpp; sourceTree = "<group>"; };
+		EF1658A02E39E58900573EEE /* GeneratorDataStorageBase.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GeneratorDataStorageBase.hpp; sourceTree = "<group>"; };
+		EF1658A12E39E58900573EEE /* GeneratorDataStorageBase.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GeneratorDataStorageBase.cpp; sourceTree = "<group>"; };
+		EF1658A42E39E92100573EEE /* GeneratorDataStorageCpp.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GeneratorDataStorageCpp.hpp; sourceTree = "<group>"; };
+		EF1658A52E39E92100573EEE /* GeneratorDataStorageCpp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GeneratorDataStorageCpp.cpp; sourceTree = "<group>"; };
+		EF1658A72E39EE0300573EEE /* GeneratorCpp.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GeneratorCpp.hpp; sourceTree = "<group>"; };
+		EF1658A82E39EE0300573EEE /* GeneratorCpp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GeneratorCpp.cpp; sourceTree = "<group>"; };
+		EF1658AA2E39EE3E00573EEE /* Generator.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Generator.hpp; sourceTree = "<group>"; };
+		EF1658AD2E39EF3100573EEE /* GeneratorPredefinedFilesCpp.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GeneratorPredefinedFilesCpp.hpp; sourceTree = "<group>"; };
+		EF1658AE2E39EF3100573EEE /* GeneratorPredefinedFilesCpp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GeneratorPredefinedFilesCpp.cpp; sourceTree = "<group>"; };
+		EF1658B12E39EF6E00573EEE /* extensions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = extensions.h; sourceTree = "<group>"; };
+		EF1658B22E39F6C700573EEE /* GeneratorRefCounterCpp.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GeneratorRefCounterCpp.hpp; sourceTree = "<group>"; };
+		EF1658B32E39F6C700573EEE /* GeneratorRefCounterCpp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GeneratorRefCounterCpp.cpp; sourceTree = "<group>"; };
+		EF1658B52E39F97200573EEE /* GeneratorOperatorEqualsCpp.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GeneratorOperatorEqualsCpp.hpp; sourceTree = "<group>"; };
+		EF1658B62E39F97200573EEE /* GeneratorOperatorEqualsCpp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GeneratorOperatorEqualsCpp.cpp; sourceTree = "<group>"; };
+		EF1658B82E39F9E500573EEE /* GeneratorOperatorEqualsBase.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GeneratorOperatorEqualsBase.hpp; sourceTree = "<group>"; };
+		EF1658B92E39F9E500573EEE /* GeneratorOperatorEqualsBase.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GeneratorOperatorEqualsBase.cpp; sourceTree = "<group>"; };
+		EF1658BB2E39FC7600573EEE /* WriterCpp.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WriterCpp.hpp; sourceTree = "<group>"; };
+		EF1658BC2E39FC7600573EEE /* WriterCpp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WriterCpp.cpp; sourceTree = "<group>"; };
+		EF1658BE2E39FD3500573EEE /* WriterBase.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = WriterBase.hpp; sourceTree = "<group>"; };
+		EF1658BF2E39FD3500573EEE /* WriterBase.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WriterBase.cpp; sourceTree = "<group>"; };
+		EF1658C12E39FDF500573EEE /* RegexPatternCpp.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = RegexPatternCpp.hpp; sourceTree = "<group>"; };
+		EF1658C22E39FDF500573EEE /* RegexPatternCpp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RegexPatternCpp.cpp; sourceTree = "<group>"; };
+		EF1658C42E3A4BC800573EEE /* SavePluginBase.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SavePluginBase.hpp; sourceTree = "<group>"; };
+		EF1658C52E3A4BC800573EEE /* SavePluginBase.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SavePluginBase.cpp; sourceTree = "<group>"; };
+		EF1658C72E3A4BF900573EEE /* SavePluginCpp.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SavePluginCpp.hpp; sourceTree = "<group>"; };
+		EF1658C82E3A4BF900573EEE /* SavePluginCpp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SavePluginCpp.cpp; sourceTree = "<group>"; };
+		EF1658CA2E3A4CA700573EEE /* FileUtils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FileUtils.cpp; sourceTree = "<group>"; };
+		EF1658CC2E3B0EF000573EEE /* SerializerBase.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SerializerBase.hpp; sourceTree = "<group>"; };
+		EF1658CD2E3B0EF000573EEE /* SerializerBase.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SerializerBase.cpp; sourceTree = "<group>"; };
+		EF1658CF2E3B14D900573EEE /* SerializerCpp.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = SerializerCpp.hpp; sourceTree = "<group>"; };
+		EF1658D02E3B14D900573EEE /* SerializerCpp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SerializerCpp.cpp; sourceTree = "<group>"; };
+		EF1658D22E3B173100573EEE /* protocols.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = protocols.hpp; sourceTree = "<group>"; };
+		EF1658D32E3B35AF00573EEE /* TranslatorBase.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TranslatorBase.hpp; sourceTree = "<group>"; };
+		EF1658D42E3B35AF00573EEE /* TranslatorBase.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TranslatorBase.cpp; sourceTree = "<group>"; };
+		EF1658D62E3B392800573EEE /* TranslatorCpp.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = TranslatorCpp.hpp; sourceTree = "<group>"; };
+		EF1658D72E3B392800573EEE /* TranslatorCpp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = TranslatorCpp.cpp; sourceTree = "<group>"; };
+		EF1658D92E3B8AB400573EEE /* GeneratorObserverCpp.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GeneratorObserverCpp.hpp; sourceTree = "<group>"; };
+		EF1658DA2E3B8AB400573EEE /* GeneratorObserverCpp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GeneratorObserverCpp.cpp; sourceTree = "<group>"; };
+		EF1E96772E7D1D640090F967 /* tests_regex.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tests_regex.cpp; sourceTree = "<group>"; };
 		EF9A0EDE2E35B55500D4FCEA /* mlc-cpp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "mlc-cpp"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -74,6 +147,25 @@
 				EF0F7E772E37190D0039F169 /* Linker.cpp */,
 				EF0F7E782E37190D0039F169 /* Parser.hpp */,
 				EF0F7E792E37190D0039F169 /* Parser.cpp */,
+				EF0F7E9A2E3767FE0039F169 /* CircularReference.hpp */,
+				EF0F7E9B2E3767FE0039F169 /* CircularReference.cpp */,
+				EF0F7EA02E376CDE0039F169 /* GeneratorVisitor.hpp */,
+				EF0F7EA12E376CDE0039F169 /* GeneratorVisitor.cpp */,
+				EF16589A2E38C99400573EEE /* GeneratorUnitTestsInterface.hpp */,
+				EF16589B2E38C99400573EEE /* GeneratorUnitTestsInterface.cpp */,
+				EF1658A02E39E58900573EEE /* GeneratorDataStorageBase.hpp */,
+				EF1658A12E39E58900573EEE /* GeneratorDataStorageBase.cpp */,
+				EF1658AA2E39EE3E00573EEE /* Generator.hpp */,
+				EF1658B82E39F9E500573EEE /* GeneratorOperatorEqualsBase.hpp */,
+				EF1658B92E39F9E500573EEE /* GeneratorOperatorEqualsBase.cpp */,
+				EF1658BE2E39FD3500573EEE /* WriterBase.hpp */,
+				EF1658BF2E39FD3500573EEE /* WriterBase.cpp */,
+				EF1658C42E3A4BC800573EEE /* SavePluginBase.hpp */,
+				EF1658C52E3A4BC800573EEE /* SavePluginBase.cpp */,
+				EF1658CC2E3B0EF000573EEE /* SerializerBase.hpp */,
+				EF1658CD2E3B0EF000573EEE /* SerializerBase.cpp */,
+				EF1658D32E3B35AF00573EEE /* TranslatorBase.hpp */,
+				EF1658D42E3B35AF00573EEE /* TranslatorBase.cpp */,
 			);
 			path = core;
 			sourceTree = "<group>";
@@ -108,7 +200,10 @@
 		EF0F7E8C2E37190D0039F169 /* utils */ = {
 			isa = PBXGroup;
 			children = (
+				EF1658CA2E3A4CA700573EEE /* FileUtils.cpp */,
 				EF0F7E8B2E37190D0039F169 /* FileUtils.hpp */,
+				EF16589D2E39E02900573EEE /* Common.hpp */,
+				EF16589E2E39E15300573EEE /* Common.cpp */,
 			);
 			path = utils;
 			sourceTree = "<group>";
@@ -116,10 +211,50 @@
 		EF0F7E962E3719F70039F169 /* tests */ = {
 			isa = PBXGroup;
 			children = (
+				EF1E96772E7D1D640090F967 /* tests_regex.cpp */,
 				EF0F7E972E371A140039F169 /* tests.hpp */,
 				EF0F7E982E371A140039F169 /* tests_parser_lexer.cpp */,
 			);
 			path = tests;
+			sourceTree = "<group>";
+		};
+		EF1658A32E39E91400573EEE /* module_cpp */ = {
+			isa = PBXGroup;
+			children = (
+				EF1658D22E3B173100573EEE /* protocols.hpp */,
+				EF1658B02E39EF5300573EEE /* code */,
+				EF1658A42E39E92100573EEE /* GeneratorDataStorageCpp.hpp */,
+				EF1658A52E39E92100573EEE /* GeneratorDataStorageCpp.cpp */,
+				EF1658A72E39EE0300573EEE /* GeneratorCpp.hpp */,
+				EF1658A82E39EE0300573EEE /* GeneratorCpp.cpp */,
+				EF1658AD2E39EF3100573EEE /* GeneratorPredefinedFilesCpp.hpp */,
+				EF1658AE2E39EF3100573EEE /* GeneratorPredefinedFilesCpp.cpp */,
+				EF1658B22E39F6C700573EEE /* GeneratorRefCounterCpp.hpp */,
+				EF1658B32E39F6C700573EEE /* GeneratorRefCounterCpp.cpp */,
+				EF1658B52E39F97200573EEE /* GeneratorOperatorEqualsCpp.hpp */,
+				EF1658B62E39F97200573EEE /* GeneratorOperatorEqualsCpp.cpp */,
+				EF1658BB2E39FC7600573EEE /* WriterCpp.hpp */,
+				EF1658BC2E39FC7600573EEE /* WriterCpp.cpp */,
+				EF1658C12E39FDF500573EEE /* RegexPatternCpp.hpp */,
+				EF1658C22E39FDF500573EEE /* RegexPatternCpp.cpp */,
+				EF1658C72E3A4BF900573EEE /* SavePluginCpp.hpp */,
+				EF1658C82E3A4BF900573EEE /* SavePluginCpp.cpp */,
+				EF1658CF2E3B14D900573EEE /* SerializerCpp.hpp */,
+				EF1658D02E3B14D900573EEE /* SerializerCpp.cpp */,
+				EF1658D62E3B392800573EEE /* TranslatorCpp.hpp */,
+				EF1658D72E3B392800573EEE /* TranslatorCpp.cpp */,
+				EF1658D92E3B8AB400573EEE /* GeneratorObserverCpp.hpp */,
+				EF1658DA2E3B8AB400573EEE /* GeneratorObserverCpp.cpp */,
+			);
+			path = module_cpp;
+			sourceTree = "<group>";
+		};
+		EF1658B02E39EF5300573EEE /* code */ = {
+			isa = PBXGroup;
+			children = (
+				EF1658B12E39EF6E00573EEE /* extensions.h */,
+			);
+			path = code;
 			sourceTree = "<group>";
 		};
 		EF9A0ED52E35B55500D4FCEA = {
@@ -142,11 +277,14 @@
 			isa = PBXGroup;
 			children = (
 				EF0F7E962E3719F70039F169 /* tests */,
-				EF0F7E7B2E37190D0039F169 /* main.cpp */,
 				EF0F7E7A2E37190D0039F169 /* core */,
 				EF0F7E852E37190D0039F169 /* models */,
 				EF0F7E8A2E37190D0039F169 /* parser */,
 				EF0F7E8C2E37190D0039F169 /* utils */,
+				EF0F7E9D2E3769610039F169 /* Mlc.hpp */,
+				EF0F7E9E2E3769610039F169 /* Mlc.cpp */,
+				EF0F7E7B2E37190D0039F169 /* main.cpp */,
+				EF1658A32E39E91400573EEE /* module_cpp */,
 			);
 			path = "mlc-cpp";
 			sourceTree = "<group>";
@@ -211,16 +349,40 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EF0F7EA22E376CDE0039F169 /* GeneratorVisitor.cpp in Sources */,
+				EF1658B72E39F97200573EEE /* GeneratorOperatorEqualsCpp.cpp in Sources */,
+				EF1658AF2E39EF3100573EEE /* GeneratorPredefinedFilesCpp.cpp in Sources */,
+				EF1658CB2E3A4CB300573EEE /* FileUtils.cpp in Sources */,
+				EF0F7E9F2E3769610039F169 /* Mlc.cpp in Sources */,
 				EF0F7E8D2E37190D0039F169 /* Function.cpp in Sources */,
+				EF1658D52E3B35AF00573EEE /* TranslatorBase.cpp in Sources */,
 				EF0F7E8E2E37190D0039F169 /* Linker.cpp in Sources */,
 				EF0F7E8F2E37190D0039F169 /* Object.cpp in Sources */,
 				EF0F7E902E37190D0039F169 /* Model.cpp in Sources */,
+				EF0F7E9C2E3767FE0039F169 /* CircularReference.cpp in Sources */,
 				EF0F7E912E37190D0039F169 /* Lexer.cpp in Sources */,
+				EF16589F2E39E15300573EEE /* Common.cpp in Sources */,
+				EF1658CE2E3B0EF000573EEE /* SerializerBase.cpp in Sources */,
 				EF0F7E922E37190D0039F169 /* Parser.cpp in Sources */,
+				EF1658D82E3B392800573EEE /* TranslatorCpp.cpp in Sources */,
 				EF0F7E932E37190D0039F169 /* ParserLexem.cpp in Sources */,
+				EF1E96782E7D1D6B0090F967 /* tests_regex.cpp in Sources */,
 				EF0F7E942E37190D0039F169 /* main.cpp in Sources */,
 				EF0F7E952E37190D0039F169 /* Class.cpp in Sources */,
+				EF1658C02E39FD3500573EEE /* WriterBase.cpp in Sources */,
+				EF1658C32E39FDF500573EEE /* RegexPatternCpp.cpp in Sources */,
+				EF1658BD2E39FC7600573EEE /* WriterCpp.cpp in Sources */,
+				EF1658B42E39F6C700573EEE /* GeneratorRefCounterCpp.cpp in Sources */,
+				EF1658D12E3B14D900573EEE /* SerializerCpp.cpp in Sources */,
 				EF0F7E992E371A140039F169 /* tests_parser_lexer.cpp in Sources */,
+				EF1658A62E39E92100573EEE /* GeneratorDataStorageCpp.cpp in Sources */,
+				EF1658C92E3A4BF900573EEE /* SavePluginCpp.cpp in Sources */,
+				EF1658A92E39EE0300573EEE /* GeneratorCpp.cpp in Sources */,
+				EF1658C62E3A4BC800573EEE /* SavePluginBase.cpp in Sources */,
+				EF1658BA2E39F9E500573EEE /* GeneratorOperatorEqualsBase.cpp in Sources */,
+				EF1658DB2E3B8AB400573EEE /* GeneratorObserverCpp.cpp in Sources */,
+				EF1658A22E39E58900573EEE /* GeneratorDataStorageBase.cpp in Sources */,
+				EF16589C2E38C99400573EEE /* GeneratorUnitTestsInterface.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

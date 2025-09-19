@@ -8,6 +8,30 @@
 #include "Object.hpp"
 #include "Modifier.h"
 #include <cassert>
+#include <iostream>
+
+
+namespace Objects
+{
+Object VOID("void", "");
+Object BOOL("bool", "");
+Object INT("int", "");
+Object UINT("unsigned", "");
+Object INT_64("int64_t", "");
+Object UINT_64("uint64_t", "");
+Object FLOAT("float", "");
+Object DOUBLE("double", "");
+Object STRING("string", "");
+}
+
+std::string AccessSpecifierToString(AccessSpecifier value)
+{
+    if(value == AccessSpecifier::m_public) return "public";
+    if(value == AccessSpecifier::m_protected) return "protected";
+    if(value == AccessSpecifier::m_private) return "private";
+    assert(0);
+    return "";
+}
 
 Object::Object()
 : is_pointer(false)
@@ -17,7 +41,7 @@ Object::Object()
 , is_const(false)
 , is_key(false)
 , is_link(false)
-, side("both")
+, side(Side::both)
 , access(AccessSpecifier::m_public) {
 }
 
@@ -32,7 +56,7 @@ Object::Object(const std::string& type_, const std::string& name_, const std::st
 , is_const(false)
 , is_key(false)
 , is_link(false)
-, side("both")
+, side(Side::both)
 , access(AccessSpecifier::m_public) {
 }
 
@@ -50,8 +74,10 @@ void Object::set_modifier(const std::string_view& modifier)
     else if(modifier == Modifier::m_const) this->is_const = true;
     else if(modifier == Modifier::m_key) this->is_key = true;
     else if(modifier == Modifier::m_link) this->is_link = true;
-    else if(modifier == Modifier::m_client) this->side = modifier;
-    else if(modifier == Modifier::m_server) this->side = modifier;
+    else if(modifier == Modifier::m_client)
+        this->side = Side::client;
+    else if(modifier == Modifier::m_server)
+        this->side = Side::server;
     else if(modifier == Modifier::m_test) this->is_test = true;
     
     else if(modifier == Modifier::l_cpp) this->lang_specific.insert(Modifier::l_cpp);
@@ -60,4 +86,23 @@ void Object::set_modifier(const std::string_view& modifier)
     else if(modifier == Modifier::l_js) this->lang_specific.insert(Modifier::l_js);
     
     else assert(0);
+}
+void Object::set_default_initial_value()
+{
+    if(type == "unsigned")
+        type = Objects::UINT.type;
+    
+    if(!value.empty())
+        return;
+    if(type == Objects::INT.type ||
+       type == Objects::UINT.type ||
+       type == Objects::INT_64.type ||
+       type == Objects::UINT_64.type)
+    {
+        value = "0";
+    }
+    else if(type == Objects::FLOAT.type) value = "0.0f";
+    else if(type == Objects::DOUBLE.type) value = "0.0";
+    else if(type == Objects::BOOL.type) value = "false";
+    else if(is_pointer) value = "nullptr";
 }

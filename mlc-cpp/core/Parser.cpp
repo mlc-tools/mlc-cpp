@@ -21,7 +21,7 @@
 
 
 
-Parser::Parser(Model &m) : model(m) {}
+Parser::Parser(Model &m) : _model(m) {}
 
 void Parser::parseFiles(const std::vector<std::string> &filePaths) {
     for (const auto &path : filePaths) {
@@ -34,13 +34,31 @@ void Parser::parseFiles(const std::vector<std::string> &filePaths) {
 
 void Parser::parseText(const std::string &input) {
     std::string text = removeComments(input);
-    ParserLexem parser(text);
+    ParserLexem parser(text, _model);
     auto classes = parser.parse_dict();
     
     std::vector<std::shared_ptr<Class>> inner_classes;
     for(auto& cls : classes){
         parse_class(cls);
         for(auto& inner : cls->inner_classes){
+            for(auto& m : cls->members){
+                if(m.type == inner->name) m.type = cls->name + inner->name;
+                for(auto& t : m.template_args){
+                    if(t.type == inner->name) t.type = cls->name + inner->name;
+                }
+                for(auto& t : m.callable_args){
+                    if(t.type == inner->name) t.type = cls->name + inner->name;
+                }
+            }
+            for(auto& m : cls->functions){
+                if(m.return_type.type == inner->name) m.return_type.type = cls->name + inner->name;
+                for(auto& t : m.template_args){
+                    if(t.type == inner->name) t.type = cls->name + inner->name;
+                }
+                for(auto& t : m.callable_args){
+                    if(t.type == inner->name) t.type = cls->name + inner->name;
+                }
+            }
             inner->name = cls->name + inner->name;
         }
         inner_classes.insert(inner_classes.end(), cls->inner_classes.begin(), cls->inner_classes.end());
@@ -51,13 +69,13 @@ void Parser::parseText(const std::string &input) {
         assert(cls->inner_classes.empty());
     }
     
-    model.classes.insert(model.classes.end(), classes.begin(), classes.end());
-    model.classes.insert(model.classes.end(), inner_classes.begin(), inner_classes.end());
+    _model.classes.insert(_model.classes.end(), classes.begin(), classes.end());
+    _model.classes.insert(_model.classes.end(), inner_classes.begin(), inner_classes.end());
 }
 
 void Parser::parse_class(const std::shared_ptr<Class>& cls)
 {
-    ParserLexem parser(cls->inner_body);
+    ParserLexem parser(cls->inner_body, _model);
     parser.parse(cls);
 }
 
@@ -79,24 +97,5 @@ std::string Parser::removeComments(const std::string &txt) {
         out += line + '\n';
     }
     return out;
-}
-
-std::pair<bool, std::string> Parser::checkSkip(const std::string &ln, Model &m) {
-    bool corresponds = true;
-    bool firstMatch = true;
-    std::string line = ln;
-    for (auto lang : {"cpp", "py", "php", "js"}) {
-        std::string mod = std::string(":") + lang;
-        size_t pos;
-        if ((pos = line.find(mod)) != std::string::npos) {
-            if (firstMatch) {
-                firstMatch = false;
-                corresponds = false;
-            }
-            corresponds = corresponds || m.isLang(lang);
-            line.erase(pos, mod.size());
-        }
-    }
-    return { !corresponds, line };
 }
 

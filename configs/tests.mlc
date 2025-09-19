@@ -1,6 +1,0 @@
-
-class model/ModelUser<ModelUserBase>
-{
-    Observable<void(DataUnit:link, DataSkin:link)>:runtime:client event_current_skin_changed
-
-}
