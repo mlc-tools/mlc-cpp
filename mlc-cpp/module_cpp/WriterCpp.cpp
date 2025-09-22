@@ -62,8 +62,8 @@ WriterCpp::writeClass(const std::shared_ptr<Class> &cls) {
 
     // Return files
     return {
-        { getFilename(cls,"h"), prepareFileCodeStyleCpp(prepareFile(header)) },
-        { getFilename(cls,"cpp"), prepareFileCodeStyleCpp(prepareFile(source)) }
+        { getFilename(cls,"h"), prepareFileCodeStyleCpp(header) },
+        { getFilename(cls,"cpp"), prepareFileCodeStyleCpp(source) }
     };
 }
 

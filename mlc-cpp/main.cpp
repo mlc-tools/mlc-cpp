@@ -53,6 +53,7 @@ int main() {
     app.addDataDirectory("/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/test/data_additional");
     
     app.setOutDirectory("/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/test/gen/");
+    app.setOutDataDirectory("/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/test/assets/");
     app.generate();
     app.generateData();
     

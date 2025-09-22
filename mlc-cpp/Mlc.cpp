@@ -10,7 +10,7 @@
 #include "CircularReference.hpp"
 #include "Registrar.hpp"
 //#include "Validator.hpp"
-//#include "DataParser.hpp"
+#include "DataParser.hpp"
 //#include "Language.hpp"
 #include "Error.hpp"
 #include "FileUtils.hpp"
@@ -115,18 +115,16 @@ void Mlc::generate() {
 
 // --- generateData() ---
 void Mlc::generateData() {
-//    // Составляем список storage-классов
-//    std::vector<std::shared_ptr<Class>> storage;
-//    for (auto &cls : _model.classes)
-//        if (cls->isStorage) storage.push_back(cls);
-//    for (auto &cls : _model.classesForData)
-//        if (cls->isStorage) storage.push_back(cls);
-//
-//    DataParser dataParser(storage,
-//                          _model.dataDirectory,
-//                          _filter_data);
-//    dataParser.parse(_model.additionalDataDirectories);
-//    dataParser.flush(_model.out_data_directory);
+    // Составляем список storage-классов
+    std::vector<std::shared_ptr<Class>> storage;
+    for (auto &cls : _model.classes)
+        if (cls->is_storage) storage.push_back(cls);
+    for (auto &cls : _model.classesForData)
+        if (cls->is_storage) storage.push_back(cls);
+
+    DataParser dataParser(_model, storage, _filter_data);
+    dataParser.parse(_model.data_directories);
+    dataParser.flush(_model.out_data_directory);
 }
 
 // --- runTest() ---

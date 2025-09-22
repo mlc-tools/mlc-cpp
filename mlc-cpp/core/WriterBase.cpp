@@ -279,5 +279,5 @@ std::string WriterBase::prepareFileCodeStyleCpp(const std::string &text) const {
     prepared.push_back('\n');
 
     // Then apply base prepareFile like the Python code
-    return prepareFile(prepared);
+    return prepared;
 }
