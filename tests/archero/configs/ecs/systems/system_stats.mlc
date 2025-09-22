@@ -1,0 +1,10 @@
+class ecs/SystemStats
+{
+}
+
+class ecs/SystemUpgrade
+{
+    fn void update(ModelEcsBase* model, float dt)
+    {
+    }
+}

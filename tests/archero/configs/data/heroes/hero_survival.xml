@@ -1,0 +1,42 @@
+<data>
+    <unit name="hero_survival">
+        <visual path_to_view="ini/scenes/gameplay/heroes/hero_survival.xml"/>
+        <stats>
+            <item key="health" value="100000"/>
+            <item key="damage" value="25"/>
+            <item key="size" value="25"/>
+            <item key="speed" value="300"/>
+            <item key="recharge" value="0.5"/>
+            <item key="shoot_radius" value="1000"/>
+            <item key="bullets_count_side_deviation" value="1"/>
+            <item key="sword_damage" value="0.5"/>
+            <item key="sword_count_mul" value="1"/>
+        </stats>
+        <components>
+            <ComponentTargetHighlight/>
+            <ComponentHealingOnChangeMaxHp/>
+            <ComponentLevelUp/>
+            <ComponentSpiritBasePoints/>
+            <ComponentEffects/>
+            <ComponentSwordCast duration="2" cast_count="5"/>
+            <!-- <ComponentMeteorPeriodic period="2"/> -->
+            <!-- <ComponentSpawnSpirit spirit="spirit_ice"/> -->
+            <!-- <ComponentSphereSpawn count="2" data="sphere_fire_bullet"/> -->
+            <!-- <ComponentSphereSpawn count="2" data="sphere_electric_bullet"/> -->
+            <!-- <ComponentAuraOfSlow name="slow" radius="150.0"/> -->
+            <!-- <ComponentAuraDamage name="damage" radius="300.0"/> -->
+        </components>
+    </unit>
+    
+    <unit name="bullet_shotgun" bullet_type="arrow">
+        <visual path_to_view="ini/scenes/gameplay/bullets/bullet_shotgun.xml"/>
+        <stats>
+            <item key="speed" value="1300"/>
+            <item key="push_target" value="50"/>
+            <item key="bullets_count_side_deviation" value="1"/>
+        </stats>
+        <components>
+            <ComponentBullet/>
+        </components>
+    </unit>
+</data>

@@ -1,0 +1,38 @@
+<data>
+    <unit name="enemy_mr_toad">
+        <visual path_to_view="ini/scenes/gameplay/units/enemy_mr_toad.xml"/>
+        <stats>
+            <item key="health" value="300"/>
+            <item key="size" value="15"/>
+            <item key="speed" value="200"/>
+            <item key="damage" value="100"/>
+        </stats>
+        <stats_string>
+            <!-- <item key="bullet" value="enemy_raider_archer_arrow"/> -->
+        </stats_string>
+        <components>
+            <ComponentActions>
+                <actions>
+                    <ActionWait name="start"  next_action="run" animation="start"/>
+                    
+                    <!-- break - it is collission with player -->
+                    <ActionRunToPlayer name="run" duration="2" random_duration="0.5" next_action_on_break="damage" next_action_on_finish="wait_finish" animation="jump"/>
+                    
+                    <!-- damage -->
+                    <ActionCreateDamage name="damage" duration="0.5" next_action="wait_break"/>
+                    <ActionWait name="wait_break" duration="0.5" next_action="move_to_hero"/>
+                    
+                    <!-- miss -->
+                    <ActionWait name="wait_finish" duration="1" next_action="move_to_hero"/>
+                    
+                    <!-- melee attack -->
+                    <ActionMoveToPlayer name="move_to_hero" duration="1" random_duration="2" next_action_on_break="melee_attack" next_action_on_finish="run"/>
+                    <ActionMeleeAttack name="melee_attack" duration="1" next_action="move_to_hero"/>
+                    
+                </actions>
+            </ComponentActions>
+            <ComponentExpDrop count="10"/>
+            <ComponentDropHeart/>
+        </components>
+    </unit>
+</data>

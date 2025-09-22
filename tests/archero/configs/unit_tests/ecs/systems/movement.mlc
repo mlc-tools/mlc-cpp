@@ -1,0 +1,129 @@
+class tests/TestSystemMovement<ITestSystemMovement>
+{
+    fn void test_update()
+    {
+        auto model = new ModelEcsBaseMock(false);
+        DataUnit unit;
+        unit.stats[UnitStat::speed] = 1.f;
+        unit.stats[UnitStat::size] = 1.f;
+        int id = BuilderEntity(&unit).set_side(Side::ally).set_position(Vector(0,0)).build(model);
+        auto move_dir = new MoveDirection();
+        move_dir->direction = Vector(1,0);
+        model->add(move_dir, id);
+        SystemMovement sys;
+        sys.update(model, 1.f);
+        auto transform = model->get<Transform>(id);
+        assertEqual(transform->position.x, 1.f, "moved by update");
+    }
+    fn void test_clean()
+    {
+        auto model = new ModelEcsBaseMock(false);
+        model->ground->ground = {{0,0},{0,0}};
+        DataUnit unit;
+        unit.stats[UnitStat::speed] = 1.f;
+        unit.stats[UnitStat::size] = 1.f;
+        int id = BuilderEntity(&unit).set_side(Side::ally).set_position(Vector(-10,0)).build(model);
+        auto move_dir = new MoveDirection();
+        model->add(move_dir, id);
+        SystemMovement sys;
+        sys.clean(model);
+        assertNotInList(id, model->entities, "entity cleaned");
+    }
+    fn void test_move_by_direction()
+    {
+        auto model = new ModelEcsBaseMock(false);
+        DataUnit unit;
+        unit.stats[UnitStat::speed] = 2.f;
+        unit.stats[UnitStat::size] = 1.f;
+        int id = BuilderEntity(&unit).set_side(Side::ally).set_position(Vector(0,0)).build(model);
+        auto move_dir = new MoveDirection();
+        move_dir->direction = Vector(1,0);
+        model->add(move_dir, id);
+        SystemMovement sys;
+        sys.move_by_direction(model, 1.f);
+        auto transform = model->get<Transform>(id);
+        assertEqual(transform->position.x, 2.f, "direction move");
+    }
+    fn void test_move_to_target()
+    {
+        auto model = new ModelEcsBaseMock(false);
+        DataUnit unit;
+        unit.stats[UnitStat::speed] = 1.f;
+        unit.stats[UnitStat::size] = 1.f;
+        int id = BuilderEntity(&unit).set_side(Side::ally).set_position(Vector(0,0)).build(model);
+        int target = BuilderEntity(&unit).set_side(Side::ally).set_position(Vector(10,0)).build(model);
+        auto move_to = new MoveToTarget();
+        move_to->target_id = target;
+        model->add(move_to, id);
+        SystemMovement sys;
+        sys.move_to_target(model, 1.f);
+        auto transform = model->get<Transform>(id);
+        assertTrue(transform->position.x > 0.f, "moved to target");
+    }
+    fn void test_move_by_parabolic()
+    {
+        auto model = new ModelEcsBaseMock(false);
+        DataUnit unit;
+        unit.stats[UnitStat::speed] = 1.f;
+        unit.stats[UnitStat::size] = 1.f;
+        int id = BuilderEntity(&unit).set_side(Side::ally).set_position(Vector(0,0)).build(model);
+        auto move_par = new MoveParabolic();
+        move_par->set(Vector(0,0), Vector(1,0), 1.f);
+        model->add(move_par, id);
+        SystemMovement sys;
+        sys.move_by_parabolic(model, 1.f);
+        auto transform = model->get<Transform>(id);
+        assertEqual(transform->position.x, 1.f, "parabolic move");
+    }
+    fn void test_move_instant()
+    {
+        auto model = new ModelEcsBaseMock(false);
+        DataUnit unit;
+        unit.stats[UnitStat::speed] = 1.f;
+        unit.stats[UnitStat::size] = 1.f;
+        int id = BuilderEntity(&unit).set_side(Side::ally).set_position(Vector(0,0)).build(model);
+        int target = BuilderEntity(&unit).set_side(Side::ally).set_position(Vector(5,5)).build(model);
+        auto move_inst = new MoveInstant();
+        move_inst->target_id = target;
+        model->add(move_inst, id);
+        SystemMovement sys;
+        sys.move_instant(model, 0.f);
+        auto transform = model->get<Transform>(id);
+        auto tr_target = model->get<Transform>(target);
+        assertEqual(transform->position.x, tr_target->position.x, "instant x");
+        assertEqual(transform->position.y, tr_target->position.y, "instant y");
+    }
+    fn void test_move_vertical()
+    {
+        auto model = new ModelEcsBaseMock(false);
+        DataUnit unit;
+        unit.stats[UnitStat::speed] = 1.f;
+        unit.stats[UnitStat::size] = 1.f;
+        int id = BuilderEntity(&unit).set_side(Side::ally).set_position(Vector(0,0)).build(model);
+        auto move_vert = new MoveVertical();
+        move_vert->start_z = 10.f;
+        move_vert->duration = 1.f;
+        model->add(move_vert, id);
+        SystemMovement sys;
+        sys.move_vertical(model, 0.5f);
+        auto transform = model->get<Transform>(id);
+        assertEqual(transform->z, 5, "vertical move");
+    }
+    fn void test_move()
+    {
+        auto model = new ModelEcsBaseMock(false);
+        DataUnit unit;
+        unit.stats[UnitStat::speed] = 1.f;
+        unit.stats[UnitStat::size] = 1.f;
+        int id = BuilderEntity(&unit).set_side(Side::ally).set_position(Vector(0,0)).build(model);
+        auto transform = model->get<Transform>(id);
+        auto stats = model->get<ComponentStats>(id);
+        ComponentMovement move_comp;
+        move_comp.direction = Vector(1,0);
+        move_comp.slow_k = 1.f;
+        SystemMovement sys;
+        bool res = sys.move(model, &move_comp, transform, stats, Vector(1,0));
+        assertTrue(res, "move returns true");
+        assertEqual(transform->position.x, 1.f, "move applied");
+    }
+}

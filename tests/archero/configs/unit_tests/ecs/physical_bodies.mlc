@@ -1,0 +1,119 @@
+class tests/TestRay<ITestRay>
+{
+    fn void test_constructor()
+    {
+        Ray r(Vector(1, 2), Vector(3, 4));
+        assertEqual(r.origin.x, 1.f, "origin x");
+        assertEqual(r.origin.y, 2.f, "origin y");
+        assertEqual(r.direction.x, 3.f, "dir x");
+        assertEqual(r.direction.y, 4.f, "dir y");
+    }
+}
+
+class tests/TestSegment<ITestSegment>
+{
+    fn void test_constructor()
+    {
+        Segment s(Vector(1, 2), Vector(3, 4));
+        assertEqual(s.start.x, 1.f, "start x");
+        assertEqual(s.start.y, 2.f, "start y");
+        assertEqual(s.end.x, 3.f, "end x");
+        assertEqual(s.end.y, 4.f, "end y");
+    }
+}
+
+class tests/TestCircle<ITestCircle>
+{
+    fn void test_constructor()
+    {
+        Circle c(Vector(1, 2), 5.f);
+        assertEqual(c.center.x, 1.f, "center x");
+        assertEqual(c.center.y, 2.f, "center y");
+        assertEqual(c.radius, 5.f, "radius");
+    }
+}
+
+class tests/TestCollisionChecker<ITestCollisionChecker>
+{
+    fn void test_has_collision()
+    {
+        Ray r(Vector(0, 0), Vector(1, 0).get_normalized());
+        Circle c(Vector(5, 0), 1.f);
+        assertTrue(CollisionChecker::has_collision(r, c), "ray hits circle");
+    }
+
+    fn void test_has_collision_ray_circle_false()
+    {
+        Ray r(Vector(0, 0), Vector(1, 0).get_normalized());
+        Circle c(Vector(5, 5), 1.f);
+        assertFalse(CollisionChecker::has_collision(r, c), "ray misses circle");
+    }
+
+    fn void test_has_collision_segment_circle_true()
+    {
+        Segment s(Vector(0, 0), Vector(10, 0));
+        Circle c(Vector(5, 1), 2.f);
+        assertTrue(CollisionChecker::has_collision(s, c), "segment hits circle");
+    }
+
+    fn void test_has_collision_segment_circle_false()
+    {
+        Segment s(Vector(0, 0), Vector(10, 0));
+        Circle c(Vector(5, 5), 1.f);
+        assertFalse(CollisionChecker::has_collision(s, c), "segment miss");
+    }
+
+    fn void test_has_collision_ray_polygon_true()
+    {
+        Polygon poly;
+        poly.points.push_back(Vector(0, -1));
+        poly.points.push_back(Vector(0, 1));
+        poly.points.push_back(Vector(2, 1));
+        poly.points.push_back(Vector(2, -1));
+        poly.bbox.update(poly.points);
+        Ray r(Vector(-1, 0), Vector(1, 0).get_normalized());
+        Vector point;
+        assertTrue(CollisionChecker::has_collision(r, poly, point), "ray polygon collision");
+        assertInRange(point.x, -0.001f, 0.001f, "collision x");
+        assertInRange(point.y, -0.001f, 0.001f, "collision y");
+    }
+
+    fn void test_has_collision_ray_polygon_false()
+    {
+        Polygon poly;
+        poly.points.push_back(Vector(0, -1));
+        poly.points.push_back(Vector(0, 1));
+        poly.points.push_back(Vector(2, 1));
+        poly.points.push_back(Vector(2, -1));
+        poly.bbox.update(poly.points);
+        Ray r(Vector(-1, 2), Vector(1, 0).get_normalized());
+        Vector point;
+        assertFalse(CollisionChecker::has_collision(r, poly, point), "ray polygon miss");
+    }
+
+    fn void test_is_point_inside_polygon()
+    {
+        Polygon square;
+        square.points.push_back(Vector(0,0));
+        square.points.push_back(Vector(2,0));
+        square.points.push_back(Vector(2,2));
+        square.points.push_back(Vector(0,2));
+        square.bbox.update(square.points);
+        assertTrue(CollisionChecker::is_point_inside_polygon(Vector(1,1), square), "point inside");
+        assertFalse(CollisionChecker::is_point_inside_polygon(Vector(3,1), square), "point outside");
+    }
+
+    fn void test_polygon_circle_mtv()
+    {
+        Polygon poly;
+        poly.points.push_back(Vector(-1, -1));
+        poly.points.push_back(Vector(1, -1));
+        poly.points.push_back(Vector(1, 1));
+        poly.points.push_back(Vector(-1, 1));
+        poly.bbox.update(poly.points);
+        Circle c(Vector(1.5, 0), 1.f);
+        auto res = CollisionChecker::polygon_circle_mtv(poly, c);
+        assertTrue(res.collision, "collision detected");
+        assertInRange(res.penetration, 0.f, 2.f, "penetration positive");
+    }
+}

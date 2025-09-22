@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<data>
+    <level name="level_3">
+        <tmx_maps>
+            <item value="tmx/level_3/level_3_wave_1.tmx"/>
+        </tmx_maps>
+        <waves>
+            <!-- <DataWaveOnRadiusWithInterval min_distance_to_player="1000" max_distance_to_player="1500" duration="10" interval="1.5" count_at_once="1">
+                <units>
+                    <item value="enemy_raider_melee_1"/>
+                    <item value="enemy_raider_melee_1"/>
+                    <item value="enemy_raider_melee_1"/>
+                    <item value="enemie_green_zombie"/>
+                </units>
+            </DataWaveOnRadiusWithInterval> -->
+            <DataWaveOnRadiusWithInterval min_distance_to_player="1000" max_distance_to_player="1500" duration="60" interval="1.5" count_at_once="1">
+                <units>
+                    <item value="enemy_raider_melee_1"/>
+                    <item value="enemy_raider_melee_1"/>
+                    <item value="enemy_raider_melee_1"/>
+                    <item value="enemy_raider_melee_1"/>
+                    <item value="enemy_raider_archer"/>
+                    <item value="enemy_raider_archer"/>
+                    <item value="enemy_raider_archer"/>
+                    <item value="enemy_raider_archer"/>
+                    <item value="enemy_raider_archer"/>
+                    <item value="enemy_raider_archer"/>
+                    <item value="enemy_raider_archer"/>
+                </units>
+            </DataWaveOnRadiusWithInterval>
+        </waves>
+    </level>
+</data>

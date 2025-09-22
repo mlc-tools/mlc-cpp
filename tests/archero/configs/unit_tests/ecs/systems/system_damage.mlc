@@ -1,0 +1,154 @@
+class tests/TestSystemDamage<ITestSystemDamage>
+{
+    fn void test_update()
+    {
+        // smoke: update обрабатывает событие урона
+        auto model = new ModelEcsBaseMock(false);
+        model->ground->ground = {{0,0},{0,0}};
+        DataUnit a; int attacker = BuilderEntity(&a).set_side(Side::ally).set_position(Vector(0,0)).build(model);
+        DataUnit v; v.stats[UnitStat::health] = 50.f; int victim = BuilderEntity(&v).set_side(Side::enemy).set_position(Vector(1,0)).build(model);
+        auto h = model->get<ComponentHealth>(victim); float h0 = h->get_current();
+        BuilderDamage().set_damage(5.f).build(model, attacker, -1, victim);
+        SystemDamage().update(model, 0.0f);
+        assertInRange(h->get_current(), h0 - 5.f - 0.001f, h0 - 5.f + 0.001f, "обработан урон");
+    }
+    fn void test_update_applies_damage()
+    {
+        auto model = new ModelEcsBaseMock(false);
+        model->ground->ground = {{0,0},{0,0}};
+
+        // Атакующий и цель
+        DataUnit attacker_du; attacker_du.stats[UnitStat::size] = 1.f;
+        int attacker_id = BuilderEntity(&attacker_du).set_side(Side::ally).set_position(Vector(0,0)).build(model);
+        DataUnit victim_du; victim_du.stats[UnitStat::health] = 100.f; victim_du.stats[UnitStat::size] = 1.f;
+        int victim_id = BuilderEntity(&victim_du).set_side(Side::enemy).set_position(Vector(10,0)).build(model);
+        auto health = model->get<ComponentHealth>(victim_id);
+        float h0 = health->get_current();
+
+        // Урон 10
+        BuilderDamage().set_damage(10.f).build(model, attacker_id, -1, victim_id);
+
+        SystemDamage().update(model, 0.0f);
+        assertInRange(health->get_current(), h0 - 10.f - 0.001f, h0 - 10.f + 0.001f, "урон применён");
+    }
+
+    fn void test_compute_damage_from_attacker_stats()
+    {
+        auto model = new ModelEcsBaseMock(false);
+        model->ground->ground = {{0,0},{0,0}};
+
+        DataUnit attacker_du; attacker_du.stats[UnitStat::damage] = 15.f; attacker_du.stats[UnitStat::size] = 1.f;
+        int attacker_id = BuilderEntity(&attacker_du).set_side(Side::ally).set_position(Vector(0,0)).build(model);
+
+        DataUnit victim_du; victim_du.stats[UnitStat::health] = 100.f; victim_du.stats[UnitStat::size] = 1.f;
+        int victim_id = BuilderEntity(&victim_du).set_side(Side::enemy).set_position(Vector(10,0)).build(model);
+
+        auto damage = SystemDamage::compute_damage(model, attacker_id, victim_id);
+        assertEqual(damage, 15.f, "базовый урон от атакующего");
+    }
+
+    fn void test_compute_damage()
+    {
+        // эквивалент предыдущего, для соответствия интерфейсу
+        auto model = new ModelEcsBaseMock(false);
+        model->ground->ground = {{0,0},{0,0}};
+        DataUnit attacker_du; attacker_du.stats[UnitStat::damage] = 8.f; int attacker = BuilderEntity(&attacker_du).set_side(Side::ally).set_position(Vector(0,0)).build(model);
+        DataUnit victim_du; victim_du.stats[UnitStat::health] = 100.f; int victim = BuilderEntity(&victim_du).set_side(Side::enemy).set_position(Vector(1,0)).build(model);
+        assertEqual(SystemDamage::compute_damage(model, attacker, victim), 8.f, "compute_damage");
+    }
+
+    fn void test_is_dodge()
+    {
+        auto model = new ModelEcsBaseMock(false);
+        DataUnit attacker_du; int attacker = BuilderEntity(&attacker_du).set_side(Side::ally).set_position(Vector(0,0)).build(model);
+        DataUnit victim_du; int victim = BuilderEntity(&victim_du).set_side(Side::enemy).set_position(Vector(1,0)).build(model);
+        auto stats_attacker = model->get<ComponentStats>(attacker);
+        auto stats_target = model->get<ComponentStats>(victim);
+        // dodge = 0 -> всегда false
+        assertFalse(SystemDamage::is_dodge(model, attacker, victim, stats_attacker, stats_target), "без уклонения");
+    }
+
+    fn void test_compute_freeze_chance()
+    {
+        auto model = new ModelEcsBaseMock(false);
+        DataUnit attacker_du; attacker_du.stats[UnitStat::freeze_chance] = 0.3f; int attacker = BuilderEntity(&attacker_du).set_side(Side::ally).set_position(Vector(0,0)).build(model);
+        DataUnit victim_du; int victim = BuilderEntity(&victim_du).set_side(Side::enemy).set_position(Vector(1,0)).build(model);
+        ComponentDamage dmg; dmg.bullet_id = -1; // без пули
+        auto stats_attacker = model->get<ComponentStats>(attacker);
+        auto stats_target = model->get<ComponentStats>(victim);
+        auto chance = SystemDamage::compute_freeze_chance(model, &dmg, attacker, victim, stats_attacker, stats_target);
+        assertEqual(chance, 0.3f, "freeze chance из атакующего");
+    }
+
+    fn void test_compute_freeze_damage()
+    {
+        auto model = new ModelEcsBaseMock(false);
+        DataUnit attacker_du; attacker_du.stats[UnitStat::freeze] = 2.f; int attacker = BuilderEntity(&attacker_du).set_side(Side::ally).set_position(Vector(0,0)).build(model);
+        DataUnit victim_du; int victim = BuilderEntity(&victim_du).set_side(Side::enemy).set_position(Vector(1,0)).build(model);
+        ComponentDamage dmg; dmg.bullet_id = -1;
+        auto stats_attacker = model->get<ComponentStats>(attacker);
+        auto stats_target = model->get<ComponentStats>(victim);
+        auto freeze = SystemDamage::compute_freeze_damage(model, &dmg, attacker, victim, stats_attacker, stats_target);
+        assertEqual(freeze, 2.f, "freeze damage из атакующего");
+    }
+
+    fn void test_compute_fire_damage()
+    {
+        auto model = new ModelEcsBaseMock(false);
+        DataUnit attacker_du; attacker_du.stats[UnitStat::fire_damage] = 3.f; int attacker = BuilderEntity(&attacker_du).set_side(Side::ally).set_position(Vector(0,0)).build(model);
+        DataUnit victim_du; int victim = BuilderEntity(&victim_du).set_side(Side::enemy).set_position(Vector(1,0)).build(model);
+        ComponentDamage dmg; dmg.bullet_id = -1;
+        auto stats_attacker = model->get<ComponentStats>(attacker);
+        auto stats_target = model->get<ComponentStats>(victim);
+        auto fire = SystemDamage::compute_fire_damage(model, &dmg, attacker, victim, stats_attacker, stats_target);
+        assertEqual(fire, 3.f, "fire damage из атакующего");
+    }
+
+    fn void test_compute_electric_damage()
+    {
+        auto model = new ModelEcsBaseMock(false);
+        DataUnit attacker_du; attacker_du.stats[UnitStat::electric_damage] = 4.f; int attacker = BuilderEntity(&attacker_du).set_side(Side::ally).set_position(Vector(0,0)).build(model);
+        DataUnit victim_du; int victim = BuilderEntity(&victim_du).set_side(Side::enemy).set_position(Vector(1,0)).build(model);
+        ComponentDamage dmg; dmg.bullet_id = -1;
+        auto stats_attacker = model->get<ComponentStats>(attacker);
+        auto stats_target = model->get<ComponentStats>(victim);
+        auto electr = SystemDamage::compute_electric_damage(model, &dmg, attacker, victim, stats_attacker, stats_target);
+        assertEqual(electr, 4.f, "electric damage из атакующего");
+    }
+
+    fn void test_compute_future_damage()
+    {
+        auto model = new ModelEcsBaseMock(false);
+        DataUnit attacker_du; attacker_du.stats[UnitStat::damage] = 5.f; int attacker = BuilderEntity(&attacker_du).set_side(Side::ally).set_position(Vector(0,0)).build(model);
+        DataUnit victim_du; int victim = BuilderEntity(&victim_du).set_side(Side::enemy).set_position(Vector(1,0)).build(model);
+        auto future = SystemDamage::compute_future_damage(model, attacker, -1, victim);
+        assertEqual(future, 5.f, "future damage = compute_damage");
+    }
+
+    fn void test_check_effects_after_damage()
+    {
+        auto model = new ModelEcsBaseMock(false);
+        // на цели есть эффекты и стат с damage_after_damaged
+        DataUnit attacker_du; int attacker = BuilderEntity(&attacker_du).set_side(Side::ally).set_position(Vector(0,0)).build(model);
+        DataUnit victim_du; victim_du.stats[UnitStat::damage_after_damaged] = 0.5f; int victim = BuilderEntity(&victim_du).set_side(Side::enemy).set_position(Vector(1,0)).build(model);
+        auto effects = new ComponentEffects(); model->add(effects, victim);
+        auto stats_attacker = model->get<ComponentStats>(attacker);
+        auto stats_target = model->get<ComponentStats>(victim);
+        ComponentDamage dmg; dmg.target_id = victim;
+        SystemDamage().check_effects_after_damage(model, &dmg, stats_attacker, stats_target);
+        assertEqual(effects->damage_mul, 0.5f, "эффект на цели активирован");
+        assertTrue(effects->damage_mul_timer > 0, "таймер эффекта выставлен");
+    }
+
+    fn void test_check_effects_on_kill()
+    {
+        auto model = new ModelEcsBaseMock(false);
+        DataUnit attacker_du; attacker_du.stats[UnitStat::damage_after_kill] = 0.4f; int attacker = BuilderEntity(&attacker_du).set_side(Side::ally).set_position(Vector(0,0)).build(model);
+        auto effects = new ComponentEffects(); model->add(effects, attacker);
+        auto stats_attacker = model->get<ComponentStats>(attacker);
+        auto stats_target = model->get<ComponentStats>(attacker); // не используется по факту
+        SystemDamage::check_effects_on_kill(model, stats_attacker, stats_target);
+        assertEqual(effects->damage_mul, 0.4f, "эффект на убийство применён");
+        assertTrue(effects->damage_mul_timer > 0, "таймер эффекта выставлен");
+    }
+}

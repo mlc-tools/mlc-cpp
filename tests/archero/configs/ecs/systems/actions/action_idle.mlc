@@ -1,0 +1,16 @@
+class ecs/ActionWait<ActionBase>
+{
+    string animation = "idle"
+    bool animation_loop = false
+    fn void on_start()
+    {
+        model->get<ComponentBusy>(this->entity_id)->is_busy = true;
+        this->check_duration(animation);
+        this->model->event_skill_animate[this->entity_id].notify(animation, this->animation_loop);
+    }
+    fn void on_finish()
+    {
+        model->get<ComponentBusy>(this->entity_id)->is_busy = false;
+    }
+}
+

@@ -1,0 +1,27 @@
+class tests/TestSystemDropHeart<ITestSystemDropHeart>
+{
+    fn void test_lucky_heart()
+    {
+        auto model = new ModelEcsBaseMock(false);
+        model->ground->ground = {{0,0},{0,0}};
+        DataUnit player_du; player_du.stats[UnitStat::health] = 100.f;
+        int player_id = BuilderEntity(&player_du).set_side(Side::ally).set_position(Vector(0,0)).build(model);
+        model->player_id = player_id;
+        model->add(new ComponentHealingOnChangeMaxHp(), player_id);
+        auto lucky = new ComponentHeartAddStatsHp();
+        lucky->stat_upgrade = DataStorage::shared().get<DataStatUpgrade>("lucky_heart_add_max_hp");
+        lucky->percent = 1;
+        model->add(lucky, player_id);
+        auto health = model->get<ComponentHealth>(player_id);
+        health->set_current(50.f);
+        DataUnit heart_du; int heart_id = BuilderEntity(&heart_du).set_side(Side::ally).set_position(Vector(10,0)).build(model);
+        model->add(new ComponentHeart(), heart_id);
+
+        SystemHealingOnChangeMaxHp().update(model, 0.0f);
+        SystemDropHeart().update(model, 0.0f);
+        SystemHealingOnChangeMaxHp().update(model, 0.0f);
+        
+        assertTrue(fabs(health->max - 110.f) < 0.01f, "max hp increased");
+        assertTrue(fabs(health->get_current() - 82.5f) < 0.01f, "current hp increased");
+    }
+}

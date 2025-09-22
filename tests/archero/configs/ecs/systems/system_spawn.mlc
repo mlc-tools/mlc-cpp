@@ -1,0 +1,36 @@
+class ecs/ComponentSpawn<ComponentBase>
+{
+    DataUnit:link unit
+    Vector position
+    float timer = 2
+    bool create_marker = true
+    bool clean = false
+}
+
+class ecs/SystemSpawn
+{
+    fn void update(ModelEcsBase* model, float dt)
+    {
+        for(auto& spawn : model->components_spawn)
+        {
+            spawn->timer -= dt;
+            if(spawn->create_marker)
+            {
+                model->event_create_marker.notify(spawn->position, spawn->timer, spawn->unit->stats.at(UnitStat::size), "spawn_point");
+                spawn->create_marker = false;
+            }
+            if(spawn->timer <= 0)
+            {
+                this->spawn_unit(model, spawn);
+                spawn->clean = true;
+            }
+        }
+        list_remove_if(model->components_spawn, (spawn :> spawn->clean));
+    }
+
+    fn void spawn_unit(ModelEcsBase* model, ComponentSpawn* spawn)
+    {
+        auto id = BuilderEntity(spawn->unit).set_level(1).set_side(Side::enemy).set_position(spawn->position).build(model);
+        model->event_create_entity.notify(id, spawn->position);
+    }
+}

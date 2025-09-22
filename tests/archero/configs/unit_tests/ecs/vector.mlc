@@ -1,0 +1,207 @@
+class tests/TestVector<ITestVector>
+{
+    fn void test_constructor()
+    {
+        Vector v(1,2);
+        assertEqual(v.x, 1.f, "x");
+        assertEqual(v.y, 2.f, "y");
+    }
+
+    fn void test_operator_unary_minus()
+    {
+        Vector v(1, 2);
+        auto r = -v;
+        assertEqual(r.x, -1.f, "negate x");
+        assertEqual(r.y, -2.f, "negate y");
+    }
+
+    fn void test_operator_plus()
+    {
+        Vector a(1, 2);
+        Vector b(3, 4);
+        auto r = a + b;
+        assertEqual(r.x, 4.f, "plus x");
+        assertEqual(r.y, 6.f, "plus y");
+    }
+
+    fn void test_operator_minus()
+    {
+        Vector a(5, 4);
+        Vector b(3, 2);
+        auto r = a - b;
+        assertEqual(r.x, 2.f, "minus x");
+        assertEqual(r.y, 2.f, "minus y");
+    }
+
+    fn void test_operator_multiply()
+    {
+        Vector v(2, 3);
+        auto r = v * 2.f;
+        assertEqual(r.x, 4.f, "mul x");
+        assertEqual(r.y, 6.f, "mul y");
+    }
+
+    fn void test_operator_divide()
+    {
+        Vector v(4, 6);
+        auto r = v / 2.f;
+        assertEqual(r.x, 2.f, "div x");
+        assertEqual(r.y, 3.f, "div y");
+    }
+
+    fn void test_operator_add_assign()
+    {
+        Vector a(1, 1);
+        Vector b(2, 3);
+        a += b;
+        assertEqual(a.x, 3.f, "plus assign x");
+        assertEqual(a.y, 4.f, "plus assign y");
+    }
+
+    fn void test_operator_sub_assign()
+    {
+        Vector a(5, 6);
+        Vector b(2, 4);
+        a -= b;
+        assertEqual(a.x, 3.f, "sub assign x");
+        assertEqual(a.y, 2.f, "sub assign y");
+    }
+
+    fn void test_operator_mul_assign()
+    {
+        Vector a(1, 2);
+        a *= 3.f;
+        assertEqual(a.x, 3.f, "mul assign x");
+        assertEqual(a.y, 6.f, "mul assign y");
+    }
+
+    fn void test_operator_div_assign()
+    {
+        Vector a(6, 9);
+        a /= 3.f;
+        assertEqual(a.x, 2.f, "div assign x");
+        assertEqual(a.y, 3.f, "div assign y");
+    }
+
+    fn void test_dot()
+    {
+        Vector a(1, 2);
+        Vector b(3, 4);
+        assertEqual(a.dot(b), 11.f, "dot product");
+    }
+
+    fn void test_length()
+    {
+        Vector v(3, 4);
+        assertEqual(v.length(), 5.f, "length");
+    }
+
+    fn void test_normalize()
+    {
+        Vector v(3, 4);
+        v.normalize();
+        assertInRange(v.length(), 0.999f, 1.001f, "normalized length");
+    }
+
+    fn void test_get_normalized()
+    {
+        Vector v(3, 4);
+        auto r = v.get_normalized();
+        assertInRange(r.length(), 0.999f, 1.001f, "get_normalized length");
+        assertEqual(v.x, 3.f, "original x unchanged");
+        assertEqual(v.y, 4.f, "original y unchanged");
+    }
+
+    fn void test_get_distance()
+    {
+        Vector a(0, 0);
+        Vector b(3, 4);
+        assertEqual(a.get_distance(b), 5.f, "distance");
+    }
+
+    fn void test_get_distance_sq()
+    {
+        Vector a(0, 0);
+        Vector b(3, 4);
+        assertEqual(a.get_distance_sq(b), 25.f, "distance sq");
+    }
+
+    fn void test_rotate()
+    {
+        Vector v(1, 0);
+        float pi = std::acos(-1.0f);
+        v.rotate(pi / 2.f);
+        assertInRange(v.x, -0.0001f, 0.0001f, "rotate x");
+        assertInRange(v.y, 0.999f, 1.001f, "rotate y");
+    }
+
+    fn void test_get_normal_to()
+    {
+        Vector v(1, 0);
+        auto n = Vector::get_normal_to(v);
+        assertEqual(n.x, 0.f, "normal x");
+        assertEqual(n.y, 1.f, "normal y");
+    }
+
+    fn void test_generate_random_point_on_radius()
+    {
+        float radius = 5.f;
+        auto p = Vector::generate_random_point_on_radius(radius);
+        assertInRange(p.length(), radius - 0.001f, radius + 0.001f, "point on radius");
+    }
+
+    fn void test_generate_random_point_in_radius()
+    {
+        float radius = 5.f;
+        auto p = Vector::generate_random_point_in_radius(radius);
+        assertInRange(p.length(), 0.f, radius, "point in radius");
+    }
+
+    fn void test_get_points_on_radius()
+    {
+        auto points = Vector::get_points_on_radius(1.f, 4);
+        assertEqual(points.size(), 4ul, "count points");
+        assertInRange(points[0].x, 0.999f, 1.001f, "p0 x");
+        assertInRange(points[0].y, -0.001f, 0.001f, "p0 y");
+        assertInRange(points[1].x, -0.001f, 0.001f, "p1 x");
+        assertInRange(points[1].y, 0.999f, 1.001f, "p1 y");
+    }
+
+    fn void test_get_angle()
+    {
+        Vector v(0, 1);
+        float pi = std::acos(-1.0f);
+        auto angle = Vector::get_angle(v);
+        assertInRange(angle, pi/2.f - 0.001f, pi/2.f + 0.001f, "angle up");
+    }
+
+    fn void test_build_vector()
+    {
+        float pi = std::acos(-1.0f);
+        auto v = Vector::build_vector(pi/2.f);
+        assertInRange(v.x, -0.001f, 0.001f, "build x");
+        assertInRange(v.y, 0.999f, 1.001f, "build y");
+    }
+
+    fn void test_get_angle_between()
+    {
+        Vector a(1, 0);
+        Vector b(0, 1);
+        float pi = std::acos(-1.0f);
+        auto angle = Vector::get_angle_between(a, b);
+        assertInRange(angle, pi/2.f - 0.001f, pi/2.f + 0.001f, "angle between");
+    }
+
+    fn void test_get_signed_angle_between()
+    {
+        Vector a(1, 0);
+        Vector b(0, 1);
+        float pi = std::acos(-1.0f);
+        auto angle = Vector::get_signed_angle_between(a, b);
+        assertInRange(angle, pi/2.f - 0.001f, pi/2.f + 0.001f, "signed positive");
+        Vector c(0, -1);
+        angle = Vector::get_signed_angle_between(a, c);
+        assertInRange(angle, -pi/2.f - 0.001f, -pi/2.f + 0.001f, "signed negative");
+    }
+}
+

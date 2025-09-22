@@ -1,0 +1,41 @@
+class ecs/ComponentCreateUnitsOnDeath<ComponentBase>
+{
+    list<DataUnit:link> units
+    float radius = 100
+}
+
+class ecs/SystemCreateUnitsOnDeath
+{
+    fn void update(ModelEcsBase* model, float dt)
+    {
+        model->each_if<ComponentCreateUnitsOnDeath, ComponentHealth>(
+            [&](auto& component, auto& health)
+            {
+                return health->get_current() <= 0;
+            },
+            [&](auto& component, auto& health)
+            {
+                this->create_units(model, component);
+            });
+        
+    }
+    fn void create_units(ModelEcsBase* model, ComponentCreateUnitsOnDeath* component)
+    {
+        int count = static_cast<int>(component->units.size());
+        auto points = Vector::get_points_on_radius(component->radius, count);
+        auto transform = model->get<Transform>(component->id);
+        for(int i=0; i<count; ++i)
+        {
+            auto pos = transform->position + points[i];
+            if(model->ground->is_bound(pos) && !model->ground->has_collision_with_walls(pos, 0))
+            {
+                //TODO: get level
+                auto data = component->units[i];
+                auto level = 1;
+                auto side = model->get<ComponentSide>(component->id)->side;
+                auto id = BuilderEntity(data).set_level(level).set_side(side).set_position(pos).build(model);
+                model->event_create_entity.notify(id, pos);
+            }
+        }
+    }
+}

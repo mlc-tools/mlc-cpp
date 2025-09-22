@@ -1,0 +1,285 @@
+class systems/SystemEquipment<System>:prefer_use_forward_declarations
+{
+    map<EquipmentSlot, ModelEquipmentSlot*> slots
+    list<ModelEquipment*> items
+
+    Observable<void()> event_inventory_changed
+    Observable<void(EquipmentSlot)> event_slot_changed
+
+    fn void initialize(ModelUser* user)
+    {
+        if(map_size(this->slots) == 0)
+        {
+            this->initialize_slot(EquipmentSlot::weapon);
+            this->initialize_slot(EquipmentSlot::ring);
+            this->initialize_slot(EquipmentSlot::amulet);
+            this->initialize_slot(EquipmentSlot::armor);
+            this->initialize_slot(EquipmentSlot::head);
+            this->initialize_slot(EquipmentSlot::boots);
+
+            if(this->items.empty())
+            {
+                auto item = DataStorage::shared().get<DataEquipment>("weapon_bow_1");
+                auto normal_merge = DataStorage::shared().get<DataMergeLevel>("normal");
+                auto default_weapon = add_item(item, normal_merge);
+                this->equip(default_weapon);
+
+                add_item(DataStorage::shared().get<DataEquipment>("ring_1"), normal_merge);
+                add_item(DataStorage::shared().get<DataEquipment>("amulet_1"), normal_merge);
+                add_item(DataStorage::shared().get<DataEquipment>("body_1"), normal_merge);
+                add_item(DataStorage::shared().get<DataEquipment>("legs_1"), normal_merge);
+                add_item(DataStorage::shared().get<DataEquipment>("head_1"), normal_merge);
+            }
+        }
+    }
+
+    fn void initialize_slot(EquipmentSlot slot)
+    {
+        this->slots[slot] = new ModelEquipmentSlot();
+        this->slots[slot]->slot = slot;
+    }
+
+    fn ModelEquipment* add_item(DataEquipment:link data, DataMergeLevel:link merge_level)
+    {
+        auto model = new ModelEquipment();
+        model->data = data;
+        model->merge_level = merge_level;
+        list_push(this->items, model);
+        this->event_inventory_changed.notify();
+        return model;
+    }
+
+    fn void equip(ModelEquipment* model)
+    {
+        auto slot = model->data->slot;
+        if(this->slots[slot]->item)
+        {
+            unequip(this->slots[slot]->item);
+        }
+
+        this->slots[slot]->item = model;
+        model->equip = true;
+        this->event_slot_changed.notify(slot);
+    }
+
+    fn void unequip(ModelEquipment* model)
+    {
+        auto slot = model->data->slot;
+        this->slots[slot]->item = nullptr;
+        model->equip = false;
+        this->event_slot_changed.notify(slot);
+    }
+
+    fn float get_stat(UnitStat:ref:const stat, float base_value)
+    {
+        auto result = base_value;
+        for(auto&& [slot, model] : this->slots)
+        {
+            result = model->get_stat(stat, result);
+        }
+        return result;
+    }
+
+    fn string get_stat_string(UnitStat:ref:const stat)
+    {
+        std::string result;
+        for(auto&& [slot, model] : this->slots)
+        {
+            auto value = model->get_stat_string(stat);
+            if(!value.empty())
+            {
+                result = value;
+            }
+        }
+        return result;
+    }
+
+    fn list<ModelEquipment*> get_items_with_merge_level(DataMergeLevel:link merge_level)
+    {
+        list<intrusive_ptr<ModelEquipment>> result;
+        for(auto item : this->items)
+        {
+            if(item->merge_level == merge_level)
+            {
+                result.push_back(item);
+            }
+        }
+        return result;
+    }
+
+    fn void request_merge(ModelEquipment* item_to_merge, list<ModelEquipment*>:ref:const merging_items)
+    {
+        assert(item_to_merge->merge_level->next);
+        for(auto item : merging_items)
+        {
+            assert(in_list(item, this->items));
+            list_remove(this->items, item);
+        }
+        this->event_inventory_changed.notify();
+        item_to_merge->merge_level = item_to_merge->merge_level->next;
+    }
+}
+
+enum data/EquipmentSlot
+{
+    weapon
+    ring
+    amulet
+    armor
+    head
+    boots
+}
+
+class model/ModelEquipmentSlot
+{
+    EquipmentSlot slot
+    ModelEquipment* item
+    int upgrade_level = 0
+
+    fn float get_stat(UnitStat:ref:const stat, float base_value)
+    {
+        if(!this->item)
+        {
+            return base_value;
+        }
+        auto result = base_value;
+        if(result == 0)
+        {
+            result = item->get_base_value(stat);
+        }
+        for(auto& level : item->data->merge_stats)
+        {
+            if(level.merge_level->index > this->item->merge_level->index)
+            {
+                break;
+            }
+            if(level.stat == stat)
+            {
+                result = level.modifier.modify(result);
+            }
+        }
+        if(stat == this->item->data->main_stat)
+        {
+            result = result * (1 + 0.2 * this->upgrade_level);
+        }
+        return result;
+    }
+
+    fn string get_stat_string(UnitStat:ref:const stat)
+    {
+        if(!this->item)
+        {
+            return "";
+        }
+        std::string result;
+        for(auto& level : item->data->merge_stats)
+        {
+            if(level.merge_level > this->item->merge_level)
+            {
+                break;
+            }
+            if(level.stat == stat && !level.modifier.string_value.empty())
+            {
+                result = level.modifier.string_value;
+            }
+        }
+        return result;
+    }
+
+    fn list<ComponentBase*> get_ecs_components()
+    {
+        std::vector<intrusive_ptr<ComponentBase>> result;
+        if(!this->item)
+        {
+            return result;
+        }
+        
+        for(auto& level : this->item->data->merge_stats)
+        {
+            if(level.merge_level->index > this->item->merge_level->index)
+            {
+                break;
+            }
+
+            if(level.component != nullptr)
+            {
+                list_push(result, clone_object<ComponentBase>(level.component));
+            }
+        }
+        return result;
+    }
+}
+
+class model/ModelEquipment
+{
+    DataEquipment:link data
+    DataMergeLevel:link merge_level
+    bool equip = false
+
+    fn float get_base_value(UnitStat:ref:const stat)
+    {
+        float result = 0;
+        if(in_map(stat, data->stats))
+        {
+            result = data->stats.at(stat);
+        }
+        else
+        {
+            for(auto& level : this->data->merge_stats)
+            {
+                if(level.merge_level->index > 1)
+                {
+                    break;
+                }
+                if(level.stat == stat)
+                {
+                    result = level.modifier.modify(result);
+                }
+            }
+        }
+        if(stat == this->data->main_stat)
+        {
+            auto level = this->merge_level->index-1;
+            result = result * (1 + 0.2*level);
+        }
+        return result;
+    }
+}
+
+class VisualItem:client
+{
+    string name
+    string desc
+    string icon
+}
+
+class data/DataEquipment:storage
+{
+    VisualItem:client visual
+    string name
+    map<UnitStat, float> stats
+    UnitStat main_stat
+    EquipmentSlot slot
+
+    class Stat
+    {
+        DataMergeLevel:link merge_level
+        UnitStat stat
+        Modifier modifier
+        string desc
+        ComponentBase* component
+        bool is_shown_in_ui = true
+    }
+    list<Stat> merge_stats
+}
+
+class data/DataMergeLevel:storage
+{
+    string name
+    VisualItem:client visual
+
+    int index = 0
+    DataMergeLevel:link next
+    list<DataMergeLevel:link> require_items_to_merge
+    int count_items_to_merge
+}

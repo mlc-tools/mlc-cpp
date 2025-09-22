@@ -1,0 +1,256 @@
+class ecs/ModelEcsBase:prefer_use_forward_declarations
+{
+    ModelUser*:runtime user
+    // ModelUserBase*:runtime opponent=nullptr
+
+    int:private next_free_id = 1
+    int player_id
+    list<int> entities
+    float game_timer = 0.0
+    list<Task*> tasks
+
+    DataLevel:link data
+    int wave_index = 0
+    Ground* ground
+
+    int enemies_level = -1
+    int enemies_rank = -1
+
+    bool wave_finished = false
+
+
+    float timer_wave_interval = 0
+    float timer_wave_duration = 0
+
+    map<DataStatUpgrade:link, int> has_skills
+
+    // common events
+    Observable<void()>:runtime event_did_initialized
+    Observable<void()>:runtime event_wave_finish
+    Observable<void()>:runtime event_wave_start
+    Observable<void()>:runtime event_wave_next // run loading next level view and switch to next level view
+    Observable<void()>:runtime event_exit
+    
+    Observable<void(int entity, Vector:ref:const)>:runtime event_create_entity
+    Observable<void(int entity, Vector:ref:const)>:runtime event_create_bullet
+    Observable<void(int entity)>:runtime event_remove_entity
+    Observable<void(Vector:ref:const pos, float life_time, float radius, string name)>:runtime event_create_marker
+    Observable<void()>:runtime event_hero_level_up
+    Observable<void()>:runtime event_hero_exp_changed
+    
+    //entities events    
+    map<int, Observable<void(int target)>>:runtime event_prepare_to_shoot
+    map<int, Observable<void(int target)>>:runtime event_turn_to
+    map<int, Observable<void(int target)>>:runtime event_shoot
+    map<int, Observable<void()>>:runtime event_death
+    map<int, Observable<void(string, bool)>>:runtime event_skill_animate
+    map<int, Observable<void(int)>>:runtime event_healing
+    map<int, Observable<void()>>:runtime event_shield_activated
+    map<int, Observable<void()>>:runtime event_dodge
+    map<int, Observable<void()>>:runtime event_ressurection
+    map<int, Observable<void(string)>>:runtime event_effects
+    map<int, Observable<void()>>:runtime event_freeze_activated
+    map<int, Observable<void()>>:runtime event_freeze_deactivated
+    map<int, Observable<void()>>:runtime event_fire_activated
+    map<int, Observable<void()>>:runtime event_fire_deactivated
+    map<int, Observable<void()>>:runtime event_stun_activated
+    map<int, Observable<void()>>:runtime event_stun_deactivated
+    map<int, Observable<void(float)>>:runtime event_damaged
+    map<int, Observable<void(ComponentAura*)>>:runtime event_aura_activated
+
+    map<string, Vector> spawn_points
+
+    function int get_free_id()
+    {
+        auto id = this->next_free_id;
+        this->next_free_id += 1;
+        return id;
+    }
+    fn void subscribe()
+    {
+    }
+    fn void unsubscribe()
+    {
+    }
+    function void update(float dt)
+    {
+        this->game_timer += dt;
+        this->update_systems(dt);
+    }
+    // function ModelUserBase* get_user(int entity_id):client
+    // {
+    //     return this->user;
+    // }
+
+    function void update_systems(float dt)
+    {
+        // clean
+        [SystemShieldRestore]
+        [SystemRemoveDamage]
+
+        //spawn
+        [SystemSpawn]
+        [SystemGate]
+        [SystemSpiritSpawn]
+
+        //skills
+        [SystemActions]
+        [SystemMeteor]
+
+        //healing 
+        [SystemHealingOnChangeMaxHp]
+
+        // battles
+        [SystemAuraDamage]
+        [SystemShoot]
+        [SystemSwordsCast]
+        [SystemSwords]
+        [SystemMeleeAttack]
+        [SystemBullet]
+        [SystemFireDamage]
+        [SystemDamage]
+        [SystemCreateUnitsOnDeath]
+        [SystemExp]
+        [SystemDropHeart]
+        [SystemDeath]
+        [SystemBulletFollowToTarget]
+        [SystemEffects]
+        [SystemBulletClean]
+
+        // movements
+        [SystemFreezing]
+        [SystemStun]
+        [SystemAuroOfSlow]
+        [SystemCreateMovement]
+        [SystemMovement]
+        [SystemPush]
+        [SystemResolveCollisions]
+        [SystemSpiritMovement]
+        [SystemSphere]
+    }
+
+    function void add_entity(int id)
+    {
+        list_push(this->entities, id);
+    }
+    function void remove_entity(int id)
+    {
+        if(in_list(id, this->entities))
+        {
+            list_remove(this->entities, id);
+        }
+        this->event_remove_entity.notify(id);
+    }
+
+    function void on_loaded()
+    {
+    }
+
+    function int get_entity_with_name(string name):const
+    {
+        // for(auto data : this->components_data)
+        // {
+        //     if(data->data->name == name)
+        //     {
+        //         return data->id;
+        //     }
+        // }
+        return 0;
+    }
+    function float get_health_rate():const
+    {
+        return 1.0f;
+    }
+}
+class ecs/Task
+{
+    // int delay_turns
+    // FunctionBase* function
+}
+
+class ecs/Cell
+{
+    int row
+    int col
+
+    constructor(int row=0, int col=0)
+    {
+        this->row = row;
+        this->col = col;
+    }
+}
+
+
+
+class ecs/Ground
+{
+    int:static:const WALL = 1
+    int:static:const GROUND = 0
+    
+    list<list<int>> ground
+    list<Polygon> wall_polygons
+
+    float tile_width = 64
+    float tile_heigth = 64
+
+    fn int get_width_tiles():const
+    {
+        return ground.at(0).size();
+    }
+    fn int get_height_tiles():const
+    {
+        return ground.size();
+    }
+
+    fn Vector get_center_position():const
+    {
+        auto width = tile_width * ground[0].size();
+        auto height = tile_heigth * ground.size();
+        return Vector(width / 2, height / 2);
+    }
+
+    fn Cell convert_position_to_tile(Vector:const:ref pos):const
+    {
+        Cell cell;
+        cell.row = pos.y / this->tile_heigth;
+        cell.col = pos.x / this->tile_width;
+        return cell;
+    }
+    fn Vector conver_tile_to_position(Cell:const:ref cell):const
+    {
+        return Vector(cell.col * this->tile_width, cell.row * this->tile_heigth);
+    }
+    fn bool is_bound(Vector:const:ref pos):const
+    {
+        auto width = tile_width * ground[0].size();
+        auto height = tile_heigth * ground.size();
+        return pos.x > 0 && pos.x < width && pos.y > 0 && pos.y < height;
+    }
+    fn bool has_collision_with_walls(Vector:const:ref pos, float radius):const
+    {
+        auto tile = this->convert_position_to_tile(pos);
+        if(this->ground.size() == 0)
+        {
+            return false;
+        }
+        if(tile.row < 0 || tile.row >= list_size(this->ground) || tile.col < 0 || tile.col >= list_size(this->ground[0]))
+        {
+            return true;
+        }
+        if(this->ground[tile.row][tile.col] == WALL)
+        {
+            return true;
+        }
+        for(auto& polygon : this->wall_polygons)
+        {
+            if(CollisionChecker::is_point_inside_polygon(pos, polygon))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
+}

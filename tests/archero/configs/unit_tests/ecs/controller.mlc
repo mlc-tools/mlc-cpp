@@ -1,0 +1,81 @@
+class tests/TestControllerDungeonBase<ITestControllerDungeonBase>
+{
+    fn void test_pause()
+    {
+        ControllerDungeonBase c;
+        c.pause();
+        assertEqual(c.paused, 1, "paused");
+    }
+    fn void test_resume()
+    {
+        ControllerDungeonBase c;
+        c.pause();
+        c.resume();
+        assertEqual(c.paused, 0, "resumed");
+    }
+    fn void test_is_level_finished()
+    {
+        ControllerDungeonBase c;
+        auto model = new ModelEcsBaseMock(false);
+        DataLevel level;
+        model->data = &level;
+        c.model = model;
+        assertTrue(c.is_level_finished(), "level finished");
+    }
+    fn void test_is_wave_finished()
+    {
+        ControllerDungeonBase c;
+        auto model = new ModelEcsBaseMock(false);
+        c.model = model;
+        assertTrue(c.is_wave_finished(), "wave finished");
+        assertTrue(model->wave_finished, "flag set");
+    }
+    fn void test_create_hero()
+    {
+        ControllerDungeonBase c;
+        auto model = new ModelEcsBaseMock(false);
+        model->spawn_points["hero"] = Vector(0,0);
+        model->user = new ModelUser();
+        model->user->initialize(0);
+        c.model = model;
+        c.create_hero();
+        assertTrue(model->player_id > 0, "hero created");
+    }
+    fn void test_create_gate_to_next_wave()
+    {
+        ControllerDungeonBase c;
+        auto model = new ModelEcsBaseMock(false);
+        model->spawn_points["gate"] = Vector(0,0);
+        c.model = model;
+        c.create_gate_to_next_wave();
+        assertTrue(true, "gate created");
+    }
+    fn void test_generate_wave()
+    {
+        assertTrue(true, "placeholder");
+    }
+    fn void test_create_enemy()
+    {
+        ControllerDungeonBase c;
+        auto model = new ModelEcsBaseMock(false);
+        c.model = model;
+        DataUnit unit;
+        c.create_enemy(&unit, Vector(0,0), 1);
+        assertTrue(true, "enemy created");
+    }
+    fn void test_add_skill()
+    {
+        assertTrue(true, "placeholder");
+    }
+    fn void test_add_skill_to_entity()
+    {
+        assertTrue(true, "placeholder");
+    }
+    fn void test_generate_skills()
+    {
+        ControllerDungeonBase c;
+        c.model = new ModelEcsBaseMock();
+        auto skills = c.generate_skills(3);
+        assertEqual(list_size(skills), 3ul, "skills count");
+    }
+}

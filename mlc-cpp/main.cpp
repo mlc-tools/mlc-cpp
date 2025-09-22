@@ -47,13 +47,11 @@ int main() {
 //    app.setConfigsDirectory("/Users/vladimirtolmachev/work/dungeon2/configs");
 
     app.setSide(Side::client);
-    app.addConfigsDirectory("/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/test/config");
-    app.addConfigsDirectory("/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/test/config_additional");
-    app.addDataDirectory("/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/test/data_xml");
-    app.addDataDirectory("/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/test/data_additional");
+    app.addConfigsDirectory("/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/tests/archero/configs");
+    app.addDataDirectory("/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/tests/archero/configs/data");
     
-    app.setOutDirectory("/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/test/gen/");
-    app.setOutDataDirectory("/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/test/assets/");
+    app.setOutDirectory("/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/tests/archero/mg/");
+    app.setOutDataDirectory("/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/tests/archero/");
     app.generate();
     app.generateData();
     

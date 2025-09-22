@@ -1,0 +1,30 @@
+<data>
+    <unit name="enemy_raider_archer">
+        <visual path_to_view="ini/scenes/gameplay/units/enemy_raider_archer.xml"/>
+        <stats>
+            <item key="health" value="300"/>
+            <item key="size" value="15"/>
+            <item key="speed" value="150"/>
+            <item key="recharge" value="3"/>
+            <item key="shoot_radius" value="2000"/>
+            <item key="damage" value="100"/>
+        </stats>
+        <stats_string>
+            <item key="bullet" value="enemy_raider_archer_arrow"/>
+        </stats_string>
+        <components>
+            <ComponentActions>
+                <actions>
+                    <ActionWait name="wait1" duration="1" next_action="shoot"/>
+                    <ActionShoot name="shoot" duration="1"  next_action="wait2"/>
+                    <ActionWait name="wait2" duration="1" next_action="movement1"/>
+                    <ActionMoveToPlayer name="movement1" duration="2" random_duration="0.5" next_action="movement2"/>
+                    <ActionMoveDirection name="movement2" duration="1" random_duration="0.25" next_action="wait1"/>
+                </actions>
+            </ComponentActions>
+            <ComponentExpDrop count="10"/>
+            <ComponentDropHeart/>
+        </components>
+    </unit>
+
+</data>

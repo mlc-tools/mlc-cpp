@@ -1,0 +1,32 @@
+<data>
+    <unit name="enemy_jelly_monster_B">
+        <visual path_to_view="ini/scenes/gameplay/units/enemy_jelly_monster_B.xml"/>
+        <stats>
+            <item key="health" value="250"/>
+            <item key="size" value="40"/>
+            <item key="speed" value="60"/>
+            <item key="damage" value="200"/>
+        </stats>
+        <stats_string>
+            <!-- <item key="bullet" value="enemy_raider_archer_arrow"/> -->
+        </stats_string>
+        <components>
+            <ComponentActions>
+                <actions>
+                    <ActionWait name="start" duration="1" next_action="move"/>
+                    <ActionMoveToPlayer name="move" duration="999" next_action="attack" />
+                    <ActionMeleeAttack name="attack" duration="0.5" next_action="move"/>
+                </actions>
+            </ComponentActions>
+            <ComponentCreateUnitsOnDeath>
+                <units>
+                    <item value="enemy_jelly_monster_C"/>
+                    <item value="enemy_jelly_monster_C"/>
+                    <item value="enemy_jelly_monster_C"/>
+                </units>
+            </ComponentCreateUnitsOnDeath>
+            <ComponentExpDrop count="10"/>
+            <ComponentDropHeart/>
+        </components>
+    </unit>
+</data>

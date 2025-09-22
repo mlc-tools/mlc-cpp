@@ -1,0 +1,1044 @@
+class ecs/ComponentRecharge<ComponentBase>
+{
+    float recharge
+    float attack_animation_timer = 0
+}
+class ecs/ComponentBullet<ComponentBase>
+{
+    int shooter_id
+    int target_id
+    float damage
+    DataUnit:link data
+    bool clean = false
+    bool through_walls = false
+    bool pierce = false
+    BulletType bullet_type
+    int ricochet_bounce = 0
+    int ricochet_wall = 0
+    bool split_on_hit = false
+    int ignore_target_id = -1
+    float ignore_target_timer = 0
+    bool always_life = false
+}
+class ecs/ComponentBulletLaser<ComponentBullet>
+{
+    Segment segment
+    float duration = 0.3
+}
+class ecs/ComponentShootBullet<ComponentBase>
+{
+}
+
+class ecs/ComponentMeleeAttack<ComponentBase>
+{
+}
+class ecs/ComponentTargetHighlight<ComponentBase>
+{
+    int target_id
+}
+class ecs/ComponentBulletSplit<ComponentBase>
+{
+    bool was_split = false
+    int count
+    DataUnit:link to_bullets
+    float split_near_target_radius
+    float timer_to_split = -1
+    bool split_on_remove = true
+}
+class ecs/ComponentShield<ComponentBase>
+{
+    bool initialized = false
+    bool active = true
+    float timer = 0
+    enum Type
+    {
+        wave
+        timer
+    }
+    Type activate_type
+}
+class ecs/ComponentEffects<ComponentBase>
+{
+    float damage_mul = 1
+    float damage_mul_timer = 0
+
+    fn float modify_damage(float damage):const
+    {
+        if(this->damage_mul_timer <= 0)
+        {
+            return damage;
+        }
+        return damage * this->damage_mul;
+    }
+}
+
+class ecs/SystemShoot
+{
+    @include ComponentTargetable
+
+    fn void update(ModelEcsBase* model, float dt)
+    {
+        for(auto& component : model->components_recharge)
+        {
+            auto freezing = model->get<Freezing>(component->id);
+            if(freezing && freezing->activated)
+            {
+                continue;
+            }
+            if(auto stun = model->get<ComponentStun>(component->id))
+            {
+                if(stun->activated)
+                {
+                    continue;
+                }
+            }
+            component->recharge -= dt;
+            component->attack_animation_timer -= dt;
+        }
+        model->each_if<ComponentShootBullet, ComponentRecharge>(
+            [this, model](auto& component_shoot_bullet, auto& component_recharge)
+            {
+                return component_recharge->recharge <= 0;
+            },
+            [this, model](auto& component_shoot_bullet, auto& component_recharge)
+            {
+                if(component_recharge->recharge <= 0)
+                {
+                    this->try_shoot(model, component_recharge);
+                }
+            });
+    }
+
+    fn void try_shoot(ModelEcsBase* model, ComponentRecharge* component)
+    {
+        assert(component->recharge <= 0);
+        auto component_stats = model->get<ComponentStats>(component->id);
+
+        int target = -1;
+        auto target_highlight = model->get<ComponentTargetHighlight>(component->id);
+        if(target_highlight)
+        {
+            target = this->find_target(model, component);
+            target_highlight->target_id = target;
+        }
+
+        bool can_shoot_on_move = component_stats->get(model, UnitStat::attack_on_move) > 0;
+        if(!can_shoot_on_move && (model->get<MoveDirection>(component->id) || model->get<MoveToTarget>(component->id)))
+        {
+            return;
+        }
+        
+        if(target == -1)
+        {
+            target = this->find_target(model, component);
+        }
+        if(target > 0)
+        {
+            this->shoot(model, component, target);
+        }
+    }
+
+    fn int find_target(ModelEcsBase* model, ComponentRecharge* component)
+    {
+        auto radius = model->get<ComponentStats>(component->id)->get(model, UnitStat::shoot_radius);
+        auto side_shooter = model->get<ComponentSide>(component->id);
+        auto transform_shooter = model->get<Transform>(component->id);
+        auto target = this->get_nearest_entity_in_radius(model, component->id, radius, side_shooter, transform_shooter);
+        return target;
+    }
+
+    fn int get_nearest_entity_in_radius(ModelEcsBase* model, int shooter, float radius, ComponentSide* side_shooter, Transform* transform_shooter, bool with_future=true, int prev_target=-1):static
+    {
+        auto min_radius_sq = radius * radius;
+        auto min_hp = 10000;
+        auto result = 0;
+        
+        model->each_if<ComponentSide, ComponentTargetable, ComponentHealth, Transform>(
+            [&](auto& component_side, auto& targetable, auto& health, auto& transform)
+            {
+                return component_side->id != prev_target && side_shooter->is_enemy(component_side->side) && (!with_future || health->get_future_value() > 0);
+            },
+            [&](auto& component_side, auto& targetable, auto& health, auto& transform)
+            {
+                auto dist = transform_shooter->position.get_distance_sq(transform->position);
+                if(dist <= min_radius_sq || (health->get_future_value() < min_hp && dist <= min_radius_sq * 1.1f))
+                {
+                    result = health->id;
+                    min_radius_sq = dist;
+                    min_hp = health->get_future_value();
+                }
+            });
+
+        if(result == 0 && with_future)
+        {
+            return get_nearest_entity_in_radius(model, shooter, radius, side_shooter, transform_shooter, false);
+        }
+        return result;
+    }
+
+    fn void shoot(ModelEcsBase* model, ComponentRecharge* component, int target)
+    {
+        auto stats = model->get<ComponentStats>(component->id);
+        model->event_prepare_to_shoot[component->id].notify(target);
+        
+        // forward
+        float bullets_count = 1 + stats->get(model, UnitStat::bullets_count);
+        auto direction = model->get<Transform>(target)->position - model->get<Transform>(component->id)->position;
+        auto normal = Vector(0, 0);
+        auto offset = Vector(0, 0);
+        if(bullets_count > 1)
+        {
+            normal = Vector::get_normal_to(direction) * 30;
+            offset = normal * (bullets_count * 0.5f - 0.5f);
+        }
+        for(float i=0; i<bullets_count; ++i)
+        {
+            BuilderBullet(component->id).set_target_id(target).set_offset_create(offset).build(model);
+            // this->create_bullet(model, component->id, target, Vector::ZERO, offset, 0);
+            offset -= normal;
+        }
+
+        // back
+        float bullets_count_back = stats->get(model, UnitStat::bullets_count_back);
+        if(bullets_count_back > 0)
+        {
+            auto back_dir = -direction;
+            back_dir.normalize();
+            auto back_normal = Vector::get_normal_to(direction) * 30;
+            auto back_offset = back_normal * (bullets_count_back * 0.5f - 0.5f);
+            for(float i=0; i<bullets_count_back; ++i)
+            {
+                BuilderBullet(component->id).set_direction(back_dir).set_offset_create(back_offset).build(model);
+                back_offset -= back_normal;
+            }
+        }
+
+        // side
+        float bullets_count_side = stats->get(model, UnitStat::bullets_count_side);
+        if(bullets_count_side > 0)
+        {
+            auto bullets_count_side_deviation = stats->get(model, UnitStat::bullets_count_side_deviation);
+            if(bullets_count_side_deviation == 0)
+            {
+                bullets_count_side_deviation = 1;
+            }
+            int angle = 0;
+            if(bullets_count_side <= 2)
+            {
+                angle = 30;
+            }
+            else if(bullets_count_side <= 4)
+            {
+                angle = 25;
+            }
+            else
+            {
+                angle = 20;
+            }
+            angle *= bullets_count_side_deviation;
+            float radian_angle = angle * M_PI / 180;
+            float first = radian_angle * -bullets_count_side / 2;
+            for(float i=0; i<bullets_count_side; ++i)
+            {
+                BuilderBullet(component->id).set_target_id(target).set_deviation_from_direction(first).build(model);
+                // this->create_bullet(model, component->id, target, Vector::ZERO, Vector::ZERO, first);
+                first += radian_angle;
+                if(std::fabs(first) < 0.001f)
+                {
+                    first += radian_angle;
+                }
+            }
+        }
+
+        auto meteor_chance = stats->get(model, UnitStat::meteor_chance);
+        if(meteor_chance > 0 && random_float() < meteor_chance)
+        {
+            int meteor_count = 1 + stats->get(model, UnitStat::meteor_count);
+            SystemMeteor::create_meteor(model, component->id, meteor_count, target);
+        }
+
+        model->event_shoot[component->id].notify(target);
+        component->recharge = model->get<ComponentStats>(component->id)->get(model, UnitStat::recharge);
+        component->attack_animation_timer = model->get<ComponentSpineInfo>(component->id)?->get_animation_duration("attack");
+    }
+}
+
+class ecs/SystemBulletClean
+{
+    @include ComponentBullet
+    @include ComponentBulletLaser
+
+    fn void update(ModelEcsBase* model, float dt)
+    {
+    }
+    fn void clean(ModelEcsBase* model)
+    {
+        list_do_if(model->components_bullet, (component :> component->clean :> SystemBullet::remove_bullet(model, component)));
+        list_do_if(model->components_bullet_laser, (bullet :> bullet->duration < 0 :> SystemBullet::remove_bullet(model, bullet)));
+    }
+}
+
+class ecs/SystemBullet
+{
+    @include ComponentTargetable
+
+    fn void update(ModelEcsBase* model, float dt)
+    {
+        model->each<ComponentBullet, Transform, ComponentStats, ComponentSide>(
+            [&](auto& bullet, auto& transform, auto& stats, auto& side)
+            {
+                this->update_bullet(model, bullet, transform, stats, side, dt);
+            });
+        this->update_split(model, dt);
+        this->update_lasers(model, dt);
+    }
+
+    fn void update_bullet(ModelEcsBase* model, ComponentBullet* component, Transform* transform, ComponentStats* bullet_stats, ComponentSide* side_bullet, float dt)
+    {
+        if(component->ignore_target_timer > 0)
+        {
+            component->ignore_target_timer -= dt;
+            if(component->ignore_target_timer <= 0)
+            {
+                component->ignore_target_id = -1;
+            }
+        }
+
+        if(auto movement = model->get<MoveToTarget>(component->id))
+        {
+            if(!model->get<ComponentHealth>(movement->target_id))
+            {
+                auto move_direction = new MoveDirection();
+                move_direction->direction = movement->direction;
+                if(move_direction->direction == Vector::ZERO)
+                {
+                    move_direction->direction = Vector(1, 0);
+                }
+                model->add(move_direction, movement->id);
+
+                model->remove(movement);
+                return;
+            }
+        }
+
+        auto move_parabolic = model->get<MoveParabolic>(component->id);
+        auto move_vertical = model->get<MoveVertical>(component->id);
+        auto push_speed = bullet_stats->get(model, UnitStat::push_target);
+        float bullet_size = bullet_stats->get(model, UnitStat::size);
+        if(bullet_size == 0)
+        {
+            bullet_size = 20;
+        }
+
+        if(!move_parabolic && !move_vertical)
+        {
+            model->each_if<ComponentSide, Transform, ComponentStats, ComponentTargetable, ComponentSpineInfo>(
+                [&](auto& component_side, auto& target_transform, auto& component_stats, auto& component_targetable, auto& spine)
+                {
+                    if(component_side->id == component->ignore_target_id)
+                    {
+                        return false;
+                    }
+                    if(side_bullet->is_enemy(component_side->side))
+                    {
+                        float size = component_stats->get(model, UnitStat::size);
+                        auto result = SystemResolveCollisions().is_collision(transform, target_transform, size, bullet_size);
+                        if(!result)
+                        {
+                            auto head = spine->get_bone_position("head");
+                            result = SystemResolveCollisions().is_collision(transform, target_transform, size, bullet_size, head);
+                        }
+                        return result;
+                    }
+                    return false;
+                },
+                [&](auto& component_side, auto& target_transform, auto& component_stats, auto& component_targetable, auto& spine)
+                {
+                    if(!component->clean)
+                    {
+                        this->damage(model, component, component_targetable->id);
+
+                        if(push_speed > 0)
+                        {
+                            auto push = new ComponentPush();
+                            push->speed = push_speed;
+                            push->direction = transform->position - transform->prev_position;
+                            push->direction.normalize();
+                            model->add(push, component_targetable->id);
+                        }
+
+                        if(auto health_prev = model->get<ComponentHealth>(component_targetable->id))
+                        {
+                            health_prev->remove_future_damage(component->shooter_id);
+                        }
+
+                        if(this->try_ricochet(model, component, side_bullet, transform, component_targetable->id))
+                        {
+                            return;
+                        }
+                        this->split_on_hit(model, component, transform, component_targetable->id);
+                        if(component->pierce)
+                        {
+                            component->ignore_target_id = component_targetable->id;
+                        }
+                        else if(component->always_life)
+                        {
+                            component->ignore_target_id = component_targetable->id;
+                            component->ignore_target_timer = 1;
+                        }
+                        else
+                        {
+                            component->clean = true;
+                        }
+                    }
+                });
+        }
+        else if(move_parabolic && move_parabolic->done)
+        {
+            this->damage_massive(model, component);
+            component->clean = true;
+        }
+        else if(move_vertical && move_vertical->done)
+        {
+            this->damage_massive(model, component);
+            component->clean = true;
+        }
+
+    }
+    fn void update_split(ModelEcsBase* model, float dt)
+    {
+        auto player_transform = model->get<Transform>(model->player_id);
+        model->each_if<ComponentBulletSplit, Transform, ComponentBullet, MoveDirection>(
+            [&](auto& component_split, auto& transform, auto& bullet, auto& move)
+            {
+                return !component_split->was_split;
+            },
+            [&](auto& component_split, auto& transform, auto& bullet, auto& move)
+            {
+                if(component_split->split_near_target_radius > 0)
+                {
+                    auto target_transform = player_transform;
+                    if(bullet->shooter_id == model->player_id)
+                    {
+                        auto component_target = model->get<ComponentTargetHighlight>(model->player_id);
+                        target_transform = model->get<Transform>(component_target->target_id);
+                    }
+                    assert(target_transform);
+                    auto distance = target_transform->position.get_distance_sq(transform->position);
+                    if(distance <= component_split->split_near_target_radius * component_split->split_near_target_radius)
+                    {
+                        SystemBullet::split_bullet(model, bullet, component_split);
+                    }
+                }
+                
+                if(!component_split->was_split && !model->ground->is_bound(transform->position + move->direction * 50))
+                {
+                    SystemBullet::split_bullet(model, bullet, component_split);
+                }
+                if(!component_split->was_split && component_split->timer_to_split > 0 && (component_split->timer_to_split -= dt) <= 0)
+                {
+                    SystemBullet::split_bullet(model, bullet, component_split);
+                }
+            });
+    }
+    fn void update_lasers(ModelEcsBase* model, float dt)
+    {
+        model->each<ComponentBulletLaser, Transform, ComponentSide>([&]
+            (auto& bullet, auto& transform, auto& side_bullet)
+            {
+                auto target_transform = model->get<Transform>(bullet->target_id);
+                auto target_spine = model->get<ComponentSpineInfo>(bullet->target_id);
+                Vector head_pos;
+                if(target_transform)
+                {
+                    head_pos = target_spine->get_bone_position("head");
+                    bullet->segment.end = target_transform->position + head_pos;
+                }
+                auto shooter_transform = model->get<Transform>(bullet->shooter_id);
+                auto shooter_spine = model->get<ComponentSpineInfo>(bullet->shooter_id);
+                if(shooter_transform && shooter_spine)
+                {
+                    transform->set(shooter_transform->position + shooter_spine->get_bone_position("shot"));
+                    bullet->segment.start = transform->position;
+                }
+
+                auto dir = (bullet->segment.end - transform->position).normalize();
+                auto end_pos = SystemResolveCollisions::find_collision_ray_and_walls(model, bullet->segment.start, dir, 200);
+                if(end_pos != Vector::ZERO)
+                {
+                    bullet->segment.end = end_pos;
+                }
+
+                model->each_if<ComponentSide, Transform, ComponentStats, ComponentTargetable, ComponentSpineInfo>(
+                [&](auto& component_side, auto& target_transform, auto& component_stats, auto& component_targetable, auto& spine)
+                {
+                    if(side_bullet->is_enemy(component_side->side))
+                    {
+                        float size = component_stats->get(model, UnitStat::size);
+                        auto result = CollisionChecker::has_collision(bullet->segment, Circle(target_transform->position + head_pos, size));
+                        return result;
+                    }
+                    return false;
+                },
+                [&](auto& component_side, auto& target_transform, auto& component_stats, auto& component_targetable, auto& spine)
+                {
+                    this->damage(model, bullet, component_targetable->id, dt / 0.3f);
+                });
+
+                bullet->duration -= dt;
+            });
+    }
+    fn bool try_ricochet(ModelEcsBase* model, ComponentBullet* component, ComponentSide* side_bullet, Transform* transform, int prev_target_id)
+    {
+        if(component->ricochet_bounce <= 0)
+        {
+            return false;
+        }
+        auto new_target = SystemShoot::get_nearest_entity_in_radius(model, component->id, 1000, side_bullet, transform, true, prev_target_id);
+        if(new_target > 0 && new_target != prev_target_id)
+        {
+            --component->ricochet_bounce;
+            component->damage *= 0.5f;
+            component->target_id = new_target;
+            component->ignore_target_id = prev_target_id;
+            transform->prev_position = transform->position;
+            if(auto target_tr = model->get<Transform>(new_target))
+            {
+                auto dir = (target_tr->position - transform->position).normalize();
+                if(auto move_dir = model->get<MoveDirection>(component->id))
+                {
+                    move_dir->direction = dir;
+                }
+                else if(auto move_to = model->get<MoveToTarget>(component->id))
+                {
+                    move_to->target_id = new_target;
+                    move_to->direction = dir;
+                }
+            }
+            if(auto health_new = model->get<ComponentHealth>(new_target))
+            {
+                health_new->add_future_damage(component->shooter_id, component->damage);
+            }
+            return true;
+        }
+        return false;
+    }
+    fn void split_on_hit(ModelEcsBase* model, ComponentBullet* bullet, Transform* transform, int target_id):static
+    {
+        if(!bullet->split_on_hit)
+        {
+            return;
+        }
+        auto direction = transform->position - transform->prev_position;
+        direction.normalize();
+        auto base_angle = Vector::get_angle(direction);
+        auto angle1 = base_angle + 45.f * M_PI / 180.f;
+        auto angle2 = base_angle - 45.f * M_PI / 180.f;
+
+        float base_damage = bullet->damage;
+        if(base_damage <= 0)
+        {
+            base_damage = SystemDamage::compute_damage(model, bullet->shooter_id, target_id);
+        }
+
+        auto id1 = BuilderBullet(bullet->shooter_id).set_name(bullet->data->name).set_direction(Vector::build_vector(angle1)).set_position_create(transform->position).build(model);
+        auto b1 = model->get<ComponentBullet>(id1);
+        b1->damage = base_damage * 0.25f;
+        b1->split_on_hit = false;
+        b1->ignore_target_id = target_id;
+
+        auto id2 = BuilderBullet(bullet->shooter_id).set_name(bullet->data->name).set_direction(Vector::build_vector(angle2)).set_position_create(transform->position).build(model);
+        auto b2 = model->get<ComponentBullet>(id2);
+        b2->damage = base_damage * 0.25f;
+        b2->split_on_hit = false;
+        b2->ignore_target_id = target_id;
+    }
+    fn void damage(ModelEcsBase* model, ComponentBullet* component, int target_id, float mul=1.f)
+    {
+        BuilderDamage().set_damage(component->damage * mul).build(model, component->shooter_id, component->id, target_id);
+    }
+    fn void damage_massive(ModelEcsBase* model, ComponentBullet* component)
+    {
+        auto stats = model->get<ComponentStats>(component->id);
+        auto transform = model->get<Transform>(component->id);
+        auto radius = stats->get(model, UnitStat::damage_mass_radius);
+        auto side = model->get<ComponentSide>(component->id)->side;
+
+        model->each_if<Transform, ComponentSide, ComponentTargetable>(
+            [&](auto& target_transform, auto& component_side, auto& targetable)
+            {
+                return component_side->is_enemy(side) && target_transform->position.get_distance_sq(transform->position) < radius* radius;
+            },
+            [&](auto& target_transform, auto& component_side, auto& targetable)
+            {
+                BuilderDamage().build(model, component->shooter_id, component->id, target_transform->id);
+            }
+        );
+    }
+    fn void remove_bullet(ModelEcsBase* model, ComponentBullet* bullet):static
+    {   
+        auto health = model->get<ComponentHealth>(bullet->target_id);
+        if(health)
+        {
+            health->remove_future_damage(bullet->shooter_id);
+        }
+
+
+        auto component_split = model->get<ComponentBulletSplit>(bullet->id);
+        if(component_split && !component_split->was_split && component_split->split_on_remove)
+        {
+            SystemBullet::split_bullet(model, bullet, component_split);
+        }
+        model->remove_entity(bullet->id);
+    }
+    fn void split_bullet(ModelEcsBase* model, ComponentBullet* bullet, ComponentBulletSplit* component_split):static
+    {   
+        auto transform = model->get<Transform>(component_split->id);
+        auto directions = Vector::get_points_on_radius(1, component_split->count);
+        for(auto& direction : directions)
+        {
+            BuilderBullet(bullet->shooter_id).set_name(component_split->to_bullets->name).set_direction(direction).set_position_create(transform->position).build(model);
+        }
+        component_split->was_split = true;
+        bullet->clean = true;
+    }
+}
+
+class ecs/SystemDamage
+{
+    @include ComponentDamage
+    fn void update(ModelEcsBase* model, float dt)
+    {
+        for(auto& component : model->components_damage)
+        {
+            auto shield = model->get<ComponentShield>(component->target_id);
+            if(shield && shield->active)
+            {
+                shield->active = false;
+                continue;
+            }
+            auto health = model->get<ComponentHealth>(component->target_id);
+            auto stats_attacker = model->get<ComponentStats>(component->attacker_id);
+            auto stats_target = model->get<ComponentStats>(component->target_id);
+            auto damage = component->damage;
+            if(damage == 0)
+            {
+                damage = SystemDamage::compute_damage(model, component->attacker_id, component->target_id, stats_attacker);
+            }
+            auto is_dodge = SystemDamage::is_dodge(model, component->attacker_id, component->target_id, stats_attacker, stats_target);
+            auto freeze_chance = SystemDamage::compute_freeze_chance(model, component, component->attacker_id, component->target_id, stats_attacker, stats_target);
+            auto freeze_damage = SystemDamage::compute_freeze_damage(model, component, component->attacker_id, component->target_id, stats_attacker, stats_target);
+            auto stun_chance = SystemDamage::compute_stun_chance(model, component, component->attacker_id, component->target_id, stats_attacker, stats_target);
+            auto stun_duration = SystemDamage::compute_stun_duration(model, component, component->attacker_id, component->target_id, stats_attacker, stats_target);
+            auto fire_damage = SystemDamage::compute_fire_damage(model, component, component->attacker_id, component->target_id, stats_attacker, stats_target);
+            auto electric_damage = SystemDamage::compute_electric_damage(model, component, component->attacker_id, component->target_id, stats_attacker, stats_target);
+
+            if(is_dodge)
+            {
+                //TODO: listen and create effect in view
+                model->event_dodge[component->target_id].notify();
+                if(health)
+                {
+                    health->remove_future_damage(component->attacker_id);
+                }
+            }
+            else
+            {
+                if(damage == 0)
+                {
+                    damage = component->damage;
+                }
+                if(health && damage > 0)
+                {
+                    health->damage(component->attacker_id, damage);
+                    model->event_damaged[health->id].notify(damage);
+                    this->check_effects_after_damage(model, component, stats_attacker, stats_target);
+
+                    if(freeze_damage > 0)
+                    {
+                        SystemFreezing::add_damage(model, component->target_id, stats_target, freeze_damage);
+                    }
+                    if(freeze_chance > 0 && random_float() < freeze_chance)
+                    {
+                        SystemFreezing::add_damage(model, component->target_id, stats_target, 1);
+                    }
+                    if(stun_chance > 0 && random_float() < stun_chance)
+                    {
+                        SystemStun::apply(model, component->target_id, std::max(0.5f, stun_duration));
+                    }
+                    if(fire_damage > 0)
+                    {
+                        SystemFireDamage::add_damage(model, component->attacker_id, component->target_id, fire_damage);
+                    }
+                    if(electric_damage > 0)
+                    {
+                        SystemElectricDamage::add_damage(model, component->attacker_id, component->target_id, electric_damage);
+                    }
+                    if(health->get_current() <= 0)
+                    {
+                        SystemVampire::on_kill(model, component->attacker_id, component->target_id);
+                        this->check_effects_on_kill(model, stats_attacker, stats_target);
+                    }
+                }
+            }
+        }
+    }
+
+    fn float compute_damage(ModelEcsBase* model, int shooter_id, int target_id, ComponentStats* stats_attacker=nullptr):static
+    {
+        if(!stats_attacker)
+        {
+            stats_attacker = model->get<ComponentStats>(shooter_id);
+        }
+        float damage = 0;
+        if(stats_attacker)
+        {
+            damage = stats_attacker->get(model, UnitStat::damage);
+            auto damage_distance = stats_attacker->get(model, UnitStat::damage_distance);
+            if(damage_distance > 0)
+            {
+                auto transform_shooter = model->get<Transform>(shooter_id);
+                auto transform_target = model->get<Transform>(target_id);
+                if(transform_shooter && transform_target)
+                {
+                    auto dist = transform_shooter->position.get_distance(transform_target->position);
+                    damage *= 1.f + dist / 1000.f * damage_distance;
+                }
+            }
+            // Boss bonus damage
+            if(auto target_data = model->get<ComponentData>(target_id))
+            {
+                if(target_data->data && target_data->data->is_boss)
+                {
+                    auto bonus = stats_attacker->get(model, UnitStat::damage_to_boss);
+                    if(bonus > 0)
+                    {
+                        damage *= 1.f + bonus;
+                    }
+                }
+            }
+        }
+        else if(auto health = model->get<ComponentHealth>(target_id))
+        {
+            damage = health->get_future_damage(shooter_id);
+        }
+
+        if(auto component_effects = model->get<ComponentEffects>(shooter_id))
+        {
+            damage = component_effects->modify_damage(damage);
+        }
+        return damage;
+    }
+
+    fn float is_dodge(ModelEcsBase* model, int shooter_id, int target_id, ComponentStats* stats_attacker, ComponentStats* stats_target):static
+    {
+        auto dodge = stats_target->get(model, UnitStat::dodge);
+        if(dodge > 0)
+        {
+            return random_float() < dodge;
+        }
+        return false;
+    }
+
+    fn float compute_freeze_chance(ModelEcsBase* model, ComponentDamage* component_damage, int shooter_id, int target_id, ComponentStats* stats_attacker, ComponentStats* stats_target):static
+    {
+        float chance = 0;
+        if(stats_attacker)
+        {
+            chance += stats_attacker->get(model, UnitStat::freeze_chance);
+        }
+        if(auto stats = model->get<ComponentStats>(component_damage->bullet_id))
+        {
+            chance += stats->get(model, UnitStat::freeze_chance);
+        }
+        return chance;
+    }
+
+    fn float compute_stun_chance(ModelEcsBase* model, ComponentDamage* component_damage, int shooter_id, int target_id, ComponentStats* stats_attacker, ComponentStats* stats_target):static
+    {
+        float chance = 0;
+        if(stats_attacker)
+        {
+            chance += stats_attacker->get(model, UnitStat::stun_chance);
+        }
+        if(auto stats = model->get<ComponentStats>(component_damage->bullet_id))
+        {
+            chance += stats->get(model, UnitStat::stun_chance);
+        }
+        return chance;
+    }
+
+    fn float compute_stun_duration(ModelEcsBase* model, ComponentDamage* component_damage, int shooter_id, int target_id, ComponentStats* stats_attacker, ComponentStats* stats_target):static
+    {
+        float duration = 0;
+        if(stats_attacker)
+        {
+            duration += stats_attacker->get(model, UnitStat::stun_duration);
+        }
+        if(auto stats = model->get<ComponentStats>(component_damage->bullet_id))
+        {
+            duration += stats->get(model, UnitStat::stun_duration);
+        }
+        return duration;
+    }
+
+    fn float compute_freeze_damage(ModelEcsBase* model, ComponentDamage* component_damage, int shooter_id, int target_id, ComponentStats* stats_attacker, ComponentStats* stats_target):static
+    {
+        float freeze_damage = 0;
+        if(stats_attacker)
+        {
+            freeze_damage += stats_attacker->get(model, UnitStat::freeze);
+        }
+        if(auto stats = model->get<ComponentStats>(component_damage->bullet_id))
+        {
+            freeze_damage += stats->get(model, UnitStat::freeze);
+        }
+        return freeze_damage;
+    }
+
+    fn float compute_fire_damage(ModelEcsBase* model, ComponentDamage* component_damage, int shooter_id, int target_id, ComponentStats* stats_attacker, ComponentStats* stats_target):static
+    {
+        float fire_damage = 0;
+        if(stats_attacker)
+        {
+            fire_damage += stats_attacker->get(model, UnitStat::fire_damage);
+        }
+        if(auto stats = model->get<ComponentStats>(component_damage->bullet_id))
+        {
+            fire_damage += stats->get(model, UnitStat::fire_damage);
+        }
+        return fire_damage;
+    }
+
+    fn float compute_electric_damage(ModelEcsBase* model, ComponentDamage* component_damage, int shooter_id, int target_id, ComponentStats* stats_attacker, ComponentStats* stats_target):static
+    {
+        float electric_damage = 0;
+        if(stats_attacker)
+        {
+            electric_damage += stats_attacker->get(model, UnitStat::electric_damage);
+        }
+        if(auto stats = model->get<ComponentStats>(component_damage->bullet_id))
+        {
+            electric_damage += stats->get(model, UnitStat::electric_damage);
+        }
+        return electric_damage;
+    }
+
+    fn float compute_future_damage(ModelEcsBase* model, int shooter_id, int bullet_id, int target_id):static
+    {
+        return SystemDamage::compute_damage(model, shooter_id, target_id);
+    }
+
+    fn void check_effects_after_damage(ModelEcsBase* model, ComponentDamage* damage, ComponentStats* stats_attacker, ComponentStats* stats_target)
+    {
+        auto damage_after_damaged = stats_target->get(model, UnitStat::damage_after_damaged);
+        if(damage_after_damaged > 0)
+        {
+            auto component_effects = model->get<ComponentEffects>(damage->target_id);
+            if(component_effects)
+            {
+                //TODO: effects
+                model->event_effects[component_effects->id].notify("activate_timed_damage");
+                component_effects->damage_mul = damage_after_damaged;
+                component_effects->damage_mul_timer = 5;
+            }
+        }
+    }
+    fn void check_effects_on_kill(ModelEcsBase* model, ComponentStats* stats_attacker, ComponentStats* stats_target):static
+    {
+        auto damage_after_kill = stats_attacker->get(model, UnitStat::damage_after_kill);
+        if(damage_after_kill > 0)
+        {
+            auto component_effects = model->get<ComponentEffects>(stats_attacker->id);
+            if(component_effects)
+            {
+                //TODO: effects
+                model->event_effects[component_effects->id].notify("activate_timed_damage");
+                component_effects->damage_mul = damage_after_kill;
+                component_effects->damage_mul_timer = 5;
+            }
+        }
+    }
+}
+
+class ecs/SystemRemoveDamage
+{
+    @include ComponentDamage
+    fn void update(ModelEcsBase* model, float dt)
+    {
+    }
+    fn void clean(ModelEcsBase* model)
+    {
+        model->components_damage.clear();
+    }
+}
+
+class ecs/SystemDeath
+{
+    fn void update(ModelEcsBase* model, float dt)
+    {
+        for(auto& health : model->components_health)
+        {
+            if(health->get_current() <= 0 && !is_ressurection(model, health))
+            {
+                this->death(model, health);
+            }
+        }
+    }
+    fn void clean(ModelEcsBase* model)
+    {
+        list_do_if(model->components_health, (component :> component->get_current() <= 0 :> model->remove_entity(component->id)));
+    }
+
+    fn void death(ModelEcsBase* model, ComponentHealth* health)
+    {
+        model->event_death[health->id].notify();
+    }
+    fn bool is_ressurection(ModelEcsBase* model, ComponentHealth* health)
+    {
+        auto stats = model->get<ComponentStats>(health->id);
+        auto ressurection = stats->get(model, UnitStat::ressurection);
+        if(health->ressurection_count < ressurection)
+        {
+            health->ressurection_count += 1;
+            health->set_current(health->max);
+
+            //TODO: show effect
+            model->event_ressurection[health->id].notify();
+            return true;
+        }
+        return false;
+    }
+}
+
+class ecs/SystemMeleeAttack
+{
+    fn void update(ModelEcsBase* model, float dt)
+    {
+        model->each_if<ComponentMeleeAttack, ComponentRecharge, ComponentBusy, Transform>(
+            [&](auto& component_attack, auto& component_recharge, auto& busy, auto& transform)
+            {
+                auto stun = model->get<ComponentStun>(component_recharge->id);
+                bool stunned = stun && stun->activated;
+                return !busy->is_busy && !stunned && component_recharge->recharge <= 0;
+            },
+            [&](auto& component_attack, auto& component_recharge, auto& busy, auto& transform)
+            {
+                this->try_attack(model, component_attack, component_recharge, transform);
+            });
+    }
+    fn void try_attack(ModelEcsBase* model, ComponentMeleeAttack* component, ComponentRecharge* component_recharge, Transform* transform)
+    {
+        auto transform_hero = model->get<Transform>(model->player_id);
+        float size = 20;
+        size += model->get<ComponentStats>(component->id)->get(model, UnitStat::size);
+        size += model->get<ComponentStats>(model->player_id)->get(model, UnitStat::size);
+        if(transform_hero->position.get_distance_sq(transform->position) <= size*size)
+        {
+            this->damage(model, component, component_recharge, model->player_id);
+        }
+
+    }
+    fn void damage(ModelEcsBase* model, ComponentMeleeAttack* component, ComponentRecharge* component_recharge, int target)
+    {
+        model->event_prepare_to_shoot[component->id].notify(target);
+        model->event_shoot[component->id].notify(target);
+        component_recharge->recharge = model->get<ComponentStats>(component->id)->get(model, UnitStat::recharge);
+    }
+
+}
+class ecs/ComponentBulletFollowToTarget<ComponentBase>
+{
+    int target_id
+    float idle = 0.1f
+    float change_angle_speed = 1
+}
+class ecs/SystemBulletFollowToTarget
+{
+    fn void update(ModelEcsBase* model, float dt)
+    {
+        model->each_if<ComponentBulletFollowToTarget, ComponentBullet, Transform>(
+            [&](auto& follow, auto& bullet, auto& transform)
+            {
+                return bullet->shooter_id == model->player_id && model->get<Transform>(follow->target_id) == nullptr;
+            },
+            [&](auto& follow, auto& bullet, auto& transform)
+            {
+                auto hero_target = model->get<ComponentTargetHighlight>(model->player_id);
+                follow->target_id = hero_target->target_id;
+            });
+
+        model->each_if<ComponentBulletFollowToTarget, MoveDirection, Transform>(
+            [&](auto& follow, auto& movement, auto& transform)
+            {
+                follow->idle -= dt;
+                return follow->idle <= 0 && model->get<Transform>(follow->target_id) != nullptr;
+            },
+            [&](auto& follow, auto& movement, auto& transform)
+            {
+                auto target_transform = model->get<Transform>(follow->target_id);
+                auto current_angle = Vector::get_angle(movement->direction);
+                // TODO: add spine head pos
+                auto goal_direction = Vector::get_angle(target_transform->position - transform->position);
+                auto diff = Vector::get_signed_angle_between(movement->direction, target_transform->position - transform->position);
+                if(std::fabs(diff) < 60 * M_PI / 180)
+                {
+                    auto t = std::min(1.f, follow->change_angle_speed * dt);
+                    auto new_angle = current_angle + diff * t;
+                    movement->direction = Vector::build_vector(new_angle);
+                }
+            });
+    }
+}
+
+class ecs/SystemShieldRestore
+{
+    @include ComponentShield
+
+    fn void update(ModelEcsBase* model, float dt)
+    {
+        for(auto& component : model->components_shield)
+        {
+            if(!component->initialized && component->activate_type == ComponentShieldType::wave)
+            {
+                model->event_wave_start.add(component, [component, model]() mutable
+                    {
+                        component->active = true;
+                        model->event_shield_activated[component->id].notify();
+                    });
+                component->initialized = true;
+            }
+            if(component->activate_type == ComponentShieldType::timer && !component->active)
+            {
+                component->timer -= dt;
+                if(component->timer <= 0)
+                {
+                    component->active = true;
+                    model->event_shield_activated[component->id].notify();
+                    component->timer = 30;
+                }
+            }
+        }
+    }
+}
+
+class ecs/SystemEffects
+{
+    @include ComponentEffects
+
+    fn void update(ModelEcsBase* model, float dt)
+    {
+        for(auto& component : model->components_effects)
+        {
+            if(component->damage_mul_timer > 0)
+            {
+                component->damage_mul_timer -= dt;
+                if(component->damage_mul_timer <= 0)
+                {
+                    //TODO: effects
+                    model->event_effects[component->id].notify("deactivate_timed_damage");
+                }
+            }
+        }
+    }
+}

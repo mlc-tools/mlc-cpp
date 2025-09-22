@@ -1,0 +1,38 @@
+class tests/TestEntityBase<ITestEntityBase>
+{
+    fn void test_default_id()
+    {
+        EntityBase entity;
+        assertEqual(entity.id, 0, "default entity id is 0");
+    }
+}
+
+class tests/TestComponentBase<ITestComponentBase>
+{
+    fn void test_default_id()
+    {
+        // ComponentBase component;
+        // assertEqual(component.id, 0, "default component id is 0");
+    }
+}
+
+class tests/TestMath<ITestMath>
+{
+    fn void test_ease_back_in()
+    {
+        float result = Math::ease_back_in(0.5f);
+        assertInRange(result, -0.088f, -0.087f, "ease_back_in range");
+    }
+
+    fn void test_ease_back_out()
+    {
+        float result = Math::ease_back_out(0.5f);
+        assertInRange(result, 1.087f, 1.088f, "ease_back_out range");
+    }
+
+    fn void test_ease_in_out()
+    {
+        float result = Math::ease_in_out(0.5f);
+        assertInRange(result, 0.499f, 0.501f, "ease_in_out range");
+    }
+}

@@ -1,0 +1,25 @@
+<data>
+    <unit name="enemy_rocketbot_4_dir">
+        <visual path_to_view="ini/scenes/gameplay/units/enemy_rocketbot_4_dir.xml"/>
+        <stats>
+            <item key="health" value="300"/>
+            <item key="size" value="15"/>
+            <item key="speed" value="100"/>
+            <item key="damage" value="100"/>
+        </stats>
+        <stats_string>
+            <item key="bullet" value="enemy_bullet_rocketbot"/>
+        </stats_string>
+        <components>
+            <ComponentActions>
+                <actions>
+                    <ActionWait name="start" duration="0.1" next_action="move"/>
+                    <ActionMoveToCenterHorizontalOrVertical name="move" duration="1" random_duration="1" next_action="shoot"/>
+                    <ActionShoot4Dir name="shoot" next_action="move" animation="attack"/>
+                </actions>
+            </ComponentActions>
+            <ComponentExpDrop count="10"/>
+            <ComponentDropHeart/>
+        </components>
+    </unit>
+</data>

@@ -164,7 +164,7 @@ std::string DataParser::flushXml() const {
         }
     }
     std::ostringstream ss;
-    out.save(ss, " ");
+    out.save(ss, "");
     std::string text = ss.str();
     return text;
 }

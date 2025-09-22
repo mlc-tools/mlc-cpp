@@ -1,0 +1,236 @@
+class ecs/DataUnit:storage
+{
+    class Visual:client
+    {
+        string path_to_view
+    }
+    string name
+    BulletType bullet_type = BulletType::none
+    
+    Visual:client visual
+
+    map<UnitStat, float> stats
+    map<UnitStat, string> stats_string
+
+    list<ComponentBase*> components
+
+    bool is_boss = false
+}
+
+enum ecs/UnitStat:numeric
+{
+    none
+    health
+    damage
+    speed
+    size
+    recharge
+    bullet
+    shoot_radius
+    mass_damage
+    damage_mass_radius
+    attack_on_move
+    push_target
+    push_target_resist
+    bullets_count
+    bullets_count_side
+    bullets_count_side_deviation
+    bullets_count_back
+    bullet_follow_target
+    bullets_through_walls
+    bullets_pierce
+
+    sword_time_1 // count
+    sword_time_10 // count
+    sword_wave // count
+    sword_count_mul
+    sword_damage
+
+    multi_shoot
+
+    dodge
+    ressurection
+    damage_after_damaged
+    damage_after_kill
+
+    freeze
+    freeze_immunity_time
+    freezing_resist
+    freeze_chance
+    fire_damage
+    fire_resist
+    electric_damage
+    electric_resist
+    stun_chance
+    stun_duration
+    ricochet_bounce
+    ricochet_wall
+    meteor_chance
+    meteor_rain
+    meteor_count
+    damage_distance
+    bullet_split
+    damage_to_boss
+}
+
+enum ecs/BulletType
+{
+    arrow // не пролетает через стены
+    fireball //пролетает через стены, летит по прямой
+    balistic //пролетает через стены, летит по параболе
+    lightning //молния - моментальный урон
+    laser //laser - моментальный урон
+    meteor //meteor - падение сверху
+
+    none
+}
+
+enum ecs/Side
+{
+    ally
+    enemy
+    neutral
+    none
+}
+
+enum ecs/ModifierType
+{
+    add
+    sub
+    mul
+    div
+}
+
+class ecs/Modifier
+{
+    ModifierType type
+    float value
+    string string_value
+    int priority
+    string name
+
+    fn float modify(float prev_value):const
+    {
+        switch(type)
+        {
+        case ModifierType::add: return prev_value + this->value;
+        case ModifierType::sub: return prev_value - this->value;
+        case ModifierType::mul: return prev_value * this->value;
+        case ModifierType::div: return prev_value / this->value;
+        }
+        return prev_value;
+    }
+}
+
+class ecs/DataStatUpgrade:storage
+{
+    class Visual:client
+    {
+        string title
+        string desc
+        string icon
+    }
+    string name
+    SkillRarity rarity
+    list<UnitStat> stats
+    list<Modifier> modifiers
+
+    list<ComponentBase*> components
+    bool to_hero = true
+    bool to_spirits = false
+
+    Visual:client visual
+}
+
+enum ecs/SkillRarity:numeric
+{
+    fine
+    rare
+    epic
+    legendary
+
+    fn SkillRarity get_random():static
+    {
+        int r = random_int(0, SkillRarity::legendary + 1);
+        if(r >= SkillRarity::legendary) return SkillRarity::legendary;
+        if(r >= SkillRarity::epic) return SkillRarity::legendary;
+        if(r >= SkillRarity::rare) return SkillRarity::rare;
+        return SkillRarity::fine;
+    }
+}
+
+class data/DataLadderLevels:storage
+{
+    string name
+    list<float> values
+
+    function float get_value(int level):const
+    {
+        assert(level < list_size(this->values));
+        assert(list_size(this->values) > 0);
+        auto index = std::min(level, list_size(this->values)-1);
+        return this->values.at(index);
+    }
+
+    function int get_level(int exp):const
+    {
+        int min_index = 0;
+        int max_index = list_size(this->values);
+        int index = std::round(std::ceil((max_index + min_index) / 2));
+
+        while(max_index - min_index > 1)
+        {
+            auto value = this->values.at(index);
+            if(exp == value)
+            {
+                return index;
+            }
+            else if(exp > value)
+            {
+                min_index = index;
+            }
+            else if(exp < value)
+            {
+                max_index = index;
+            }
+            index = std::round(std::floor((max_index + min_index) / 2.0f));
+        }
+        return index;
+    }
+
+    function float get_progress_to_next_level(int exp):const
+    {
+        auto level = this->get_level(exp);
+        if(level+1 >= list_size(this->values))
+        {
+            return 1.f;
+        }
+        auto next = level + 1;
+        auto diff = this->values[next] - this->values[level];
+        auto collected = exp - this->values[level];
+        auto progress = collected * 1.0f / diff;
+        return progress;
+    }
+
+    function int get_progress_to_next_level_int(int exp):const
+    {
+        auto level = this->get_level(exp);
+        if(level+1 >= list_size(this->values))
+        {
+            return 1.f;
+        }
+        auto collected = exp - this->values[level];
+        return collected;
+    }
+    function int get_count_to_next_level_int(int exp):const
+    {
+        auto level = this->get_level(exp);
+        if(level+1 >= list_size(this->values))
+        {
+            return 1.f;
+        }
+        auto next = level + 1;
+        auto diff = this->values[next] - this->values[level];
+        return diff;
+    }
+}

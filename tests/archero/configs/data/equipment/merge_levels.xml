@@ -1,0 +1,24 @@
+<data>
+    <merge_level name="normal" index="1" next="fine" count_items_to_merge="2"><require_items_to_merge><item value="normal"/></require_items_to_merge><visual title="Normal" icon="icon_equip/frames/normal.png"/></merge_level>
+    
+    <merge_level name="fine" index="2" next="rare" count_items_to_merge="2"><require_items_to_merge><item value="fine"/></require_items_to_merge><visual title="Fine" icon="icon_equip/frames/fine.png"/></merge_level>
+    
+    <merge_level name="rare" index="3" next="epic_1" count_items_to_merge="2"><require_items_to_merge><item value="rare"/></require_items_to_merge><visual title="Rare" icon="icon_equip/frames/rare.png"/></merge_level>
+    
+    <merge_level name="epic_1" index="4" next="epic_2"      count_items_to_merge="2"><require_items_to_merge><item value="epic_1"/><item value="epic_2"/><item value="epic_3"/></require_items_to_merge><visual title="Epic" icon="icon_equip/frames/epic.png"/></merge_level>
+    <merge_level name="epic_2" index="5" next="epic_3"      count_items_to_merge="2"><require_items_to_merge><item value="epic_1"/><item value="epic_2"/><item value="epic_3"/></require_items_to_merge><visual title="Epic +1" icon="icon_equip/frames/epic.png"/></merge_level>
+    <merge_level name="epic_3" index="6" next="legendary_1" count_items_to_merge="2"><require_items_to_merge><item value="epic_1"/><item value="epic_2"/><item value="epic_3"/></require_items_to_merge><visual title="Epic +2" icon="icon_equip/frames/epic.png"/></merge_level>
+    
+    <merge_level name="legendary_1" index="7" next="legendary_2" count_items_to_merge="2"><require_items_to_merge><item value="legendary_1"/><item value="legendary_2"/><item value="legendary_3"/><item value="legendary_4"/></require_items_to_merge><visual title="Legendary" icon="icon_equip/frames/legendary.png"/></merge_level>
+    <merge_level name="legendary_2" index="8" next="legendary_3" count_items_to_merge="2"><require_items_to_merge><item value="legendary_1"/><item value="legendary_2"/><item value="legendary_3"/><item value="legendary_4"/></require_items_to_merge><visual title="Legendary +2" icon="icon_equip/frames/legendary.png"/></merge_level>
+    <merge_level name="legendary_3" index="9" next="legendary_4" count_items_to_merge="2"><require_items_to_merge><item value="legendary_1"/><item value="legendary_2"/><item value="legendary_3"/><item value="legendary_4"/></require_items_to_merge><visual title="Legendary +3" icon="icon_equip/frames/legendary.png"/></merge_level>
+    <merge_level name="legendary_4" index="10" next="mythic_1"    count_items_to_merge="2"><require_items_to_merge><item value="legendary_1"/><item value="legendary_2"/><item value="legendary_3"/><item value="legendary_4"/></require_items_to_merge><visual title="Legendary +4" icon="icon_equip/frames/legendary.png"/></merge_level>
+    
+    <merge_level name="mythic_1" index="11" next="mythic_2" count_items_to_merge="2"><require_items_to_merge><item value="mythic_1"/><item value="mythic_2"/><item value="mythic_3"/><item value="mythic_4"/><item value="mythic_5"/></require_items_to_merge><visual title="Mythic" icon="icon_equip/frames/mythic.png"/></merge_level>
+    <merge_level name="mythic_2" index="12" next="mythic_3" count_items_to_merge="2"><require_items_to_merge><item value="mythic_1"/><item value="mythic_2"/><item value="mythic_3"/><item value="mythic_4"/><item value="mythic_5"/></require_items_to_merge><visual title="Mythic +1" icon="icon_equip/frames/mythic.png"/></merge_level>
+    <merge_level name="mythic_3" index="13" next="mythic_4" count_items_to_merge="2"><require_items_to_merge><item value="mythic_1"/><item value="mythic_2"/><item value="mythic_3"/><item value="mythic_4"/><item value="mythic_5"/></require_items_to_merge><visual title="Mythic +2" icon="icon_equip/frames/mythic.png"/></merge_level>
+    <merge_level name="mythic_4" index="14" next="mythic_5" count_items_to_merge="2"><require_items_to_merge><item value="mythic_1"/><item value="mythic_2"/><item value="mythic_3"/><item value="mythic_4"/><item value="mythic_5"/></require_items_to_merge><visual title="Mythic +3" icon="icon_equip/frames/mythic.png"/></merge_level>
+    <merge_level name="mythic_5" index="15" next="chaotic"  count_items_to_merge="2"><require_items_to_merge><item value="mythic_1"/><item value="mythic_2"/><item value="mythic_3"/><item value="mythic_4"/><item value="mythic_5"/></require_items_to_merge><visual title="Mythic +4" icon="icon_equip/frames/mythic.png"/></merge_level>
+    
+    <merge_level name="chaotic" index="16"><visual title="Chaotic" icon="icon_equip/frames/chaotic.png"/></merge_level>
+</data>

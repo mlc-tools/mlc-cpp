@@ -1,0 +1,27 @@
+<data>
+    <ladder_levels name="hero_exp">
+        <values>
+            <item value="0"/>
+            <item value="20"/>
+            <item value="80"/>
+            <item value="140"/>
+            <item value="230"/>
+            <item value="360"/>
+            <item value="550"/>
+            <item value="830"/>
+            <item value="1250"/>
+            <item value="1880"/>
+            <item value="2820"/>
+            <item value="4230"/>
+            <item value="6340"/>
+            <item value="9500"/>
+            <item value="14240"/>
+            <item value="21350"/>
+            <item value="32010"/>
+            <item value="48000"/>
+            <item value="71980"/>
+            <item value="107950"/>
+            <item value="161900"/>
+        </values>
+    </ladder_levels>
+</data>

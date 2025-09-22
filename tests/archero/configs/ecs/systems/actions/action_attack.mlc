@@ -1,0 +1,128 @@
+class ecs/ActionMeleeAttack<ActionBase>
+{
+    fn void on_start()
+    {
+        model->get<ComponentBusy>(this->entity_id)->is_busy = true;
+        model->event_skill_animate[this->entity_id].notify("attack", true);
+        BuilderDamage().build(model, this->entity_id, 0, model->player_id);
+    }
+    fn void on_finish()
+    {
+        model->get<ComponentBusy>(this->entity_id)->is_busy = false;
+    }
+
+}
+
+class ecs/ActionCreateDamage<ActionBase>
+{
+    fn void on_start()
+    {
+        model->get<ComponentBusy>(this->entity_id)->is_busy = true;
+        model->event_skill_animate[this->entity_id].notify("attack", true);
+        BuilderDamage().build(model, this->entity_id, 0, model->player_id);
+    }
+    fn void on_finish()
+    {
+        model->get<ComponentBusy>(this->entity_id)->is_busy = false;
+    }
+}
+
+class ecs/ActionCreateMarkerNearHero<ActionBase>
+{
+    string marker
+    string marker_id = "marker"
+    float radius = 0
+    fn void on_start()
+    {
+        auto bullet_name = model->get<ComponentStats>(this->entity_id)->get_string(model, UnitStat::bullet);
+        auto data = DataStorage::shared().get<DataUnit>(bullet_name);
+
+        auto radius_damage = data->stats.at(UnitStat::damage_mass_radius);
+        auto radius_near_player = this->radius;
+        if(radius_near_player == 0)
+        {
+            radius_near_player = radius_damage; 
+        }
+
+        auto transform_hero = model->get<Transform>(model->player_id);
+        auto pos = transform_hero->position + Vector::generate_random_point_in_radius(radius_near_player);
+        if(!model->ground->is_bound(pos) || model->ground->has_collision_with_walls(pos, 0))
+        {
+            pos = transform_hero->position + Vector::generate_random_point_in_radius(radius_near_player);
+        }
+        common_dictionary->vectors[this->marker_id] = pos;
+
+        if(string_size(this->marker) > 0)
+        {
+            model->event_create_marker.notify(pos, 2, radius_damage, "");
+        }
+    }
+}
+
+class ecs/ActionShoot<ActionBase>
+{
+    string animation = "attack"
+    string marker_id = "marker"
+    string bullet_name
+    bool was_shoot = false
+    float time_shoot = 0
+
+    fn void on_start()
+    {
+        this->check_duration(animation);
+        this->was_shoot = false;
+        if(this->time_shoot == 0)
+        {
+            auto spine = model->get<ComponentSpineInfo>(this->entity_id);
+            this->time_shoot = spine->get_event_time(animation, "shoot");
+        }
+        model->get<ComponentBusy>(this->entity_id)->is_busy = true;
+        model->event_turn_to[this->entity_id].notify(model->player_id);
+        model->event_skill_animate[this->entity_id].notify(animation, true);
+    }
+    fn void on_finish()
+    {
+        model->get<ComponentBusy>(this->entity_id)->is_busy = false;
+    }
+    fn void on_update(float dt)
+    {
+        if(!this->was_shoot && this->timer >= this->time_shoot)
+        {
+            this->was_shoot = true;
+            this->shoot();
+        }
+    }
+    fn void shoot()
+    {
+        auto pos = this->common_dictionary->vectors[this->marker_id];
+        BuilderBullet(this->entity_id).set_name(this->bullet_name).set_target_id(model->player_id).set_position_to_shoot(pos).build(model);
+        // SystemShoot::create_bullet(this->model, this->entity_id, model->player_id, pos, Vector::ZERO, 0);
+    }
+}
+
+class ecs/ActionShootByMoveDirection<ActionShoot>
+{
+    fn void shoot()
+    {
+        auto direction = this->common_dictionary->vectors["move_direction"];
+        auto transform = model->get<Transform>(this->entity_id);
+
+        BuilderBullet(this->entity_id).set_spine_bone_of_create_bullet("shot").set_direction(direction).build(model);
+        BuilderBullet(this->entity_id).set_spine_bone_of_create_bullet("shot2").set_direction(-direction).build(model);
+    }
+}
+
+class ecs/ActionShoot4Dir<ActionShoot>
+{
+    fn void shoot()
+    {
+        Vector horizont(1, 0);
+        Vector vertical(0, 1);
+
+
+        BuilderBullet(this->entity_id).set_spine_bone_of_create_bullet("shot").set_direction(-vertical).build(model);
+        BuilderBullet(this->entity_id).set_spine_bone_of_create_bullet("shot2").set_direction(horizont).build(model);
+        BuilderBullet(this->entity_id).set_spine_bone_of_create_bullet("shot3").set_direction(-horizont).build(model);
+        BuilderBullet(this->entity_id).set_spine_bone_of_create_bullet("shot4").set_direction(vertical).build(model);
+    }
+}

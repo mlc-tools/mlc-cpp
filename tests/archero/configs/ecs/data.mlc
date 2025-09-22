@@ -1,0 +1,192 @@
+class ecs/DataLevel:storage
+{
+    string name
+
+    list<string> tmx_maps
+    list<DataWaveBase*> waves
+
+    float enemies_hp_rate
+    float enemies_damage_rate
+
+    fn bool is_change_view_on_next_wave():const
+    {
+        return this->tmx_maps.size() > 0;
+    }
+}
+
+class ecs/SpawnInfo
+{
+    constructor(Vector:ref:const position=Vector::ZERO, DataUnit:link unit=nullptr):cpp
+    {
+        this->position = position;
+        this->unit = unit;
+    }
+    Vector position
+    DataUnit:link unit
+}
+
+class ecs/DataWaveBase
+{
+    fn list<SpawnInfo> get_units(ModelEcsBase* model):const:abstract
+
+    fn bool is_interval_generate():const:virtual
+    {
+        return false;
+    }
+    fn bool update(ModelEcsBase* model, float dt):const
+    {
+        return false;
+    }
+
+    fn void on_start(ModelEcsBase* model):const
+    {
+    }
+
+    fn bool is_finished(ModelEcsBase* model):const
+    {
+        return false;
+    }
+}
+class ecs/DataWaveOnSpawnPoints<DataWaveBase>
+{
+    map<string, DataUnit:link> units
+
+    fn list<SpawnInfo> get_units(ModelEcsBase* model):const
+    {
+        list<SpawnInfo> result;
+        for(auto&& [name, unit] : this->units)
+        {
+            result.push_back(SpawnInfo(model->spawn_points.at(name), unit));
+        }
+        return result;
+    }
+}
+class ecs/DataWaveOnSpawnPointsRandom<DataWaveBase>
+{
+    list<DataUnit:link> units
+    float min_distance_to_player
+
+    fn list<SpawnInfo> get_units(ModelEcsBase* model):const
+    {
+        list<SpawnInfo> result;
+        auto points = this->get_points(model);
+        for(auto unit : this->units)
+        {
+            if(points.empty())
+                points = this->get_points(model);
+            assert(!points.empty());
+            auto index = random_int(0, points.size());
+            result.push_back(SpawnInfo(points.at(index), unit));
+            list_erase(points, index);
+        }
+
+        return result;
+    }
+
+    fn list<Vector> get_points(ModelEcsBase* model):const
+    {
+        list<Vector> result;
+        float dist_sq = this->min_distance_to_player * this->min_distance_to_player;
+        auto transform = model->get<Transform>(model->player_id);
+        for(auto&& [_, pos] : model->spawn_points)
+        {
+            if(transform->position.get_distance_sq(pos) <= dist_sq)
+            {
+                result.push_back(pos);
+            }
+        }
+        return result;
+    }
+}
+class ecs/DataWaveOnRadius<DataWaveBase>
+{
+    list<DataUnit:link> units
+    float min_distance_to_player
+    float max_distance_to_player
+
+    fn list<SpawnInfo> get_units(ModelEcsBase* model):const
+    {
+        list<SpawnInfo> result;
+        assert(max_distance_to_player >= min_distance_to_player);
+
+        auto transform = model->get<Transform>(model->player_id);
+        auto count = units.size();
+        while(count > 0)
+        {
+            float radius = random_float() * (max_distance_to_player - min_distance_to_player) + min_distance_to_player;
+            assert(radius >= min_distance_to_player && radius <= max_distance_to_player);
+            auto pos = transform->position + Vector::generate_random_point_on_radius(radius);
+            auto unit_radius = units.at(count-1)->stats.at(UnitStat::size);
+            if(!model->ground->has_collision_with_walls(pos, unit_radius))
+            {
+                count -= 1;
+                result.emplace_back(pos, units.at(count));
+            }
+        }
+
+        return result;
+    }
+}
+
+class ecs/DataWaveOnRadiusWithInterval<DataWaveBase>
+{
+    list<DataUnit:link> units
+    float min_distance_to_player
+    float max_distance_to_player
+    float duration = 60
+    float interval = 1
+    float count_at_once = 1
+
+    fn bool is_interval_generate():const
+    {
+        return true;
+    }
+    fn bool update(ModelEcsBase* model, float dt):const
+    {
+        model->timer_wave_interval += dt;
+        model->timer_wave_duration += dt;
+
+        if(model->timer_wave_interval >= this->interval)
+        {
+            model->timer_wave_interval = 0;
+            return true;
+        }
+        return false;
+    }
+
+    fn void on_start(ModelEcsBase* model):const
+    {
+        model->timer_wave_interval = 0;
+        model->timer_wave_duration = 0;
+    }
+
+    fn bool is_finished(ModelEcsBase* model):const
+    {
+        return model->timer_wave_duration >= this->duration;
+    }
+
+
+    fn list<SpawnInfo> get_units(ModelEcsBase* model):const
+    {
+        list<SpawnInfo> result;
+        assert(max_distance_to_player >= min_distance_to_player);
+
+        auto transform = model->get<Transform>(model->player_id);
+        auto count = this->count_at_once;
+        while(count > 0)
+        {
+            float radius = random_float() * (max_distance_to_player - min_distance_to_player) + min_distance_to_player;
+            assert(radius >= min_distance_to_player && radius <= max_distance_to_player);
+            auto pos = transform->position + Vector::generate_random_point_on_radius(radius);
+            auto rand_index = random_int(0, list_size(this->units));
+            auto unit_radius = units.at(rand_index)->stats.at(UnitStat::size);
+            if(!model->ground->has_collision_with_walls(pos, unit_radius))
+            {
+                count -= 1;
+                result.emplace_back(pos, units.at(rand_index));
+            }
+        }
+
+        return result;
+    }
+}

@@ -1,0 +1,273 @@
+class ecs/ComponentData<ComponentBase>
+{
+    DataUnit:link data
+    constructor(DataUnit:link data=nullptr)
+    {
+        this->data = data;
+    }
+}
+class ecs/Transform<ComponentBase>
+{
+    Vector prev_position
+    Vector position
+    int z
+    float rotation = -1
+    fn void set(Vector:ref:const position)
+    {
+        prev_position = this->position;
+        this->position = position;
+    }
+}
+class ecs/ComponentStats<ComponentBase>
+{
+    int parent_id
+    DataUnit:link data
+    list<DataStatUpgrade:link> upgrades
+    map<UnitStat, list<Modifier>>:private stats
+    map<UnitStat, float>:private cashe
+    map<UnitStat, string>:private cashe_string
+
+    fn void add_upgrade(DataStatUpgrade:link data)
+    {
+        assert(data->stats.size() == data->modifiers.size());
+
+        this->upgrades.push_back(data);
+        
+        auto size = data->stats.size();
+        for(int i=0; i<size; ++i)
+        {
+            auto& modifiers = this->stats[data->stats[i]];
+            modifiers.push_back(data->modifiers[i]);
+            modifiers.back().name = data->name;
+            std::sort(modifiers.begin(), modifiers.end(), [](const Modifier& lhs, const Modifier& rhs)
+            {
+                return lhs.priority < rhs.priority;
+            });
+            map_remove(this->cashe, data->stats[i]);
+            map_remove(this->cashe_string, data->stats[i]);
+        }
+    }
+
+    fn void set_fixed(UnitStat:ref:const stat, float value)
+    {
+        this->cashe[stat] = value;
+    }
+
+    fn void reset_cashe(UnitStat:ref:const stat)
+    {
+        map_remove(this->cashe, stat);
+    }
+
+    fn void remove_upgrade(DataStatUpgrade:link data)
+    {
+        list_remove(this->upgrades, data);
+        for(auto stat : data->stats)
+        {
+            list_remove_if(this->stats[stat], (modifier :> modifier.name == data->name));
+            map_remove(this->cashe, stat);
+            map_remove(this->cashe_string, stat);
+        }
+    }
+
+    fn float get_stat_base(UnitStat:ref:const stat)
+    {
+        float value = 0;
+        if(in_map(stat, data->stats))
+        {
+            value = data->stats.at(stat);
+        }
+        return value;
+    }
+    fn string get_stat_string_base(UnitStat:ref:const stat):private
+    {
+        std::string value;
+        if(in_map(stat, data->stats_string))
+        {
+            value = data->stats_string.at(stat);
+        }
+        return value;
+    }
+
+    fn float get(ModelEcsBase* model, UnitStat:ref:const stat)
+    {
+        if(in_map(stat, this->cashe))
+        {
+            return this->cashe[stat];
+        }
+
+        auto base = this->get_stat_base(stat);
+        float result = 0;
+        if(this->parent_id > 0)
+        {
+            auto parent_stats = model->get<ComponentStats>(this->parent_id);
+            if(parent_stats)
+            {
+                result = parent_stats->get(model, stat);
+                result = base * result;
+            }
+        }
+        else
+        {
+            result = base;
+        }
+
+        auto component_user = model->get<ComponentUser>(this->id);
+        if(component_user)
+        {
+            auto system = component_user->user->system<SystemEquipment>();
+            if(system)
+            {
+                result = system->get_stat(stat, result);
+            }
+        }
+
+        auto& modifiers = this->stats[stat];
+        for(auto& modifier : modifiers)
+        {
+            result = modifier.modify(result);
+        }
+        
+        this->cashe[stat] = result;
+        return result;
+    }
+
+    fn string get_string(ModelEcsBase* model, UnitStat:ref:const stat)
+    {
+        if(in_map(stat, this->cashe_string))
+        {
+            return this->cashe_string[stat];
+        }
+
+        auto value = this->get_stat_string_base(stat);
+
+        auto component_user = model->get<ComponentUser>(this->id);
+        if(component_user)
+        {
+            auto system = component_user->user->system<SystemEquipment>();
+            if(system)
+            {
+                auto new_value = system->get_stat_string(stat);
+                if(!new_value.empty())
+                {
+                    value = new_value;
+                }
+            }
+        }
+        
+        auto& modifiers = this->stats[stat];
+        if(list_size(modifiers) > 0)
+        {
+            auto size = static_cast<int>(modifiers.size());
+            for(int i=size-1; i>=0; --i)
+            {
+                if(!modifiers[i].string_value.empty())
+                {
+                    value = modifiers[i].string_value;
+                    break;
+                }
+            }
+        }
+        this->cashe_string[stat] = value;
+        return value;
+    }
+}
+
+class ecs/ComponentSide<ComponentBase>
+{
+    Side side
+
+    fn bool is_enemy(Side:ref:const side):const
+    {
+        switch(this->side)
+        {
+        case Side::neutral: return false;
+        case Side::ally: return side == Side::enemy;
+        case Side::enemy: return side == Side::ally;
+        }
+        return false;
+    }
+}
+
+class ecs/ComponentTargetable<ComponentBase>
+{
+}
+class ecs/ComponentHealth<ComponentBase>
+{
+    float:private current = 0
+    float max = 0
+    map<int, float>:private future_damage
+    float:private sum_future_damage
+    int ressurection_count = 0
+
+    fn float get_current():const
+    {
+        return this->current;
+    }
+    fn void set_current(float value)
+    {
+        this->current = value;
+    }
+    fn float get_future_damage(int damager)
+    {
+        if(in_map(damager, this->future_damage))
+        {
+            return this->future_damage.at(damager);
+        }
+        return 0;
+    }
+
+    fn void add_future_damage(int damager, float damage)
+    {
+        this->future_damage[damager] = damage;
+        this->calculate_future_damage();
+    }
+    fn void remove_future_damage(int damager)
+    {
+        map_remove(this->future_damage, damager);
+        this->calculate_future_damage();
+    }
+
+    fn void damage(int damager, float damage)
+    {
+        map_remove(this->future_damage, damager);
+        this->calculate_future_damage();
+
+        this->current -= std::min(this->current, damage);
+    }
+
+    fn void calculate_future_damage():private
+    {
+        this->sum_future_damage = 0;
+        for(auto&& [_, value] : this->future_damage)
+        {
+            this->sum_future_damage += value;
+        }
+    }
+
+    fn float get_future_value():const
+    {
+        return this->current - this->sum_future_damage;
+    }
+}
+class ecs/ComponentDamage<ComponentBase>
+{
+    int attacker_id
+    int bullet_id
+    int target_id
+    float damage
+}
+class ecs/ComponentUser<ComponentBase>
+{
+    ModelUser* user
+}
+class ecs/ComponentSpineInfo<ComponentBase>
+{
+    fn float get_animation_duration(string animation):abstract
+    fn Vector get_bone_position(string bone):abstract
+    fn float get_event_time(string animation, string event):abstract
+    fn float get_direction():abstract
+}
+class ecs/ComponentBusy<ComponentBase>
+{
+    bool is_busy = false
+}

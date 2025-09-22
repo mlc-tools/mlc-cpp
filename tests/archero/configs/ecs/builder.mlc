@@ -1,0 +1,386 @@
+class ecs/BuilderEntity
+{
+    @include ModelEquipmentSlot
+
+    int id
+    int level
+    Side side
+    Vector position
+    DataUnit:link data
+    ModelUser* user
+
+    constructor(DataUnit:link data=nullptr)
+    {
+        this->data = data;
+    }
+
+    fn BuilderEntity:ref set_level(int level)
+    {
+        this->level = level;
+        return *this;
+    }
+
+    fn BuilderEntity:ref set_side(Side side)
+    {
+        this->side = side;
+        return *this;
+    }
+
+    fn BuilderEntity:ref set_user(ModelUser* user)
+    {
+        this->user = user;
+        return *this;
+    }
+
+    fn BuilderEntity:ref set_position(Vector:ref:const pos)
+    {
+        this->position = pos;
+        return *this;
+    }
+
+    fn int build(ModelEcsBase* model)
+    {
+        assert(this->data);
+        id = model->get_free_id();
+        model->add(new ComponentData(this->data), id);
+
+        auto stats = new ComponentStats();
+        stats->data = this->data;
+        model->add(stats, id);
+
+        if(this->user)
+        {
+            auto component = make_intrusive<ComponentUser>();
+            component->user = this->user;
+            model->add(component, id);
+        }
+
+        auto transform = new Transform();
+        transform->position = this->position;
+        model->add(transform, id);
+
+        auto component_side = new ComponentSide();
+        component_side->side = this->side;
+        model->add(component_side, id);
+        
+        model->add(new ComponentBusy(), id);
+
+        if(in_map(UnitStat::size, this->data->stats) && this->data->bullet_type == BulletType::none)
+        {
+            auto component = new ComponentBody();
+            component->size = stats->get(model, UnitStat::size);
+            model->add(component, id);
+        }
+        if(in_map(UnitStat::recharge, this->data->stats))
+        {
+            model->add(new ComponentRecharge(), id);
+        }
+        if(in_map(UnitStat::health, this->data->stats))
+        {
+            model->add(new ComponentTargetable(), id);
+
+            auto health = new ComponentHealth();
+            model->add(health, id);
+            health->max = stats->get(model, UnitStat::health);
+            health->set_current(health->max);
+
+            model->add(new Freezing(), id);
+        }
+
+        this->add_components_from_data(model, id);
+        this->add_components_from_equipment(model, id);
+
+        return id;
+    }
+
+    fn void add_components_from_data(ModelEcsBase* model, int id)
+    {
+        for(auto component : this->data->components)
+        {
+            auto clone = clone_object<ComponentBase>(component);
+            clone->id = id;
+            clone->add_self_to_model(model);
+        }
+    }
+
+    fn void add_components_from_equipment(ModelEcsBase* model, int id)
+    {
+        if(!this->user)
+        {
+            return;
+        }
+        auto equipments = user->system<SystemEquipment>();
+        for(auto&& [slot, model_slot] : equipments->slots)
+        {
+            if(model_slot->item)
+            {
+                auto components = model_slot->get_ecs_components();
+                for(auto component : components)
+                {
+                    component->id = id;
+                    component->add_self_to_model(model);
+                }
+            }
+        }
+    }
+}
+
+class ecs/BuilderDamage
+{
+    float damage
+    fn BuilderDamage& set_damage(float damage)
+    {
+        this->damage = damage;
+        return *this;
+    }
+    fn int build(ModelEcsBase* model, int attacker_id, int bullet_id, int target_id)
+    {
+        auto id = model->get_free_id();
+        auto damage = new ComponentDamage();
+        damage->attacker_id = attacker_id;
+        damage->bullet_id = bullet_id;
+        damage->target_id = target_id;
+        damage->damage = this->damage;
+        model->add(damage, id);
+        return id;
+    }
+}
+
+class ecs/BuilderBullet
+{
+    int shooter_id = 0
+    int target_id = 0
+
+    string bullet_name
+    Vector position_create
+    Vector position_to_shoot
+    Vector direction
+    Vector offset_create
+    float deviation_from_direction = 0
+    Side side = Side::none
+    string spine_bone_of_create_bullet = "shot"
+
+    DataUnit:link data
+
+    float damage = 0
+
+    constructor(int shooter_id=0)
+    {
+        this->shooter_id = shooter_id;
+    }
+
+    fn BuilderBullet& set_name(string value){this->bullet_name = value; return *this;}
+    fn BuilderBullet& set_target_id(int value){this->target_id = value; return *this;}
+    fn BuilderBullet& set_damage(float value){this->damage = value; return *this;}
+    fn BuilderBullet& set_side(Side value){this->side = value; return *this;}
+    fn BuilderBullet& set_position_create(Vector:ref:const value){this->position_create = value; return *this;}
+    fn BuilderBullet& set_position_to_shoot(Vector:ref:const value){this->position_to_shoot = value; return *this;}
+    fn BuilderBullet& set_direction(Vector:ref:const value){this->direction = value; return *this;}
+    fn BuilderBullet& set_offset_create(Vector:ref:const value){this->offset_create = value; return *this;}
+    fn BuilderBullet& set_deviation_from_direction(float value){this->deviation_from_direction = value; return *this;}
+    fn BuilderBullet& set_spine_bone_of_create_bullet(string value){this->spine_bone_of_create_bullet = value; return *this;}
+
+    fn int build(ModelEcsBase* model)
+    {
+        assert(this->shooter_id > 0);
+
+        auto shooter_side = model->get<ComponentSide>(this->shooter_id);
+        if(!shooter_side)
+        {
+            return 0;
+        }
+
+        if(this->side == Side::none)
+        {
+            this->side = shooter_side->side;
+        }
+        auto shooter_stats = model->get<ComponentStats>(this->shooter_id);
+        auto bullet_name = this->get_bullet_name(model, shooter_stats);
+        this->data = DataStorage::shared().get<DataUnit>(bullet_name);
+        auto position_bullet = this->get_position_to_create(model);
+
+        auto id = BuilderEntity(this->data).set_side(side).set_position(position_bullet).build(model);
+
+        auto component_bullet = model->get<ComponentBullet>(id);
+        component_bullet->shooter_id = this->shooter_id;
+        component_bullet->target_id = this->target_id;
+        component_bullet->data = this->data;
+        component_bullet->through_walls = shooter_stats->get(model, UnitStat::bullets_through_walls);
+        component_bullet->pierce = shooter_stats->get(model, UnitStat::bullets_pierce);
+        component_bullet->bullet_type = this->data->bullet_type;
+        auto bullet_stats = model->get<ComponentStats>(id);
+        component_bullet->ricochet_bounce = shooter_stats->get(model, UnitStat::ricochet_bounce);
+        component_bullet->ricochet_wall = shooter_stats->get(model, UnitStat::ricochet_wall);
+        component_bullet->split_on_hit = shooter_stats->get(model, UnitStat::bullet_split) > 0;
+
+        component_bullet->damage = this->damage;
+
+        if(this->target_id > 0)
+        {
+            if(component_bullet->damage == 0)
+            {
+                component_bullet->damage = SystemDamage::compute_future_damage(model, this->shooter_id, id, this->target_id);
+            }
+            auto health_target = model->get<ComponentHealth>(this->target_id);
+            if(health_target)
+            {
+                health_target->add_future_damage(this->shooter_id, component_bullet->damage);
+            }
+        }
+
+
+        if(shooter_stats->get(model, UnitStat::bullet_follow_target) > 0)
+        {
+            auto follow = new ComponentBulletFollowToTarget();
+            follow->target_id = this->target_id;
+            follow->change_angle_speed = shooter_stats->get(model, UnitStat::bullet_follow_target);
+            model->add(follow, id);
+        }
+
+        if(data->bullet_type == BulletType::arrow || data->bullet_type == BulletType::fireball)
+        {
+            auto movement = new MoveDirection();
+            movement->direction = this->get_direction(model);
+            if(deviation_from_direction != 0)
+            {
+                auto angle = Vector::get_angle(movement->direction);
+                movement->direction = Vector::build_vector(angle + deviation_from_direction);
+            }
+            model->add(movement, id);
+        }
+        else if(auto movement = model->get<MoveParabolic>(id))
+        {
+            auto target_position = this->get_target_position(model);
+            auto start_position = position_bullet;
+            auto speed = bullet_stats->get(model, UnitStat::speed);
+            movement->set(start_position, target_position, speed);
+        }
+        else if(data->bullet_type == BulletType::lightning)
+        {
+            auto movement = new MoveInstant();
+            movement->target_id = this->target_id;
+            model->add(movement, id);
+
+        }
+        else if(data->bullet_type == BulletType::laser)
+        {
+
+        }
+        else if(data->bullet_type == BulletType::meteor)
+        {
+            auto movement = new MoveVertical();
+            movement->destination = this->get_target_position(model);
+            model->add(movement, id);
+
+            model->get<Transform>(id)->z = movement->start_z;
+        }
+        else
+        {
+            assert(0);
+        }
+
+        model->event_create_bullet.notify(id, position_bullet);
+        return id;
+    }
+
+    fn Vector get_position_to_create(ModelEcsBase* model):const
+    {
+        if(this->position_create != Vector::ZERO)
+        {
+            return this->position_create;
+        }
+        auto transform = model->get<Transform>(this->shooter_id);
+        auto spine_self = model->get<ComponentSpineInfo>(this->shooter_id);
+        auto position_bullet = transform->position + this->offset_create;
+        position_bullet += spine_self?->get_bone_position(spine_bone_of_create_bullet);
+        return position_bullet;
+    }
+
+    fn Vector get_target_position(ModelEcsBase* model):const
+    {
+        if(this->position_to_shoot != Vector::ZERO)
+        {
+            return this->position_to_shoot;
+        }
+        assert(this->target_id > 0);
+        auto transform = model->get<Transform>(this->target_id);
+        auto result = transform->position;
+        if(this->data->bullet_type == BulletType::arrow || this->data->bullet_type == BulletType::fireball)
+        {
+            auto spine_target = model->get<ComponentSpineInfo>(this->target_id);
+            result += spine_target->get_bone_position("head");
+        }
+
+        if(side == Side::ally)
+        {
+            Vector move_direction;
+            if(auto movement = model->get<MoveDirection>(this->target_id))
+            {
+                move_direction = movement->direction;
+            }
+            else if(auto movement = model->get<MoveToTarget>(this->target_id))
+            {
+                move_direction = movement->direction;
+            }
+            if(move_direction != Vector::ZERO)
+            {
+                float bullet_speed = this->data->stats.at(UnitStat::speed);
+                float target_speed = model->get<ComponentStats>(this->target_id)->get(model, UnitStat::speed);
+                result = this->get_preemption(transform->position, move_direction, target_speed, this->get_position_to_create(model), bullet_speed);
+            }
+        }
+
+        return result;
+    }
+
+    fn Vector get_preemption(Vector:const:ref target_pos, Vector:const:ref target_direction, float target_speed, Vector:const:ref shooter_pos, float bullet_speed):const
+    {
+        Vector result = target_pos;
+        Vector target_velocity = target_direction.get_normalized() * target_speed;
+
+        Vector displacement = target_pos - shooter_pos;
+
+        float a = target_velocity.dot(target_velocity) - bullet_speed * bullet_speed;
+        float b = 2 * displacement.dot(target_velocity);
+        float c = displacement.dot(displacement);
+
+        float discriminant = b*b - 4*a*c;
+
+        if (discriminant >= 0 && std::abs(a) > 1e-6) {
+            float sqrt_disc = sqrt(discriminant);
+            float t1 = (-b + sqrt_disc) / (2 * a);
+            float t2 = (-b - sqrt_disc) / (2 * a);
+            
+            float t = std::min(t1, t2);
+            if (t < 0) t = std::max(t1, t2); // используем положительное время
+            
+            if (t > 0) {
+                Vector intercept_point = target_pos + target_velocity * t;
+                result = intercept_point;
+            }
+        }
+        return result;
+    }
+
+    fn Vector get_direction(ModelEcsBase* model):const
+    {
+        if(this->direction != Vector::ZERO)
+        {
+            return this->direction;
+        }
+        auto from_pos = this->get_position_to_create(model);
+        auto to_pos = this->get_target_position(model);
+        return (to_pos - from_pos).normalize();
+    }
+
+    fn string get_bullet_name(ModelEcsBase* model, ComponentStats* stats):const
+    {
+        if(string_size(this->bullet_name) > 0)
+        {
+            return this->bullet_name;
+        }
+        return stats->get_string(model, UnitStat::bullet);
+    }
+
+
+}

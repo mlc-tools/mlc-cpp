@@ -1,0 +1,44 @@
+<data>
+    <unit name="boss_fireballs_balistic" is_boss="true">
+        <visual path_to_view="ini/scenes/gameplay/units/boss_fireballs_balistic.xml"/>
+        <stats>
+            <item key="health" value="10000"/>
+            <item key="size" value="50"/>
+            <item key="speed" value="200"/>
+            <item key="recharge" value="3"/>
+            <item key="shoot_radius" value="2000"/>
+            <item key="damage" value="100"/>
+            <item key="freeze_immunity_time" value="15"/>
+            <item key="push_target_resist" value="1"/>
+        </stats>
+        <stats_string>
+            <item key="bullet" value="enemy_fireball_balistic"/>
+        </stats_string>
+        <components>
+            <ComponentActions>
+                <actions>
+                    <ActionMoveDirection name="movement1" duration="1.5" next_action="movement2" />
+                    <ActionMoveDirection name="movement2" duration="1.5" next_action="create_marker1" />
+
+                    <!-- shooot 2 balistic fireballs -->
+                    <ActionCreateMarkerNearHero name="create_marker1" duration="0.2" radius="300" next_action="create_marker2" marker="marker_simple" marker_id="attack_1"/>
+                    <ActionCreateMarkerNearHero name="create_marker2" duration="0.2" radius="300" next_action="create_marker3" marker="marker_simple" marker_id="attack_2"/>
+                    <ActionCreateMarkerNearHero name="create_marker3" duration="0.2" radius="300" next_action="shoot1" marker="marker_simple" marker_id="attack_3"/>
+
+                    <ActionShoot name="shoot1" animation="attack" bullet_name="enemy_fireball_balistic_with_split_to_6" marker_id="attack_1" next_action="shoot2"/>
+                    <ActionShoot name="shoot2" animation="attack" bullet_name="enemy_fireball_balistic_with_split_to_6" marker_id="attack_2" next_action="shoot3"/>
+                    <ActionShoot name="shoot3" animation="attack" bullet_name="enemy_fireball_balistic_with_split_to_6" marker_id="attack_3" next_action="movement3"/>
+
+                    <ActionMoveDirection name="movement3" duration="2" next_action="shoot_linear_big1" />
+                    <ActionShoot name="shoot_linear_big1" animation="attack" bullet_name="enemy_fireball_linear_big_with_split_to_3" next_action="shoot_linear_big2"/>
+                    <ActionShoot name="shoot_linear_big2" animation="attack" bullet_name="enemy_fireball_linear_big_with_split_to_3" next_action="shoot_linear_big3"/>
+                    <ActionShoot name="shoot_linear_big3" animation="attack" bullet_name="enemy_fireball_linear_big_with_split_to_3" next_action="movement4"/>
+                    <ActionMoveDirection name="movement4" duration="2" next_action="movement1" />
+
+                </actions>
+            </ComponentActions>
+        </components>
+    </unit>
+
+
+</data>
