@@ -12,6 +12,8 @@
 #include <sstream>
 #include <algorithm>
 #include <iostream>
+#include <unordered_set>
+#include <cctype>
 #include "Class.hpp"
 #include "Function.hpp"
 #include "Object.hpp"

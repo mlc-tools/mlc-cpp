@@ -16,6 +16,7 @@ namespace mg
 
     }
 
+
     ModifierType::ModifierType(int _value)
     {
         value = _value;

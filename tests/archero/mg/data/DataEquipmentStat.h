@@ -17,6 +17,7 @@ namespace mg
     class SerializerJson;
     class DeserializerJson;
 
+
     class DataEquipmentStat
     {
     public:

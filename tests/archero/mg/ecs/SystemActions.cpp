@@ -38,6 +38,7 @@ namespace mg
                 this->switch_to_next(model, component);
             }
 
+
             if(auto stun = model->get<ComponentStun>(component->id))
             {
                 if(stun->activated)

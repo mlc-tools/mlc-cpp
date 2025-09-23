@@ -93,6 +93,7 @@ namespace mg
         {
             auto speed = stats->get(model, UnitStat::speed);
 
+
             if(move->timer_to_move_by_changed_direction > 0)
             {
                 move->timer_to_move_by_changed_direction -= dt;
@@ -108,6 +109,7 @@ namespace mg
                     auto dir = pos - transform->position;
                     dir.normalize();
                     auto offset = dir * (dt * speed);
+
 
                     if(!this->move(model, move, transform, stats, offset))
                     {

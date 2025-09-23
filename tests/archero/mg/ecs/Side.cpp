@@ -15,6 +15,7 @@ namespace mg
 
     }
 
+
     Side::Side(int _value)
     {
         value = _value;

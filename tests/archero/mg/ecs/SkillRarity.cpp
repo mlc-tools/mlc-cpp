@@ -15,6 +15,7 @@ namespace mg
 
     }
 
+
     SkillRarity SkillRarity::get_random()
     {
         int r = random_int(0, SkillRarity::legendary + 1);

@@ -153,6 +153,7 @@ namespace mg
             }
         }
 
+
         if(shooter_stats->get(model, UnitStat::bullet_follow_target) > 0)
         {
             auto follow = make_intrusive<ComponentBulletFollowToTarget>();

@@ -15,6 +15,7 @@ namespace mg
 
     }
 
+
     BulletType::BulletType(int _value)
     {
         value = _value;

@@ -65,6 +65,7 @@ namespace mg
             health->ressurection_count += 1;
             health->set_current(health->max);
 
+
             model->event_ressurection[health->id].notify();
             return true;
         }

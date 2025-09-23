@@ -220,10 +220,12 @@ namespace mg
             return 0.0f;
         }
 
+
         float cosVal = dot / len_prod;
 
         if (cosVal >  1.0f) cosVal =  1.0f;
         if (cosVal < -1.0f) cosVal = -1.0f;
+
 
         float rad = std::acos(cosVal);
         return rad;

@@ -7,6 +7,7 @@
 #include <filesystem>
 #include <fstream>
 #include <sstream>
+#include <cstring>
 #include "FileUtils.hpp"
 
 
@@ -69,15 +70,23 @@ std::string read(const std::string &path) {
 
 std::pair<bool, std::fstream*> write(const std::string &path, const std::string &content)
 {
-    // If file exists and content is identical, do nothing.
+    // Fast path: if file exists and size matches, compare bytes; otherwise skip read.
     if (std::filesystem::exists(path)) {
         try {
-            auto existing = read(path);
-            if (existing == content) {
-                return {false, nullptr};
+            auto sz = std::filesystem::file_size(path);
+            if (sz == content.size()) {
+                std::ifstream in(path, std::ios::binary);
+                if (in) {
+                    std::string buf;
+                    buf.resize(static_cast<size_t>(sz));
+                    in.read(&buf[0], static_cast<std::streamsize>(sz));
+                    if (in.good() && std::memcmp(buf.data(), content.data(), buf.size()) == 0) {
+                        return {false, nullptr};
+                    }
+                }
             }
         } catch (...) {
-            // If read fails, proceed to overwrite
+            // If file_size or read fails, proceed to overwrite
         }
     }
 

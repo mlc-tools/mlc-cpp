@@ -479,6 +479,7 @@ namespace mg
     private:
         std::map<int, intrusive_ptr<ComponentSword>> map_components_sword;
 
+
     public:
         template <class TCompA, class TCompB>
         std::vector<std::tuple<intrusive_ptr<TCompA>, intrusive_ptr<TCompB>>> view()const

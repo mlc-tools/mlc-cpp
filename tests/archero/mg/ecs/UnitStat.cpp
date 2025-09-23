@@ -15,6 +15,7 @@ namespace mg
 
     }
 
+
     UnitStat::UnitStat(int _value)
     {
         value = _value;

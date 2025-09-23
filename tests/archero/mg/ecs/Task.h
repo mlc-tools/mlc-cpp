@@ -13,6 +13,7 @@ namespace mg
     class SerializerJson;
     class DeserializerJson;
 
+
     class Task
     {
     public:

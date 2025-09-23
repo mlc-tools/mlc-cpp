@@ -15,6 +15,7 @@ namespace mg
     class SerializerJson;
     class DeserializerJson;
 
+
     class Shuffle
     {
     public:
@@ -23,6 +24,7 @@ namespace mg
         template <class T>
         static T shuffle(const std::map<T, float>& weights, float random_value=-1)
         {
+
 
             float total = 0;
             T last;
@@ -59,6 +61,7 @@ namespace mg
             {
                 random_value = random_float() * total;
             }
+
 
             int l = 0;
             int rgt = prefix.size() - 1;

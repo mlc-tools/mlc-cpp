@@ -102,7 +102,6 @@ private:
 #include "intrusive_ptr.h"
 #include "pugixml/pugixml.hpp"
 {includes}
-
 {forward_declarations_out}
 namespace {namespace}
 {
@@ -122,8 +121,7 @@ namespace {namespace}
     };
 } //namespace {namespace}
 
-#endif //#ifndef __{namespace}_{class_name}_h__
-)";
+#endif //#ifndef __{namespace}_{class_name}_h__)";
     static constexpr const char *SOURCE = R"(#include "intrusive_ptr.h"
 #include "{path_to_root}{namespace}_Factory.h"
 {includes}
@@ -134,14 +132,11 @@ namespace {namespace}
 namespace {namespace}
 {
     {static_initializations}
-    {registration}
-    {class_name}::{class_name}({constructor_args})
+    {registration}{class_name}::{class_name}({constructor_args})
     {initializations}{
     {constructor_body}
     }
 
     {destructor}
-
-{functions}} //namespace {namespace}
-)";
+{functions}} //namespace {namespace})";
 };

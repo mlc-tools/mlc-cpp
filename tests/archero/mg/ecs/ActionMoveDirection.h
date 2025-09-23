@@ -15,6 +15,7 @@ namespace mg
     class SerializerJson;
     class DeserializerJson;
 
+
     class ActionMoveDirection : public ActionBase
     {
     public:

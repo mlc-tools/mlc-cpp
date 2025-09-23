@@ -16,6 +16,7 @@ namespace mg
 
     }
 
+
     ComponentSwordState::ComponentSwordState(int _value)
     {
         value = _value;

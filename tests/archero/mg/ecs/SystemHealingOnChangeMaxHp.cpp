@@ -58,6 +58,7 @@ namespace mg
 
         });
 
+
         if(!model->wave_finished)
         {
             model->each_if<ComponentRandomHealing,ComponentHealth>(

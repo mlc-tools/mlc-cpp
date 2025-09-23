@@ -355,6 +355,7 @@ namespace mg
             health->remove_future_damage(bullet->shooter_id);
         }
 
+
         auto component_split = model->get<ComponentBulletSplit>(bullet->id);
         if(component_split && !component_split->was_split && component_split->split_on_remove)
         {

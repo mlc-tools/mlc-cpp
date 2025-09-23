@@ -16,6 +16,7 @@ namespace mg
 
     }
 
+
     ComponentShieldType::ComponentShieldType(int _value)
     {
         value = _value;

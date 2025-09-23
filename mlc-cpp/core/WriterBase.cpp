@@ -14,6 +14,7 @@
 #include <cassert>
 #include <sstream>
 #include <re2/re2.h>
+#include <cstring>
 
 WriterBase::WriterBase()
   : _model(nullptr)
@@ -207,49 +208,70 @@ std::string WriterBase::prepareFileCodeStylePhp(const std::string &text) const {
 }
 
 std::string WriterBase::prepareFileCodeStyleCpp(const std::string &text) const {
+    // Single-pass formatter: minimal temporaries, controlled allocations.
     int tabs = 0;
-    std::ostringstream out;
-    std::istringstream iss(text);
-    std::string line;
+    std::string out;
+    out.reserve(text.size() + text.size() / 10);
 
-    auto indent = [](int count) {
-        if (count <= 0) return std::string();
-        return std::string(static_cast<size_t>(count) * 4, ' ');
+    auto append_indent = [&](int count) {
+        if (count <= 0) return;
+        out.append(static_cast<size_t>(count) * 4, ' ');
     };
 
-    while (std::getline(iss, line)) {
-        std::string stripped = strip(line);
+    auto contains_label = [](const char* p, size_t n) -> bool {
+        // naive search for public:/protected:/private: inside [p, p+n)
+        // avoids constructing std::string
+        auto find_sub = [&](const char* sub) {
+            size_t m = std::strlen(sub);
+            if (m == 0 || m > n) return false;
+            for (size_t i = 0; i + m <= n; ++i) {
+                if (std::memcmp(p + i, sub, m) == 0) return true;
+            }
+            return false;
+        };
+        return find_sub("public:") || find_sub("protected:") || find_sub("private:");
+    };
+
+    size_t pos = 0;
+    int empty_lines = 0; // keep at most two consecutive empty lines
+    while (pos <= text.size()) {
+        size_t nl = text.find('\n', pos);
+        size_t end = (nl == std::string::npos) ? text.size() : nl; // end is index of '\n' or size()
+
+        // trim spaces on [pos, end)
+        size_t l = pos;
+        while (l < end && std::isspace(static_cast<unsigned char>(text[l])) && text[l] != '\n') ++l;
+        size_t r = end;
+        while (r > l && std::isspace(static_cast<unsigned char>(text[r - 1])) && text[r - 1] != '\n') --r;
+        size_t len = r - l; // length of trimmed line
 
         bool backward = false;
-        if (!stripped.empty() && stripped.front() == '}') {
+        if (len > 0 && text[l] == '}') {
             --tabs;
-        } else if (stripped.find("public:") != std::string::npos ||
-                   stripped.find("protected:") != std::string::npos ||
-                   stripped.find("private:") != std::string::npos) {
+        } else if (len > 0 && contains_label(text.data() + l, len)) {
             backward = true;
             --tabs;
         }
         if (tabs < 0) tabs = 0;
 
-        std::string toWrite;
-        if (!stripped.empty()) {
-            toWrite = indent(tabs) + stripped;
-        } // else keep empty line as is
+        if (len == 0) {
+            if (empty_lines < 2) {
+                out.push_back('\n');
+            }
+            ++empty_lines;
+        } else {
+            append_indent(tabs);
+            out.append(text.data() + l, len);
+            out.push_back('\n');
+            empty_lines = 0;
+        }
+
         if (backward) ++tabs;
-        if (!stripped.empty() && stripped.front() == '{') ++tabs;
+        if (len > 0 && text[l] == '{') ++tabs;
 
-        out << toWrite << '\n';
+        if (nl == std::string::npos) break;
+        pos = nl + 1;
     }
 
-    std::string prepared = out.str();
-//    prepared = std::regex_replace(prepared, std::regex("^\\s+|\\s+$"), "");
-
-    for (;;) {
-        auto before = prepared.size();
-        replace_all(prepared, "\n\n\n", "\n\n");
-        if (prepared.size() == before) break;
-    }
-//    prepared.push_back('\n');
-
-    return prepared;
+    return out;
 }

@@ -5,12 +5,14 @@
 #include "intrusive_ptr.h"
 #include "pugixml/pugixml.hpp"
 
+
 namespace mg
 {
     class SerializerXml;
     class DeserializerXml;
     class SerializerJson;
     class DeserializerJson;
+
 
     class IControllerDungeonBase
     {
@@ -25,6 +27,7 @@ namespace mg
         virtual void deserialize_xml(DeserializerXml& deserializer);
         virtual void serialize_json(SerializerJson& serializer) const;
         virtual void deserialize_json(DeserializerJson& deserializer);
+
 
     };
 } //namespace mg

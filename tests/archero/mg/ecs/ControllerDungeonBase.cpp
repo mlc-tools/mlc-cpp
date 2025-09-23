@@ -97,6 +97,7 @@ namespace mg
             model->update(dt);
         }
 
+
         if(this->paused == 0 && is_wave_finished() == true && !this->show_window_skill)
         {
             if(!model->data->is_change_view_on_next_wave())

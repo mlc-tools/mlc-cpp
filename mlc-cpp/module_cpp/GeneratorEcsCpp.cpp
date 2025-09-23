@@ -341,8 +341,8 @@ void GeneratorEcsCpp::generateSystemsEndTurn(Model &model) {
         while (std::getline(iss, line)) lines.push_back(line);
     }
     std::vector<string> out;
-    re2::RE2 reCond(R"(\[([!]*is\w+)\])");
-    re2::RE2 reSys (R"(\[(System\w+)\])");
+    static re2::RE2 reCond(R"(\[([!]*is\w+)\])");
+    static re2::RE2 reSys (R"(\[(System\w+)\])");
     for (size_t i=0;i<lines.size();++i) {
         const auto &op = lines[i];
         if (op.empty()) continue;

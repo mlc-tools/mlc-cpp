@@ -146,6 +146,7 @@ namespace mg
         auto stats = model->get<ComponentStats>(component->id);
         model->event_prepare_to_shoot[component->id].notify(target);
 
+
         float bullets_count = 1 + stats->get(model, UnitStat::bullets_count);
         auto direction = model->get<Transform>(target)->position - model->get<Transform>(component->id)->position;
         auto normal = Vector(0, 0);
@@ -162,6 +163,7 @@ namespace mg
             offset -= normal;
         }
 
+
         float bullets_count_back = stats->get(model, UnitStat::bullets_count_back);
         if(bullets_count_back > 0)
         {
@@ -175,6 +177,7 @@ namespace mg
                 back_offset -= back_normal;
             }
         }
+
 
         float bullets_count_side = stats->get(model, UnitStat::bullets_count_side);
         if(bullets_count_side > 0)

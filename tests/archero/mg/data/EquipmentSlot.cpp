@@ -15,6 +15,7 @@ namespace mg
 
     }
 
+
     EquipmentSlot::EquipmentSlot(int _value)
     {
         value = _value;
