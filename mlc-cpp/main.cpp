@@ -46,34 +46,34 @@ int main() {
 //    app.setConfigsDirectory("/Users/vladimirtolmachev/work/archero/configs");
 //    app.setConfigsDirectory("/Users/vladimirtolmachev/work/dungeon2/configs");
 
-//    {
-//        app.setSide(Side::client);
-//        app.setGenerateTests(false);
-//        app.setGenerateIntrusive(false);
-//        app.addConfigsDirectory("/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/tests/archero/configs");
-//        app.addDataDirectory("/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/tests/archero/configs/data");
-//        app.setFilterCode([](const std::string& path){
-//            return path.find("/unit_tests/") == std::string::npos;
-//        });
-//        app.setOutDirectory("/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/tests/archero/mg/");
-//        app.setOutDataDirectory("/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/tests/archero/");
-//        app.generate();
-//        app.generateData();
-//    }
     {
         app.setSide(Side::client);
         app.setGenerateTests(false);
         app.setGenerateIntrusive(false);
-        app.addConfigsDirectory("/Users/vladimirtolmachev/work/archero/configs/");
-        app.addDataDirectory("/Users/vladimirtolmachev/work/archero/configs/data/");
+        app.addConfigsDirectory("/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/tests/archero/configs");
+        app.addDataDirectory("/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/tests/archero/configs/data");
         app.setFilterCode([](const std::string& path){
             return path.find("/unit_tests/") == std::string::npos;
         });
-        app.setOutDirectory("/Users/vladimirtolmachev/work/archero/client/generated/mg/");
-        app.setOutDataDirectory("/Users/vladimirtolmachev/work/archero/assets/data/");
+        app.setOutDirectory("/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/tests/archero/mg/");
+        app.setOutDataDirectory("/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/tests/archero/");
         app.generate();
         app.generateData();
     }
+//    {
+//        app.setSide(Side::client);
+//        app.setGenerateTests(false);
+//        app.setGenerateIntrusive(false);
+//        app.addConfigsDirectory("/Users/vladimirtolmachev/work/archero/configs/");
+//        app.addDataDirectory("/Users/vladimirtolmachev/work/archero/configs/data/");
+//        app.setFilterCode([](const std::string& path){
+//            return path.find("/unit_tests/") == std::string::npos;
+//        });
+//        app.setOutDirectory("/Users/vladimirtolmachev/work/archero/client/generated/mg/");
+//        app.setOutDataDirectory("/Users/vladimirtolmachev/work/archero/assets/data/");
+//        app.generate();
+//        app.generateData();
+//    }
     
     auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
     std::cout << "parsed on " << elapsed.count() << "ms" << std::endl;

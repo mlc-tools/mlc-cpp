@@ -9,7 +9,7 @@
 
 #include <algorithm>
 #include <cctype>
-#include <regex>
+#include <re2/re2.h>
 #include <sstream>
 
 #include "../models/Model.hpp"
@@ -341,17 +341,16 @@ void GeneratorEcsCpp::generateSystemsEndTurn(Model &model) {
         while (std::getline(iss, line)) lines.push_back(line);
     }
     std::vector<string> out;
-    std::regex reCond(R"(\[([!]*is\w+)\])");
-    std::regex reSys (R"(\[(System\w+)\])");
+    re2::RE2 reCond(R"(\[([!]*is\w+)\])");
+    re2::RE2 reSys (R"(\[(System\w+)\])");
     for (size_t i=0;i<lines.size();++i) {
         const auto &op = lines[i];
         if (op.empty()) continue;
-        std::smatch mC, mS;
-        bool hasS = std::regex_search(op, mS, reSys);
+        std::string sys;
+        bool hasS = RE2::PartialMatch(op, reSys, &sys);
         if (hasS) {
             string cond;
-            if (std::regex_search(op, mC, reCond)) cond = mC[1];
-            string sys = mS[1];
+            (void)RE2::PartialMatch(op, reCond, &cond);
             // check if SystemX has method clean
             bool hasClean = false;
             auto sysCls = getClass(model, sys);
@@ -774,4 +773,3 @@ auto join_all(
 
     model.addFile(nullptr, "ecs/ecs_helper.h", HELPER_HPP);
 }
-

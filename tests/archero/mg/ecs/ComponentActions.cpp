@@ -1,5 +1,6 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "../model/Model.h"
 #include "ActionBase.h"
 #include "ComponentActions.h"
 #include "ComponentBase.h"

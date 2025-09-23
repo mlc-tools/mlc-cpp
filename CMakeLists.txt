@@ -26,6 +26,10 @@ endforeach()
 
 
 add_executable(${APP_NAME} ${SOURCES})
+
+find_package(RE2 REQUIRED CONFIG)  # CONFIG на случай, если пакет установлен с экспортом targets
+target_link_libraries(${APP_NAME} PRIVATE re2::re2)
+
 target_include_directories(${APP_NAME} PRIVATE ${SRC_DIR})
 target_include_directories(${APP_NAME} PRIVATE ${SRC_DIR}/models)
 target_include_directories(${APP_NAME} PRIVATE ${SRC_DIR}/module_cpp)

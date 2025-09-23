@@ -2,6 +2,7 @@
 #include "../mg_Factory.h"
 #include "../DataStorage.h"
 #include "../data/DataParams.h"
+#include "Model.h"
 #include "ModelUser.h"
 #include "ModelUserBase.h"
 #include "System.h"

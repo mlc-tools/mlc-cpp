@@ -1,5 +1,7 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "../model/Model.h"
+#include "../model/System.h"
 #include "ComponentDamage.h"
 #include "ModelEcsBase.h"
 #include "SystemRemoveDamage.h"

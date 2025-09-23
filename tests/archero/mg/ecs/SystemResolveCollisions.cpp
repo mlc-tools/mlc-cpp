@@ -1,6 +1,8 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
 #include "../Observable.h"
+#include "../model/Model.h"
+#include "../model/System.h"
 #include "BulletType.h"
 #include "Circle.h"
 #include "CollisionChecker.h"

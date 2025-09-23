@@ -3,6 +3,7 @@
 #include "../ecs/ComponentBase.h"
 #include "../ecs/Modifier.h"
 #include "../ecs/UnitStat.h"
+#include "DataEquipment.h"
 #include "DataEquipmentStat.h"
 #include "DataMergeLevel.h"
 #include <string>

@@ -1,9 +1,12 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "../model/Model.h"
+#include "../model/System.h"
 #include "ComponentHealth.h"
 #include "ComponentSide.h"
 #include "ComponentVampire.h"
 #include "ModelEcsBase.h"
+#include "Side.h"
 #include "SystemVampire.h"
 #include <string>
 #include "../mg_extensions.h"

@@ -3,6 +3,7 @@
 #include "../data/EquipmentSlot.h"
 #include "../ecs/ComponentBase.h"
 #include "../ecs/UnitStat.h"
+#include "Model.h"
 #include "ModelEquipment.h"
 #include "ModelEquipmentSlot.h"
 #include <string>

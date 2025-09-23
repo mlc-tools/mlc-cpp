@@ -2,6 +2,7 @@
 #include "../mg_Factory.h"
 #include "CommandBase.h"
 #include "IVisitorResponse.h"
+#include "Response.h"
 #include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"

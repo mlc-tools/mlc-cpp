@@ -11,6 +11,7 @@
 #include "Object.hpp"
 #include "Common.hpp"
 #include "Error.hpp"
+#include "RegexPatternCpp.hpp"
 
 //#include <fmt/core.h>  // если доступно, можно заменить на std::ostringstream
 
@@ -79,20 +80,17 @@ std::vector<int> TranslatorBase::convertToEnum(Class &cls) {
     return values;
 }
 
-std::string TranslatorBase::replacePattern(
-    const std::string &text,
-    const std::tuple<std::regex,std::string,std::vector<std::string>> &pattern)
+void TranslatorBase::replacePattern(
+    std::string &text,
+    const RegexPattern& pattern)
 {
-    bool skip = std::get<2>(pattern).size() > 0;
-    for (auto &f : std::get<2>(pattern)) {
+    bool skip = pattern.triggers.size() > 0;
+    for (auto &f : pattern.triggers) {
         skip = skip && (text.find(f) == std::string::npos);
     }
     if (!skip) {
-        return std::regex_replace(text,
-                                  std::get<0>(pattern),
-                                  std::get<1>(pattern));
+        RE2::GlobalReplace(&text, *pattern.pattern, pattern.replacement);
     }
-    return text;
 }
 
 std::pair<std::string,std::vector<std::string>>

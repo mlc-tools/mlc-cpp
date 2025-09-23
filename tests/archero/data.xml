@@ -1,869 +1,1920 @@
 <?xml version="1.0"?>
 <data>
-<stat_upgrades>
-<pair key="swords_x2">
-<value name="swords_x2" rarity="epic">
-<stats>
-<item value="sword_count_mul" />
-</stats>
-<modifiers>
-<item type="mul" value="2" priority="1" />
-</modifiers>
-<components />
-<visual title="More Rockets" desc="Doubles the number of summoned rockets" icon="icon_skills/skill_swords_x2.png" />
-</value>
-</pair>
-<pair key="spirit_lightning">
-<value name="spirit_lightning" rarity="epic">
-<stats />
-<modifiers />
-<components>
-<ComponentSpawnSpirit spirit="spirit_lightning" />
-</components>
-<visual title="Lightning Spirit" desc="Fires lightning bolts" icon="icon_skills/skill_spirit_lightning.png" />
-</value>
-</pair>
-<pair key="spirit_fire">
-<value name="spirit_fire" rarity="epic">
-<stats />
-<modifiers />
-<components>
-<ComponentSpawnSpirit spirit="spirit_fire" />
-</components>
-<visual title="Flame Spirit" desc="Fires fireballs" icon="icon_skills/skill_spirit_fire.png" />
-</value>
-</pair>
-<pair key="spirit_ice">
-<value name="spirit_ice" rarity="epic">
-<stats />
-<modifiers />
-<components>
-<ComponentSpawnSpirit spirit="spirit_ice" />
-</components>
-<visual title="Ice Spirit" desc="Freezes and slows enemies" icon="icon_skills/skill_spirit_ice.png" />
-</value>
-</pair>
-<pair key="monster_power">
-<value name="monster_power" rarity="epic">
-<stats>
-<item value="health" />
-<item value="damage" />
-<item value="recharge" />
-<item value="size" />
-</stats>
-<modifiers>
-<item type="mul" value="1.15" priority="1" />
-<item type="mul" value="1.15" priority="1" />
-<item type="div" value="1.1" priority="1" />
-<item type="mul" value="1.5" priority="1" />
-</modifiers>
-<components />
-<visual title="Giant’s Strength" desc="Increases health, damage, and fire rate; increases size" icon="icon_skills/skill_monster_power.png" />
-</value>
-</pair>
-<pair key="enchanted_gun">
-<value name="enchanted_gun" rarity="epic">
-<stats />
-<modifiers />
-<components />
-<visual title="Enchanted Weapon" desc="Weapon detaches and shoots automatically; reduces attack speed" icon="icon_skills/skill_enchanted_gun.png" />
-</value>
-</pair>
-<pair key="speed_1">
-<value name="speed_1" rarity="epic">
-<stats>
-<item value="recharge" />
-<item value="speed" />
-</stats>
-<modifiers>
-<item type="div" value="1.15" priority="1" />
-<item type="mul" value="1.25" priority="1" />
-</modifiers>
-<components />
-<visual title="Swift Spirit" desc="Increases attack and movement speed" icon="icon_skills/skill_speed_1.png" />
-</value>
-</pair>
-<pair key="bullet_follow_to_target">
-<value name="bullet_follow_to_target" rarity="epic">
-<stats>
-<item value="bullet_follow_target" />
-</stats>
-<modifiers>
-<item type="add" value="1" priority="10" />
-</modifiers>
-<components />
-<visual title="Target Lock" desc="Projectiles home in on targets" icon="icon_skills/skill_bullet_follow_to_target.png" />
-</value>
-</pair>
-<pair key="add_bullet_side">
-<value name="add_bullet_side" rarity="epic">
-<stats>
-<item value="bullets_count_side" />
-</stats>
-<modifiers>
-<item type="add" value="1" priority="10" />
-</modifiers>
-<components />
-<visual title="Fan Shot" desc="Adds two side bullets" icon="icon_skills/skill_add_bullet_side.png" />
-</value>
-</pair>
-<pair key="bullets_through_walls">
-<value name="bullets_through_walls" rarity="epic">
-<stats>
-<item value="bullets_through_walls" />
-</stats>
-<modifiers>
-<item type="add" value="1" priority="10" />
-</modifiers>
-<components />
-<visual title="Through Walls" desc="Projectiles can travel through walls" icon="icon_skills/skill_bullets_through_walls.png" />
-</value>
-</pair>
-<pair key="winds_blessing">
-<value name="winds_blessing" rarity="epic">
-<stats>
-<item value="speed" />
-<item value="size" />
-<item value="dodge" />
-</stats>
-<modifiers>
-<item type="mul" value="1.10" priority="1" />
-<item type="div" value="1.1" priority="1" />
-<item type="add" value="0.1" priority="10" />
-</modifiers>
-<components />
-<visual title="Wind’s Blessing" desc="Increases movement speed, reduces size, and grants dodge chance" icon="icon_skills/skill_winds_blessing.png" />
-</value>
-</pair>
-<pair key="aura_of_slow">
-<value name="aura_of_slow" rarity="epic">
-<stats />
-<modifiers />
-<components>
-<ComponentAuraOfSlow name="slow" radius="300.0" />
-</components>
-<visual title="Aura of Slow" desc="Slows nearby enemies and projectiles" icon="icon_skills/skill_aura_of_slow.png" />
-</value>
-</pair>
-<pair key="ressurection">
-<value name="ressurection" rarity="epic">
-<stats>
-<item value="ressurection" />
-</stats>
-<modifiers>
-<item type="add" value="1" priority="10" />
-</modifiers>
-<components />
-<visual title="Resurrection" desc="Revives the hero once per level" icon="icon_skills/skill_ressurection.png" />
-</value>
-</pair>
-<pair key="fire_damage_mul_1">
-<value name="fire_damage_mul_1" rarity="epic">
-<stats>
-<item value="fire_damage" />
-</stats>
-<modifiers>
-<item type="mul" value="1.5" priority="1" />
-</modifiers>
-<components />
-<visual title="Fire Boost" desc="Increases fire damage" />
-</value>
-</pair>
-<pair key="freeze_power">
-<value name="freeze_power" rarity="epic">
-<stats>
-<item value="freeze" />
-</stats>
-<modifiers>
-<item type="mul" value="1.5" priority="1" />
-</modifiers>
-<components />
-<visual title="Freeze Boost" desc="Increases freeze effectiveness" />
-</value>
-</pair>
-<pair key="electro_damage_mul_1">
-<value name="electro_damage_mul_1" rarity="epic">
-<stats>
-<item value="electric_damage" />
-</stats>
-<modifiers>
-<item type="mul" value="1.5" priority="1" />
-</modifiers>
-<components />
-<visual title="Lightning Boost" desc="Increases lightning damage" />
-</value>
-</pair>
-<pair key="spirit_mastery">
-<value name="spirit_mastery" rarity="epic" to_spirits="true">
-<stats>
-<item value="damage" />
-</stats>
-<modifiers>
-<item type="mul" value="1.5" priority="1" />
-</modifiers>
-<components />
-<visual title="Spirit Mastery" desc="Boosts all summoned spirits" />
-</value>
-</pair>
-<pair key="meteor_on_attack">
-<value name="meteor_on_attack" rarity="epic">
-<stats>
-<item value="meteor_chance" />
-</stats>
-<modifiers>
-<item type="add" value="0.1" priority="10" />
-</modifiers>
-<components />
-<visual title="Meteor" desc="Chance to summon a meteor when attacking" />
-</value>
-</pair>
-<pair key="meteor_chain">
-<value name="meteor_chain" rarity="epic">
-<stats>
-<item value="meteor_count" />
-</stats>
-<modifiers>
-<item type="add" value="1" priority="10" />
-</modifiers>
-<components />
-<visual title="Chain Meteors" desc="Summons 2 meteors at once" />
-</value>
-</pair>
-<pair key="swords_damage">
-<value name="swords_damage" rarity="epic">
-<stats>
-<item value="sword_damage" />
-</stats>
-<modifiers>
-<item type="mul" value="1.5" priority="1" />
-</modifiers>
-<components />
-<visual title="Rocket Pressure" desc="Increases summoned rocket damage" icon="icon_skills/skill_swords_damage.png" />
-</value>
-</pair>
-<pair key="max_hp_1">
-<value name="max_hp_1" rarity="fine">
-<stats>
-<item value="health" />
-</stats>
-<modifiers>
-<item type="mul" value="1.1" priority="1" />
-</modifiers>
-<components />
-<visual title="Heavyweight" desc="Increases maximum health" icon="icon_skills/skill_max_hp1.png" />
-</value>
-</pair>
-<pair key="add_velocity_1">
-<value name="add_velocity_1" rarity="fine">
-<stats>
-<item value="speed" />
-</stats>
-<modifiers>
-<item type="mul" value="1.5" priority="1" />
-</modifiers>
-<components />
-<visual title="Runner" desc="Increases movement speed" icon="icon_skills/skill_add_speed_1.png" />
-</value>
-</pair>
-<pair key="add_dmg_1">
-<value name="add_dmg_1" rarity="fine">
-<stats>
-<item value="damage" />
-</stats>
-<modifiers>
-<item type="mul" value="1.1" priority="1" />
-</modifiers>
-<components />
-<visual title="Strongman" desc="Increases attack power" icon="icon_skills/skill_add_dmg_1.png" />
-</value>
-</pair>
-<pair key="bullet_fire">
-<value name="bullet_fire" rarity="fine">
-<stats>
-<item value="fire_damage" />
-</stats>
-<modifiers>
-<item type="add" value="0.334" priority="10" />
-</modifiers>
-<components />
-<visual title="Incendiary Rounds" desc="Bullets may ignite enemies" icon="icon_skills/skill_spirit_fire.png" />
-</value>
-</pair>
-<pair key="push_target">
-<value name="push_target" rarity="fine">
-<stats>
-<item value="push_target" />
-</stats>
-<modifiers>
-<item type="add" value="100" priority="10" />
-</modifiers>
-<components />
-<visual title="Counterattack" desc="Pushes enemies back on hit" icon="icon_skills/skill_push_target.png" />
-</value>
-</pair>
-<pair key="blitz_attack_speed">
-<value name="blitz_attack_speed" rarity="fine">
-<stats>
-<item value="recharge" />
-</stats>
-<modifiers>
-<item type="div" value="1.1" priority="1" />
-</modifiers>
-<components />
-<visual title="Blitz" desc="Increases attack speed" icon="icon_skills/skill_blitz_attack_speed.png" />
-</value>
-</pair>
-<pair key="healing_chance">
-<value name="healing_chance" rarity="fine">
-<stats />
-<modifiers />
-<components>
-<ComponentRandomHealing />
-</components>
-<visual title="Healing Chance" desc="Random chance to heal" icon="icon_skills/skill_healing_chance.png" />
-</value>
-</pair>
-<pair key="add_damage_after_damaged">
-<value name="add_damage_after_damaged" rarity="fine">
-<stats>
-<item value="damage_after_damaged" />
-</stats>
-<modifiers>
-<item type="add" value="1.5" priority="10" />
-</modifiers>
-<components />
-<visual title="Wounded Warrior" desc="When damaged, attack power increases by 50% for 5 seconds" icon="icon_skills/skill_add_damage_after_damaged.png" />
-</value>
-</pair>
-<pair key="boss_killer">
-<value name="boss_killer" rarity="fine">
-<stats>
-<item value="damage_to_boss" />
-</stats>
-<modifiers>
-<item type="add" value="0.5" priority="10" />
-</modifiers>
-<components />
-<visual title="Boss Slayer" desc="Increased damage against bosses" icon="icon_skills/skill_add_dmg_3.png" />
-</value>
-</pair>
-<pair key="sniper">
-<value name="sniper" rarity="fine">
-<stats />
-<modifiers />
-<components />
-<visual title="Sniper" desc="The farther the target, the higher the damage" />
-</value>
-</pair>
-<pair key="ricochet_wall">
-<value name="ricochet_wall" rarity="fine">
-<stats>
-<item value="ricochet_wall" />
-</stats>
-<modifiers>
-<item type="add" value="1" priority="10" />
-</modifiers>
-<components />
-<visual title="Ricochet" desc="Bullets bounce off walls (+1 bounce)" />
-</value>
-</pair>
-<pair key="add_bullet_back">
-<value name="add_bullet_back" rarity="fine">
-<stats>
-<item value="bullets_count_back" />
-</stats>
-<modifiers>
-<item type="add" value="1" priority="10" />
-</modifiers>
-<components />
-<visual title="Backshot" desc="Fires an additional bullet backward" />
-</value>
-</pair>
-<pair key="healing_low_hp">
-<value name="healing_low_hp" rarity="fine">
-<stats />
-<modifiers />
-<components>
-<ComponentHealingLowHp />
-</components>
-<visual title="Healing" desc="Gradually regenerates health when HP is below 30%" />
-</value>
-</pair>
-<pair key="vampire">
-<value name="vampire" rarity="fine">
-<stats />
-<modifiers />
-<components>
-<ComponentVampire />
-</components>
-<visual title="Vampire" desc="Chance to restore health when killing zombies" />
-</value>
-</pair>
-<pair key="power_trio">
-<value name="power_trio" rarity="legendary">
-<stats>
-<item value="health" />
-<item value="damage" />
-<item value="recharge" />
-</stats>
-<modifiers>
-<item type="mul" value="1.2" priority="1" />
-<item type="mul" value="1.15" priority="1" />
-<item type="div" value="1.2" priority="1" />
-</modifiers>
-<components />
-<visual title="Power Trio" desc="+15% attack, +20% fire rate, +20% max HP" icon="icon_skills/skill_power_trio.png" />
-</value>
-</pair>
-<pair key="shield_wave">
-<value name="shield_wave" rarity="legendary">
-<stats />
-<modifiers />
-<components>
-<ComponentShield activate_type="wave" />
-</components>
-<visual title="Shield" desc="Blocks one hit per wave" icon="icon_skills/skill_shield_wave.png" />
-</value>
-</pair>
-<pair key="shield_time">
-<value name="shield_time" rarity="legendary">
-<stats />
-<modifiers />
-<components>
-<ComponentShield activate_type="timer" />
-</components>
-<visual title="Shield" desc="Blocks one hit every 30 seconds" icon="icon_skills/skill_shield_time.png" />
-</value>
-</pair>
-<pair key="spirit_king">
-<value name="spirit_king" rarity="legendary">
-<stats />
-<modifiers />
-<components>
-<ComponentSpawnSpirit spirit="spirit_king" />
-</components>
-<visual title="Royal Spirit" desc="Powerful spirit firing lasers" icon="icon_skills/skill_spirit_king.png" />
-</value>
-</pair>
-<pair key="add_dmg_3">
-<value name="add_dmg_3" rarity="legendary">
-<stats>
-<item value="damage" />
-</stats>
-<modifiers>
-<item type="mul" value="1.3" priority="1" />
-</modifiers>
-<components />
-<visual title="Attack Boost" desc="Strong attack increase" icon="icon_skills/skill_add_dmg_3.png" />
-</value>
-</pair>
-<pair key="aura_radioactive">
-<value name="aura_radioactive" rarity="legendary">
-<stats />
-<modifiers />
-<components>
-<ComponentAuraDamage name="damage" radius="400.0">
-<damaged_entities />
-</ComponentAuraDamage>
-</components>
-<visual title="&#10;Radioactive Aura" desc="Deals damage to nearby enemies and weakens them" />
-</value>
-</pair>
-<pair key="sword_lasers">
-<value name="sword_lasers" rarity="legendary">
-<stats />
-<modifiers />
-<components />
-<visual title="Energy Rockets" desc="Summoned rockets fire lasers" icon="icon_skills/skill_sword_lasers.png" />
-</value>
-</pair>
-<pair key="max_hp_3">
-<value name="max_hp_3" rarity="legendary">
-<stats>
-<item value="health" />
-</stats>
-<modifiers>
-<item type="mul" value="1.4" priority="1" />
-</modifiers>
-<components />
-<visual title="Heavyweight" desc="Increases maximum health" icon="icon_skills/skill_max_hp3.png" />
-</value>
-</pair>
-<pair key="meteor_rain">
-<value name="meteor_rain" rarity="legendary">
-<stats>
-<item value="meteor_rain" />
-</stats>
-<modifiers>
-<item type="add" value="1" priority="10" />
-</modifiers>
-<components>
-<ComponentMeteorPeriodic />
-</components>
-<visual title="Meteor Shower" desc="Periodic meteor strikes" />
-</value>
-</pair>
-<pair key="web_balls">
-<value name="web_balls" rarity="legendary">
-<stats />
-<modifiers />
-<components />
-<visual title="Circular Web" desc="Summoned orbs link into a damaging web" icon="icon_skills/skill_web_balls.png" />
-</value>
-</pair>
-<pair key="max_hp_2">
-<value name="max_hp_2" rarity="rare">
-<stats>
-<item value="health" />
-</stats>
-<modifiers>
-<item type="mul" value="1.2" priority="1" />
-</modifiers>
-<components />
-<visual title="Heavyweight" desc="Increases maximum health" icon="icon_skills/skill_max_hp2.png" />
-</value>
-</pair>
-<pair key="add_dmg_2">
-<value name="add_dmg_2" rarity="rare">
-<stats>
-<item value="damage" />
-</stats>
-<modifiers>
-<item type="mul" value="1.2" priority="1" />
-</modifiers>
-<components />
-<visual title="Strongman" desc="Increases attack power" icon="icon_skills/skill_add_dmg_2.png" />
-</value>
-</pair>
-<pair key="swords_in_10_sec">
-<value name="swords_in_10_sec" rarity="rare">
-<stats>
-<item value="sword_time_10" />
-</stats>
-<modifiers>
-<item type="add" value="5" priority="10" />
-</modifiers>
-<components />
-<visual title="Rockets" desc="Summons 5 rockets every 10 seconds" icon="icon_skills/skill_swords_in_10_sec.png" />
-</value>
-</pair>
-<pair key="swords_in_1_sec">
-<value name="swords_in_1_sec" rarity="rare">
-<stats>
-<item value="sword_time_1" />
-</stats>
-<modifiers>
-<item type="add" value="1" priority="10" />
-</modifiers>
-<components />
-<visual title="Rockets" desc="Summons 1 rocket per second" icon="icon_skills/skill_swords_in_1_sec.png" />
-</value>
-</pair>
-<pair key="add_bullet_forward">
-<value name="add_bullet_forward" rarity="rare">
-<stats>
-<item value="bullets_count" />
-</stats>
-<modifiers>
-<item type="add" value="1" priority="10" />
-</modifiers>
-<components />
-<visual title="Shot" desc="Adds one extra bullet" icon="icon_skills/skill_add_bullet_forward.png" />
-</value>
-</pair>
-<pair key="multi_shoot">
-<value name="multi_shoot" rarity="rare">
-<stats>
-<item value="multi_shoot" />
-</stats>
-<modifiers>
-<item type="add" value="1" priority="10" />
-</modifiers>
-<components />
-<visual title="Multishot" desc="Adds sequential fire" icon="icon_skills/skill_multi_shoot.png" />
-</value>
-</pair>
-<pair key="sphere_saw">
-<value name="sphere_saw" rarity="rare">
-<stats />
-<modifiers />
-<components>
-<ComponentSphereSpawn data="sphere_saw_bullet" />
-</components>
-<visual title="Orbs" desc="Summons neutral floating orbs" icon="icon_skills/skill_sphere_saw.png" />
-</value>
-</pair>
-<pair key="sphere_fire">
-<value name="sphere_fire" rarity="rare">
-<stats />
-<modifiers />
-<components>
-<ComponentSphereSpawn data="sphere_fire_bullet" />
-</components>
-<visual title="Fire Orbs" desc="Summons 2 fire orbs" icon="icon_skills/skill_sphere_fire.png" />
-</value>
-</pair>
-<pair key="sphere_electric">
-<value name="sphere_electric" rarity="rare">
-<stats />
-<modifiers />
-<components>
-<ComponentSphereSpawn data="sphere_electric_bullet" />
-</components>
-<visual title="Ice Orbs" desc="Summons 2 ice orbs" icon="icon_skills/skill_sphere_electric.png" />
-</value>
-</pair>
-<pair key="bullet_stun">
-<value name="bullet_stun" rarity="rare">
-<stats>
-<item value="stun_chance" />
-<item value="stun_duration" />
-</stats>
-<modifiers>
-<item type="add" value="0.1" priority="10" />
-<item type="add" value="2" priority="10" />
-</modifiers>
-<components />
-<visual title="Stun" desc="Grants chance to stun enemies" />
-</value>
-</pair>
-<pair key="bullet_split">
-<value name="bullet_split" rarity="rare">
-<stats>
-<item value="bullet_split" />
-</stats>
-<modifiers>
-<item type="add" value="1" priority="10" />
-</modifiers>
-<components />
-<visual title="Split Projectiles" desc="Projectiles split on impact" />
-</value>
-</pair>
-<pair key="bullets_pierce">
-<value name="bullets_pierce" rarity="rare">
-<stats>
-<item value="bullets_pierce" />
-</stats>
-<modifiers>
-<item type="add" value="1" priority="10" />
-</modifiers>
-<components />
-<visual title="Piercing Projectiles" desc="Projectiles pierce through enemies" />
-</value>
-</pair>
-<pair key="add_damage_after_kill">
-<value name="add_damage_after_kill" rarity="rare">
-<stats>
-<item value="damage_after_kill" />
-</stats>
-<modifiers>
-<item type="add" value="1.5" priority="10" />
-</modifiers>
-<components />
-<visual title="Zombie Slayer" desc="Temporarily increases attack after a kill" />
-</value>
-</pair>
-<pair key="warrior_heart">
-<value name="warrior_heart" rarity="rare">
-<stats />
-<modifiers />
-<components>
-<ComponentHeartAddStatsDamage percent="0.05" stat_upgrade="lucky_heart_add_damage" />
-</components>
-<visual title="Warrior’s Heart" desc="Picking up hearts may increase attack power" />
-</value>
-</pair>
-<pair key="fast_shooter">
-<value name="fast_shooter" rarity="rare">
-<stats>
-<item value="recharge" />
-<item value="damage" />
-</stats>
-<modifiers>
-<item type="div" value="1.2" priority="1" />
-<item type="div" value="1.2" priority="1" />
-</modifiers>
-<components />
-<visual title="Quick Shot" desc="Increases fire rate but reduces damage" />
-</value>
-</pair>
-<pair key="speed_2">
-<value name="speed_2" rarity="rare">
-<stats>
-<item value="speed" />
-</stats>
-<modifiers>
-<item type="mul" value="1.1" priority="1" />
-</modifiers>
-<components />
-<visual title="Wind Fairy" desc="Increases movement speed" icon="icon_skills/skill_add_speed_1.png" />
-</value>
-</pair>
-<pair key="ricochet_bounce">
-<value name="ricochet_bounce" rarity="rare">
-<stats>
-<item value="ricochet_bounce" />
-</stats>
-<modifiers>
-<item type="add" value="1" priority="10" />
-</modifiers>
-<components />
-<visual title="Ricochet" desc="Projectiles bounce off enemies" />
-</value>
-</pair>
-<pair key="lucky_heart">
-<value name="lucky_heart" rarity="rare">
-<stats />
-<modifiers />
-<components>
-<ComponentHeartAddStatsHp percent="0.05" stat_upgrade="lucky_heart_add_max_hp" />
-</components>
-<visual title="Lucky Heart" desc="Picking up hearts may increase max HP" />
-</value>
-</pair>
-<pair key="bullet_freeze">
-<value name="bullet_freeze" rarity="rare">
-<stats>
-<item value="freeze_chance" />
-</stats>
-<modifiers>
-<item type="add" value="0.1" priority="10" />
-</modifiers>
-<components />
-<visual title="Freeze" desc="Bullets may freeze enemies" icon="icon_skills/skill_spirit_ice.png" />
-</value>
-</pair>
-</stat_upgrades>
-<levels>
-<pair key="level_1">
-<value name="level_1">
-<tmx_maps>
-<item value="tmx/level_2/level_1_wave_1.tmx" />
-</tmx_maps>
-<waves>
-<DataWaveOnSpawnPoints>
-<units>
-<pair key="3" value="enemy_raider_melee_1" />
-<pair key="4" value="enemy_raider_melee_1" />
-<pair key="11" value="enemy_raider_melee_1" />
-<pair key="12" value="enemy_raider_melee_1" />
-</units>
-</DataWaveOnSpawnPoints>
-<DataWaveOnSpawnPoints>
-<units>
-<pair key="7" value="enemy_raider_archer" />
-<pair key="8" value="enemy_raider_archer" />
-<pair key="5" value="enemy_raider_archer" />
-<pair key="6" value="enemy_raider_archer" />
-<pair key="9" value="enemy_raider_archer" />
-<pair key="10" value="enemy_raider_archer" />
-</units>
-</DataWaveOnSpawnPoints>
-<DataWaveOnSpawnPoints>
-<units>
-<pair key="9" value="enemy_raider_melee_1" />
-<pair key="10" value="enemy_raider_melee_1" />
-<pair key="5" value="enemy_raider_archer_with_3_arrows" />
-<pair key="6" value="enemy_raider_archer_with_3_arrows" />
-<pair key="3" value="enemy_raider_archer_with_3_arrows" />
-<pair key="4" value="enemy_raider_archer_with_3_arrows" />
-<pair key="11" value="enemy_raider_melee_1" />
-<pair key="12" value="enemy_raider_melee_1" />
-</units>
-</DataWaveOnSpawnPoints>
-<DataWaveOnSpawnPoints>
-<units>
-<pair key="7" value="enemy_jelly_monster_B" />
-<pair key="8" value="enemy_jelly_monster_B" />
-<pair key="5" value="enemy_jelly_monster_C" />
-<pair key="6" value="enemy_jelly_monster_C" />
-<pair key="9" value="enemy_jelly_monster_C" />
-<pair key="10" value="enemy_jelly_monster_C" />
-</units>
-</DataWaveOnSpawnPoints>
-<DataWaveOnSpawnPoints>
-<units />
-</DataWaveOnSpawnPoints>
-<DataWaveOnSpawnPoints>
-<units>
-<pair key="5" value="enemy_rocketbot_2_dir" />
-<pair key="9" value="enemy_rocketbot_2_dir" />
-<pair key="6" value="enemy_fire_witch" />
-<pair key="10" value="enemy_fire_witch" />
-</units>
-</DataWaveOnSpawnPoints>
-<DataWaveOnSpawnPoints>
-<units>
-<pair key="5" value="enemy_jelly_monster_B" />
-<pair key="7" value="enemy_jelly_monster_B" />
-<pair key="9" value="enemy_jelly_monster_B" />
-<pair key="8" value="enemie_green_zombie" />
-<pair key="10" value="enemie_green_zombie" />
-</units>
-</DataWaveOnSpawnPoints>
-<DataWaveOnSpawnPoints>
-<units>
-<pair key="3" value="enemy_raider_archer" />
-<pair key="4" value="enemy_raider_archer" />
-<pair key="11" value="enemy_fire_witch" />
-<pair key="12" value="enemy_fire_witch" />
-</units>
-</DataWaveOnSpawnPoints>
-<DataWaveOnSpawnPoints>
-<units />
-</DataWaveOnSpawnPoints>
-<DataWaveOnSpawnPoints>
-<units>
-<pair key="boss" value="boss_fireballs_balistic" />
-</units>
-</DataWaveOnSpawnPoints>
-<DataWaveOnSpawnPoints>
-<units />
-</DataWaveOnSpawnPoints>
-<DataWaveOnSpawnPoints>
-<units />
-</DataWaveOnSpawnPoints>
-<DataWaveOnSpawnPoints>
-<units />
-</DataWaveOnSpawnPoints>
-<DataWaveOnSpawnPoints>
-<units />
-</DataWaveOnSpawnPoints>
-<DataWaveOnSpawnPoints>
-<units />
-</DataWaveOnSpawnPoints>
-<DataWaveOnSpawnPoints>
-<units />
-</DataWaveOnSpawnPoints>
-<DataWaveOnSpawnPoints>
-<units />
-</DataWaveOnSpawnPoints>
-<DataWaveOnSpawnPoints>
-<units />
-</DataWaveOnSpawnPoints>
-<DataWaveOnSpawnPoints>
-<units />
-</DataWaveOnSpawnPoints>
-<DataWaveOnSpawnPoints>
-<units />
-</DataWaveOnSpawnPoints>
-</waves>
-</value>
-</pair>
-</levels>
-<paramses>
-<pair key="default">
-<value name="default">
-<user_systems>
-<SystemEquipment />
-</user_systems>
-<skill_rarity_weights>
-<pair key="fine" value="100" />
-<pair key="rare" value="75" />
-<pair key="epic" value="50" />
-<pair key="legendary" value="25" />
-</skill_rarity_weights>
-</value>
-</pair>
-</paramses>
+  <merge_levels>
+    <pair key="normal">
+      <value name="normal" index="1" next="fine" count_items_to_merge="2">
+        <require_items_to_merge>
+          <item value="normal" />
+        </require_items_to_merge>
+        <visual title="Normal" icon="icon_equip/frames/normal.png" />
+      </value>
+    </pair>
+    <pair key="fine">
+      <value name="fine" index="2" next="rare" count_items_to_merge="2">
+        <require_items_to_merge>
+          <item value="fine" />
+        </require_items_to_merge>
+        <visual title="Fine" icon="icon_equip/frames/fine.png" />
+      </value>
+    </pair>
+    <pair key="rare">
+      <value name="rare" index="3" next="epic_1" count_items_to_merge="2">
+        <require_items_to_merge>
+          <item value="rare" />
+        </require_items_to_merge>
+        <visual title="Rare" icon="icon_equip/frames/rare.png" />
+      </value>
+    </pair>
+    <pair key="epic_1">
+      <value name="epic_1" index="4" next="epic_2" count_items_to_merge="2">
+        <require_items_to_merge>
+          <item value="epic_1" />
+          <item value="epic_2" />
+          <item value="epic_3" />
+        </require_items_to_merge>
+        <visual title="Epic" icon="icon_equip/frames/epic.png" />
+      </value>
+    </pair>
+    <pair key="epic_2">
+      <value name="epic_2" index="5" next="epic_3" count_items_to_merge="2">
+        <require_items_to_merge>
+          <item value="epic_1" />
+          <item value="epic_2" />
+          <item value="epic_3" />
+        </require_items_to_merge>
+        <visual title="Epic +1" icon="icon_equip/frames/epic.png" />
+      </value>
+    </pair>
+    <pair key="epic_3">
+      <value name="epic_3" index="6" next="legendary_1" count_items_to_merge="2">
+        <require_items_to_merge>
+          <item value="epic_1" />
+          <item value="epic_2" />
+          <item value="epic_3" />
+        </require_items_to_merge>
+        <visual title="Epic +2" icon="icon_equip/frames/epic.png" />
+      </value>
+    </pair>
+    <pair key="legendary_1">
+      <value name="legendary_1" index="7" next="legendary_2" count_items_to_merge="2">
+        <require_items_to_merge>
+          <item value="legendary_1" />
+          <item value="legendary_2" />
+          <item value="legendary_3" />
+          <item value="legendary_4" />
+        </require_items_to_merge>
+        <visual title="Legendary" icon="icon_equip/frames/legendary.png" />
+      </value>
+    </pair>
+    <pair key="legendary_2">
+      <value name="legendary_2" index="8" next="legendary_3" count_items_to_merge="2">
+        <require_items_to_merge>
+          <item value="legendary_1" />
+          <item value="legendary_2" />
+          <item value="legendary_3" />
+          <item value="legendary_4" />
+        </require_items_to_merge>
+        <visual title="Legendary +2" icon="icon_equip/frames/legendary.png" />
+      </value>
+    </pair>
+    <pair key="legendary_3">
+      <value name="legendary_3" index="9" next="legendary_4" count_items_to_merge="2">
+        <require_items_to_merge>
+          <item value="legendary_1" />
+          <item value="legendary_2" />
+          <item value="legendary_3" />
+          <item value="legendary_4" />
+        </require_items_to_merge>
+        <visual title="Legendary +3" icon="icon_equip/frames/legendary.png" />
+      </value>
+    </pair>
+    <pair key="legendary_4">
+      <value name="legendary_4" index="10" next="mythic_1" count_items_to_merge="2">
+        <require_items_to_merge>
+          <item value="legendary_1" />
+          <item value="legendary_2" />
+          <item value="legendary_3" />
+          <item value="legendary_4" />
+        </require_items_to_merge>
+        <visual title="Legendary +4" icon="icon_equip/frames/legendary.png" />
+      </value>
+    </pair>
+    <pair key="mythic_1">
+      <value name="mythic_1" index="11" next="mythic_2" count_items_to_merge="2">
+        <require_items_to_merge>
+          <item value="mythic_1" />
+          <item value="mythic_2" />
+          <item value="mythic_3" />
+          <item value="mythic_4" />
+          <item value="mythic_5" />
+        </require_items_to_merge>
+        <visual title="Mythic" icon="icon_equip/frames/mythic.png" />
+      </value>
+    </pair>
+    <pair key="mythic_2">
+      <value name="mythic_2" index="12" next="mythic_3" count_items_to_merge="2">
+        <require_items_to_merge>
+          <item value="mythic_1" />
+          <item value="mythic_2" />
+          <item value="mythic_3" />
+          <item value="mythic_4" />
+          <item value="mythic_5" />
+        </require_items_to_merge>
+        <visual title="Mythic +1" icon="icon_equip/frames/mythic.png" />
+      </value>
+    </pair>
+    <pair key="mythic_3">
+      <value name="mythic_3" index="13" next="mythic_4" count_items_to_merge="2">
+        <require_items_to_merge>
+          <item value="mythic_1" />
+          <item value="mythic_2" />
+          <item value="mythic_3" />
+          <item value="mythic_4" />
+          <item value="mythic_5" />
+        </require_items_to_merge>
+        <visual title="Mythic +2" icon="icon_equip/frames/mythic.png" />
+      </value>
+    </pair>
+    <pair key="mythic_4">
+      <value name="mythic_4" index="14" next="mythic_5" count_items_to_merge="2">
+        <require_items_to_merge>
+          <item value="mythic_1" />
+          <item value="mythic_2" />
+          <item value="mythic_3" />
+          <item value="mythic_4" />
+          <item value="mythic_5" />
+        </require_items_to_merge>
+        <visual title="Mythic +3" icon="icon_equip/frames/mythic.png" />
+      </value>
+    </pair>
+    <pair key="mythic_5">
+      <value name="mythic_5" index="15" next="chaotic" count_items_to_merge="2">
+        <require_items_to_merge>
+          <item value="mythic_1" />
+          <item value="mythic_2" />
+          <item value="mythic_3" />
+          <item value="mythic_4" />
+          <item value="mythic_5" />
+        </require_items_to_merge>
+        <visual title="Mythic +4" icon="icon_equip/frames/mythic.png" />
+      </value>
+    </pair>
+    <pair key="chaotic">
+      <value name="chaotic" index="16">
+        <visual title="Chaotic" icon="icon_equip/frames/chaotic.png" />
+      </value>
+    </pair>
+  </merge_levels>
+  <ladder_levelses>
+    <pair key="hero_exp">
+      <value name="hero_exp">
+        <values>
+          <item value="0" />
+          <item value="20" />
+          <item value="80" />
+          <item value="140" />
+          <item value="230" />
+          <item value="360" />
+          <item value="550" />
+          <item value="830" />
+          <item value="1250" />
+          <item value="1880" />
+          <item value="2820" />
+          <item value="4230" />
+          <item value="6340" />
+          <item value="9500" />
+          <item value="14240" />
+          <item value="21350" />
+          <item value="32010" />
+          <item value="48000" />
+          <item value="71980" />
+          <item value="107950" />
+          <item value="161900" />
+        </values>
+      </value>
+    </pair>
+  </ladder_levelses>
+  <units>
+    <pair key="hero_survival">
+      <value name="hero_survival">
+        <visual path_to_view="ini/scenes/gameplay/heroes/hero_survival.xml" />
+        <stats>
+          <item key="health" value="100000" />
+          <item key="damage" value="25" />
+          <item key="size" value="25" />
+          <item key="speed" value="300" />
+          <item key="recharge" value="0.5" />
+          <item key="shoot_radius" value="1000" />
+          <item key="bullets_count_side_deviation" value="1" />
+          <item key="sword_damage" value="0.5" />
+          <item key="sword_count_mul" value="1" />
+        </stats>
+        <components>
+          <ComponentTargetHighlight />
+          <ComponentHealingOnChangeMaxHp />
+          <ComponentLevelUp />
+          <ComponentSpiritBasePoints />
+          <ComponentEffects />
+          <ComponentSwordCast duration="2" cast_count="5" />
+        </components>
+      </value>
+    </pair>
+    <pair key="bullet_shotgun">
+      <value name="bullet_shotgun" bullet_type="arrow">
+        <visual path_to_view="ini/scenes/gameplay/bullets/bullet_shotgun.xml" />
+        <stats>
+          <item key="speed" value="1300" />
+          <item key="push_target" value="50" />
+          <item key="bullets_count_side_deviation" value="1" />
+        </stats>
+        <components>
+          <ComponentBullet />
+        </components>
+      </value>
+    </pair>
+    <pair key="enemy_raider_melee_1">
+      <value name="enemy_raider_melee_1">
+        <visual path_to_view="ini/scenes/gameplay/units/enemy_raider_melee_1.xml" />
+        <stats>
+          <item key="health" value="300" />
+          <item key="size" value="25" />
+          <item key="speed" value="200" />
+          <item key="damage" value="100" />
+        </stats>
+        <stats_string />
+        <components>
+          <ComponentActions>
+            <actions>
+              <ActionWait name="start" duration="1" next_action="move_to_hero" />
+              <ActionMoveToPlayer name="move_to_hero" next_action_on_break="melee_attack" next_action_on_finish="melee_attack" />
+              <ActionMeleeAttack name="melee_attack" duration="1" next_action="move_to_hero" />
+            </actions>
+          </ComponentActions>
+          <ComponentExpDrop count="10" />
+          <ComponentDropHeart />
+        </components>
+      </value>
+    </pair>
+    <pair key="enemie_green_zombie">
+      <value name="enemie_green_zombie">
+        <visual path_to_view="ini/scenes/gameplay/units/enemie_green_zombie.xml" />
+        <stats>
+          <item key="health" value="300" />
+          <item key="size" value="15" />
+          <item key="speed" value="100" />
+          <item key="recharge" value="1" />
+          <item key="damage" value="50" />
+        </stats>
+        <components>
+          <ComponentActions>
+            <actions>
+              <ActionWait name="start" duration="0.0" random_duration="0.2" next_action="pre_run" animation="idle" />
+              <ActionWait name="pre_run" next_action="run" animation="pre_dash" duration="1" />
+              <ActionRunToPlayer name="run" duration="2" random_duration="0.5" next_action_on_break="damage" next_action_on_finish="wait_finish" />
+              <ActionCreateDamage name="damage" duration="0.5" next_action="wait_break" />
+              <ActionWait name="wait_break" duration="0.5" next_action="move_to_hero" />
+              <ActionWait name="wait_finish" duration="1" next_action="move_to_hero" />
+              <ActionMoveToPlayer name="move_to_hero" duration="1" random_duration="1" next_action_on_break="melee_attack" next_action_on_finish="pre_run" />
+              <ActionMeleeAttack name="melee_attack" duration="1" next_action="move_to_hero" />
+            </actions>
+          </ComponentActions>
+          <ComponentExpDrop count="10" />
+          <ComponentDropHeart />
+        </components>
+      </value>
+    </pair>
+    <pair key="spirit_ice">
+      <value name="spirit_ice">
+        <visual path_to_view="ini/scenes/gameplay/units/spirit_ice.xml" />
+        <stats>
+          <item key="recharge" value="1" />
+          <item key="shoot_radius" value="100" />
+          <item key="damage" value="0.5" />
+        </stats>
+        <stats_string>
+          <item key="bullet" value="spirit_ice_bullet" />
+        </stats_string>
+        <components>
+          <ComponentSpirit />
+          <ComponentShootBullet />
+        </components>
+      </value>
+    </pair>
+    <pair key="enemy_spider">
+      <value name="enemy_spider">
+        <visual path_to_view="ini/scenes/gameplay/units/enemy_spider.xml" />
+        <stats>
+          <item key="health" value="300" />
+          <item key="size" value="15" />
+          <item key="speed" value="100" />
+          <item key="damage" value="100" />
+        </stats>
+        <stats_string>
+          <item key="bullet" value="enemy_fireball_linear" />
+        </stats_string>
+        <components>
+          <ComponentActions>
+            <actions>
+              <ActionWait name="start" duration="0.1" next_action="move" />
+              <ActionMoveToCenterHorizontalOrVertical name="move" duration="1" random_duration="1" next_action="shoot" />
+              <ActionShootByMoveDirection name="shoot" next_action="move" animation="attack" />
+            </actions>
+          </ComponentActions>
+          <ComponentExpDrop count="10" />
+          <ComponentDropHeart />
+        </components>
+      </value>
+    </pair>
+    <pair key="enemy_rocketbot_2_dir">
+      <value name="enemy_rocketbot_2_dir">
+        <visual path_to_view="ini/scenes/gameplay/units/enemy_rocketbot_2_dir.xml" />
+        <stats>
+          <item key="health" value="300" />
+          <item key="size" value="15" />
+          <item key="speed" value="100" />
+          <item key="damage" value="100" />
+        </stats>
+        <stats_string>
+          <item key="bullet" value="enemy_bullet_rocketbot" />
+        </stats_string>
+        <components>
+          <ComponentActions>
+            <actions>
+              <ActionWait name="start" duration="0.1" next_action="move" />
+              <ActionMoveToCenterHorizontalOrVertical name="move" duration="1" random_duration="1" next_action="shoot" />
+              <ActionShootByMoveDirection name="shoot" next_action="move" animation="attack" />
+            </actions>
+          </ComponentActions>
+          <ComponentExpDrop count="10" />
+          <ComponentDropHeart />
+        </components>
+      </value>
+    </pair>
+    <pair key="spirit_king">
+      <value name="spirit_king">
+        <visual path_to_view="ini/scenes/gameplay/units/spirit_king.xml" />
+        <stats>
+          <item key="recharge" value="1" />
+          <item key="shoot_radius" value="100" />
+          <item key="damage" value="0.5" />
+        </stats>
+        <stats_string>
+          <item key="bullet" value="spirit_laser_bullet" />
+        </stats_string>
+        <components>
+          <ComponentSpirit />
+          <ComponentShootBullet />
+        </components>
+      </value>
+    </pair>
+    <pair key="boss_fireballs_balistic">
+      <value name="boss_fireballs_balistic" is_boss="true">
+        <visual path_to_view="ini/scenes/gameplay/units/boss_fireballs_balistic.xml" />
+        <stats>
+          <item key="health" value="10000" />
+          <item key="size" value="50" />
+          <item key="speed" value="200" />
+          <item key="recharge" value="3" />
+          <item key="shoot_radius" value="2000" />
+          <item key="damage" value="100" />
+          <item key="freeze_immunity_time" value="15" />
+          <item key="push_target_resist" value="1" />
+        </stats>
+        <stats_string>
+          <item key="bullet" value="enemy_fireball_balistic" />
+        </stats_string>
+        <components>
+          <ComponentActions>
+            <actions>
+              <ActionMoveDirection name="movement1" duration="1.5" next_action="movement2" />
+              <ActionMoveDirection name="movement2" duration="1.5" next_action="create_marker1" />
+              <ActionCreateMarkerNearHero name="create_marker1" duration="0.2" radius="300" next_action="create_marker2" marker="marker_simple" marker_id="attack_1" />
+              <ActionCreateMarkerNearHero name="create_marker2" duration="0.2" radius="300" next_action="create_marker3" marker="marker_simple" marker_id="attack_2" />
+              <ActionCreateMarkerNearHero name="create_marker3" duration="0.2" radius="300" next_action="shoot1" marker="marker_simple" marker_id="attack_3" />
+              <ActionShoot name="shoot1" animation="attack" bullet_name="enemy_fireball_balistic_with_split_to_6" marker_id="attack_1" next_action="shoot2" />
+              <ActionShoot name="shoot2" animation="attack" bullet_name="enemy_fireball_balistic_with_split_to_6" marker_id="attack_2" next_action="shoot3" />
+              <ActionShoot name="shoot3" animation="attack" bullet_name="enemy_fireball_balistic_with_split_to_6" marker_id="attack_3" next_action="movement3" />
+              <ActionMoveDirection name="movement3" duration="2" next_action="shoot_linear_big1" />
+              <ActionShoot name="shoot_linear_big1" animation="attack" bullet_name="enemy_fireball_linear_big_with_split_to_3" next_action="shoot_linear_big2" />
+              <ActionShoot name="shoot_linear_big2" animation="attack" bullet_name="enemy_fireball_linear_big_with_split_to_3" next_action="shoot_linear_big3" />
+              <ActionShoot name="shoot_linear_big3" animation="attack" bullet_name="enemy_fireball_linear_big_with_split_to_3" next_action="movement4" />
+              <ActionMoveDirection name="movement4" duration="2" next_action="movement1" />
+            </actions>
+          </ComponentActions>
+        </components>
+      </value>
+    </pair>
+    <pair key="enemy_raider_archer_arrow">
+      <value name="enemy_raider_archer_arrow" bullet_type="arrow">
+        <visual path_to_view="ini/scenes/gameplay/bullets/enemy_raider_archer_arrow.xml" />
+        <stats>
+          <item key="speed" value="500" />
+        </stats>
+        <components>
+          <ComponentBullet />
+        </components>
+      </value>
+    </pair>
+    <pair key="enemy_fireball_balistic">
+      <value name="enemy_fireball_balistic" bullet_type="balistic">
+        <visual path_to_view="ini/scenes/gameplay/bullets/enemy_fireball_balistic.xml" />
+        <stats>
+          <item key="speed" value="400" />
+          <item key="mass_damage" value="1" />
+          <item key="damage_mass_radius" value="100" />
+        </stats>
+        <components>
+          <ComponentBullet />
+          <MoveParabolic />
+        </components>
+      </value>
+    </pair>
+    <pair key="enemy_fireball_balistic_with_split_to_3">
+      <value name="enemy_fireball_balistic_with_split_to_3" bullet_type="balistic">
+        <visual path_to_view="ini/scenes/gameplay/bullets/enemy_fireball_balistic.xml" />
+        <stats>
+          <item key="speed" value="400" />
+          <item key="mass_damage" value="1" />
+          <item key="damage_mass_radius" value="100" />
+        </stats>
+        <components>
+          <ComponentBullet />
+          <MoveParabolic />
+          <ComponentBulletSplit count="3" to_bullets="enemy_fireball_linear" />
+        </components>
+      </value>
+    </pair>
+    <pair key="enemy_fireball_balistic_with_split_to_6">
+      <value name="enemy_fireball_balistic_with_split_to_6" bullet_type="balistic">
+        <visual path_to_view="ini/scenes/gameplay/bullets/enemy_fireball_balistic.xml" />
+        <stats>
+          <item key="speed" value="400" />
+          <item key="mass_damage" value="1" />
+          <item key="damage_mass_radius" value="100" />
+        </stats>
+        <components>
+          <ComponentBullet />
+          <MoveParabolic />
+          <ComponentBulletSplit count="6" to_bullets="enemy_fireball_linear" />
+        </components>
+      </value>
+    </pair>
+    <pair key="enemy_fireball_linear">
+      <value name="enemy_fireball_linear" bullet_type="fireball">
+        <visual path_to_view="ini/scenes/gameplay/bullets/enemy_fireball_linear.xml" />
+        <stats>
+          <item key="speed" value="500" />
+        </stats>
+        <components>
+          <ComponentBullet />
+        </components>
+      </value>
+    </pair>
+    <pair key="enemy_fireball_linear_big_with_split_to_3">
+      <value name="enemy_fireball_linear_big_with_split_to_3" bullet_type="fireball">
+        <visual path_to_view="ini/scenes/gameplay/bullets/enemy_fireball_linear_big.xml" />
+        <stats>
+          <item key="speed" value="500" />
+        </stats>
+        <components>
+          <ComponentBullet />
+          <ComponentBulletSplit count="3" to_bullets="enemy_fireball_linear_medium" split_on_remove="no" timer_to_split="2" split_near_target_radius="100" />
+        </components>
+      </value>
+    </pair>
+    <pair key="enemy_fireball_linear_medium">
+      <value name="enemy_fireball_linear_medium" bullet_type="fireball">
+        <visual path_to_view="ini/scenes/gameplay/bullets/enemy_fireball_linear_medium.xml" />
+        <stats>
+          <item key="speed" value="500" />
+        </stats>
+        <components>
+          <ComponentBullet />
+        </components>
+      </value>
+    </pair>
+    <pair key="enemy_bullet_rocketbot">
+      <value name="enemy_bullet_rocketbot" bullet_type="fireball">
+        <visual path_to_view="ini/scenes/gameplay/bullets/enemy_bullet_rocketbot.xml" />
+        <stats>
+          <item key="speed" value="500" />
+        </stats>
+        <components>
+          <ComponentBullet />
+        </components>
+      </value>
+    </pair>
+    <pair key="spirit_fire_bullet">
+      <value name="spirit_fire_bullet" bullet_type="fireball">
+        <visual path_to_view="ini/scenes/gameplay/bullets/spirit_fire_bullet.xml" />
+        <stats>
+          <item key="speed" value="500" />
+        </stats>
+        <components>
+          <ComponentBullet />
+        </components>
+      </value>
+    </pair>
+    <pair key="sphere_fire_bullet">
+      <value name="sphere_fire_bullet" bullet_type="fireball">
+        <visual path_to_view="ini/scenes/gameplay/bullets/sphere_fire_bullet.xml" />
+        <stats>
+          <item key="damage" value="0.5" />
+          <item key="fire_damage" value="0.5" />
+        </stats>
+        <components>
+          <ComponentBullet />
+          <ComponentSphere />
+        </components>
+      </value>
+    </pair>
+    <pair key="sphere_saw_bullet">
+      <value name="sphere_saw_bullet" bullet_type="fireball">
+        <visual path_to_view="ini/scenes/gameplay/bullets/sphere_saw_bullet.xml" />
+        <stats>
+          <item key="damage" value="0.5" />
+        </stats>
+        <components>
+          <ComponentBullet />
+          <ComponentSphere />
+        </components>
+      </value>
+    </pair>
+    <pair key="sphere_electric_bullet">
+      <value name="sphere_electric_bullet" bullet_type="lightning">
+        <visual path_to_view="ini/scenes/gameplay/bullets/sphere_electric_bullet.xml" />
+        <stats>
+          <item key="size" value="50" />
+          <item key="damage" value="0.5" />
+          <item key="electric_damage" value="0.3" />
+        </stats>
+        <components>
+          <ComponentBullet />
+          <ComponentSphere />
+        </components>
+      </value>
+    </pair>
+    <pair key="spirit_lightning_bullet">
+      <value name="spirit_lightning_bullet" bullet_type="lightning">
+        <visual path_to_view="ini/scenes/gameplay/bullets/spirit_lightning_bullet.xml" />
+        <stats>
+          <item key="speed" value="1000" />
+        </stats>
+        <components>
+          <ComponentBullet />
+        </components>
+      </value>
+    </pair>
+    <pair key="spirit_ice_bullet">
+      <value name="spirit_ice_bullet" bullet_type="fireball">
+        <visual path_to_view="ini/scenes/gameplay/bullets/spirit_ice_bullet.xml" />
+        <stats>
+          <item key="speed" value="700" />
+          <item key="freeze" value="1" />
+        </stats>
+        <components>
+          <ComponentBullet />
+        </components>
+      </value>
+    </pair>
+    <pair key="spirit_laser_bullet">
+      <value name="spirit_laser_bullet" bullet_type="laser">
+        <visual path_to_view="ini/scenes/gameplay/bullets/spirit_laser_bullet.xml" />
+        <stats>
+          <item key="speed" value="700" />
+        </stats>
+        <components>
+          <ComponentBulletLaser />
+        </components>
+      </value>
+    </pair>
+    <pair key="meteor">
+      <value name="meteor" bullet_type="meteor">
+        <visual path_to_view="ini/scenes/gameplay/bullets/meteor_rain.xml" />
+        <stats>
+          <item key="speed" value="400" />
+          <item key="mass_damage" value="1" />
+          <item key="damage_mass_radius" value="200" />
+          <item key="fire_damage" value="1" />
+        </stats>
+        <components>
+          <ComponentBullet />
+        </components>
+      </value>
+    </pair>
+    <pair key="spirit_lightning">
+      <value name="spirit_lightning">
+        <visual path_to_view="ini/scenes/gameplay/units/spirit_lightning.xml" />
+        <stats>
+          <item key="recharge" value="1" />
+          <item key="shoot_radius" value="100" />
+          <item key="damage" value="0.5" />
+        </stats>
+        <stats_string>
+          <item key="bullet" value="spirit_lightning_bullet" />
+        </stats_string>
+        <components>
+          <ComponentSpirit />
+          <ComponentShootBullet />
+        </components>
+      </value>
+    </pair>
+    <pair key="spirit_fire">
+      <value name="spirit_fire">
+        <visual path_to_view="ini/scenes/gameplay/units/spirit_fire.xml" />
+        <stats>
+          <item key="recharge" value="1" />
+          <item key="shoot_radius" value="100" />
+          <item key="damage" value="0.5" />
+        </stats>
+        <stats_string>
+          <item key="bullet" value="spirit_fire_bullet" />
+        </stats_string>
+        <components>
+          <ComponentSpirit />
+          <ComponentShootBullet />
+        </components>
+      </value>
+    </pair>
+    <pair key="enemy_rocketbot_4_dir">
+      <value name="enemy_rocketbot_4_dir">
+        <visual path_to_view="ini/scenes/gameplay/units/enemy_rocketbot_4_dir.xml" />
+        <stats>
+          <item key="health" value="300" />
+          <item key="size" value="15" />
+          <item key="speed" value="100" />
+          <item key="damage" value="100" />
+        </stats>
+        <stats_string>
+          <item key="bullet" value="enemy_bullet_rocketbot" />
+        </stats_string>
+        <components>
+          <ComponentActions>
+            <actions>
+              <ActionWait name="start" duration="0.1" next_action="move" />
+              <ActionMoveToCenterHorizontalOrVertical name="move" duration="1" random_duration="1" next_action="shoot" />
+              <ActionShoot4Dir name="shoot" next_action="move" animation="attack" />
+            </actions>
+          </ComponentActions>
+          <ComponentExpDrop count="10" />
+          <ComponentDropHeart />
+        </components>
+      </value>
+    </pair>
+    <pair key="enemy_blue_zombie">
+      <value name="enemy_blue_zombie">
+        <visual path_to_view="ini/scenes/gameplay/units/enemy_blue_zombie.xml" />
+        <stats>
+          <item key="health" value="300" />
+          <item key="size" value="15" />
+          <item key="speed" value="100" />
+          <item key="recharge" value="1" />
+          <item key="damage" value="50" />
+        </stats>
+        <components>
+          <ComponentActions>
+            <actions>
+              <ActionWait name="start" duration="0.5" random_duration="1" next_action="run" />
+              <ActionRunToPlayer name="run" duration="1" random_duration="0.5" next_action_on_break="damage" next_action_on_finish="wait_finish" />
+              <ActionCreateDamage name="damage" duration="0.5" next_action="wait_break" />
+              <ActionWait name="wait_break" duration="0.5" next_action="move_to_hero" />
+              <ActionWait name="wait_finish" duration="1" next_action="move_to_hero" />
+              <ActionMoveToPlayer name="move_to_hero" duration="10" random_duration="2" next_action_on_break="melee_attack" next_action_on_finish="run" />
+              <ActionMeleeAttack name="melee_attack" duration="1" next_action="move_to_hero" />
+            </actions>
+          </ComponentActions>
+          <ComponentExpDrop count="10" />
+          <ComponentDropHeart />
+        </components>
+      </value>
+    </pair>
+    <pair key="entity_exp">
+      <value name="entity_exp">
+        <visual path_to_view="ini/scenes/gameplay/units/entity_exp.xml" />
+        <stats />
+        <components>
+          <ComponentExp />
+        </components>
+      </value>
+    </pair>
+    <pair key="entity_heart">
+      <value name="entity_heart">
+        <visual path_to_view="ini/scenes/gameplay/units/entity_heart.xml" />
+        <stats />
+        <components>
+          <ComponentHeart />
+        </components>
+      </value>
+    </pair>
+    <pair key="entity_sword">
+      <value name="entity_sword">
+        <visual path_to_view="ini/scenes/gameplay/units/entity_sword.xml" />
+        <stats>
+          <item key="shoot_radius" value="5000" />
+        </stats>
+        <components>
+          <ComponentSword prepare_to_fly_duration="0.5" fly_speed="1000" />
+        </components>
+      </value>
+    </pair>
+    <pair key="entity_gate_to_next_wave">
+      <value name="entity_gate_to_next_wave">
+        <visual path_to_view="ini/scenes/gameplay/units/entity_gate_to_next_wave.xml" />
+        <components>
+          <ComponentGate radius="64" />
+        </components>
+      </value>
+    </pair>
+    <pair key="enemy_raider_archer">
+      <value name="enemy_raider_archer">
+        <visual path_to_view="ini/scenes/gameplay/units/enemy_raider_archer.xml" />
+        <stats>
+          <item key="health" value="300" />
+          <item key="size" value="15" />
+          <item key="speed" value="150" />
+          <item key="recharge" value="3" />
+          <item key="shoot_radius" value="2000" />
+          <item key="damage" value="100" />
+        </stats>
+        <stats_string>
+          <item key="bullet" value="enemy_raider_archer_arrow" />
+        </stats_string>
+        <components>
+          <ComponentActions>
+            <actions>
+              <ActionWait name="wait1" duration="1" next_action="shoot" />
+              <ActionShoot name="shoot" duration="1" next_action="wait2" />
+              <ActionWait name="wait2" duration="1" next_action="movement1" />
+              <ActionMoveToPlayer name="movement1" duration="2" random_duration="0.5" next_action="movement2" />
+              <ActionMoveDirection name="movement2" duration="1" random_duration="0.25" next_action="wait1" />
+            </actions>
+          </ComponentActions>
+          <ComponentExpDrop count="10" />
+          <ComponentDropHeart />
+        </components>
+      </value>
+    </pair>
+    <pair key="enemy_raider_archer_with_3_arrows">
+      <value name="enemy_raider_archer_with_3_arrows">
+        <visual path_to_view="ini/scenes/gameplay/units/enemy_raider_archer_with_3_arrows.xml" />
+        <stats>
+          <item key="health" value="300" />
+          <item key="size" value="15" />
+          <item key="speed" value="100" />
+          <item key="damage" value="100" />
+        </stats>
+        <stats_string>
+          <item key="bullet" value="enemy_raider_archer_arrow" />
+        </stats_string>
+        <components>
+          <ComponentActions>
+            <actions>
+              <ActionWait name="wait1" duration="0.3" next_action="shoot" />
+              <ActionShoot name="shoot" duration="0.35" next_action="shoot2" />
+              <ActionShoot name="shoot2" duration="0.35" next_action="shoot3" />
+              <ActionShoot name="shoot3" duration="0.35" next_action="wait2" />
+              <ActionWait name="wait2" duration="1" next_action="movement1" />
+              <ActionMoveToCenterHorizontalOrVertical name="movement1" duration="2" random_duration="0.5" next_action="movement2" />
+              <ActionMoveDirection name="movement2" duration="1" random_duration="0.25" next_action="wait1" />
+            </actions>
+          </ComponentActions>
+          <ComponentExpDrop count="10" />
+          <ComponentDropHeart />
+        </components>
+      </value>
+    </pair>
+    <pair key="enemy_mr_toad">
+      <value name="enemy_mr_toad">
+        <visual path_to_view="ini/scenes/gameplay/units/enemy_mr_toad.xml" />
+        <stats>
+          <item key="health" value="300" />
+          <item key="size" value="15" />
+          <item key="speed" value="200" />
+          <item key="damage" value="100" />
+        </stats>
+        <stats_string />
+        <components>
+          <ComponentActions>
+            <actions>
+              <ActionWait name="start" next_action="run" animation="start" />
+              <ActionRunToPlayer name="run" duration="2" random_duration="0.5" next_action_on_break="damage" next_action_on_finish="wait_finish" animation="jump" />
+              <ActionCreateDamage name="damage" duration="0.5" next_action="wait_break" />
+              <ActionWait name="wait_break" duration="0.5" next_action="move_to_hero" />
+              <ActionWait name="wait_finish" duration="1" next_action="move_to_hero" />
+              <ActionMoveToPlayer name="move_to_hero" duration="1" random_duration="2" next_action_on_break="melee_attack" next_action_on_finish="run" />
+              <ActionMeleeAttack name="melee_attack" duration="1" next_action="move_to_hero" />
+            </actions>
+          </ComponentActions>
+          <ComponentExpDrop count="10" />
+          <ComponentDropHeart />
+        </components>
+      </value>
+    </pair>
+    <pair key="enemy_jelly_monster_A">
+      <value name="enemy_jelly_monster_A">
+        <visual path_to_view="ini/scenes/gameplay/units/enemy_jelly_monster_A.xml" />
+        <stats>
+          <item key="health" value="500" />
+          <item key="size" value="50" />
+          <item key="speed" value="50" />
+          <item key="damage" value="300" />
+        </stats>
+        <stats_string />
+        <components>
+          <ComponentActions>
+            <actions>
+              <ActionWait name="start" duration="1" next_action="move" />
+              <ActionMoveToPlayer name="move" duration="999" next_action="attack" />
+              <ActionMeleeAttack name="attack" duration="0.5" next_action="move" />
+            </actions>
+          </ComponentActions>
+          <ComponentCreateUnitsOnDeath>
+            <units>
+              <item value="enemy_jelly_monster_B" />
+              <item value="enemy_jelly_monster_B" />
+            </units>
+          </ComponentCreateUnitsOnDeath>
+          <ComponentExpDrop count="10" />
+          <ComponentDropHeart />
+        </components>
+      </value>
+    </pair>
+    <pair key="enemy_jelly_monster_C">
+      <value name="enemy_jelly_monster_C">
+        <visual path_to_view="ini/scenes/gameplay/units/enemy_jelly_monster_C.xml" />
+        <stats>
+          <item key="health" value="100" />
+          <item key="size" value="30" />
+          <item key="speed" value="75" />
+          <item key="damage" value="100" />
+        </stats>
+        <stats_string />
+        <components>
+          <ComponentActions>
+            <actions>
+              <ActionWait name="start" duration="1" next_action="move" />
+              <ActionMoveToPlayer name="move" duration="999" next_action="attack" />
+              <ActionMeleeAttack name="attack" duration="0.5" next_action="move" />
+            </actions>
+          </ComponentActions>
+          <ComponentExpDrop count="10" />
+          <ComponentDropHeart />
+        </components>
+      </value>
+    </pair>
+    <pair key="enemy_jelly_monster_B">
+      <value name="enemy_jelly_monster_B">
+        <visual path_to_view="ini/scenes/gameplay/units/enemy_jelly_monster_B.xml" />
+        <stats>
+          <item key="health" value="250" />
+          <item key="size" value="40" />
+          <item key="speed" value="60" />
+          <item key="damage" value="200" />
+        </stats>
+        <stats_string />
+        <components>
+          <ComponentActions>
+            <actions>
+              <ActionWait name="start" duration="1" next_action="move" />
+              <ActionMoveToPlayer name="move" duration="999" next_action="attack" />
+              <ActionMeleeAttack name="attack" duration="0.5" next_action="move" />
+            </actions>
+          </ComponentActions>
+          <ComponentCreateUnitsOnDeath>
+            <units>
+              <item value="enemy_jelly_monster_C" />
+              <item value="enemy_jelly_monster_C" />
+              <item value="enemy_jelly_monster_C" />
+            </units>
+          </ComponentCreateUnitsOnDeath>
+          <ComponentExpDrop count="10" />
+          <ComponentDropHeart />
+        </components>
+      </value>
+    </pair>
+    <pair key="enemy_fire_witch">
+      <value name="enemy_fire_witch">
+        <visual path_to_view="ini/scenes/gameplay/units/enemy_fire_witch.xml" />
+        <stats>
+          <item key="health" value="300" />
+          <item key="size" value="15" />
+          <item key="speed" value="100" />
+          <item key="recharge" value="3" />
+          <item key="shoot_radius" value="2000" />
+          <item key="damage" value="100" />
+        </stats>
+        <stats_string>
+          <item key="bullet" value="enemy_fireball_balistic" />
+        </stats_string>
+        <components>
+          <ComponentActions>
+            <actions>
+              <ActionMoveDirection name="movement" duration="2" random_duration="0.5" next_action="movement2" />
+              <ActionMoveDirection name="movement2" duration="1" random_duration="0.5" next_action="create_marker" />
+              <ActionCreateMarkerNearHero name="create_marker" duration="0" next_action="wait1" />
+              <ActionWait name="wait1" duration="1" next_action="shoot" />
+              <ActionShoot name="shoot" duration="1" next_action="wait2" />
+              <ActionWait name="wait2" duration="1" next_action="movement" />
+            </actions>
+          </ComponentActions>
+          <ComponentExpDrop count="10" />
+          <ComponentDropHeart />
+        </components>
+      </value>
+    </pair>
+  </units>
+  <equipments>
+    <pair key="weapon_bow_1">
+      <value name="weapon_bow_1" main_stat="damage">
+        <stats>
+          <item key="recharge" value="0.5" />
+          <item key="shoot_radius" value="1000" />
+          <item key="attack_on_move" value="0" />
+        </stats>
+        <visual icon="icon_equip/weapon_1.png" />
+        <merge_stats>
+          <item merge_level="normal" stat="damage" desc="Damage: %d" is_shown_in_ui="false">
+            <modifier type="add" priority="-1000" value="50" />
+            <component type="ComponentShootBullet" />
+          </item>
+          <item merge_level="normal" stat="bullet" desc="Powerfull arrows" is_shown_in_ui="false">
+            <modifier type="add" priority="-1000" string_value="bullet_shotgun" />
+          </item>
+          <item merge_level="fine" stat="damage" desc="attack +5%">
+            <modifier type="mul" priority="0" value="1.05" />
+          </item>
+        </merge_stats>
+      </value>
+    </pair>
+    <pair key="amulet_1">
+      <value name="amulet_1" slot="amulet" main_stat="damage">
+        <visual icon="icon_equip/amulet_1.png" />
+        <merge_stats>
+          <item merge_level="normal" stat="damage" desc="Damage: %d">
+            <modifier type="add" priority="-1000" value="25" />
+          </item>
+        </merge_stats>
+      </value>
+    </pair>
+    <pair key="ring_1">
+      <value name="ring_1" slot="ring" main_stat="damage">
+        <visual icon="icon_equip/ring_1.png" />
+        <merge_stats>
+          <item merge_level="normal" stat="damage" desc="Damage: %d">
+            <modifier type="add" priority="-1000" value="20" />
+          </item>
+        </merge_stats>
+      </value>
+    </pair>
+    <pair key="body_1">
+      <value name="body_1" slot="armor" main_stat="health">
+        <visual icon="icon_equip/body_1.png" />
+        <merge_stats>
+          <item merge_level="normal" stat="health" desc="Damage: %d">
+            <modifier type="add" priority="-1000" value="250" />
+          </item>
+        </merge_stats>
+      </value>
+    </pair>
+    <pair key="legs_1">
+      <value name="legs_1" slot="boots" main_stat="health">
+        <visual icon="icon_equip/legs_1.png" />
+        <merge_stats>
+          <item merge_level="normal" stat="health" desc="Damage: %d">
+            <modifier type="add" priority="-1000" value="150" />
+          </item>
+        </merge_stats>
+      </value>
+    </pair>
+    <pair key="head_1">
+      <value name="head_1" slot="head" main_stat="health">
+        <visual icon="icon_equip/head_1.png" />
+        <merge_stats>
+          <item merge_level="normal" stat="health" desc="Damage: %d">
+            <modifier type="add" priority="-1000" value="150" />
+          </item>
+        </merge_stats>
+      </value>
+    </pair>
+  </equipments>
+  <stat_upgrades>
+    <pair key="lucky_heart_add_max_hp">
+      <value name="lucky_heart_add_max_hp">
+        <stats>
+          <item value="health" />
+        </stats>
+        <modifiers>
+          <item type="mul" priority="1" value="1.1" />
+        </modifiers>
+      </value>
+    </pair>
+    <pair key="lucky_heart_add_damage">
+      <value name="lucky_heart_add_damage">
+        <stats>
+          <item value="damage" />
+        </stats>
+        <modifiers>
+          <item type="mul" priority="1" value="1.1" />
+        </modifiers>
+      </value>
+    </pair>
+    <pair key="enemy_skill_run_add_speed">
+      <value name="enemy_skill_run_add_speed">
+        <stats>
+          <item value="speed" />
+        </stats>
+        <modifiers>
+          <item type="mul" priority="9" value="5" />
+        </modifiers>
+      </value>
+    </pair>
+    <pair key="swords_x2">
+      <value name="swords_x2" rarity="epic">
+        <stats>
+          <item value="sword_count_mul" />
+        </stats>
+        <modifiers>
+          <item type="mul" value="2" priority="1" />
+        </modifiers>
+        <components />
+        <visual title="More Rockets" desc="Doubles the number of summoned rockets" icon="icon_skills/skill_swords_x2.png" />
+      </value>
+    </pair>
+    <pair key="spirit_lightning">
+      <value name="spirit_lightning" rarity="epic">
+        <stats />
+        <modifiers />
+        <components>
+          <ComponentSpawnSpirit spirit="spirit_lightning" />
+        </components>
+        <visual title="Lightning Spirit" desc="Fires lightning bolts" icon="icon_skills/skill_spirit_lightning.png" />
+      </value>
+    </pair>
+    <pair key="spirit_fire">
+      <value name="spirit_fire" rarity="epic">
+        <stats />
+        <modifiers />
+        <components>
+          <ComponentSpawnSpirit spirit="spirit_fire" />
+        </components>
+        <visual title="Flame Spirit" desc="Fires fireballs" icon="icon_skills/skill_spirit_fire.png" />
+      </value>
+    </pair>
+    <pair key="spirit_ice">
+      <value name="spirit_ice" rarity="epic">
+        <stats />
+        <modifiers />
+        <components>
+          <ComponentSpawnSpirit spirit="spirit_ice" />
+        </components>
+        <visual title="Ice Spirit" desc="Freezes and slows enemies" icon="icon_skills/skill_spirit_ice.png" />
+      </value>
+    </pair>
+    <pair key="monster_power">
+      <value name="monster_power" rarity="epic">
+        <stats>
+          <item value="health" />
+          <item value="damage" />
+          <item value="recharge" />
+          <item value="size" />
+        </stats>
+        <modifiers>
+          <item type="mul" value="1.15" priority="1" />
+          <item type="mul" value="1.15" priority="1" />
+          <item type="div" value="1.1" priority="1" />
+          <item type="mul" value="1.5" priority="1" />
+        </modifiers>
+        <components />
+        <visual title="Giant’s Strength" desc="Increases health, damage, and fire rate; increases size" icon="icon_skills/skill_monster_power.png" />
+      </value>
+    </pair>
+    <pair key="enchanted_gun">
+      <value name="enchanted_gun" rarity="epic">
+        <stats />
+        <modifiers />
+        <components />
+        <visual title="Enchanted Weapon" desc="Weapon detaches and shoots automatically; reduces attack speed" icon="icon_skills/skill_enchanted_gun.png" />
+      </value>
+    </pair>
+    <pair key="speed_1">
+      <value name="speed_1" rarity="epic">
+        <stats>
+          <item value="recharge" />
+          <item value="speed" />
+        </stats>
+        <modifiers>
+          <item type="div" value="1.15" priority="1" />
+          <item type="mul" value="1.25" priority="1" />
+        </modifiers>
+        <components />
+        <visual title="Swift Spirit" desc="Increases attack and movement speed" icon="icon_skills/skill_speed_1.png" />
+      </value>
+    </pair>
+    <pair key="bullet_follow_to_target">
+      <value name="bullet_follow_to_target" rarity="epic">
+        <stats>
+          <item value="bullet_follow_target" />
+        </stats>
+        <modifiers>
+          <item type="add" value="1" priority="10" />
+        </modifiers>
+        <components />
+        <visual title="Target Lock" desc="Projectiles home in on targets" icon="icon_skills/skill_bullet_follow_to_target.png" />
+      </value>
+    </pair>
+    <pair key="add_bullet_side">
+      <value name="add_bullet_side" rarity="epic">
+        <stats>
+          <item value="bullets_count_side" />
+        </stats>
+        <modifiers>
+          <item type="add" value="1" priority="10" />
+        </modifiers>
+        <components />
+        <visual title="Fan Shot" desc="Adds two side bullets" icon="icon_skills/skill_add_bullet_side.png" />
+      </value>
+    </pair>
+    <pair key="bullets_through_walls">
+      <value name="bullets_through_walls" rarity="epic">
+        <stats>
+          <item value="bullets_through_walls" />
+        </stats>
+        <modifiers>
+          <item type="add" value="1" priority="10" />
+        </modifiers>
+        <components />
+        <visual title="Through Walls" desc="Projectiles can travel through walls" icon="icon_skills/skill_bullets_through_walls.png" />
+      </value>
+    </pair>
+    <pair key="winds_blessing">
+      <value name="winds_blessing" rarity="epic">
+        <stats>
+          <item value="speed" />
+          <item value="size" />
+          <item value="dodge" />
+        </stats>
+        <modifiers>
+          <item type="mul" value="1.10" priority="1" />
+          <item type="div" value="1.1" priority="1" />
+          <item type="add" value="0.1" priority="10" />
+        </modifiers>
+        <components />
+        <visual title="Wind’s Blessing" desc="Increases movement speed, reduces size, and grants dodge chance" icon="icon_skills/skill_winds_blessing.png" />
+      </value>
+    </pair>
+    <pair key="aura_of_slow">
+      <value name="aura_of_slow" rarity="epic">
+        <stats />
+        <modifiers />
+        <components>
+          <ComponentAuraOfSlow name="slow" radius="300.0" />
+        </components>
+        <visual title="Aura of Slow" desc="Slows nearby enemies and projectiles" icon="icon_skills/skill_aura_of_slow.png" />
+      </value>
+    </pair>
+    <pair key="ressurection">
+      <value name="ressurection" rarity="epic">
+        <stats>
+          <item value="ressurection" />
+        </stats>
+        <modifiers>
+          <item type="add" value="1" priority="10" />
+        </modifiers>
+        <components />
+        <visual title="Resurrection" desc="Revives the hero once per level" icon="icon_skills/skill_ressurection.png" />
+      </value>
+    </pair>
+    <pair key="fire_damage_mul_1">
+      <value name="fire_damage_mul_1" rarity="epic">
+        <stats>
+          <item value="fire_damage" />
+        </stats>
+        <modifiers>
+          <item type="mul" value="1.5" priority="1" />
+        </modifiers>
+        <components />
+        <visual title="Fire Boost" desc="Increases fire damage" />
+      </value>
+    </pair>
+    <pair key="freeze_power">
+      <value name="freeze_power" rarity="epic">
+        <stats>
+          <item value="freeze" />
+        </stats>
+        <modifiers>
+          <item type="mul" value="1.5" priority="1" />
+        </modifiers>
+        <components />
+        <visual title="Freeze Boost" desc="Increases freeze effectiveness" />
+      </value>
+    </pair>
+    <pair key="electro_damage_mul_1">
+      <value name="electro_damage_mul_1" rarity="epic">
+        <stats>
+          <item value="electric_damage" />
+        </stats>
+        <modifiers>
+          <item type="mul" value="1.5" priority="1" />
+        </modifiers>
+        <components />
+        <visual title="Lightning Boost" desc="Increases lightning damage" />
+      </value>
+    </pair>
+    <pair key="spirit_mastery">
+      <value name="spirit_mastery" rarity="epic" to_spirits="true">
+        <stats>
+          <item value="damage" />
+        </stats>
+        <modifiers>
+          <item type="mul" value="1.5" priority="1" />
+        </modifiers>
+        <components />
+        <visual title="Spirit Mastery" desc="Boosts all summoned spirits" />
+      </value>
+    </pair>
+    <pair key="meteor_on_attack">
+      <value name="meteor_on_attack" rarity="epic">
+        <stats>
+          <item value="meteor_chance" />
+        </stats>
+        <modifiers>
+          <item type="add" value="0.1" priority="10" />
+        </modifiers>
+        <components />
+        <visual title="Meteor" desc="Chance to summon a meteor when attacking" />
+      </value>
+    </pair>
+    <pair key="meteor_chain">
+      <value name="meteor_chain" rarity="epic">
+        <stats>
+          <item value="meteor_count" />
+        </stats>
+        <modifiers>
+          <item type="add" value="1" priority="10" />
+        </modifiers>
+        <components />
+        <visual title="Chain Meteors" desc="Summons 2 meteors at once" />
+      </value>
+    </pair>
+    <pair key="swords_damage">
+      <value name="swords_damage" rarity="epic">
+        <stats>
+          <item value="sword_damage" />
+        </stats>
+        <modifiers>
+          <item type="mul" value="1.5" priority="1" />
+        </modifiers>
+        <components />
+        <visual title="Rocket Pressure" desc="Increases summoned rocket damage" icon="icon_skills/skill_swords_damage.png" />
+      </value>
+    </pair>
+    <pair key="max_hp_1">
+      <value name="max_hp_1" rarity="fine">
+        <stats>
+          <item value="health" />
+        </stats>
+        <modifiers>
+          <item type="mul" value="1.1" priority="1" />
+        </modifiers>
+        <components />
+        <visual title="Heavyweight" desc="Increases maximum health" icon="icon_skills/skill_max_hp1.png" />
+      </value>
+    </pair>
+    <pair key="add_velocity_1">
+      <value name="add_velocity_1" rarity="fine">
+        <stats>
+          <item value="speed" />
+        </stats>
+        <modifiers>
+          <item type="mul" value="1.5" priority="1" />
+        </modifiers>
+        <components />
+        <visual title="Runner" desc="Increases movement speed" icon="icon_skills/skill_add_speed_1.png" />
+      </value>
+    </pair>
+    <pair key="add_dmg_1">
+      <value name="add_dmg_1" rarity="fine">
+        <stats>
+          <item value="damage" />
+        </stats>
+        <modifiers>
+          <item type="mul" value="1.1" priority="1" />
+        </modifiers>
+        <components />
+        <visual title="Strongman" desc="Increases attack power" icon="icon_skills/skill_add_dmg_1.png" />
+      </value>
+    </pair>
+    <pair key="bullet_fire">
+      <value name="bullet_fire" rarity="fine">
+        <stats>
+          <item value="fire_damage" />
+        </stats>
+        <modifiers>
+          <item type="add" value="0.334" priority="10" />
+        </modifiers>
+        <components />
+        <visual title="Incendiary Rounds" desc="Bullets may ignite enemies" icon="icon_skills/skill_spirit_fire.png" />
+      </value>
+    </pair>
+    <pair key="push_target">
+      <value name="push_target" rarity="fine">
+        <stats>
+          <item value="push_target" />
+        </stats>
+        <modifiers>
+          <item type="add" value="100" priority="10" />
+        </modifiers>
+        <components />
+        <visual title="Counterattack" desc="Pushes enemies back on hit" icon="icon_skills/skill_push_target.png" />
+      </value>
+    </pair>
+    <pair key="blitz_attack_speed">
+      <value name="blitz_attack_speed" rarity="fine">
+        <stats>
+          <item value="recharge" />
+        </stats>
+        <modifiers>
+          <item type="div" value="1.1" priority="1" />
+        </modifiers>
+        <components />
+        <visual title="Blitz" desc="Increases attack speed" icon="icon_skills/skill_blitz_attack_speed.png" />
+      </value>
+    </pair>
+    <pair key="healing_chance">
+      <value name="healing_chance" rarity="fine">
+        <stats />
+        <modifiers />
+        <components>
+          <ComponentRandomHealing />
+        </components>
+        <visual title="Healing Chance" desc="Random chance to heal" icon="icon_skills/skill_healing_chance.png" />
+      </value>
+    </pair>
+    <pair key="add_damage_after_damaged">
+      <value name="add_damage_after_damaged" rarity="fine">
+        <stats>
+          <item value="damage_after_damaged" />
+        </stats>
+        <modifiers>
+          <item type="add" value="1.5" priority="10" />
+        </modifiers>
+        <components />
+        <visual title="Wounded Warrior" desc="When damaged, attack power increases by 50% for 5 seconds" icon="icon_skills/skill_add_damage_after_damaged.png" />
+      </value>
+    </pair>
+    <pair key="boss_killer">
+      <value name="boss_killer" rarity="fine">
+        <stats>
+          <item value="damage_to_boss" />
+        </stats>
+        <modifiers>
+          <item type="add" value="0.5" priority="10" />
+        </modifiers>
+        <components />
+        <visual title="Boss Slayer" desc="Increased damage against bosses" icon="icon_skills/skill_add_dmg_3.png" />
+      </value>
+    </pair>
+    <pair key="sniper">
+      <value name="sniper" rarity="fine">
+        <stats />
+        <modifiers />
+        <components />
+        <visual title="Sniper" desc="The farther the target, the higher the damage" />
+      </value>
+    </pair>
+    <pair key="ricochet_wall">
+      <value name="ricochet_wall" rarity="fine">
+        <stats>
+          <item value="ricochet_wall" />
+        </stats>
+        <modifiers>
+          <item type="add" value="1" priority="10" />
+        </modifiers>
+        <components />
+        <visual title="Ricochet" desc="Bullets bounce off walls (+1 bounce)" />
+      </value>
+    </pair>
+    <pair key="add_bullet_back">
+      <value name="add_bullet_back" rarity="fine">
+        <stats>
+          <item value="bullets_count_back" />
+        </stats>
+        <modifiers>
+          <item type="add" value="1" priority="10" />
+        </modifiers>
+        <components />
+        <visual title="Backshot" desc="Fires an additional bullet backward" />
+      </value>
+    </pair>
+    <pair key="healing_low_hp">
+      <value name="healing_low_hp" rarity="fine">
+        <stats />
+        <modifiers />
+        <components>
+          <ComponentHealingLowHp />
+        </components>
+        <visual title="Healing" desc="Gradually regenerates health when HP is below 30%" />
+      </value>
+    </pair>
+    <pair key="vampire">
+      <value name="vampire" rarity="fine">
+        <stats />
+        <modifiers />
+        <components>
+          <ComponentVampire />
+        </components>
+        <visual title="Vampire" desc="Chance to restore health when killing zombies" />
+      </value>
+    </pair>
+    <pair key="power_trio">
+      <value name="power_trio" rarity="legendary">
+        <stats>
+          <item value="health" />
+          <item value="damage" />
+          <item value="recharge" />
+        </stats>
+        <modifiers>
+          <item type="mul" value="1.2" priority="1" />
+          <item type="mul" value="1.15" priority="1" />
+          <item type="div" value="1.2" priority="1" />
+        </modifiers>
+        <components />
+        <visual title="Power Trio" desc="+15% attack, +20% fire rate, +20% max HP" icon="icon_skills/skill_power_trio.png" />
+      </value>
+    </pair>
+    <pair key="shield_wave">
+      <value name="shield_wave" rarity="legendary">
+        <stats />
+        <modifiers />
+        <components>
+          <ComponentShield activate_type="wave" />
+        </components>
+        <visual title="Shield" desc="Blocks one hit per wave" icon="icon_skills/skill_shield_wave.png" />
+      </value>
+    </pair>
+    <pair key="shield_time">
+      <value name="shield_time" rarity="legendary">
+        <stats />
+        <modifiers />
+        <components>
+          <ComponentShield activate_type="timer" />
+        </components>
+        <visual title="Shield" desc="Blocks one hit every 30 seconds" icon="icon_skills/skill_shield_time.png" />
+      </value>
+    </pair>
+    <pair key="spirit_king">
+      <value name="spirit_king" rarity="legendary">
+        <stats />
+        <modifiers />
+        <components>
+          <ComponentSpawnSpirit spirit="spirit_king" />
+        </components>
+        <visual title="Royal Spirit" desc="Powerful spirit firing lasers" icon="icon_skills/skill_spirit_king.png" />
+      </value>
+    </pair>
+    <pair key="add_dmg_3">
+      <value name="add_dmg_3" rarity="legendary">
+        <stats>
+          <item value="damage" />
+        </stats>
+        <modifiers>
+          <item type="mul" value="1.3" priority="1" />
+        </modifiers>
+        <components />
+        <visual title="Attack Boost" desc="Strong attack increase" icon="icon_skills/skill_add_dmg_3.png" />
+      </value>
+    </pair>
+    <pair key="aura_radioactive">
+      <value name="aura_radioactive" rarity="legendary">
+        <stats />
+        <modifiers />
+        <components>
+          <ComponentAuraDamage name="damage" radius="400.0">
+            <damaged_entities />
+          </ComponentAuraDamage>
+        </components>
+        <visual title="&#10;Radioactive Aura" desc="Deals damage to nearby enemies and weakens them" />
+      </value>
+    </pair>
+    <pair key="sword_lasers">
+      <value name="sword_lasers" rarity="legendary">
+        <stats />
+        <modifiers />
+        <components />
+        <visual title="Energy Rockets" desc="Summoned rockets fire lasers" icon="icon_skills/skill_sword_lasers.png" />
+      </value>
+    </pair>
+    <pair key="max_hp_3">
+      <value name="max_hp_3" rarity="legendary">
+        <stats>
+          <item value="health" />
+        </stats>
+        <modifiers>
+          <item type="mul" value="1.4" priority="1" />
+        </modifiers>
+        <components />
+        <visual title="Heavyweight" desc="Increases maximum health" icon="icon_skills/skill_max_hp3.png" />
+      </value>
+    </pair>
+    <pair key="meteor_rain">
+      <value name="meteor_rain" rarity="legendary">
+        <stats>
+          <item value="meteor_rain" />
+        </stats>
+        <modifiers>
+          <item type="add" value="1" priority="10" />
+        </modifiers>
+        <components>
+          <ComponentMeteorPeriodic />
+        </components>
+        <visual title="Meteor Shower" desc="Periodic meteor strikes" />
+      </value>
+    </pair>
+    <pair key="web_balls">
+      <value name="web_balls" rarity="legendary">
+        <stats />
+        <modifiers />
+        <components />
+        <visual title="Circular Web" desc="Summoned orbs link into a damaging web" icon="icon_skills/skill_web_balls.png" />
+      </value>
+    </pair>
+    <pair key="max_hp_2">
+      <value name="max_hp_2" rarity="rare">
+        <stats>
+          <item value="health" />
+        </stats>
+        <modifiers>
+          <item type="mul" value="1.2" priority="1" />
+        </modifiers>
+        <components />
+        <visual title="Heavyweight" desc="Increases maximum health" icon="icon_skills/skill_max_hp2.png" />
+      </value>
+    </pair>
+    <pair key="add_dmg_2">
+      <value name="add_dmg_2" rarity="rare">
+        <stats>
+          <item value="damage" />
+        </stats>
+        <modifiers>
+          <item type="mul" value="1.2" priority="1" />
+        </modifiers>
+        <components />
+        <visual title="Strongman" desc="Increases attack power" icon="icon_skills/skill_add_dmg_2.png" />
+      </value>
+    </pair>
+    <pair key="swords_in_10_sec">
+      <value name="swords_in_10_sec" rarity="rare">
+        <stats>
+          <item value="sword_time_10" />
+        </stats>
+        <modifiers>
+          <item type="add" value="5" priority="10" />
+        </modifiers>
+        <components />
+        <visual title="Rockets" desc="Summons 5 rockets every 10 seconds" icon="icon_skills/skill_swords_in_10_sec.png" />
+      </value>
+    </pair>
+    <pair key="swords_in_1_sec">
+      <value name="swords_in_1_sec" rarity="rare">
+        <stats>
+          <item value="sword_time_1" />
+        </stats>
+        <modifiers>
+          <item type="add" value="1" priority="10" />
+        </modifiers>
+        <components />
+        <visual title="Rockets" desc="Summons 1 rocket per second" icon="icon_skills/skill_swords_in_1_sec.png" />
+      </value>
+    </pair>
+    <pair key="add_bullet_forward">
+      <value name="add_bullet_forward" rarity="rare">
+        <stats>
+          <item value="bullets_count" />
+        </stats>
+        <modifiers>
+          <item type="add" value="1" priority="10" />
+        </modifiers>
+        <components />
+        <visual title="Shot" desc="Adds one extra bullet" icon="icon_skills/skill_add_bullet_forward.png" />
+      </value>
+    </pair>
+    <pair key="multi_shoot">
+      <value name="multi_shoot" rarity="rare">
+        <stats>
+          <item value="multi_shoot" />
+        </stats>
+        <modifiers>
+          <item type="add" value="1" priority="10" />
+        </modifiers>
+        <components />
+        <visual title="Multishot" desc="Adds sequential fire" icon="icon_skills/skill_multi_shoot.png" />
+      </value>
+    </pair>
+    <pair key="sphere_saw">
+      <value name="sphere_saw" rarity="rare">
+        <stats />
+        <modifiers />
+        <components>
+          <ComponentSphereSpawn data="sphere_saw_bullet" />
+        </components>
+        <visual title="Orbs" desc="Summons neutral floating orbs" icon="icon_skills/skill_sphere_saw.png" />
+      </value>
+    </pair>
+    <pair key="sphere_fire">
+      <value name="sphere_fire" rarity="rare">
+        <stats />
+        <modifiers />
+        <components>
+          <ComponentSphereSpawn data="sphere_fire_bullet" />
+        </components>
+        <visual title="Fire Orbs" desc="Summons 2 fire orbs" icon="icon_skills/skill_sphere_fire.png" />
+      </value>
+    </pair>
+    <pair key="sphere_electric">
+      <value name="sphere_electric" rarity="rare">
+        <stats />
+        <modifiers />
+        <components>
+          <ComponentSphereSpawn data="sphere_electric_bullet" />
+        </components>
+        <visual title="Ice Orbs" desc="Summons 2 ice orbs" icon="icon_skills/skill_sphere_electric.png" />
+      </value>
+    </pair>
+    <pair key="bullet_stun">
+      <value name="bullet_stun" rarity="rare">
+        <stats>
+          <item value="stun_chance" />
+          <item value="stun_duration" />
+        </stats>
+        <modifiers>
+          <item type="add" value="0.1" priority="10" />
+          <item type="add" value="2" priority="10" />
+        </modifiers>
+        <components />
+        <visual title="Stun" desc="Grants chance to stun enemies" />
+      </value>
+    </pair>
+    <pair key="bullet_split">
+      <value name="bullet_split" rarity="rare">
+        <stats>
+          <item value="bullet_split" />
+        </stats>
+        <modifiers>
+          <item type="add" value="1" priority="10" />
+        </modifiers>
+        <components />
+        <visual title="Split Projectiles" desc="Projectiles split on impact" />
+      </value>
+    </pair>
+    <pair key="bullets_pierce">
+      <value name="bullets_pierce" rarity="rare">
+        <stats>
+          <item value="bullets_pierce" />
+        </stats>
+        <modifiers>
+          <item type="add" value="1" priority="10" />
+        </modifiers>
+        <components />
+        <visual title="Piercing Projectiles" desc="Projectiles pierce through enemies" />
+      </value>
+    </pair>
+    <pair key="add_damage_after_kill">
+      <value name="add_damage_after_kill" rarity="rare">
+        <stats>
+          <item value="damage_after_kill" />
+        </stats>
+        <modifiers>
+          <item type="add" value="1.5" priority="10" />
+        </modifiers>
+        <components />
+        <visual title="Zombie Slayer" desc="Temporarily increases attack after a kill" />
+      </value>
+    </pair>
+    <pair key="warrior_heart">
+      <value name="warrior_heart" rarity="rare">
+        <stats />
+        <modifiers />
+        <components>
+          <ComponentHeartAddStatsDamage percent="0.05" stat_upgrade="lucky_heart_add_damage" />
+        </components>
+        <visual title="Warrior’s Heart" desc="Picking up hearts may increase attack power" />
+      </value>
+    </pair>
+    <pair key="fast_shooter">
+      <value name="fast_shooter" rarity="rare">
+        <stats>
+          <item value="recharge" />
+          <item value="damage" />
+        </stats>
+        <modifiers>
+          <item type="div" value="1.2" priority="1" />
+          <item type="div" value="1.2" priority="1" />
+        </modifiers>
+        <components />
+        <visual title="Quick Shot" desc="Increases fire rate but reduces damage" />
+      </value>
+    </pair>
+    <pair key="speed_2">
+      <value name="speed_2" rarity="rare">
+        <stats>
+          <item value="speed" />
+        </stats>
+        <modifiers>
+          <item type="mul" value="1.1" priority="1" />
+        </modifiers>
+        <components />
+        <visual title="Wind Fairy" desc="Increases movement speed" icon="icon_skills/skill_add_speed_1.png" />
+      </value>
+    </pair>
+    <pair key="ricochet_bounce">
+      <value name="ricochet_bounce" rarity="rare">
+        <stats>
+          <item value="ricochet_bounce" />
+        </stats>
+        <modifiers>
+          <item type="add" value="1" priority="10" />
+        </modifiers>
+        <components />
+        <visual title="Ricochet" desc="Projectiles bounce off enemies" />
+      </value>
+    </pair>
+    <pair key="lucky_heart">
+      <value name="lucky_heart" rarity="rare">
+        <stats />
+        <modifiers />
+        <components>
+          <ComponentHeartAddStatsHp percent="0.05" stat_upgrade="lucky_heart_add_max_hp" />
+        </components>
+        <visual title="Lucky Heart" desc="Picking up hearts may increase max HP" />
+      </value>
+    </pair>
+    <pair key="bullet_freeze">
+      <value name="bullet_freeze" rarity="rare">
+        <stats>
+          <item value="freeze_chance" />
+        </stats>
+        <modifiers>
+          <item type="add" value="0.1" priority="10" />
+        </modifiers>
+        <components />
+        <visual title="Freeze" desc="Bullets may freeze enemies" icon="icon_skills/skill_spirit_ice.png" />
+      </value>
+    </pair>
+  </stat_upgrades>
+  <levels>
+    <pair key="level_1">
+      <value name="level_1">
+        <tmx_maps>
+          <item value="tmx/level_2/level_1_wave_1.tmx" />
+        </tmx_maps>
+        <waves>
+          <DataWaveOnSpawnPoints>
+            <units>
+              <pair key="3" value="enemy_raider_melee_1" />
+              <pair key="4" value="enemy_raider_melee_1" />
+              <pair key="11" value="enemy_raider_melee_1" />
+              <pair key="12" value="enemy_raider_melee_1" />
+            </units>
+          </DataWaveOnSpawnPoints>
+          <DataWaveOnSpawnPoints>
+            <units>
+              <pair key="7" value="enemy_raider_archer" />
+              <pair key="8" value="enemy_raider_archer" />
+              <pair key="5" value="enemy_raider_archer" />
+              <pair key="6" value="enemy_raider_archer" />
+              <pair key="9" value="enemy_raider_archer" />
+              <pair key="10" value="enemy_raider_archer" />
+            </units>
+          </DataWaveOnSpawnPoints>
+          <DataWaveOnSpawnPoints>
+            <units>
+              <pair key="9" value="enemy_raider_melee_1" />
+              <pair key="10" value="enemy_raider_melee_1" />
+              <pair key="5" value="enemy_raider_archer_with_3_arrows" />
+              <pair key="6" value="enemy_raider_archer_with_3_arrows" />
+              <pair key="3" value="enemy_raider_archer_with_3_arrows" />
+              <pair key="4" value="enemy_raider_archer_with_3_arrows" />
+              <pair key="11" value="enemy_raider_melee_1" />
+              <pair key="12" value="enemy_raider_melee_1" />
+            </units>
+          </DataWaveOnSpawnPoints>
+          <DataWaveOnSpawnPoints>
+            <units>
+              <pair key="7" value="enemy_jelly_monster_B" />
+              <pair key="8" value="enemy_jelly_monster_B" />
+              <pair key="5" value="enemy_jelly_monster_C" />
+              <pair key="6" value="enemy_jelly_monster_C" />
+              <pair key="9" value="enemy_jelly_monster_C" />
+              <pair key="10" value="enemy_jelly_monster_C" />
+            </units>
+          </DataWaveOnSpawnPoints>
+          <DataWaveOnSpawnPoints>
+            <units />
+          </DataWaveOnSpawnPoints>
+          <DataWaveOnSpawnPoints>
+            <units>
+              <pair key="5" value="enemy_rocketbot_2_dir" />
+              <pair key="9" value="enemy_rocketbot_2_dir" />
+              <pair key="6" value="enemy_fire_witch" />
+              <pair key="10" value="enemy_fire_witch" />
+            </units>
+          </DataWaveOnSpawnPoints>
+          <DataWaveOnSpawnPoints>
+            <units>
+              <pair key="5" value="enemy_jelly_monster_B" />
+              <pair key="7" value="enemy_jelly_monster_B" />
+              <pair key="9" value="enemy_jelly_monster_B" />
+              <pair key="8" value="enemie_green_zombie" />
+              <pair key="10" value="enemie_green_zombie" />
+            </units>
+          </DataWaveOnSpawnPoints>
+          <DataWaveOnSpawnPoints>
+            <units>
+              <pair key="3" value="enemy_raider_archer" />
+              <pair key="4" value="enemy_raider_archer" />
+              <pair key="11" value="enemy_fire_witch" />
+              <pair key="12" value="enemy_fire_witch" />
+            </units>
+          </DataWaveOnSpawnPoints>
+          <DataWaveOnSpawnPoints>
+            <units />
+          </DataWaveOnSpawnPoints>
+          <DataWaveOnSpawnPoints>
+            <units>
+              <pair key="boss" value="boss_fireballs_balistic" />
+            </units>
+          </DataWaveOnSpawnPoints>
+          <DataWaveOnSpawnPoints>
+            <units />
+          </DataWaveOnSpawnPoints>
+          <DataWaveOnSpawnPoints>
+            <units />
+          </DataWaveOnSpawnPoints>
+          <DataWaveOnSpawnPoints>
+            <units />
+          </DataWaveOnSpawnPoints>
+          <DataWaveOnSpawnPoints>
+            <units />
+          </DataWaveOnSpawnPoints>
+          <DataWaveOnSpawnPoints>
+            <units />
+          </DataWaveOnSpawnPoints>
+          <DataWaveOnSpawnPoints>
+            <units />
+          </DataWaveOnSpawnPoints>
+          <DataWaveOnSpawnPoints>
+            <units />
+          </DataWaveOnSpawnPoints>
+          <DataWaveOnSpawnPoints>
+            <units />
+          </DataWaveOnSpawnPoints>
+          <DataWaveOnSpawnPoints>
+            <units />
+          </DataWaveOnSpawnPoints>
+          <DataWaveOnSpawnPoints>
+            <units />
+          </DataWaveOnSpawnPoints>
+        </waves>
+      </value>
+    </pair>
+    <pair key="level_3">
+      <value name="level_3">
+        <tmx_maps>
+          <item value="tmx/level_3/level_3_wave_1.tmx" />
+        </tmx_maps>
+        <waves>
+          <DataWaveOnRadiusWithInterval min_distance_to_player="1000" max_distance_to_player="1500" duration="60" interval="1.5" count_at_once="1">
+            <units>
+              <item value="enemy_raider_melee_1" />
+              <item value="enemy_raider_melee_1" />
+              <item value="enemy_raider_melee_1" />
+              <item value="enemy_raider_melee_1" />
+              <item value="enemy_raider_archer" />
+              <item value="enemy_raider_archer" />
+              <item value="enemy_raider_archer" />
+              <item value="enemy_raider_archer" />
+              <item value="enemy_raider_archer" />
+              <item value="enemy_raider_archer" />
+              <item value="enemy_raider_archer" />
+            </units>
+          </DataWaveOnRadiusWithInterval>
+        </waves>
+      </value>
+    </pair>
+  </levels>
+  <paramses>
+    <pair key="default">
+      <value name="default">
+        <user_systems>
+          <SystemEquipment />
+        </user_systems>
+        <skill_rarity_weights>
+          <pair key="fine" value="100" />
+          <pair key="rare" value="75" />
+          <pair key="epic" value="50" />
+          <pair key="legendary" value="25" />
+        </skill_rarity_weights>
+      </value>
+    </pair>
+  </paramses>
 </data>

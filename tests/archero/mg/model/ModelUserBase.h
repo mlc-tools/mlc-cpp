@@ -22,7 +22,8 @@ namespace mg
     public:
         ModelUserBase();
         virtual ~ModelUserBase();
-        template <class T> intrusive_ptr<T> system()
+        template <class T>
+        intrusive_ptr<T> system()
         {
 
             for (auto&& pair : this->systems)
@@ -41,7 +42,8 @@ namespace mg
             return nullptr;
 
         }
-        template <class T> const T* system() const
+        template <class T>
+        const T* system() const
         {
 
             for (auto&& pair : this->systems)

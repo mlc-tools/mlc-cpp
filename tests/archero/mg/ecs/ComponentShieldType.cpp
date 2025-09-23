@@ -1,6 +1,7 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
 #include "../BaseEnum.h"
+#include "ComponentShield.h"
 #include "ComponentShieldType.h"
 #include <string>
 #include "../mg_extensions.h"

@@ -3,6 +3,7 @@
 #include "CommandBase.h"
 #include "CommandSequence.h"
 #include "IVisitorResponse.h"
+#include "Response.h"
 #include <string>
 #include <vector>
 #include "../mg_extensions.h"

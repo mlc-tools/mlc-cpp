@@ -1,6 +1,7 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
 #include "Model.h"
+#include "ModelUser.h"
 #include "ModelUserBase.h"
 #include "System.h"
 #include <map>

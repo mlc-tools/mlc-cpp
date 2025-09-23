@@ -1,6 +1,8 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "../model/Model.h"
 #include "ComponentBase.h"
+#include "ComponentSword.h"
 #include "ComponentSwordCast.h"
 #include "ModelEcsBase.h"
 #include "Vector.h"

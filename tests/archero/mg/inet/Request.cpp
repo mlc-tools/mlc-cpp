@@ -2,6 +2,7 @@
 #include "../mg_Factory.h"
 #include "CommandBase.h"
 #include "Request.h"
+#include "Response.h"
 #include "ResponseError.h"
 #include <string>
 #include "../mg_extensions.h"

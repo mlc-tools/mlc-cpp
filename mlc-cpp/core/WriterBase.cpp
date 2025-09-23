@@ -13,6 +13,7 @@
 #include "Common.hpp"
 #include <cassert>
 #include <sstream>
+#include <re2/re2.h>
 
 WriterBase::WriterBase()
   : _model(nullptr)
@@ -154,42 +155,26 @@ std::string WriterBase::prepareFile(const std::string &text) const {
     for (auto fmt : SerializeFormat_getAll()) {
         int code = static_cast<int>(fmt);
         auto tag = SerializeFormat_to_str(fmt);
-        std::regex block(
+        RE2 block(
             "\\{\\{format=" + tag + "\\}\\}[\\s\\S]+?\\{\\{end_format=" + tag + "\\}\\}"
         );
         if ((_model->serializeFormats & all) == all) {
-            out = std::regex_replace(out, block, "");
+            RE2::GlobalReplace(&out, block, "");
         } else if (!(_model->serializeFormats & code)) {
-            out = std::regex_replace(out, block, "");
+            RE2::GlobalReplace(&out, block, "");
         } else {
             // leave inner, but strip markers
-            out = std::regex_replace(
-                out,
-                std::regex("\\{\\{format=" + tag + "\\}\\}"),
-                ""
-            );
-            out = std::regex_replace(
-                out,
-                std::regex("\\{\\{end_format=" + tag + "\\}\\}"),
-                ""
-            );
+            RE2::GlobalReplace(&out, RE2("\\{\\{format=" + tag + "\\}\\}"), "");
+            RE2::GlobalReplace(&out, RE2("\\{\\{end_format=" + tag + "\\}\\}"), "");
         }
     }
     // handle "both"
-    std::regex bothBlock("\\{\\{format=both\\}\\}[\\s\\S]+?\\{\\{end_format=both\\}\\}");
+    RE2 bothBlock("\\{\\{format=both\\}\\}[\\s\\S]+?\\{\\{end_format=both\\}\\}");
     if (_model->serializeFormats != all) {
-        out = std::regex_replace(out, bothBlock, "");
+        RE2::GlobalReplace(&out, bothBlock, "");
     } else {
-        out = std::regex_replace(
-            out,
-            std::regex("\\{\\{format=both\\}\\}"),
-            ""
-        );
-        out = std::regex_replace(
-            out,
-            std::regex("\\{\\{end_format=both\\}\\}"),
-            ""
-        );
+        RE2::GlobalReplace(&out, RE2("\\{\\{format=both\\}\\}"), "");
+        RE2::GlobalReplace(&out, RE2("\\{\\{end_format=both\\}\\}"), "");
     }
     return out;
 }
@@ -201,7 +186,7 @@ std::string WriterBase::prepareFileCodeStylePhp(const std::string &text) const {
     std::istringstream iss(out);
     std::string line;
     while (std::getline(iss, line)) {
-        line = std::regex_replace(line, std::regex("^\\s+|\\s+$"), "");
+        RE2::GlobalReplace(&line, RE2("^\\s+|\\s+$"), "");
         if (!line.empty() && line[0]=='}') --tabs;
         oss << std::string(tabs, '\t') << line << "\n";
         if (!line.empty() && line[0]=='{') ++tabs;

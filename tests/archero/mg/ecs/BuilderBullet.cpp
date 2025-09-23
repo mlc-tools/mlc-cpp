@@ -1,6 +1,8 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
 #include "../DataStorage.h"
+#include "../model/Model.h"
+#include "../model/System.h"
 #include "BuilderBullet.h"
 #include "BuilderEntity.h"
 #include "BulletType.h"

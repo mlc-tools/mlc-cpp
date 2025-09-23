@@ -3,6 +3,7 @@
 #include "../data/DataEquipment.h"
 #include "../data/DataMergeLevel.h"
 #include "../ecs/UnitStat.h"
+#include "Model.h"
 #include "ModelEquipment.h"
 #include <string>
 #include "../mg_extensions.h"

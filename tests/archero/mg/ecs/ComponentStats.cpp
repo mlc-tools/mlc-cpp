@@ -1,5 +1,7 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "../model/Model.h"
+#include "../model/System.h"
 #include "../systems/SystemEquipment.h"
 #include "ComponentBase.h"
 #include "ComponentStats.h"

@@ -1,5 +1,6 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "DataUnit.h"
 #include "DataUnitVisual.h"
 #include <string>
 #include "../mg_extensions.h"

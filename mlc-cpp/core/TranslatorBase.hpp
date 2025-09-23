@@ -8,7 +8,7 @@
 
 #include <string>
 #include <vector>
-#include <regex>
+#include <re2/re2.h>
 #include <tuple>
 #include <sstream>
 #include <memory>
@@ -17,6 +17,7 @@ class Model;
 class Class;
 class Function;
 class Object;
+struct RegexPattern;
 
 /// Базовый класс для трансляции тела методов (инлайн-замены по regex, enum-конвертация и т.д.).
 class TranslatorBase {
@@ -51,9 +52,7 @@ public:
     /// Конвертировать enum-класс: заполнить имя/тип/initial_value, вернуть список значений.
     virtual std::vector<int> convertToEnum(Class &cls);
 
-    /// Вспомогательные статические функции:
-    ///  — replacePattern: применить std::regex_replace, пропуская по фильтрам
-    virtual std::string replacePattern(const std::string &text, const std::tuple<std::regex,std::string,std::vector<std::string>> &pattern);
+    virtual void replacePattern(std::string &text, const RegexPattern& pattern);
 
     virtual std::pair<std::string,std::vector<std::string>>
     saveStrings(std::string func);

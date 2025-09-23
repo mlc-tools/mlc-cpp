@@ -1,5 +1,6 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "../model/System.h"
 #include "ActionBase.h"
 #include "ActionMoveToPlayer.h"
 #include "MoveToTarget.h"

@@ -6,7 +6,6 @@
 #include "DataParser.hpp"
 
 #include <sstream>
-#include <regex>
 
 #include "GeneratorDataStorageBase.hpp" // getDataName/getDataListName/getClassNameFromDataName
 #include "FileUtils.hpp"

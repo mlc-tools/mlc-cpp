@@ -13,7 +13,7 @@
 #include "RegexPatternCpp.hpp"
 #include <iostream>
 
-#include <regex>
+#include <re2/re2.h>
 
 void TranslatorCpp::translate(Model &model) {
     // просто вызываем базовый, он пройдёт по всем классам
@@ -38,8 +38,8 @@ std::string TranslatorCpp::translateFunctionBody(Class &cls,
     for(auto& inner : cls.inner_classes){
         auto original_name = inner->name.substr(cls.name.size());
         if(body.find(original_name) != std::string::npos){
-            auto regex = std::regex("\\b" + original_name + "\\b");
-            result = std::regex_replace(result, regex, inner->name);
+            RE2 regex("\\b" + original_name + "\\b");
+            RE2::GlobalReplace(&result, regex, inner->name);
         }
     }
     return result;
@@ -63,7 +63,7 @@ std::string TranslatorCpp::replaceByRegex(const std::string &body,
 
     // Функции-замены
     for (auto &pat : RegexPatternCpp::functionPatterns) {
-        tmp = replacePattern(tmp, {pat.pattern, pat.replacement, pat.triggers});
+        replacePattern(tmp, pat);
     }
     // Простые replaces
     for (auto &pr : RegexPatternCpp::replaces) {
@@ -71,7 +71,7 @@ std::string TranslatorCpp::replaceByRegex(const std::string &body,
     }
     // C++17 -> C++14
     for (auto &pat : RegexPatternCpp::convertC17toC14) {
-        tmp = replacePattern(tmp, {pat.pattern, pat.replacement, pat.triggers});
+        replacePattern(tmp, pat);
     }
 
     // Восстанавливаем литералы

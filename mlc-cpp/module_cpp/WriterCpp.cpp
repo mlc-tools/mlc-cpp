@@ -663,13 +663,17 @@ std::set<std::string> WriterCpp::getIncludesForMethod(
         auto &n = c->name;
         if (!hppInc.count(n) && text.find(n)!=std::string::npos) {
             // compile or reuse regex
-            auto it = RegexPatternCpp::regsClassNames.find(n);
-            if (it==RegexPatternCpp::regsClassNames.end()) {
-                RegexPatternCpp::regsClassNames[n] = std::regex("\\b" + n + "\\b");
-            }
-            if (n==cls->name || std::regex_search(text, RegexPatternCpp::regsClassNames[n]))
+//            auto it = RegexPatternCpp::regsClassNames.find(n);
+//            if (it==RegexPatternCpp::regsClassNames.end()) {
+//                RegexPatternCpp::regsClassNames[n] = std::regex("\\b" + n + "\\b");
+//            }
+//            if (n==cls->name || std::regex_search(text, RegexPatternCpp::regsClassNames[n]))
+//            {
+//                out.insert(n);
+//            }
+            if(text.find(c->name) != std::string::npos)
             {
-                out.insert(n);
+                out.insert(c->name);
             }
         }
     }

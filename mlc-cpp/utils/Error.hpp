@@ -10,6 +10,14 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <chrono>
+
+#define PROFILE_START(tabs, message) for(int i=0; i<tabs; ++i) std::clog << "  "; \
+const auto __start_profile_time__ = std::chrono::system_clock::now(); std::clog << "Start profiling [" << message << "]" << std::endl;
+
+#define PROFILE_STEP(tabs, message) for(int i=0; i<tabs; ++i) std::clog << "  "; \
+std::clog << "Stage profiling: " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::system_clock::now() - __start_profile_time__).count() << "ùs [" << message << "]"  << std::endl;
+
 
 // Simple ANSI color holder
 struct Color {

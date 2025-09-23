@@ -6,6 +6,7 @@
 #include "../data/DataMergeLevel.h"
 #include "../data/EquipmentSlot.h"
 #include "../ecs/UnitStat.h"
+#include "../model/Model.h"
 #include "../model/ModelEquipment.h"
 #include "../model/ModelEquipmentSlot.h"
 #include "../model/ModelUser.h"

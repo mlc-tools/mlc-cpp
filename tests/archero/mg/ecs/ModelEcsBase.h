@@ -88,12 +88,18 @@ namespace mg
     public:
         ModelEcsBase();
         ~ModelEcsBase();
-        template <class T> std::vector<intrusive_ptr<T>>& get_components();
-        template <class T> const std::vector<intrusive_ptr<T>>& get_components() const;
-        template <class T> intrusive_ptr<T> get(int component_id);
-        template <class T> const T* get(int component_id) const;
-        template <class T> void remove(T* component);
-        template <class T> void remove(intrusive_ptr<T> component);
+        template <class T>
+        std::vector<intrusive_ptr<T>>& get_components();
+        template <class T>
+        const std::vector<intrusive_ptr<T>>& get_components() const;
+        template <class T>
+        intrusive_ptr<T> get(int component_id);
+        template <class T>
+        const T* get(int component_id) const;
+        template <class T>
+        void remove(T* component);
+        template <class T>
+        void remove(intrusive_ptr<T> component);
         int get_free_id();
         void subscribe();
         void unsubscribe();
@@ -172,8 +178,10 @@ namespace mg
         void clear_components_sword_cast();
         void clear_components_sword();
         void build_maps();
-        template <class T> void add(intrusive_ptr<T> component, int component_id=0);
-        template <class T> void add(T* component, int component_id=0);
+        template <class T>
+        void add(intrusive_ptr<T> component, int component_id=0);
+        template <class T>
+        void add(T* component, int component_id=0);
         void copy_entity_from_model(ModelEcsBase* model, int id, int new_id);
         void serialize_xml(SerializerXml& serializer) const;
         void deserialize_xml(DeserializerXml& deserializer);

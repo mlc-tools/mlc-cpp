@@ -2,6 +2,8 @@
 #include "../mg_Factory.h"
 #include "../DataStorage.h"
 #include "../data/DataLadderLevels.h"
+#include "../model/Model.h"
+#include "../model/System.h"
 #include "BuilderEntity.h"
 #include "ComponentExp.h"
 #include "ComponentExpDrop.h"

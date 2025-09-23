@@ -1,6 +1,8 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "../model/Model.h"
 #include "ComponentBase.h"
+#include "ComponentSpawn.h"
 #include "ComponentSpawnSpirit.h"
 #include "DataUnit.h"
 #include "ModelEcsBase.h"

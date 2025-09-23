@@ -2,6 +2,7 @@
 #include "../mg_Factory.h"
 #include "ActionMoveDirection.h"
 #include "ActionMoveToCenterHorizontalOrVertical.h"
+#include "MoveDirection.h"
 #include "Transform.h"
 #include "Vector.h"
 #include <string>

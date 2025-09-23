@@ -20,7 +20,8 @@ namespace mg
     public:
         Shuffle();
         ~Shuffle();
-        static template <class T> T shuffle(const std::map<T, float>& weights, float random_value=-1)
+        template <class T>
+        static T shuffle(const std::map<T, float>& weights, float random_value=-1)
         {
 
             float total = 0;

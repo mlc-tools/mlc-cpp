@@ -2,6 +2,7 @@
 #include "../mg_Factory.h"
 #include "../DataStorage.h"
 #include "../data/DataParams.h"
+#include "../model/System.h"
 #include "../utils/Shuffle.h"
 #include "BuilderEntity.h"
 #include "ComponentBase.h"

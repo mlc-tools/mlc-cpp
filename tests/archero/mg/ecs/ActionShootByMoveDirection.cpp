@@ -3,6 +3,7 @@
 #include "ActionShoot.h"
 #include "ActionShootByMoveDirection.h"
 #include "BuilderBullet.h"
+#include "MoveDirection.h"
 #include "Transform.h"
 #include <string>
 #include "../mg_extensions.h"

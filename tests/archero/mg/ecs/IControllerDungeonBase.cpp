@@ -1,5 +1,6 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "ControllerDungeonBase.h"
 #include "IControllerDungeonBase.h"
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"

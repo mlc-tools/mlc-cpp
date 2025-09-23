@@ -1,5 +1,8 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "../model/Model.h"
+#include "../model/System.h"
+#include "ComponentAura.h"
 #include "ComponentAuraOfSlow.h"
 #include "ComponentMovement.h"
 #include "ModelEcsBase.h"
