@@ -14,6 +14,7 @@
 #include <memory>
 #include <map>
 #include <array>
+#include <functional>
 #include "Class.hpp"
 #include "Object.hpp"
 #include "Function.hpp"

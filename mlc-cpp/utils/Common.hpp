@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <cctype>
 #include <map>
+#include <unordered_map>
 
 inline std::vector<std::string> smartSplit(
     const std::string& str,
