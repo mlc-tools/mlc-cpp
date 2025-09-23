@@ -227,24 +227,13 @@ std::string WriterBase::prepareFileCodeStyleCpp(const std::string &text) const {
     std::istringstream iss(text);
     std::string line;
 
-    auto trim = [](std::string s) {
-        // trim left
-        size_t start = 0;
-        while (start < s.size() && std::isspace(static_cast<unsigned char>(s[start])))
-            ++start;
-        size_t end = s.size();
-        while (end > start && std::isspace(static_cast<unsigned char>(s[end-1])))
-            --end;
-        return s.substr(start, end - start);
-    };
-
     auto indent = [](int count) {
         if (count <= 0) return std::string();
         return std::string(static_cast<size_t>(count) * 4, ' ');
     };
 
     while (std::getline(iss, line)) {
-        std::string stripped = trim(line);
+        std::string stripped = strip(line);
 
         bool backward = false;
         if (!stripped.empty() && stripped.front() == '}') {

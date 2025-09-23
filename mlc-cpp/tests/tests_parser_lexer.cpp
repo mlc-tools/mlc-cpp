@@ -97,6 +97,30 @@ void test_parser_class_with_member() {
     assert(cls->functions[0].name == "method");
 }
 
+void test_parser_class_with_inner() {
+    Model m;
+    Parser p(m);
+    std::string code = R"(
+        class group_name/MyClass {
+            class InnerClass{}
+            InnerClass inner_class;
+        }
+    )";
+    p.parseText(code);
+
+    assert(m.classes.size() == 2);
+    auto cls = m.classes[0];
+    assert(cls->name == "MyClass");
+    assert(cls->group == "group_name");
+    assert(cls->members.size() == 1);
+    assert(cls->members[0].type == "MyClassInnerClass");
+    assert(cls->members[0].name == "inner_class");
+    
+    cls = m.classes[1];
+    assert(cls->name == "MyClassInnerClass");
+    assert(cls->group == "group_name");
+}
+
 void test_parse_members() {
     auto check_object = [](const Object& obj, const std::string& type, const std::string& name, const std::string& value=""){
         assert(obj.type == type);
@@ -222,6 +246,7 @@ void run() {
     test_parser_simple_class();
     test_parser_remove_comments();
     test_parser_class_with_member();
+    test_parser_class_with_inner();
     test_parse_members();
     test_parse_functions();
     run_regex_tests();

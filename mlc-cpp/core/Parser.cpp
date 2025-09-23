@@ -60,6 +60,7 @@ void Parser::parseText(const std::string &input) {
                 }
             }
             inner->name = cls->name + inner->name;
+            inner->group = cls->group;
         }
         inner_classes.insert(inner_classes.end(), cls->inner_classes.begin(), cls->inner_classes.end());
     }

@@ -24,3 +24,15 @@ std::string format(const std::string& template_str, const std::unordered_map<std
     }
     return result;
 }
+
+std::string strip(const std::string& s)
+{
+    // trim left
+    size_t start = 0;
+    while (start < s.size() && std::isspace(static_cast<unsigned char>(s[start])))
+        ++start;
+    size_t end = s.size();
+    while (end > start && std::isspace(static_cast<unsigned char>(s[end-1])))
+        --end;
+    return s.substr(start, end - start);
+}

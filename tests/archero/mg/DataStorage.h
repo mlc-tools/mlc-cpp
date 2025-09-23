@@ -38,7 +38,6 @@ namespace mg
         std::vector<std::string> get_merge_levels_keys() const;
         static const DataStorage& shared();
         void initialize_xml(const std::string& content) const;
-        void initialize_json(const std::string& content) const;
         template <class T> const T* get(const std::string& name) const;
         const std::map<std::string, DataLevel>& get_levels() const;
         const std::map<std::string, DataUnit>& get_units() const;

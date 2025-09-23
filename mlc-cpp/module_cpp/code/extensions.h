@@ -10,8 +10,8 @@
 #include <string>
 #include <vector>
 
-const std::string EXTENSIONS_HPP = R"__EXT__(
-#ifndef __@{namespace}_functions_h__
+#pragma mark EXTENSIONS_HPP
+const std::string EXTENSIONS_HPP = R"__EXT__(#ifndef __@{namespace}_functions_h__
 #define __@{namespace}_functions_h__
 
 #include <map>
@@ -365,9 +365,8 @@ namespace @{namespace}
 #endif
 )__EXT__";
 
-
-const std::string EXTENSIONS_CPP = R"__EXT__(
-#include <cstdlib>
+#pragma mark EXTENSIONS_CPP
+const std::string EXTENSIONS_CPP = R"__EXT__(#include <cstdlib>
 #include <sstream>
 #include <vector>
 #include "@{namespace}_extensions.h"
@@ -660,9 +659,8 @@ namespace @{namespace}
 }
 )__EXT__";
 
-
-const std::string INTRUSIVE_HPP = R"__EXT__(
-#ifndef __intrusive_ptr__
+#pragma mark INTRUSIVE_HPP
+const std::string INTRUSIVE_HPP = R"__EXT__(#ifndef __intrusive_ptr__
 #define __intrusive_ptr__
 
 #include <assert.h>
@@ -831,8 +829,8 @@ namespace @{namespace}
 #endif
 )__EXT__";
 
-const std::string FACTORY_HPP = R"__EXT__(
-#ifndef __@{namespace}_Factory_h__
+#pragma mark FACTORY_HPP
+const std::string FACTORY_HPP = R"__EXT__(#ifndef __@{namespace}_Factory_h__
 #define __@{namespace}_Factory_h__
 #include <string>
 #include <map>
@@ -913,8 +911,8 @@ namespace @{namespace}
 #endif
 )__EXT__";
 
-const std::string FACTORY_REGISTRATION = R"__EXT__(
-#define REGISTRATION_OBJECT(TType)                                      \\
+#pragma mark FACTORY_REGISTRATION
+const std::string FACTORY_REGISTRATION = R"__EXT__(#define REGISTRATION_OBJECT(TType)                                      \\
 class registration__##TType                                             \\
 {                                                                       \\
 public:                                                                 \\
@@ -926,8 +924,8 @@ public:                                                                 \\
 
 )__EXT__";
 
-const std::string SERIALIZER_XML_HPP = R"__EXT__(
-#ifndef __mg_SERIALIZERXML_H__
+#pragma mark SERIALIZER_XML_HPP
+const std::string SERIALIZER_XML_HPP = R"__EXT__(#ifndef __mg_SERIALIZERXML_H__
 #define __mg_SERIALIZERXML_H__
 
 #include <string>
@@ -1680,8 +1678,8 @@ private:
 #endif
 )__EXT__";
 
-const std::string SERIALIZER_XML_CPP = R"__EXT__(
-#include "SerializerXml.h"
+#pragma mark SERIALIZER_XML_CPP
+const std::string SERIALIZER_XML_CPP = R"__EXT__(#include "SerializerXml.h"
 #include "pugixml/pugixml.hpp"
 
 
@@ -1884,8 +1882,8 @@ DeserializerXml DeserializerXml::operator*()
 }
 )__EXT__";
 
-const std::string SERIALIZER_JSON_HPP = R"__EXT__(
-#ifndef __mg_SERIALIZERJSON_H__
+#pragma mark SERIALIZER_JSON_HPP
+const std::string SERIALIZER_JSON_HPP = R"__EXT__(#ifndef __mg_SERIALIZERJSON_H__
 #define __mg_SERIALIZERJSON_H__
 
 #include <string>
@@ -2642,8 +2640,8 @@ private:
 #endif //__mg_SERIALIZERJSON_H__
 )__EXT__";
 
-const std::string SERIALIZER_JSON_CPP = R"__EXT__(
-#include "SerializerJson.h"
+#pragma mark SERIALIZER_JSON_CPP
+const std::string SERIALIZER_JSON_CPP = R"__EXT__(#include "SerializerJson.h"
 #include "jsoncpp/json.h"
 
 
@@ -2903,8 +2901,8 @@ DeserializerJson DeserializerJson::iterator::operator*()
 }
 )__EXT__";
 
-const std::string SERIALIZER_COMMON = R"__EXT__(
-#ifndef __mg_SERIALIZERCOMMON_H__
+#pragma mark SERIALIZER_COMMON
+const std::string SERIALIZER_COMMON = R"__EXT__(#ifndef __mg_SERIALIZERCOMMON_H__
 #define __mg_SERIALIZERCOMMON_H__
 
 #include <type_traits>
@@ -3040,8 +3038,8 @@ struct default_value
 #endif //SERIALIZER_SERIALIZERCOMMON_H
 )__EXT__";
 
+#pragma mark SERIALIZER_PIMPL
 const std::string SERIALIZER_PIMPL = R"__EXT__(
-
 #ifndef __mg_Pimpl_h__
 #define __mg_Pimpl_h__
 
@@ -3115,8 +3113,8 @@ private:
 #endif /* __mg_Pimpl_h__ */
 )__EXT__";
 
-const std::string BASE_ENUM_HPP = R"__EXT__(
-#ifndef __mg_BaseEnum_h__
+#pragma mark BASE_ENUM_HPP
+const std::string BASE_ENUM_HPP = R"__EXT__(#ifndef __mg_BaseEnum_h__
 #define __mg_BaseEnum_h__
 
 #include <string>
@@ -3137,9 +3135,8 @@ namespace mg
 #endif
 )__EXT__";
 
-
-const std::string OBSERVER_HPP = R"__EXT__(
-#ifndef __@{namespace}_Observer_h__
+#pragma mark OBSERVER_HPP
+const std::string OBSERVER_HPP = R"__EXT__(#ifndef __@{namespace}_Observer_h__
 #define __@{namespace}_Observer_h__
 #include <assert.h>
 #include <functional>
@@ -3291,6 +3288,7 @@ namespace @{namespace}
 #endif
 )__EXT__";
 
+#pragma mark FILES_DICT
 const std::vector<std::pair<std::string, std::string>> FILES_DICT = {
     {"@{namespace}_extensions.h", EXTENSIONS_HPP},
     {"@{namespace}_extensions.cpp", EXTENSIONS_CPP},

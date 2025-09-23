@@ -15,8 +15,7 @@
 
 namespace {
 static std::string build_hpp(const std::string &ns) {
-    return format_indexes(R"(
-#ifndef __Registrar_h__
+    return format_indexes(R"(#ifndef __Registrar_h__
 #define __Registrar_h__
 
 namespace {0}
@@ -33,8 +32,7 @@ static std::string build_cpp(const std::string &ns,
                              const std::string &includes,
                              const std::string &registrations)
 {
-    return format_indexes(R"(
-#include "Registrar.h"
+    return format_indexes(R"(#include "Registrar.h"
 #include "{1}"
 {2}
 void {0}::register_classes()

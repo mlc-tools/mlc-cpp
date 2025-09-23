@@ -88,7 +88,7 @@ void GeneratorPredefinedFiles::generateConfigFiles(Model &model) {
         "#ifndef __" + getNamespace() + "_Config_h__\n"
         "#define __" + getNamespace() + "_Config_h__\n\n"
         + join(lines, '\n') +
-        "\n#endif // __" + getNamespace() + "_Config_h__\n";
+        "\n\n#endif //#ifndef __" + getNamespace() + "_Config_h__";
 
     model.addFile(nullptr, "config.h", pattern);
 }

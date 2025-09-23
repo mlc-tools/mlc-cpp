@@ -163,7 +163,7 @@ std::vector<int> TranslatorCpp::convertToEnum(Class &cls) {
     {
         auto ret = makeConstRef(cls.name, "");
         auto method = addMethod(ret, "operator =", false);
-        method->callable_args.push_back(Object(ret.type, "rhs"));
+        method->callable_args.push_back(makeConstRef(ret.type, "rhs"));
         method->body += "value = rhs.value;";
         method->body += "return *this;";
     }
@@ -188,17 +188,17 @@ std::vector<int> TranslatorCpp::convertToEnum(Class &cls) {
         }
         method->body += "return *this;";
     }
-    //   operator==(BaseEnum)
-    {
-        auto method = addMethod(Objects::BOOL, "operator ==", true);
-        method->callable_args.push_back(makeConstRef(cls.parent_class_name, "rhs"));
-        method->body += "return value == rhs.operator int();";
-    }
     //   operator==(Enum)
     {
         auto method = addMethod(Objects::BOOL, "operator ==", true);
         method->callable_args.push_back(makeConstRef(cls.name, "rhs"));
         method->body += "return value == rhs.value;";
+    }
+    //   operator==(BaseEnum)
+    {
+        auto method = addMethod(Objects::BOOL, "operator ==", true);
+        method->callable_args.push_back(makeConstRef(cls.parent_class_name, "rhs"));
+        method->body += "return value == rhs.operator int();";
     }
     //   operator==(int)
     {

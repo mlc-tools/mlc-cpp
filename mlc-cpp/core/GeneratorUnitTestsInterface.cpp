@@ -122,6 +122,8 @@ class tests/TestCase:test
 )";
 
 void GeneratorUnitTestsInterface::generate(Model &model) {
+    if(!model.generateTests)
+        return;
     _model = &model;
 
     // 1) Тестовые интерфейсы ITest<Class>

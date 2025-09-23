@@ -48,33 +48,45 @@ std::string getClassNameFromDataName(const std::string& name) {
     return "Data" + out;
 }
 
+static std::string pluralizeWord(const std::string& w)
+{
+    if (w.empty()) return w;
+    static const std::unordered_map<std::string,std::string> irregular = {
+        {"child","children"}, {"person","people"}, {"man","men"}, {"woman","women"},
+        {"mouse","mice"}, {"louse","lice"}, {"goose","geese"}, {"tooth","teeth"}, {"foot","feet"},
+        {"cactus","cacti"}, {"focus","foci"}, {"fungus","fungi"}, {"nucleus","nuclei"}, {"radius","radii"},
+        {"analysis","analyses"}, {"basis","bases"}, {"crisis","crises"}, {"thesis","theses"}, {"synthesis","syntheses"},
+        {"diagnosis","diagnoses"}, {"ellipsis","ellipses"}, {"parenthesis","parentheses"}, {"oasis","oases"},
+        {"phenomenon","phenomena"}, {"criterion","criteria"}, {"index","indices"}, {"matrix","matrices"},
+        {"vertex","vertices"}, {"axis","axes"}, {"ox","oxen"}, {"quiz","quizzes"}
+    };
+    if (auto it = irregular.find(w); it != irregular.end())
+        return it->second;
+    auto ends_with = [&](const std::string& suf){
+        return w.size() >= suf.size() && w.compare(w.size()-suf.size(), suf.size(), suf) == 0;
+    };
+    auto is_vowel = [](char c){ c = (char)std::tolower((unsigned char)c); return c=='a'||c=='e'||c=='i'||c=='o'||c=='u'; };
+    if (w.size()>=2 && w.back()=='y' && !is_vowel(w[w.size()-2]))
+        return w.substr(0, w.size()-1) + "ies";
+    if (ends_with("s") || ends_with("x") || ends_with("z") || ends_with("ch") || ends_with("sh"))
+        return w + "es";
+    static const std::unordered_set<std::string> f_exceptions = {"roof","belief","chef","chief","cliff","proof","reef","safe","gulf"};
+    if (ends_with("fe"))
+        return w.substr(0, w.size()-2) + "ves";
+    if (ends_with("f") && !f_exceptions.count(w))
+        return w.substr(0, w.size()-1) + "ves";
+    static const std::unordered_set<std::string> o_es = {"hero","potato","tomato","echo","veto","torpedo","embargo"};
+    if (ends_with("o"))
+        return (o_es.count(w) ? w + "es" : w + "s");
+    return w + "s";
+}
+
 std::string getDataListName(const std::string& name) {
     if (name.empty()) return {};
-    char last = name.back();
-    std::string s = name;
-    auto vowel = [](char c){
-        return c=='a'||c=='e'||c=='i'||c=='o'||c=='u'||c=='y';
-    };
-    if (last=='y') {
-        if (vowel(last)) s = s.substr(0,s.size()-1)+"ies";
-        else           s += 's';
-    }
-    else if (last=='o' || last=='u') {
-        s += "es";
-    }
-    else if (last=='f') {
-        s = s.substr(0,s.size()-1)+"ves";
-    }
-    else if (s.size()>1 && s.substr(s.size()-2)=="fe") {
-        s = s.substr(0,s.size()-2)+"ves";
-    }
-    else if ( s=="s" || s=="ss" || s=="x" || s=="sh" || s=="ch" ) {
-        s += "es";
-    }
-    else {
-        s += 's';
-    }
-    return s;
+    auto pos = name.rfind('_');
+    if (pos == std::string::npos)
+        return pluralizeWord(name);
+    return name.substr(0, pos+1) + pluralizeWord(name.substr(pos+1));
 }
 
 // Сам класс
@@ -91,6 +103,7 @@ void GeneratorDataStorageBase::generate(Model &model) {
     _class->type = "class";
     _class->name = "DataStorage";
     _class->is_serialized = true;
+    _class->prefer_use_forward_declarations = true;
 
     // создаём контейнеры для каждого storage-класса
     for (auto &cls : _model->classes) {
@@ -211,13 +224,14 @@ void GeneratorDataStorageBase::createKeysGetter(const std::string& mapName) {
     m.name       = "get_" + mapName + "_keys";
     m.is_const    = true;
     m.return_type = parse_object("list<string>");
-    m.body += (
-        "std::vector<std::string> result;\n"
-        "for (auto&& [key, _] : this->" + mapName + ") {\n"
-        "    list_push(result, key);\n"
-        "}\n"
-        "return result;"
-    );
+    m.body += R"(
+        std::vector<std::string> result;
+        for (auto&& [key, _] : this->)" + mapName + R"() 
+        {
+            list_push(result, key);
+        }
+        return result;
+    )";
     _class->functions.push_back(std::move(m));
 }
 
@@ -233,7 +247,7 @@ void GeneratorDataStorageBase::createGettersMaps(const std::vector<std::shared_p
         m.name       = "get_" + mapName;
         m.is_const    = true;
         m.return_type = parse_object("map<string, " + cls->name + ">:const:ref");
-        m.body += ("return this->" + mapName + ";");
+        m.body += "\nreturn this->" + mapName + ";\n";
         _class->functions.push_back(std::move(m));
     }
 }

@@ -17,6 +17,7 @@
 #include "Object.hpp"
 #include "Model.hpp"
 #include "Common.hpp"
+#include <iostream>
 
 WriterCpp::WriterCpp()
 {}
@@ -93,6 +94,10 @@ std::pair<std::string,std::string> WriterCpp::writeFunction(const Function &fn)
 auto WriterCpp::writeHpp(const std::shared_ptr<Class> &cls)
     -> std::tuple<std::string,std::set<std::string>,std::set<std::string>,std::set<std::string>>
 {
+    if(cls->name == "BulletType")
+    {
+        std::cout << "";
+    }
     const std::string ns = "mg";
     const std::string cn = cls->name;
     auto [incs,fwd,fwdOut] = getIncludesForHeader(cls);
@@ -101,7 +106,7 @@ auto WriterCpp::writeHpp(const std::shared_ptr<Class> &cls)
     std::ostringstream funcs;
     if (cls->type=="enum") {
         funcs << cn << "(const BaseEnum& rhs):BaseEnum(rhs){}\n";
-        funcs << "const " << cn << "& operator=(const BaseEnum& rhs){ this->value=rhs.operator int(); return *this; }\n";
+        funcs << "const " << cn << "& operator =(const BaseEnum& rhs) { this->value = rhs.operator int(); return *this; }\n";
     }
     AccessSpecifier lastAcc = AccessSpecifier::m_public;
     for (auto &fn : cls->functions) {
@@ -174,6 +179,10 @@ std::string WriterCpp::writeCpp(const std::shared_ptr<Class> &cls,
                              const std::set<std::string> &fwd,
                              const std::set<std::string> &fwdOut)
 {
+    if(cls->name == "VisualItem")
+    {
+        std::cout << "";
+    }
     const std::string ns = "mg";
     const std::string cn = cls->name;
     // Methods
@@ -198,7 +207,7 @@ std::string WriterCpp::writeCpp(const std::shared_ptr<Class> &cls,
     // Destructor
     std::string dtor;
     if(cls->type!="enum"){
-        dtor=cn+"::~"+cn+"(){}\n";
+        dtor=cn+"::~"+cn+"()\n{\n}\n";
     }
     // Registration
     std::string reg;
@@ -221,7 +230,7 @@ std::string WriterCpp::writeCpp(const std::shared_ptr<Class> &cls,
     std::string ctorArgs, ctorBody;
     if(!cls->constructors.empty()){
         ctorArgs = createFunctionCppArgs(cls->constructors.at(0));
-        ctorBody = cls->constructors.at(0).body;
+        ctorBody = strip(cls->constructors.at(0).body);
     }
 
     // Format source
@@ -443,8 +452,7 @@ std::string WriterCpp::writeFunctionCpp(const Function &method) {
     if (!method.specific_implementations.empty())
         return method.specific_implementations;
     // pattern:
-    std::string pat = "{type} {scope}{name}({args}){const}\n"
-                      "{\n{body}\n}\n\n";
+    std::string pat = "{type} {scope}{name}({args}){const}\n{\n{body}\n}\n\n";
     std::string ret="", scope="", args="";
     if (method.name != currentClass_->name)
         ret = writeNamedObject(method.return_type, "", false, true);
@@ -465,7 +473,7 @@ std::string WriterCpp::writeFunctionCpp(const Function &method) {
     fill("name",    method.name);
     fill("args",    args);
     fill("const",   cst);
-    fill("body",    method.body);
+    fill("body",    strip(method.body))	;
     return pat;
 }
 
@@ -546,23 +554,31 @@ std::tuple<std::set<std::string>,
 WriterCpp::getIncludesForHeader(const std::shared_ptr<Class> &cls)
 {
     std::set<std::string> inc, fwd, fwdOut;
-    // add helper
-    std::function<void(std::set<std::string>&, const Object&)> addObj =
-    [&](std::set<std::string> &dst, const Object &o){
-        dst.insert(convertType(o.type));
+
+    std::function<void(std::set<std::string>&, const Object&)> addObj = [&](std::set<std::string> &container, const Object &o){
+        container.insert(convertType(o.type));
         for (auto &ta : o.template_args) {
-            addObj(dst, ta);
+            addObj(fwd, ta);
         }
         for (auto &ca : o.callable_args) {
-            addObj(dst, ca);
+            addObj(fwd, ca);
         }
     };
+    std::function<void(std::set<std::string>&, const Object&)> parseObj = [&](std::set<std::string> &container, const Object &o){
+        addObj(container, o);
+        for(auto& arg : o.template_args){
+            if(cls->prefer_use_forward_declarations)
+                parseObj(fwd, arg);
+            else
+                parseObj(container, arg);
+        }
+    };
+    
     // members
     for (auto &m : cls->members) {
-        addObj(inc, m);
-        if (m.is_pointer && !m.is_const && !m.is_link) {
+        parseObj(inc, m);
+        if(m.type.find("std::atomic") != std::string::npos)
             inc.insert("std::atomic");
-        }
     }
     // functions
     static const std::set<std::string> stdIns = {"map","list","string"};

@@ -26,6 +26,7 @@ struct Function : public Object {
     Function(Function &&other) noexcept = default;
     Function& operator=(const Function &other)  = default;
     Function& operator=(Function &&other) noexcept  = default;
+    virtual bool is_equal_declaration(const Function &other) const;
     
     virtual void set_modifier(const std::string_view& modifier) override;
 };

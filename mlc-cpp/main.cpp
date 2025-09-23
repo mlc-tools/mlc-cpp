@@ -47,8 +47,12 @@ int main() {
 //    app.setConfigsDirectory("/Users/vladimirtolmachev/work/dungeon2/configs");
 
     app.setSide(Side::client);
+    app.setGenerateTests(false);
     app.addConfigsDirectory("/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/tests/archero/configs");
     app.addDataDirectory("/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/tests/archero/configs/data");
+    app.setFilterCode([](const std::string& path){
+        return path.find("/unit_tests/") == std::string::npos;
+    });
     
     app.setOutDirectory("/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/tests/archero/mg/");
     app.setOutDataDirectory("/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/tests/archero/");

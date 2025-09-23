@@ -120,9 +120,9 @@ namespace {namespace}
 {functions}
 {members}
     };
-} // namespace {namespace}
+} //namespace {namespace}
 
-#endif // __{namespace}_{class_name}_h__
+#endif //#ifndef __{namespace}_{class_name}_h__
 )";
     static constexpr const char *SOURCE = R"(#include "intrusive_ptr.h"
 #include "{path_to_root}{namespace}_Factory.h"
@@ -142,6 +142,6 @@ namespace {namespace}
 
     {destructor}
 
-{functions}} // namespace {namespace}
+{functions}} //namespace {namespace}
 )";
 };

@@ -52,6 +52,7 @@ public:
     Object(Object &&other) noexcept = default;
     Object& operator=(const Object &other) = default;
     Object& operator=(Object &&other) noexcept = default;
+    virtual bool is_equal(const Object &other) const;
     
     virtual void set_modifier(const std::string_view& modifier);
     void set_default_initial_value();

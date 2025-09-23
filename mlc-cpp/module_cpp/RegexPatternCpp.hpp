@@ -32,8 +32,8 @@ public:
 {
     auto& $1 = pair.first;
     auto& $2 = pair.second;
-    (void)$1; // don't generate 'Unused variable' warning
-    (void)$2; // don't generate 'Unused variable' warning)",
+    (void)$1; //don't generate 'Unused variable' warning
+    (void)$2; //don't generate 'Unused variable' warning)",
             { "for" }
         }
     };

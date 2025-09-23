@@ -18,6 +18,12 @@ Function::Function()
 , translated(false){
 }
 
+bool Function::is_equal_declaration(const Function &other) const
+{
+    bool result = Object::is_equal(other);
+    return result;
+}
+
 void Function::set_modifier(const std::string_view& modifier)
 {
     if(modifier == Modifier::m_external) this->is_external = true;

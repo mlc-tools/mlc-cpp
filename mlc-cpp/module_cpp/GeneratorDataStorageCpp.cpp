@@ -22,10 +22,8 @@ bool GeneratorDataStorageCpp::isNeedCreateStaticInstance() const {
 }
 
 std::string GeneratorDataStorageCpp::getSharedMethodBody() {
-    return R"(
-    static DataStorage instance;
-    return instance;
-    )";
+    return R"(static DataStorage instance;
+    return instance;)";
 }
 
 void GeneratorDataStorageCpp::createGetters(const std::vector<std::shared_ptr<Class>>& classes)
@@ -55,14 +53,17 @@ void GeneratorDataStorageCpp::generateImplementations(
         std::string mapName  = getDataListName(dataName);
 
         impl << R"(
-template<>
-const )" << cls->name << R"(* DataStorage::get<)" << cls->name << R"(>(const std::string& name) const {
-    if (name.empty()) {
+template<>const )" << cls->name << R"(* DataStorage::get(const std::string& name) const 
+{
+    if(name.empty()) 
+    {
         return nullptr;
     }
-    if (_loaded) {
+    if(_loaded) 
+    {
         auto iter = )" << mapName << R"(.find(name);
-        if (iter == )" << mapName << R"(.end()) {
+        if(iter == )" << mapName << R"(.end()) 
+        {
             std::cout << "Cannot find data with name [" << name << "] in DataStorage::)" << mapName << R"(" << std::endl;
         }
         return iter != )" << mapName << R"(.end() ? &iter->second : nullptr;
@@ -77,7 +78,7 @@ const )" << cls->name << R"(* DataStorage::get<)" << cls->name << R"(>(const std
 std::vector<std::shared_ptr<Class>> GeneratorDataStorageCpp::getStorageClasses() const {
     std::vector<std::shared_ptr<Class>> result;
     for (auto &cls : _model->classes) {
-        if (cls->is_storage && _model->is_side(cls->side)) {
+        if(cls->is_storage && _model->is_side(cls->side)) {
             result.push_back(cls);
         }
     }
@@ -98,7 +99,8 @@ auto non_const_this = const_cast<DataStorage*>(this);
 
         body << R"(
 auto )" << dataName << R"( = json[")" << mapName << R"("];
-for (auto& node : )" << dataName << R"() {
+for (auto& node : )" << dataName << R"() 
+{
     auto name = node["key"].asString();
     non_const_this->)" << mapName << R"(.emplace(name, )" << cls->name << R"(());
 }
@@ -114,11 +116,11 @@ non_const_this->deserialize_json(deserializer);
 
 std::string GeneratorDataStorageCpp::getInitializeFunctionXmlBody() {
     std::ostringstream body;
-    body << R"(
-pugi::xml_document doc;
+    body << R"(pugi::xml_document doc;
 doc.load_string(content.c_str());
 auto non_const_this = const_cast<DataStorage*>(this);
-if (doc.root() != nullptr) {
+if(doc.root() != nullptr) 
+{
     pugi::xml_node root = doc.root().first_child();
 )";
     for (auto &cls : getStorageClasses()) {
@@ -126,7 +128,8 @@ if (doc.root() != nullptr) {
         std::string mapName  = getDataListName(dataName);
 
         body << R"(
-    for (auto& node : root.child(")" << mapName << R"(")) {
+    for(auto& node : root.child(")" << mapName << R"(")) 
+    {
         auto name = node.attribute("key").as_string();
         non_const_this->)" << mapName << R"(.emplace(name, )" << cls->name << R"(());
     }

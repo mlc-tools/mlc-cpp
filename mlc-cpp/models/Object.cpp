@@ -60,6 +60,28 @@ Object::Object(const std::string& type_, const std::string& name_, const std::st
 , access(AccessSpecifier::m_public) {
 }
 
+bool Object::is_equal(const Object &other) const
+{
+    bool result = true;
+    result = result && type == other.type;
+    result = result && name == other.name;
+    result = result && template_args.size() == other.template_args.size();
+    if(result)
+    {
+        for(size_t i=0; i<template_args.size(); ++i)
+        {
+            result = result && template_args.at(i).is_equal(other.template_args.at(i));
+        }
+    }
+    if(result)
+    {
+        for(size_t i=0; i<callable_args.size(); ++i)
+        {
+            result = result && callable_args.at(i).is_equal(other.callable_args.at(i));
+        }
+    }
+    return result;
+}
 
 void Object::set_modifier(const std::string_view& modifier)
 {
@@ -104,5 +126,6 @@ void Object::set_default_initial_value()
     else if(type == Objects::FLOAT.type) value = "0.0f";
     else if(type == Objects::DOUBLE.type) value = "0.0";
     else if(type == Objects::BOOL.type) value = "false";
+    else if(type == Objects::STRING.type) value = "\"\"";
     else if(is_pointer) value = "nullptr";
 }

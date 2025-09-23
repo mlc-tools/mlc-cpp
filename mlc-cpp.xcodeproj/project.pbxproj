@@ -259,20 +259,20 @@
 		EF1658A32E39E91400573EEE /* module_cpp */ = {
 			isa = PBXGroup;
 			children = (
-				EF1658D22E3B173100573EEE /* protocols.hpp */,
 				EF1658B02E39EF5300573EEE /* code */,
-				EF1658A42E39E92100573EEE /* GeneratorDataStorageCpp.hpp */,
-				EF1658A52E39E92100573EEE /* GeneratorDataStorageCpp.cpp */,
 				EF1658A72E39EE0300573EEE /* GeneratorCpp.hpp */,
 				EF1658A82E39EE0300573EEE /* GeneratorCpp.cpp */,
+				EF1658A42E39E92100573EEE /* GeneratorDataStorageCpp.hpp */,
+				EF1658A52E39E92100573EEE /* GeneratorDataStorageCpp.cpp */,
+				EF1658D92E3B8AB400573EEE /* GeneratorObserverCpp.hpp */,
+				EF1658DA2E3B8AB400573EEE /* GeneratorObserverCpp.cpp */,
+				EF1658B52E39F97200573EEE /* GeneratorOperatorEqualsCpp.hpp */,
+				EF1658B62E39F97200573EEE /* GeneratorOperatorEqualsCpp.cpp */,
 				EF1658AD2E39EF3100573EEE /* GeneratorPredefinedFilesCpp.hpp */,
 				EF1658AE2E39EF3100573EEE /* GeneratorPredefinedFilesCpp.cpp */,
 				EF1658B22E39F6C700573EEE /* GeneratorRefCounterCpp.hpp */,
 				EF1658B32E39F6C700573EEE /* GeneratorRefCounterCpp.cpp */,
-				EF1658B52E39F97200573EEE /* GeneratorOperatorEqualsCpp.hpp */,
-				EF1658B62E39F97200573EEE /* GeneratorOperatorEqualsCpp.cpp */,
-				EF1658BB2E39FC7600573EEE /* WriterCpp.hpp */,
-				EF1658BC2E39FC7600573EEE /* WriterCpp.cpp */,
+				EF1658D22E3B173100573EEE /* protocols.hpp */,
 				EF1658C12E39FDF500573EEE /* RegexPatternCpp.hpp */,
 				EF1658C22E39FDF500573EEE /* RegexPatternCpp.cpp */,
 				EF1658C72E3A4BF900573EEE /* SavePluginCpp.hpp */,
@@ -281,8 +281,8 @@
 				EF1658D02E3B14D900573EEE /* SerializerCpp.cpp */,
 				EF1658D62E3B392800573EEE /* TranslatorCpp.hpp */,
 				EF1658D72E3B392800573EEE /* TranslatorCpp.cpp */,
-				EF1658D92E3B8AB400573EEE /* GeneratorObserverCpp.hpp */,
-				EF1658DA2E3B8AB400573EEE /* GeneratorObserverCpp.cpp */,
+				EF1658BB2E39FC7600573EEE /* WriterCpp.hpp */,
+				EF1658BC2E39FC7600573EEE /* WriterCpp.cpp */,
 			);
 			path = module_cpp;
 			sourceTree = "<group>";

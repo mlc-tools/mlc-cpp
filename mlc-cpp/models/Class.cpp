@@ -60,6 +60,14 @@ bool Class::has_method(const std::string& name) const
     return false;
 }
 
+bool Class::has_method(const Function& func) const
+{
+    auto iter = std::find_if(functions.begin(), functions.end(), [func](const Function& f){
+        return func.is_equal_declaration(f);
+    });
+    return iter != functions.end();
+}
+
 Function* Class::get_method(const std::string& name)
 {
     for(auto& method : this->functions){
@@ -72,16 +80,42 @@ Function* Class::get_method(const std::string& name)
 
 void Class::onLinked(Model& model)
 {
-    
+    if(_linked)
+        return;
+
+    for(auto& func : functions)
+    {
+        if (func.name.find("operator") != std::string::npos)
+        {
+            func.is_virtual = false;
+            continue;
+        }
+        func.is_virtual = is_virtual || func.is_virtual || func.is_abstract || has_function_in_subclasses(func) || has_function_in_parentclass(func);
+    }
+
+    if(!is_abstract)
+    {
+        for(auto& method : functions)
+        {
+            if(method.is_abstract)
+            {
+                is_abstract = true;
+                method.is_virtual = true;
+                break;
+            }
+        }
+        if(!parent.expired())
+            parent.lock()->onLinked(model);
+    }
+    _linked = true;
 }
 
 bool Class::has_virtual() const
 {
     bool result = false;
     result = result || this->is_virtual;
-    //TODO: check this code
-//    result = result or this->superclasses;
-//    result = result or this->subclasses;
+    result = result || !this->parent.expired();
+    result = result || !this->subclasses.empty();
     result = result || this->has_abstract_method();
     if(!result){
         for(auto cls : this->subclasses){
@@ -98,5 +132,34 @@ bool Class::has_abstract_method() const
     for(auto& f : functions)
         if(f.is_abstract)
             return true;
+    return false;
+}
+
+
+bool Class::has_function_in_subclasses(const Function& func, bool depth)
+{
+    for(auto wclass : subclasses)
+    {
+        auto cls = wclass.expired() ? nullptr : wclass.lock();
+        if(cls->has_function_in_subclasses(func, depth + 1))
+            return true;
+    }
+    if(depth > 0)
+    {
+        return has_method(func);
+    }
+    return false;
+}
+
+bool Class::has_function_in_parentclass(const Function& func, bool depth)
+{
+    if(!parent.expired() && parent.lock()->has_function_in_parentclass(func, depth + 1))
+    {
+        return true;
+    }
+    if(depth > 0)
+    {
+        return has_method(func);
+    }
     return false;
 }

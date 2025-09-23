@@ -22,6 +22,7 @@
 #include "ecs/DataWaveOnRadius.h"
 #include "ecs/DataWaveOnRadiusWithInterval.h"
 #include "ecs/EntityBase.h"
+#include "ecs/ComponentBase.h"
 #include "ecs/Math.h"
 #include "ecs/ControllerDungeonBase.h"
 #include "ecs/BuilderEntity.h"
@@ -134,12 +135,12 @@
 #include "ecs/ComponentSword.h"
 #include "ecs/SystemSwordsCast.h"
 #include "ecs/SystemSwords.h"
-#include "ecs/DataUnitVisual.h"
 #include "ecs/DataUnit.h"
 #include "ecs/Modifier.h"
-#include "ecs/DataStatUpgradeVisual.h"
 #include "ecs/DataStatUpgrade.h"
 #include "data/DataLadderLevels.h"
+#include "ecs/DataUnitVisual.h"
+#include "ecs/DataStatUpgradeVisual.h"
 #include "ecs/Polygon.h"
 #include "ecs/BBox.h"
 #include "ecs/ModelEcsBase.h"
@@ -153,9 +154,9 @@
 #include "model/ModelEquipmentSlot.h"
 #include "model/ModelEquipment.h"
 #include "VisualItem.h"
-#include "data/DataEquipmentStat.h"
 #include "data/DataEquipment.h"
 #include "data/DataMergeLevel.h"
+#include "data/DataEquipmentStat.h"
 #include "model/Model.h"
 #include "model/ModelUserBase.h"
 #include "model/ModelUser.h"
@@ -186,6 +187,7 @@ void mg::register_classes()
     Factory::shared().registrationCommand<DataWaveOnRadius>(DataWaveOnRadius::TYPE);
     Factory::shared().registrationCommand<DataWaveOnRadiusWithInterval>(DataWaveOnRadiusWithInterval::TYPE);
     Factory::shared().registrationCommand<EntityBase>(EntityBase::TYPE);
+    Factory::shared().registrationCommand<ComponentBase>(ComponentBase::TYPE);
     Factory::shared().registrationCommand<Math>(Math::TYPE);
     Factory::shared().registrationCommand<ControllerDungeonBase>(ControllerDungeonBase::TYPE);
     Factory::shared().registrationCommand<BuilderEntity>(BuilderEntity::TYPE);
@@ -298,12 +300,12 @@ void mg::register_classes()
     Factory::shared().registrationCommand<ComponentSword>(ComponentSword::TYPE);
     Factory::shared().registrationCommand<SystemSwordsCast>(SystemSwordsCast::TYPE);
     Factory::shared().registrationCommand<SystemSwords>(SystemSwords::TYPE);
-    Factory::shared().registrationCommand<DataUnitVisual>(DataUnitVisual::TYPE);
     Factory::shared().registrationCommand<DataUnit>(DataUnit::TYPE);
     Factory::shared().registrationCommand<Modifier>(Modifier::TYPE);
-    Factory::shared().registrationCommand<DataStatUpgradeVisual>(DataStatUpgradeVisual::TYPE);
     Factory::shared().registrationCommand<DataStatUpgrade>(DataStatUpgrade::TYPE);
     Factory::shared().registrationCommand<DataLadderLevels>(DataLadderLevels::TYPE);
+    Factory::shared().registrationCommand<DataUnitVisual>(DataUnitVisual::TYPE);
+    Factory::shared().registrationCommand<DataStatUpgradeVisual>(DataStatUpgradeVisual::TYPE);
     Factory::shared().registrationCommand<Polygon>(Polygon::TYPE);
     Factory::shared().registrationCommand<BBox>(BBox::TYPE);
     Factory::shared().registrationCommand<ModelEcsBase>(ModelEcsBase::TYPE);
@@ -317,12 +319,13 @@ void mg::register_classes()
     Factory::shared().registrationCommand<ModelEquipmentSlot>(ModelEquipmentSlot::TYPE);
     Factory::shared().registrationCommand<ModelEquipment>(ModelEquipment::TYPE);
     Factory::shared().registrationCommand<VisualItem>(VisualItem::TYPE);
-    Factory::shared().registrationCommand<DataEquipmentStat>(DataEquipmentStat::TYPE);
     Factory::shared().registrationCommand<DataEquipment>(DataEquipment::TYPE);
     Factory::shared().registrationCommand<DataMergeLevel>(DataMergeLevel::TYPE);
+    Factory::shared().registrationCommand<DataEquipmentStat>(DataEquipmentStat::TYPE);
     Factory::shared().registrationCommand<Model>(Model::TYPE);
     Factory::shared().registrationCommand<ModelUserBase>(ModelUserBase::TYPE);
     Factory::shared().registrationCommand<ModelUser>(ModelUser::TYPE);
     Factory::shared().registrationCommand<UserProfile>(UserProfile::TYPE);
     Factory::shared().registrationCommand<DataStorage>(DataStorage::TYPE);
+
 }
