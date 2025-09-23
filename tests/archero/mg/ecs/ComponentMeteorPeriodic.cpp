@@ -1,7 +1,9 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "ComponentBase.h"
 #include "ComponentMeteorPeriodic.h"
 #include "ModelEcsBase.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"

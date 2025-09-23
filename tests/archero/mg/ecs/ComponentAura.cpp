@@ -1,7 +1,9 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
 #include "ComponentAura.h"
+#include "ComponentBase.h"
 #include "ModelEcsBase.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -13,7 +15,7 @@ namespace mg
     ComponentAura::ComponentAura()
     : name("")
     , initialized(false)
-    , radius(0.0)
+    , radius(0.0f)
     {
 
     }
@@ -74,28 +76,28 @@ namespace mg
     {
         ComponentBase::serialize_xml(serializer);
         serializer.serialize(name, "name", std::string(""));
-        serializer.serialize(radius, "radius", float(0.0));
+        serializer.serialize(radius, "radius", float(0.0f));
     }
 
     void ComponentAura::deserialize_xml(DeserializerXml& deserializer)
     {
         ComponentBase::deserialize_xml(deserializer);
         deserializer.deserialize(name, "name", std::string(""));
-        deserializer.deserialize(radius, "radius", float(0.0));
+        deserializer.deserialize(radius, "radius", float(0.0f));
     }
 
     void ComponentAura::serialize_json(SerializerJson& serializer) const
     {
         ComponentBase::serialize_json(serializer);
         serializer.serialize(name, "name", std::string(""));
-        serializer.serialize(radius, "radius", float(0.0));
+        serializer.serialize(radius, "radius", float(0.0f));
     }
 
     void ComponentAura::deserialize_json(DeserializerJson& deserializer)
     {
         ComponentBase::deserialize_json(deserializer);
         deserializer.deserialize(name, "name", std::string(""));
-        deserializer.deserialize(radius, "radius", float(0.0));
+        deserializer.deserialize(radius, "radius", float(0.0f));
     }
 
 } //namespace mg

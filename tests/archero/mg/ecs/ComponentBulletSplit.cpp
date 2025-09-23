@@ -1,7 +1,10 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "ComponentBase.h"
 #include "ComponentBulletSplit.h"
+#include "DataUnit.h"
 #include "ModelEcsBase.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -14,7 +17,7 @@ namespace mg
     : was_split(false)
     , count(0)
     , to_bullets(nullptr)
-    , split_near_target_radius(0.0)
+    , split_near_target_radius(0.0f)
     , timer_to_split(-1)
     , split_on_remove(true)
     {
@@ -30,6 +33,7 @@ namespace mg
         bool result = this->ComponentBase::operator ==(rhs);
         result = result && this->was_split == rhs.was_split;
         result = result && this->count == rhs.count;
+        result = result && ((this->to_bullets == rhs.to_bullets) || (this->to_bullets != nullptr && rhs.to_bullets != nullptr && *this->to_bullets == *rhs.to_bullets));
         result = result && this->split_near_target_radius == rhs.split_near_target_radius;
         result = result && this->timer_to_split == rhs.timer_to_split;
         result = result && this->split_on_remove == rhs.split_on_remove;
@@ -84,7 +88,7 @@ namespace mg
         serializer.serialize(was_split, "was_split", bool(false));
         serializer.serialize(count, "count", int(0));
         serializer.serialize(to_bullets, "to_bullets");
-        serializer.serialize(split_near_target_radius, "split_near_target_radius", float(0.0));
+        serializer.serialize(split_near_target_radius, "split_near_target_radius", float(0.0f));
         serializer.serialize(timer_to_split, "timer_to_split", float(-1));
         serializer.serialize(split_on_remove, "split_on_remove", bool(true));
     }
@@ -95,7 +99,7 @@ namespace mg
         deserializer.deserialize(was_split, "was_split", bool(false));
         deserializer.deserialize(count, "count", int(0));
         deserializer.deserialize(to_bullets, "to_bullets");
-        deserializer.deserialize(split_near_target_radius, "split_near_target_radius", float(0.0));
+        deserializer.deserialize(split_near_target_radius, "split_near_target_radius", float(0.0f));
         deserializer.deserialize(timer_to_split, "timer_to_split", float(-1));
         deserializer.deserialize(split_on_remove, "split_on_remove", bool(true));
     }
@@ -106,7 +110,7 @@ namespace mg
         serializer.serialize(was_split, "was_split", bool(false));
         serializer.serialize(count, "count", int(0));
         serializer.serialize(to_bullets, "to_bullets");
-        serializer.serialize(split_near_target_radius, "split_near_target_radius", float(0.0));
+        serializer.serialize(split_near_target_radius, "split_near_target_radius", float(0.0f));
         serializer.serialize(timer_to_split, "timer_to_split", float(-1));
         serializer.serialize(split_on_remove, "split_on_remove", bool(true));
     }
@@ -117,7 +121,7 @@ namespace mg
         deserializer.deserialize(was_split, "was_split", bool(false));
         deserializer.deserialize(count, "count", int(0));
         deserializer.deserialize(to_bullets, "to_bullets");
-        deserializer.deserialize(split_near_target_radius, "split_near_target_radius", float(0.0));
+        deserializer.deserialize(split_near_target_radius, "split_near_target_radius", float(0.0f));
         deserializer.deserialize(timer_to_split, "timer_to_split", float(-1));
         deserializer.deserialize(split_on_remove, "split_on_remove", bool(true));
     }

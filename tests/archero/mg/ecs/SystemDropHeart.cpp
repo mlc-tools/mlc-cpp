@@ -14,6 +14,7 @@
 #include "Side.h"
 #include "SystemDropHeart.h"
 #include "Transform.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -50,6 +51,7 @@ namespace mg
                 model->event_create_entity.notify(id, transform->position);
             }
         });
+
         auto player_transform = model->get<Transform>(model->player_id);
         auto dist = 100 * 100;
         model->each_if<ComponentHeart,Transform>(
@@ -82,7 +84,6 @@ namespace mg
 
     void SystemDropHeart::clean(ModelEcsBase* model)
     {
-
         for(int __index__ = 0; __index__ < model->components_heart.size(); ++__index__)
         {
             auto& component = model->components_heart.at(__index__);
@@ -90,10 +91,7 @@ namespace mg
             {
                 auto __size__ = model->components_heart.size();
                 model->remove_entity(component->id);
-                if(__size__ != model->components_heart.size())
-                {
-                    __index__ -= 1;
-                }
+                if(__size__ != model->components_heart.size()) { --__index__; }
             }
         }
     }
@@ -105,7 +103,6 @@ namespace mg
 
     int SystemDropHeart::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -113,7 +110,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool SystemDropHeart::operator ==(const SystemDropHeart& rhs) const

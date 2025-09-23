@@ -101,7 +101,7 @@ void ParserLexem::parse(const std::shared_ptr<Class>& cls) {
         else if (cur.type == TokenType::Include) {
             advance();
             if (cur.type == TokenType::Identifier) {
-                cls->includes.push_back(std::string(cur.value));
+                cls->user_includes.insert(std::string(cur.value));
                 advance();
             }
         } else if (cur.type == TokenType::Keyword && cur.value == "constructor") {

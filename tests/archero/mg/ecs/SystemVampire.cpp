@@ -5,6 +5,7 @@
 #include "ComponentVampire.h"
 #include "ModelEcsBase.h"
 #include "SystemVampire.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -30,12 +31,14 @@ namespace mg
         {
             return;
         }
+
         auto side_killer = model->get<ComponentSide>(killer_id);
         auto side_target = model->get<ComponentSide>(target_id);
         if(!side_killer || !side_target || !side_killer->is_enemy(side_target->side))
         {
             return;
         }
+
         if(random_float() < component->chance)
         {
             auto health = model->get<ComponentHealth>(killer_id);
@@ -56,7 +59,6 @@ namespace mg
 
     int SystemVampire::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -64,7 +66,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool SystemVampire::operator ==(const SystemVampire& rhs) const

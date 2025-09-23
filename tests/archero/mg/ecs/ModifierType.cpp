@@ -2,6 +2,7 @@
 #include "../mg_Factory.h"
 #include "../BaseEnum.h"
 #include "ModifierType.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -13,7 +14,6 @@ namespace mg
     {
 
     }
-
 
     ModifierType::ModifierType(int _value)
     {

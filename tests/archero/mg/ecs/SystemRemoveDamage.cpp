@@ -3,6 +3,7 @@
 #include "ComponentDamage.h"
 #include "ModelEcsBase.h"
 #include "SystemRemoveDamage.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -38,7 +39,6 @@ namespace mg
 
     int SystemRemoveDamage::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -46,7 +46,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool SystemRemoveDamage::operator ==(const SystemRemoveDamage& rhs) const

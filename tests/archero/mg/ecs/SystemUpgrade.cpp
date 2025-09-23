@@ -2,6 +2,7 @@
 #include "../mg_Factory.h"
 #include "ModelEcsBase.h"
 #include "SystemUpgrade.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -32,7 +33,6 @@ namespace mg
 
     int SystemUpgrade::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -40,7 +40,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool SystemUpgrade::operator ==(const SystemUpgrade& rhs) const

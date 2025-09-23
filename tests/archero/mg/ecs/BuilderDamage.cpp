@@ -3,6 +3,7 @@
 #include "BuilderDamage.h"
 #include "ComponentDamage.h"
 #include "ModelEcsBase.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -12,7 +13,7 @@ namespace mg
     const std::string BuilderDamage::TYPE("BuilderDamage");
 
     BuilderDamage::BuilderDamage()
-    : damage(0.0)
+    : damage(0.0f)
     , _reference_counter(1)
     {
 
@@ -47,7 +48,6 @@ namespace mg
 
     int BuilderDamage::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -55,7 +55,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool BuilderDamage::operator ==(const BuilderDamage& rhs) const
@@ -89,22 +88,22 @@ namespace mg
 
     void BuilderDamage::serialize_xml(SerializerXml& serializer) const
     {
-        serializer.serialize(damage, "damage", float(0.0));
+        serializer.serialize(damage, "damage", float(0.0f));
     }
 
     void BuilderDamage::deserialize_xml(DeserializerXml& deserializer)
     {
-        deserializer.deserialize(damage, "damage", float(0.0));
+        deserializer.deserialize(damage, "damage", float(0.0f));
     }
 
     void BuilderDamage::serialize_json(SerializerJson& serializer) const
     {
-        serializer.serialize(damage, "damage", float(0.0));
+        serializer.serialize(damage, "damage", float(0.0f));
     }
 
     void BuilderDamage::deserialize_json(DeserializerJson& deserializer)
     {
-        deserializer.deserialize(damage, "damage", float(0.0));
+        deserializer.deserialize(damage, "damage", float(0.0f));
     }
 
 } //namespace mg

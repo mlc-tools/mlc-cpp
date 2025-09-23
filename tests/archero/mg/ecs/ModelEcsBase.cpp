@@ -1,6 +1,7 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
 #include "../Observable.h"
+#include "../model/ModelUser.h"
 #include "ComponentActions.h"
 #include "ComponentAura.h"
 #include "ComponentAuraDamage.h"
@@ -52,10 +53,12 @@
 #include "ComponentTargetable.h"
 #include "ComponentUser.h"
 #include "ComponentVampire.h"
+#include "DataLevel.h"
 #include "DataStatUpgrade.h"
 #include "ElectricDamage.h"
 #include "FireDamage.h"
 #include "Freezing.h"
+#include "Ground.h"
 #include "ModelEcsBase.h"
 #include "MoveDirection.h"
 #include "MoveInstant.h"
@@ -98,7 +101,9 @@
 #include "Transform.h"
 #include "Vector.h"
 #include "intrusive_ptr.h"
+#include <map>
 #include <string>
+#include <vector>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -108,172 +113,172 @@ namespace mg
     const std::string ModelEcsBase::TYPE("ModelEcsBase");
 
     ModelEcsBase::ModelEcsBase()
-    : _reference_counter(1)
-    , components_actions()
-    , components_aura()
-    , components_aura_damage()
-    , components_aura_of_slow()
-    , components_body()
-    , components_bullet()
-    , components_bullet_follow_to_target()
-    , components_bullet_laser()
-    , components_bullet_split()
-    , components_busy()
-    , components_create_movement_to_hero()
-    , components_create_units_on_death()
-    , components_damage()
-    , components_data()
-    , components_drop_heart()
-    , components_effects()
-    , components_electric_damage()
-    , components_exp()
-    , components_exp_drop()
-    , components_fire_damage()
-    , components_freezing()
-    , components_gate()
-    , components_healing_low_hp()
-    , components_healing_on_change_max_hp()
-    , components_health()
-    , components_heart()
-    , components_heart_add_stats()
-    , components_heart_add_stats_damage()
-    , components_heart_add_stats_hp()
-    , components_level_up()
-    , components_melee_attack()
-    , components_meteor_periodic()
-    , components_move_direction()
-    , components_move_instant()
-    , components_move_parabolic()
-    , components_move_to_target()
-    , components_move_vertical()
-    , components_movement()
-    , components_push()
-    , components_random_healing()
-    , components_recharge()
-    , components_shield()
-    , components_shoot_bullet()
-    , components_side()
-    , components_spawn()
-    , components_spawn_spirit()
-    , components_sphere()
-    , components_sphere_spawn()
-    , components_spine_info()
-    , components_spirit()
-    , components_spirit_base_points()
-    , components_stats()
-    , components_stun()
-    , components_sword()
-    , components_sword_cast()
-    , components_target_highlight()
-    , components_targetable()
-    , components_transform()
-    , components_user()
-    , components_vampire()
-    , data(nullptr)
-    , enemies_level(-1)
-    , enemies_rank(-1)
-    , entities()
-    , event_aura_activated()
-    , event_create_bullet()
-    , event_create_entity()
-    , event_create_marker()
-    , event_damaged()
-    , event_death()
-    , event_did_initialized()
-    , event_dodge()
-    , event_effects()
-    , event_exit()
-    , event_fire_activated()
-    , event_fire_deactivated()
-    , event_freeze_activated()
-    , event_freeze_deactivated()
-    , event_healing()
-    , event_hero_exp_changed()
-    , event_hero_level_up()
-    , event_prepare_to_shoot()
-    , event_remove_entity()
-    , event_ressurection()
-    , event_shield_activated()
-    , event_shoot()
-    , event_skill_animate()
-    , event_stun_activated()
-    , event_stun_deactivated()
-    , event_turn_to()
-    , event_wave_finish()
-    , event_wave_next()
-    , event_wave_start()
-    , game_timer(0.0)
-    , ground(nullptr)
-    , has_skills()
-    , map_components_actions()
-    , map_components_aura()
-    , map_components_aura_damage()
-    , map_components_aura_of_slow()
-    , map_components_body()
-    , map_components_bullet()
-    , map_components_bullet_follow_to_target()
-    , map_components_bullet_laser()
-    , map_components_bullet_split()
-    , map_components_busy()
-    , map_components_create_movement_to_hero()
-    , map_components_create_units_on_death()
-    , map_components_damage()
-    , map_components_data()
-    , map_components_drop_heart()
-    , map_components_effects()
-    , map_components_electric_damage()
-    , map_components_exp()
-    , map_components_exp_drop()
-    , map_components_fire_damage()
-    , map_components_freezing()
-    , map_components_gate()
-    , map_components_healing_low_hp()
-    , map_components_healing_on_change_max_hp()
-    , map_components_health()
-    , map_components_heart()
-    , map_components_heart_add_stats()
-    , map_components_heart_add_stats_damage()
-    , map_components_heart_add_stats_hp()
-    , map_components_level_up()
-    , map_components_melee_attack()
-    , map_components_meteor_periodic()
-    , map_components_move_direction()
-    , map_components_move_instant()
-    , map_components_move_parabolic()
-    , map_components_move_to_target()
-    , map_components_move_vertical()
-    , map_components_movement()
-    , map_components_push()
-    , map_components_random_healing()
-    , map_components_recharge()
-    , map_components_shield()
-    , map_components_shoot_bullet()
-    , map_components_side()
-    , map_components_spawn()
-    , map_components_spawn_spirit()
-    , map_components_sphere()
-    , map_components_sphere_spawn()
-    , map_components_spine_info()
-    , map_components_spirit()
-    , map_components_spirit_base_points()
-    , map_components_stats()
-    , map_components_stun()
-    , map_components_sword()
-    , map_components_sword_cast()
-    , map_components_target_highlight()
-    , map_components_targetable()
-    , map_components_transform()
-    , map_components_user()
-    , map_components_vampire()
+    : user(nullptr)
     , next_free_id(1)
     , player_id(0)
-    , spawn_points()
+    , entities()
+    , game_timer(0.0)
     , tasks()
-    , timer_wave_duration(0)
-    , timer_wave_interval(0)
-    , user(nullptr)
-    , wave_finished(false)
+    , data(nullptr)
     , wave_index(0)
+    , ground(nullptr)
+    , enemies_level(-1)
+    , enemies_rank(-1)
+    , wave_finished(false)
+    , timer_wave_interval(0)
+    , timer_wave_duration(0)
+    , has_skills()
+    , event_did_initialized()
+    , event_wave_finish()
+    , event_wave_start()
+    , event_wave_next()
+    , event_exit()
+    , event_create_entity()
+    , event_create_bullet()
+    , event_remove_entity()
+    , event_create_marker()
+    , event_hero_level_up()
+    , event_hero_exp_changed()
+    , event_prepare_to_shoot()
+    , event_turn_to()
+    , event_shoot()
+    , event_death()
+    , event_skill_animate()
+    , event_healing()
+    , event_shield_activated()
+    , event_dodge()
+    , event_ressurection()
+    , event_effects()
+    , event_freeze_activated()
+    , event_freeze_deactivated()
+    , event_fire_activated()
+    , event_fire_deactivated()
+    , event_stun_activated()
+    , event_stun_deactivated()
+    , event_damaged()
+    , event_aura_activated()
+    , spawn_points()
+    , _reference_counter(1)
+    , components_data()
+    , map_components_data()
+    , components_transform()
+    , map_components_transform()
+    , components_stats()
+    , map_components_stats()
+    , components_side()
+    , map_components_side()
+    , components_targetable()
+    , map_components_targetable()
+    , components_health()
+    , map_components_health()
+    , components_damage()
+    , map_components_damage()
+    , components_user()
+    , map_components_user()
+    , components_spine_info()
+    , map_components_spine_info()
+    , components_busy()
+    , map_components_busy()
+    , components_create_units_on_death()
+    , map_components_create_units_on_death()
+    , components_aura()
+    , map_components_aura()
+    , components_aura_of_slow()
+    , map_components_aura_of_slow()
+    , components_aura_damage()
+    , map_components_aura_damage()
+    , components_spirit()
+    , map_components_spirit()
+    , components_spirit_base_points()
+    , map_components_spirit_base_points()
+    , components_spawn_spirit()
+    , map_components_spawn_spirit()
+    , components_recharge()
+    , map_components_recharge()
+    , components_bullet()
+    , map_components_bullet()
+    , components_bullet_laser()
+    , map_components_bullet_laser()
+    , components_shoot_bullet()
+    , map_components_shoot_bullet()
+    , components_melee_attack()
+    , map_components_melee_attack()
+    , components_target_highlight()
+    , map_components_target_highlight()
+    , components_bullet_split()
+    , map_components_bullet_split()
+    , components_shield()
+    , map_components_shield()
+    , components_effects()
+    , map_components_effects()
+    , components_bullet_follow_to_target()
+    , map_components_bullet_follow_to_target()
+    , components_meteor_periodic()
+    , map_components_meteor_periodic()
+    , components_electric_damage()
+    , map_components_electric_damage()
+    , components_sphere_spawn()
+    , map_components_sphere_spawn()
+    , components_sphere()
+    , map_components_sphere()
+    , components_actions()
+    , map_components_actions()
+    , components_gate()
+    , map_components_gate()
+    , components_level_up()
+    , map_components_level_up()
+    , components_exp()
+    , map_components_exp()
+    , components_exp_drop()
+    , map_components_exp_drop()
+    , components_stun()
+    , map_components_stun()
+    , components_fire_damage()
+    , map_components_fire_damage()
+    , components_movement()
+    , map_components_movement()
+    , components_move_direction()
+    , map_components_move_direction()
+    , components_move_to_target()
+    , map_components_move_to_target()
+    , components_move_instant()
+    , map_components_move_instant()
+    , components_move_vertical()
+    , map_components_move_vertical()
+    , components_freezing()
+    , map_components_freezing()
+    , components_move_parabolic()
+    , map_components_move_parabolic()
+    , components_create_movement_to_hero()
+    , map_components_create_movement_to_hero()
+    , components_push()
+    , map_components_push()
+    , components_spawn()
+    , map_components_spawn()
+    , components_healing_on_change_max_hp()
+    , map_components_healing_on_change_max_hp()
+    , components_drop_heart()
+    , map_components_drop_heart()
+    , components_heart()
+    , map_components_heart()
+    , components_heart_add_stats()
+    , map_components_heart_add_stats()
+    , components_heart_add_stats_hp()
+    , map_components_heart_add_stats_hp()
+    , components_heart_add_stats_damage()
+    , map_components_heart_add_stats_damage()
+    , components_random_healing()
+    , map_components_random_healing()
+    , components_vampire()
+    , map_components_vampire()
+    , components_healing_low_hp()
+    , map_components_healing_low_hp()
+    , components_body()
+    , map_components_body()
+    , components_sword_cast()
+    , map_components_sword_cast()
+    , components_sword()
+    , map_components_sword()
     {
 
     }
@@ -770,6 +775,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<Transform> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_transform))
@@ -778,6 +784,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentStats> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_stats))
@@ -786,6 +793,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentSide> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_side))
@@ -794,6 +802,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentTargetable> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_targetable))
@@ -802,6 +811,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentHealth> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_health))
@@ -810,6 +820,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentDamage> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_damage))
@@ -818,6 +829,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentUser> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_user))
@@ -826,6 +838,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentSpineInfo> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_spine_info))
@@ -834,6 +847,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentBusy> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_busy))
@@ -842,6 +856,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentCreateUnitsOnDeath> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_create_units_on_death))
@@ -850,6 +865,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentAura> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_aura))
@@ -858,6 +874,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentAuraOfSlow> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_aura_of_slow))
@@ -866,6 +883,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentAuraDamage> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_aura_damage))
@@ -874,6 +892,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentSpirit> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_spirit))
@@ -882,6 +901,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentSpiritBasePoints> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_spirit_base_points))
@@ -890,6 +910,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentSpawnSpirit> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_spawn_spirit))
@@ -898,6 +919,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentRecharge> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_recharge))
@@ -906,6 +928,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentBullet> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_bullet))
@@ -914,6 +937,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentBulletLaser> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_bullet_laser))
@@ -922,6 +946,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentShootBullet> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_shoot_bullet))
@@ -930,6 +955,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentMeleeAttack> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_melee_attack))
@@ -938,6 +964,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentTargetHighlight> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_target_highlight))
@@ -946,6 +973,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentBulletSplit> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_bullet_split))
@@ -954,6 +982,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentShield> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_shield))
@@ -962,6 +991,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentEffects> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_effects))
@@ -970,6 +1000,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentBulletFollowToTarget> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_bullet_follow_to_target))
@@ -978,6 +1009,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentMeteorPeriodic> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_meteor_periodic))
@@ -986,6 +1018,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ElectricDamage> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_electric_damage))
@@ -994,6 +1027,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentSphereSpawn> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_sphere_spawn))
@@ -1002,6 +1036,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentSphere> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_sphere))
@@ -1010,6 +1045,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentActions> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_actions))
@@ -1018,6 +1054,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentGate> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_gate))
@@ -1026,6 +1063,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentLevelUp> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_level_up))
@@ -1034,6 +1072,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentExp> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_exp))
@@ -1042,6 +1081,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentExpDrop> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_exp_drop))
@@ -1050,6 +1090,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentStun> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_stun))
@@ -1058,6 +1099,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<FireDamage> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_fire_damage))
@@ -1066,6 +1108,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentMovement> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_movement))
@@ -1074,6 +1117,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<MoveDirection> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_move_direction))
@@ -1082,6 +1126,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<MoveToTarget> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_move_to_target))
@@ -1090,6 +1135,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<MoveInstant> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_move_instant))
@@ -1098,6 +1144,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<MoveVertical> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_move_vertical))
@@ -1106,6 +1153,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<Freezing> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_freezing))
@@ -1114,6 +1162,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<MoveParabolic> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_move_parabolic))
@@ -1122,6 +1171,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentCreateMovementToHero> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_create_movement_to_hero))
@@ -1130,6 +1180,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentPush> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_push))
@@ -1138,6 +1189,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentSpawn> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_spawn))
@@ -1146,6 +1198,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentHealingOnChangeMaxHp> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_healing_on_change_max_hp))
@@ -1154,6 +1207,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentDropHeart> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_drop_heart))
@@ -1162,6 +1216,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentHeart> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_heart))
@@ -1170,6 +1225,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentHeartAddStats> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_heart_add_stats))
@@ -1178,6 +1234,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentHeartAddStatsHp> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_heart_add_stats_hp))
@@ -1186,6 +1243,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentHeartAddStatsDamage> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_heart_add_stats_damage))
@@ -1194,6 +1252,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentRandomHealing> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_random_healing))
@@ -1202,6 +1261,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentVampire> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_vampire))
@@ -1210,6 +1270,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentHealingLowHp> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_healing_low_hp))
@@ -1218,6 +1279,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentBody> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_body))
@@ -1226,6 +1288,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentSwordCast> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_sword_cast))
@@ -1234,6 +1297,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> intrusive_ptr<ComponentSword> ModelEcsBase::get(int component_id)
     {
         if(in_map(component_id, this->map_components_sword))
@@ -1242,6 +1306,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentData* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_data))
@@ -1250,6 +1315,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const Transform* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_transform))
@@ -1258,6 +1324,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentStats* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_stats))
@@ -1266,6 +1333,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentSide* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_side))
@@ -1274,6 +1342,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentTargetable* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_targetable))
@@ -1282,6 +1351,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentHealth* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_health))
@@ -1290,6 +1360,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentDamage* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_damage))
@@ -1298,6 +1369,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentUser* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_user))
@@ -1306,6 +1378,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentSpineInfo* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_spine_info))
@@ -1314,6 +1387,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentBusy* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_busy))
@@ -1322,6 +1396,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentCreateUnitsOnDeath* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_create_units_on_death))
@@ -1330,6 +1405,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentAura* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_aura))
@@ -1338,6 +1414,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentAuraOfSlow* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_aura_of_slow))
@@ -1346,6 +1423,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentAuraDamage* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_aura_damage))
@@ -1354,6 +1432,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentSpirit* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_spirit))
@@ -1362,6 +1441,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentSpiritBasePoints* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_spirit_base_points))
@@ -1370,6 +1450,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentSpawnSpirit* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_spawn_spirit))
@@ -1378,6 +1459,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentRecharge* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_recharge))
@@ -1386,6 +1468,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentBullet* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_bullet))
@@ -1394,6 +1477,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentBulletLaser* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_bullet_laser))
@@ -1402,6 +1486,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentShootBullet* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_shoot_bullet))
@@ -1410,6 +1495,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentMeleeAttack* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_melee_attack))
@@ -1418,6 +1504,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentTargetHighlight* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_target_highlight))
@@ -1426,6 +1513,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentBulletSplit* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_bullet_split))
@@ -1434,6 +1522,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentShield* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_shield))
@@ -1442,6 +1531,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentEffects* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_effects))
@@ -1450,6 +1540,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentBulletFollowToTarget* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_bullet_follow_to_target))
@@ -1458,6 +1549,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentMeteorPeriodic* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_meteor_periodic))
@@ -1466,6 +1558,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ElectricDamage* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_electric_damage))
@@ -1474,6 +1567,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentSphereSpawn* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_sphere_spawn))
@@ -1482,6 +1576,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentSphere* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_sphere))
@@ -1490,6 +1585,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentActions* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_actions))
@@ -1498,6 +1594,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentGate* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_gate))
@@ -1506,6 +1603,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentLevelUp* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_level_up))
@@ -1514,6 +1612,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentExp* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_exp))
@@ -1522,6 +1621,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentExpDrop* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_exp_drop))
@@ -1530,6 +1630,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentStun* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_stun))
@@ -1538,6 +1639,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const FireDamage* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_fire_damage))
@@ -1546,6 +1648,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentMovement* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_movement))
@@ -1554,6 +1657,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const MoveDirection* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_move_direction))
@@ -1562,6 +1666,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const MoveToTarget* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_move_to_target))
@@ -1570,6 +1675,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const MoveInstant* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_move_instant))
@@ -1578,6 +1684,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const MoveVertical* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_move_vertical))
@@ -1586,6 +1693,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const Freezing* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_freezing))
@@ -1594,6 +1702,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const MoveParabolic* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_move_parabolic))
@@ -1602,6 +1711,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentCreateMovementToHero* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_create_movement_to_hero))
@@ -1610,6 +1720,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentPush* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_push))
@@ -1618,6 +1729,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentSpawn* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_spawn))
@@ -1626,6 +1738,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentHealingOnChangeMaxHp* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_healing_on_change_max_hp))
@@ -1634,6 +1747,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentDropHeart* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_drop_heart))
@@ -1642,6 +1756,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentHeart* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_heart))
@@ -1650,6 +1765,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentHeartAddStats* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_heart_add_stats))
@@ -1658,6 +1774,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentHeartAddStatsHp* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_heart_add_stats_hp))
@@ -1666,6 +1783,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentHeartAddStatsDamage* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_heart_add_stats_damage))
@@ -1674,6 +1792,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentRandomHealing* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_random_healing))
@@ -1682,6 +1801,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentVampire* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_vampire))
@@ -1690,6 +1810,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentHealingLowHp* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_healing_low_hp))
@@ -1698,6 +1819,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentBody* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_body))
@@ -1706,6 +1828,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentSwordCast* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_sword_cast))
@@ -1714,6 +1837,7 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> const ComponentSword* ModelEcsBase::get(int component_id) const
     {
         if(in_map(component_id, this->map_components_sword))
@@ -1722,495 +1846,496 @@ namespace mg
         }
         return nullptr;
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentData> component)
     {
         if(component)
         {
-            list_remove(this->components_data, component);
-            map_remove(this->map_components_data, component->id);
+            list_remove(this->components_data, component); map_remove(this->map_components_data, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<Transform> component)
     {
         if(component)
         {
-            list_remove(this->components_transform, component);
-            map_remove(this->map_components_transform, component->id);
+            list_remove(this->components_transform, component); map_remove(this->map_components_transform, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentStats> component)
     {
         if(component)
         {
-            list_remove(this->components_stats, component);
-            map_remove(this->map_components_stats, component->id);
+            list_remove(this->components_stats, component); map_remove(this->map_components_stats, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentSide> component)
     {
         if(component)
         {
-            list_remove(this->components_side, component);
-            map_remove(this->map_components_side, component->id);
+            list_remove(this->components_side, component); map_remove(this->map_components_side, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentTargetable> component)
     {
         if(component)
         {
-            list_remove(this->components_targetable, component);
-            map_remove(this->map_components_targetable, component->id);
+            list_remove(this->components_targetable, component); map_remove(this->map_components_targetable, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentHealth> component)
     {
         if(component)
         {
-            list_remove(this->components_health, component);
-            map_remove(this->map_components_health, component->id);
+            list_remove(this->components_health, component); map_remove(this->map_components_health, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentDamage> component)
     {
         if(component)
         {
-            list_remove(this->components_damage, component);
-            map_remove(this->map_components_damage, component->id);
+            list_remove(this->components_damage, component); map_remove(this->map_components_damage, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentUser> component)
     {
         if(component)
         {
-            list_remove(this->components_user, component);
-            map_remove(this->map_components_user, component->id);
+            list_remove(this->components_user, component); map_remove(this->map_components_user, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentSpineInfo> component)
     {
         if(component)
         {
-            list_remove(this->components_spine_info, component);
-            map_remove(this->map_components_spine_info, component->id);
+            list_remove(this->components_spine_info, component); map_remove(this->map_components_spine_info, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentBusy> component)
     {
         if(component)
         {
-            list_remove(this->components_busy, component);
-            map_remove(this->map_components_busy, component->id);
+            list_remove(this->components_busy, component); map_remove(this->map_components_busy, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentCreateUnitsOnDeath> component)
     {
         if(component)
         {
-            list_remove(this->components_create_units_on_death, component);
-            map_remove(this->map_components_create_units_on_death, component->id);
+            list_remove(this->components_create_units_on_death, component); map_remove(this->map_components_create_units_on_death, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentAura> component)
     {
         if(component)
         {
-            list_remove(this->components_aura, component);
-            map_remove(this->map_components_aura, component->id);
+            list_remove(this->components_aura, component); map_remove(this->map_components_aura, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentAuraOfSlow> component)
     {
         this->remove<ComponentAura>(intrusive_ptr<ComponentAura>(component));
         if(component)
         {
-            list_remove(this->components_aura_of_slow, component);
-            map_remove(this->map_components_aura_of_slow, component->id);
+            list_remove(this->components_aura_of_slow, component); map_remove(this->map_components_aura_of_slow, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentAuraDamage> component)
     {
         this->remove<ComponentAura>(intrusive_ptr<ComponentAura>(component));
         if(component)
         {
-            list_remove(this->components_aura_damage, component);
-            map_remove(this->map_components_aura_damage, component->id);
+            list_remove(this->components_aura_damage, component); map_remove(this->map_components_aura_damage, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentSpirit> component)
     {
         if(component)
         {
-            list_remove(this->components_spirit, component);
-            map_remove(this->map_components_spirit, component->id);
+            list_remove(this->components_spirit, component); map_remove(this->map_components_spirit, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentSpiritBasePoints> component)
     {
         if(component)
         {
-            list_remove(this->components_spirit_base_points, component);
-            map_remove(this->map_components_spirit_base_points, component->id);
+            list_remove(this->components_spirit_base_points, component); map_remove(this->map_components_spirit_base_points, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentSpawnSpirit> component)
     {
         if(component)
         {
-            list_remove(this->components_spawn_spirit, component);
-            map_remove(this->map_components_spawn_spirit, component->id);
+            list_remove(this->components_spawn_spirit, component); map_remove(this->map_components_spawn_spirit, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentRecharge> component)
     {
         if(component)
         {
-            list_remove(this->components_recharge, component);
-            map_remove(this->map_components_recharge, component->id);
+            list_remove(this->components_recharge, component); map_remove(this->map_components_recharge, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentBullet> component)
     {
         if(component)
         {
-            list_remove(this->components_bullet, component);
-            map_remove(this->map_components_bullet, component->id);
+            list_remove(this->components_bullet, component); map_remove(this->map_components_bullet, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentBulletLaser> component)
     {
         this->remove<ComponentBullet>(intrusive_ptr<ComponentBullet>(component));
         if(component)
         {
-            list_remove(this->components_bullet_laser, component);
-            map_remove(this->map_components_bullet_laser, component->id);
+            list_remove(this->components_bullet_laser, component); map_remove(this->map_components_bullet_laser, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentShootBullet> component)
     {
         if(component)
         {
-            list_remove(this->components_shoot_bullet, component);
-            map_remove(this->map_components_shoot_bullet, component->id);
+            list_remove(this->components_shoot_bullet, component); map_remove(this->map_components_shoot_bullet, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentMeleeAttack> component)
     {
         if(component)
         {
-            list_remove(this->components_melee_attack, component);
-            map_remove(this->map_components_melee_attack, component->id);
+            list_remove(this->components_melee_attack, component); map_remove(this->map_components_melee_attack, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentTargetHighlight> component)
     {
         if(component)
         {
-            list_remove(this->components_target_highlight, component);
-            map_remove(this->map_components_target_highlight, component->id);
+            list_remove(this->components_target_highlight, component); map_remove(this->map_components_target_highlight, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentBulletSplit> component)
     {
         if(component)
         {
-            list_remove(this->components_bullet_split, component);
-            map_remove(this->map_components_bullet_split, component->id);
+            list_remove(this->components_bullet_split, component); map_remove(this->map_components_bullet_split, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentShield> component)
     {
         if(component)
         {
-            list_remove(this->components_shield, component);
-            map_remove(this->map_components_shield, component->id);
+            list_remove(this->components_shield, component); map_remove(this->map_components_shield, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentEffects> component)
     {
         if(component)
         {
-            list_remove(this->components_effects, component);
-            map_remove(this->map_components_effects, component->id);
+            list_remove(this->components_effects, component); map_remove(this->map_components_effects, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentBulletFollowToTarget> component)
     {
         if(component)
         {
-            list_remove(this->components_bullet_follow_to_target, component);
-            map_remove(this->map_components_bullet_follow_to_target, component->id);
+            list_remove(this->components_bullet_follow_to_target, component); map_remove(this->map_components_bullet_follow_to_target, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentMeteorPeriodic> component)
     {
         if(component)
         {
-            list_remove(this->components_meteor_periodic, component);
-            map_remove(this->map_components_meteor_periodic, component->id);
+            list_remove(this->components_meteor_periodic, component); map_remove(this->map_components_meteor_periodic, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ElectricDamage> component)
     {
         if(component)
         {
-            list_remove(this->components_electric_damage, component);
-            map_remove(this->map_components_electric_damage, component->id);
+            list_remove(this->components_electric_damage, component); map_remove(this->map_components_electric_damage, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentSphereSpawn> component)
     {
         if(component)
         {
-            list_remove(this->components_sphere_spawn, component);
-            map_remove(this->map_components_sphere_spawn, component->id);
+            list_remove(this->components_sphere_spawn, component); map_remove(this->map_components_sphere_spawn, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentSphere> component)
     {
         if(component)
         {
-            list_remove(this->components_sphere, component);
-            map_remove(this->map_components_sphere, component->id);
+            list_remove(this->components_sphere, component); map_remove(this->map_components_sphere, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentActions> component)
     {
         if(component)
         {
-            list_remove(this->components_actions, component);
-            map_remove(this->map_components_actions, component->id);
+            list_remove(this->components_actions, component); map_remove(this->map_components_actions, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentGate> component)
     {
         if(component)
         {
-            list_remove(this->components_gate, component);
-            map_remove(this->map_components_gate, component->id);
+            list_remove(this->components_gate, component); map_remove(this->map_components_gate, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentLevelUp> component)
     {
         if(component)
         {
-            list_remove(this->components_level_up, component);
-            map_remove(this->map_components_level_up, component->id);
+            list_remove(this->components_level_up, component); map_remove(this->map_components_level_up, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentExp> component)
     {
         if(component)
         {
-            list_remove(this->components_exp, component);
-            map_remove(this->map_components_exp, component->id);
+            list_remove(this->components_exp, component); map_remove(this->map_components_exp, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentExpDrop> component)
     {
         if(component)
         {
-            list_remove(this->components_exp_drop, component);
-            map_remove(this->map_components_exp_drop, component->id);
+            list_remove(this->components_exp_drop, component); map_remove(this->map_components_exp_drop, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentStun> component)
     {
         if(component)
         {
-            list_remove(this->components_stun, component);
-            map_remove(this->map_components_stun, component->id);
+            list_remove(this->components_stun, component); map_remove(this->map_components_stun, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<FireDamage> component)
     {
         if(component)
         {
-            list_remove(this->components_fire_damage, component);
-            map_remove(this->map_components_fire_damage, component->id);
+            list_remove(this->components_fire_damage, component); map_remove(this->map_components_fire_damage, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentMovement> component)
     {
         if(component)
         {
-            list_remove(this->components_movement, component);
-            map_remove(this->map_components_movement, component->id);
+            list_remove(this->components_movement, component); map_remove(this->map_components_movement, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<MoveDirection> component)
     {
         this->remove<ComponentMovement>(intrusive_ptr<ComponentMovement>(component));
         if(component)
         {
-            list_remove(this->components_move_direction, component);
-            map_remove(this->map_components_move_direction, component->id);
+            list_remove(this->components_move_direction, component); map_remove(this->map_components_move_direction, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<MoveToTarget> component)
     {
         this->remove<ComponentMovement>(intrusive_ptr<ComponentMovement>(component));
         if(component)
         {
-            list_remove(this->components_move_to_target, component);
-            map_remove(this->map_components_move_to_target, component->id);
+            list_remove(this->components_move_to_target, component); map_remove(this->map_components_move_to_target, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<MoveInstant> component)
     {
         this->remove<ComponentMovement>(intrusive_ptr<ComponentMovement>(component));
         if(component)
         {
-            list_remove(this->components_move_instant, component);
-            map_remove(this->map_components_move_instant, component->id);
+            list_remove(this->components_move_instant, component); map_remove(this->map_components_move_instant, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<MoveVertical> component)
     {
         this->remove<ComponentMovement>(intrusive_ptr<ComponentMovement>(component));
         if(component)
         {
-            list_remove(this->components_move_vertical, component);
-            map_remove(this->map_components_move_vertical, component->id);
+            list_remove(this->components_move_vertical, component); map_remove(this->map_components_move_vertical, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<Freezing> component)
     {
         if(component)
         {
-            list_remove(this->components_freezing, component);
-            map_remove(this->map_components_freezing, component->id);
+            list_remove(this->components_freezing, component); map_remove(this->map_components_freezing, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<MoveParabolic> component)
     {
         if(component)
         {
-            list_remove(this->components_move_parabolic, component);
-            map_remove(this->map_components_move_parabolic, component->id);
+            list_remove(this->components_move_parabolic, component); map_remove(this->map_components_move_parabolic, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentCreateMovementToHero> component)
     {
         if(component)
         {
-            list_remove(this->components_create_movement_to_hero, component);
-            map_remove(this->map_components_create_movement_to_hero, component->id);
+            list_remove(this->components_create_movement_to_hero, component); map_remove(this->map_components_create_movement_to_hero, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentPush> component)
     {
         if(component)
         {
-            list_remove(this->components_push, component);
-            map_remove(this->map_components_push, component->id);
+            list_remove(this->components_push, component); map_remove(this->map_components_push, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentSpawn> component)
     {
         if(component)
         {
-            list_remove(this->components_spawn, component);
-            map_remove(this->map_components_spawn, component->id);
+            list_remove(this->components_spawn, component); map_remove(this->map_components_spawn, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentHealingOnChangeMaxHp> component)
     {
         if(component)
         {
-            list_remove(this->components_healing_on_change_max_hp, component);
-            map_remove(this->map_components_healing_on_change_max_hp, component->id);
+            list_remove(this->components_healing_on_change_max_hp, component); map_remove(this->map_components_healing_on_change_max_hp, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentDropHeart> component)
     {
         if(component)
         {
-            list_remove(this->components_drop_heart, component);
-            map_remove(this->map_components_drop_heart, component->id);
+            list_remove(this->components_drop_heart, component); map_remove(this->map_components_drop_heart, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentHeart> component)
     {
         if(component)
         {
-            list_remove(this->components_heart, component);
-            map_remove(this->map_components_heart, component->id);
+            list_remove(this->components_heart, component); map_remove(this->map_components_heart, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentHeartAddStats> component)
     {
         if(component)
         {
-            list_remove(this->components_heart_add_stats, component);
-            map_remove(this->map_components_heart_add_stats, component->id);
+            list_remove(this->components_heart_add_stats, component); map_remove(this->map_components_heart_add_stats, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentHeartAddStatsHp> component)
     {
         this->remove<ComponentHeartAddStats>(intrusive_ptr<ComponentHeartAddStats>(component));
         if(component)
         {
-            list_remove(this->components_heart_add_stats_hp, component);
-            map_remove(this->map_components_heart_add_stats_hp, component->id);
+            list_remove(this->components_heart_add_stats_hp, component); map_remove(this->map_components_heart_add_stats_hp, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentHeartAddStatsDamage> component)
     {
         this->remove<ComponentHeartAddStats>(intrusive_ptr<ComponentHeartAddStats>(component));
         if(component)
         {
-            list_remove(this->components_heart_add_stats_damage, component);
-            map_remove(this->map_components_heart_add_stats_damage, component->id);
+            list_remove(this->components_heart_add_stats_damage, component); map_remove(this->map_components_heart_add_stats_damage, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentRandomHealing> component)
     {
         if(component)
         {
-            list_remove(this->components_random_healing, component);
-            map_remove(this->map_components_random_healing, component->id);
+            list_remove(this->components_random_healing, component); map_remove(this->map_components_random_healing, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentVampire> component)
     {
         if(component)
         {
-            list_remove(this->components_vampire, component);
-            map_remove(this->map_components_vampire, component->id);
+            list_remove(this->components_vampire, component); map_remove(this->map_components_vampire, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentHealingLowHp> component)
     {
         if(component)
         {
-            list_remove(this->components_healing_low_hp, component);
-            map_remove(this->map_components_healing_low_hp, component->id);
+            list_remove(this->components_healing_low_hp, component); map_remove(this->map_components_healing_low_hp, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentBody> component)
     {
         if(component)
         {
-            list_remove(this->components_body, component);
-            map_remove(this->map_components_body, component->id);
+            list_remove(this->components_body, component); map_remove(this->map_components_body, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentSwordCast> component)
     {
         if(component)
         {
-            list_remove(this->components_sword_cast, component);
-            map_remove(this->map_components_sword_cast, component->id);
+            list_remove(this->components_sword_cast, component); map_remove(this->map_components_sword_cast, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(intrusive_ptr<ComponentSword> component)
     {
         if(component)
         {
-            list_remove(this->components_sword, component);
-            map_remove(this->map_components_sword, component->id);
+            list_remove(this->components_sword, component); map_remove(this->map_components_sword, component->id);
         }
     }
+
     template<> void ModelEcsBase::remove(ComponentData* component)
     {
         this->remove(intrusive_ptr<ComponentData>(component));
@@ -2451,381 +2576,6 @@ namespace mg
     {
         this->remove(intrusive_ptr<ComponentSword>(component));
     }
-    ModelEcsBase::ModelEcsBase(const ModelEcsBase& rhs)
-    {
-        this->operator=(rhs);
-    }
-
-    void ModelEcsBase::add_entity(int id)
-    {
-        list_push(this->entities, id);
-    }
-
-    void ModelEcsBase::clear_components_actions()
-    {
-        map_clear(this->map_components_actions);
-        list_clear(this->components_actions);
-    }
-
-    void ModelEcsBase::clear_components_aura()
-    {
-        map_clear(this->map_components_aura);
-        list_clear(this->components_aura);
-    }
-
-    void ModelEcsBase::clear_components_aura_damage()
-    {
-        map_clear(this->map_components_aura_damage);
-        list_clear(this->components_aura_damage);
-    }
-
-    void ModelEcsBase::clear_components_aura_of_slow()
-    {
-        map_clear(this->map_components_aura_of_slow);
-        list_clear(this->components_aura_of_slow);
-    }
-
-    void ModelEcsBase::clear_components_body()
-    {
-        map_clear(this->map_components_body);
-        list_clear(this->components_body);
-    }
-
-    void ModelEcsBase::clear_components_bullet()
-    {
-        map_clear(this->map_components_bullet);
-        list_clear(this->components_bullet);
-    }
-
-    void ModelEcsBase::clear_components_bullet_follow_to_target()
-    {
-        map_clear(this->map_components_bullet_follow_to_target);
-        list_clear(this->components_bullet_follow_to_target);
-    }
-
-    void ModelEcsBase::clear_components_bullet_laser()
-    {
-        map_clear(this->map_components_bullet_laser);
-        list_clear(this->components_bullet_laser);
-    }
-
-    void ModelEcsBase::clear_components_bullet_split()
-    {
-        map_clear(this->map_components_bullet_split);
-        list_clear(this->components_bullet_split);
-    }
-
-    void ModelEcsBase::clear_components_busy()
-    {
-        map_clear(this->map_components_busy);
-        list_clear(this->components_busy);
-    }
-
-    void ModelEcsBase::clear_components_create_movement_to_hero()
-    {
-        map_clear(this->map_components_create_movement_to_hero);
-        list_clear(this->components_create_movement_to_hero);
-    }
-
-    void ModelEcsBase::clear_components_create_units_on_death()
-    {
-        map_clear(this->map_components_create_units_on_death);
-        list_clear(this->components_create_units_on_death);
-    }
-
-    void ModelEcsBase::clear_components_damage()
-    {
-        map_clear(this->map_components_damage);
-        list_clear(this->components_damage);
-    }
-
-    void ModelEcsBase::clear_components_data()
-    {
-        map_clear(this->map_components_data);
-        list_clear(this->components_data);
-    }
-
-    void ModelEcsBase::clear_components_drop_heart()
-    {
-        map_clear(this->map_components_drop_heart);
-        list_clear(this->components_drop_heart);
-    }
-
-    void ModelEcsBase::clear_components_effects()
-    {
-        map_clear(this->map_components_effects);
-        list_clear(this->components_effects);
-    }
-
-    void ModelEcsBase::clear_components_electric_damage()
-    {
-        map_clear(this->map_components_electric_damage);
-        list_clear(this->components_electric_damage);
-    }
-
-    void ModelEcsBase::clear_components_exp()
-    {
-        map_clear(this->map_components_exp);
-        list_clear(this->components_exp);
-    }
-
-    void ModelEcsBase::clear_components_exp_drop()
-    {
-        map_clear(this->map_components_exp_drop);
-        list_clear(this->components_exp_drop);
-    }
-
-    void ModelEcsBase::clear_components_fire_damage()
-    {
-        map_clear(this->map_components_fire_damage);
-        list_clear(this->components_fire_damage);
-    }
-
-    void ModelEcsBase::clear_components_freezing()
-    {
-        map_clear(this->map_components_freezing);
-        list_clear(this->components_freezing);
-    }
-
-    void ModelEcsBase::clear_components_gate()
-    {
-        map_clear(this->map_components_gate);
-        list_clear(this->components_gate);
-    }
-
-    void ModelEcsBase::clear_components_healing_low_hp()
-    {
-        map_clear(this->map_components_healing_low_hp);
-        list_clear(this->components_healing_low_hp);
-    }
-
-    void ModelEcsBase::clear_components_healing_on_change_max_hp()
-    {
-        map_clear(this->map_components_healing_on_change_max_hp);
-        list_clear(this->components_healing_on_change_max_hp);
-    }
-
-    void ModelEcsBase::clear_components_health()
-    {
-        map_clear(this->map_components_health);
-        list_clear(this->components_health);
-    }
-
-    void ModelEcsBase::clear_components_heart()
-    {
-        map_clear(this->map_components_heart);
-        list_clear(this->components_heart);
-    }
-
-    void ModelEcsBase::clear_components_heart_add_stats()
-    {
-        map_clear(this->map_components_heart_add_stats);
-        list_clear(this->components_heart_add_stats);
-    }
-
-    void ModelEcsBase::clear_components_heart_add_stats_damage()
-    {
-        map_clear(this->map_components_heart_add_stats_damage);
-        list_clear(this->components_heart_add_stats_damage);
-    }
-
-    void ModelEcsBase::clear_components_heart_add_stats_hp()
-    {
-        map_clear(this->map_components_heart_add_stats_hp);
-        list_clear(this->components_heart_add_stats_hp);
-    }
-
-    void ModelEcsBase::clear_components_level_up()
-    {
-        map_clear(this->map_components_level_up);
-        list_clear(this->components_level_up);
-    }
-
-    void ModelEcsBase::clear_components_melee_attack()
-    {
-        map_clear(this->map_components_melee_attack);
-        list_clear(this->components_melee_attack);
-    }
-
-    void ModelEcsBase::clear_components_meteor_periodic()
-    {
-        map_clear(this->map_components_meteor_periodic);
-        list_clear(this->components_meteor_periodic);
-    }
-
-    void ModelEcsBase::clear_components_move_direction()
-    {
-        map_clear(this->map_components_move_direction);
-        list_clear(this->components_move_direction);
-    }
-
-    void ModelEcsBase::clear_components_move_instant()
-    {
-        map_clear(this->map_components_move_instant);
-        list_clear(this->components_move_instant);
-    }
-
-    void ModelEcsBase::clear_components_move_parabolic()
-    {
-        map_clear(this->map_components_move_parabolic);
-        list_clear(this->components_move_parabolic);
-    }
-
-    void ModelEcsBase::clear_components_move_to_target()
-    {
-        map_clear(this->map_components_move_to_target);
-        list_clear(this->components_move_to_target);
-    }
-
-    void ModelEcsBase::clear_components_move_vertical()
-    {
-        map_clear(this->map_components_move_vertical);
-        list_clear(this->components_move_vertical);
-    }
-
-    void ModelEcsBase::clear_components_movement()
-    {
-        map_clear(this->map_components_movement);
-        list_clear(this->components_movement);
-    }
-
-    void ModelEcsBase::clear_components_push()
-    {
-        map_clear(this->map_components_push);
-        list_clear(this->components_push);
-    }
-
-    void ModelEcsBase::clear_components_random_healing()
-    {
-        map_clear(this->map_components_random_healing);
-        list_clear(this->components_random_healing);
-    }
-
-    void ModelEcsBase::clear_components_recharge()
-    {
-        map_clear(this->map_components_recharge);
-        list_clear(this->components_recharge);
-    }
-
-    void ModelEcsBase::clear_components_shield()
-    {
-        map_clear(this->map_components_shield);
-        list_clear(this->components_shield);
-    }
-
-    void ModelEcsBase::clear_components_shoot_bullet()
-    {
-        map_clear(this->map_components_shoot_bullet);
-        list_clear(this->components_shoot_bullet);
-    }
-
-    void ModelEcsBase::clear_components_side()
-    {
-        map_clear(this->map_components_side);
-        list_clear(this->components_side);
-    }
-
-    void ModelEcsBase::clear_components_spawn()
-    {
-        map_clear(this->map_components_spawn);
-        list_clear(this->components_spawn);
-    }
-
-    void ModelEcsBase::clear_components_spawn_spirit()
-    {
-        map_clear(this->map_components_spawn_spirit);
-        list_clear(this->components_spawn_spirit);
-    }
-
-    void ModelEcsBase::clear_components_sphere()
-    {
-        map_clear(this->map_components_sphere);
-        list_clear(this->components_sphere);
-    }
-
-    void ModelEcsBase::clear_components_sphere_spawn()
-    {
-        map_clear(this->map_components_sphere_spawn);
-        list_clear(this->components_sphere_spawn);
-    }
-
-    void ModelEcsBase::clear_components_spine_info()
-    {
-        map_clear(this->map_components_spine_info);
-        list_clear(this->components_spine_info);
-    }
-
-    void ModelEcsBase::clear_components_spirit()
-    {
-        map_clear(this->map_components_spirit);
-        list_clear(this->components_spirit);
-    }
-
-    void ModelEcsBase::clear_components_spirit_base_points()
-    {
-        map_clear(this->map_components_spirit_base_points);
-        list_clear(this->components_spirit_base_points);
-    }
-
-    void ModelEcsBase::clear_components_stats()
-    {
-        map_clear(this->map_components_stats);
-        list_clear(this->components_stats);
-    }
-
-    void ModelEcsBase::clear_components_stun()
-    {
-        map_clear(this->map_components_stun);
-        list_clear(this->components_stun);
-    }
-
-    void ModelEcsBase::clear_components_sword()
-    {
-        map_clear(this->map_components_sword);
-        list_clear(this->components_sword);
-    }
-
-    void ModelEcsBase::clear_components_sword_cast()
-    {
-        map_clear(this->map_components_sword_cast);
-        list_clear(this->components_sword_cast);
-    }
-
-    void ModelEcsBase::clear_components_target_highlight()
-    {
-        map_clear(this->map_components_target_highlight);
-        list_clear(this->components_target_highlight);
-    }
-
-    void ModelEcsBase::clear_components_targetable()
-    {
-        map_clear(this->map_components_targetable);
-        list_clear(this->components_targetable);
-    }
-
-    void ModelEcsBase::clear_components_transform()
-    {
-        map_clear(this->map_components_transform);
-        list_clear(this->components_transform);
-    }
-
-    void ModelEcsBase::clear_components_user()
-    {
-        map_clear(this->map_components_user);
-        list_clear(this->components_user);
-    }
-
-    void ModelEcsBase::clear_components_vampire()
-    {
-        map_clear(this->map_components_vampire);
-        list_clear(this->components_vampire);
-    }
-
-    int ModelEcsBase::get_entity_with_name(const std::string& name) const
-    {
-        return 0;
-    }
-
     int ModelEcsBase::get_free_id()
     {
         auto id = this->next_free_id;
@@ -2833,14 +2583,418 @@ namespace mg
         return id;
     }
 
-    float ModelEcsBase::get_health_rate() const
+    void ModelEcsBase::subscribe()
     {
-        return 1.0f;
+
     }
 
-    std::string ModelEcsBase::get_type() const
+    void ModelEcsBase::unsubscribe()
     {
-        return ModelEcsBase::TYPE;
+
+    }
+
+    void ModelEcsBase::update(float dt)
+    {
+        this->game_timer += dt;
+        this->update_systems(dt);
+    }
+
+    void ModelEcsBase::update_systems(float dt)
+    {
+        ;
+        SystemShieldRestore s2;
+        s2.update(this, dt);
+        SystemRemoveDamage s3;
+        s3.update(this, dt);
+        s3.clean(this);
+        ;
+        SystemSpawn s6;
+        s6.update(this, dt);
+        SystemGate s7;
+        s7.update(this, dt);
+        SystemSpiritSpawn s8;
+        s8.update(this, dt);
+        ;
+        SystemActions s11;
+        s11.update(this, dt);
+        SystemMeteor s12;
+        s12.update(this, dt);
+        ;
+        SystemHealingOnChangeMaxHp s15;
+        s15.update(this, dt);
+        ;
+        SystemAuraDamage s18;
+        s18.update(this, dt);
+        SystemShoot s19;
+        s19.update(this, dt);
+        SystemSwordsCast s20;
+        s20.update(this, dt);
+        s20.clean(this);
+        SystemSwords s21;
+        s21.update(this, dt);
+        SystemMeleeAttack s22;
+        s22.update(this, dt);
+        SystemBullet s23;
+        s23.update(this, dt);
+        SystemFireDamage s24;
+        s24.update(this, dt);
+        SystemDamage s25;
+        s25.update(this, dt);
+        SystemCreateUnitsOnDeath s26;
+        s26.update(this, dt);
+        SystemExp s27;
+        s27.update(this, dt);
+        s27.clean(this);
+        SystemDropHeart s28;
+        s28.update(this, dt);
+        s28.clean(this);
+        SystemDeath s29;
+        s29.update(this, dt);
+        s29.clean(this);
+        SystemBulletFollowToTarget s30;
+        s30.update(this, dt);
+        SystemEffects s31;
+        s31.update(this, dt);
+        SystemBulletClean s32;
+        s32.update(this, dt);
+        s32.clean(this);
+        ;
+        SystemFreezing s35;
+        s35.update(this, dt);
+        SystemStun s36;
+        s36.update(this, dt);
+        SystemAuroOfSlow s37;
+        s37.update(this, dt);
+        SystemCreateMovement s38;
+        s38.update(this, dt);
+        SystemMovement s39;
+        s39.update(this, dt);
+        s39.clean(this);
+        SystemPush s40;
+        s40.update(this, dt);
+        s40.clean(this);
+        SystemResolveCollisions s41;
+        s41.update(this, dt);
+        SystemSpiritMovement s42;
+        s42.update(this, dt);
+        SystemSphere s43;
+        s43.update(this, dt);
+        ;
+    }
+
+    void ModelEcsBase::add_entity(int id)
+    {
+        list_push(this->entities, id);
+    }
+
+    void ModelEcsBase::remove_entity(int id)
+    {
+        if(in_list(id, this->entities))
+        {
+            list_remove(this->entities, id);
+        }
+        this->event_remove_entity.notify(id);
+
+        if(in_map(id, this->map_components_data))
+        {
+            auto component = this->map_components_data.at(id);
+            this->remove<ComponentData>(component);
+        }
+        if(in_map(id, this->map_components_transform))
+        {
+            auto component = this->map_components_transform.at(id);
+            this->remove<Transform>(component);
+        }
+        if(in_map(id, this->map_components_stats))
+        {
+            auto component = this->map_components_stats.at(id);
+            this->remove<ComponentStats>(component);
+        }
+        if(in_map(id, this->map_components_side))
+        {
+            auto component = this->map_components_side.at(id);
+            this->remove<ComponentSide>(component);
+        }
+        if(in_map(id, this->map_components_targetable))
+        {
+            auto component = this->map_components_targetable.at(id);
+            this->remove<ComponentTargetable>(component);
+        }
+        if(in_map(id, this->map_components_health))
+        {
+            auto component = this->map_components_health.at(id);
+            this->remove<ComponentHealth>(component);
+        }
+        if(in_map(id, this->map_components_damage))
+        {
+            auto component = this->map_components_damage.at(id);
+            this->remove<ComponentDamage>(component);
+        }
+        if(in_map(id, this->map_components_user))
+        {
+            auto component = this->map_components_user.at(id);
+            this->remove<ComponentUser>(component);
+        }
+        if(in_map(id, this->map_components_spine_info))
+        {
+            auto component = this->map_components_spine_info.at(id);
+            this->remove<ComponentSpineInfo>(component);
+        }
+        if(in_map(id, this->map_components_busy))
+        {
+            auto component = this->map_components_busy.at(id);
+            this->remove<ComponentBusy>(component);
+        }
+        if(in_map(id, this->map_components_create_units_on_death))
+        {
+            auto component = this->map_components_create_units_on_death.at(id);
+            this->remove<ComponentCreateUnitsOnDeath>(component);
+        }
+        if(in_map(id, this->map_components_aura))
+        {
+            auto component = this->map_components_aura.at(id);
+            this->remove<ComponentAura>(component);
+        }
+        if(in_map(id, this->map_components_aura_of_slow))
+        {
+            auto component = this->map_components_aura_of_slow.at(id);
+            this->remove<ComponentAuraOfSlow>(component);
+        }
+        if(in_map(id, this->map_components_aura_damage))
+        {
+            auto component = this->map_components_aura_damage.at(id);
+            this->remove<ComponentAuraDamage>(component);
+        }
+        if(in_map(id, this->map_components_spirit))
+        {
+            auto component = this->map_components_spirit.at(id);
+            this->remove<ComponentSpirit>(component);
+        }
+        if(in_map(id, this->map_components_spirit_base_points))
+        {
+            auto component = this->map_components_spirit_base_points.at(id);
+            this->remove<ComponentSpiritBasePoints>(component);
+        }
+        if(in_map(id, this->map_components_spawn_spirit))
+        {
+            auto component = this->map_components_spawn_spirit.at(id);
+            this->remove<ComponentSpawnSpirit>(component);
+        }
+        if(in_map(id, this->map_components_recharge))
+        {
+            auto component = this->map_components_recharge.at(id);
+            this->remove<ComponentRecharge>(component);
+        }
+        if(in_map(id, this->map_components_bullet))
+        {
+            auto component = this->map_components_bullet.at(id);
+            this->remove<ComponentBullet>(component);
+        }
+        if(in_map(id, this->map_components_bullet_laser))
+        {
+            auto component = this->map_components_bullet_laser.at(id);
+            this->remove<ComponentBulletLaser>(component);
+        }
+        if(in_map(id, this->map_components_shoot_bullet))
+        {
+            auto component = this->map_components_shoot_bullet.at(id);
+            this->remove<ComponentShootBullet>(component);
+        }
+        if(in_map(id, this->map_components_melee_attack))
+        {
+            auto component = this->map_components_melee_attack.at(id);
+            this->remove<ComponentMeleeAttack>(component);
+        }
+        if(in_map(id, this->map_components_target_highlight))
+        {
+            auto component = this->map_components_target_highlight.at(id);
+            this->remove<ComponentTargetHighlight>(component);
+        }
+        if(in_map(id, this->map_components_bullet_split))
+        {
+            auto component = this->map_components_bullet_split.at(id);
+            this->remove<ComponentBulletSplit>(component);
+        }
+        if(in_map(id, this->map_components_shield))
+        {
+            auto component = this->map_components_shield.at(id);
+            this->remove<ComponentShield>(component);
+        }
+        if(in_map(id, this->map_components_effects))
+        {
+            auto component = this->map_components_effects.at(id);
+            this->remove<ComponentEffects>(component);
+        }
+        if(in_map(id, this->map_components_bullet_follow_to_target))
+        {
+            auto component = this->map_components_bullet_follow_to_target.at(id);
+            this->remove<ComponentBulletFollowToTarget>(component);
+        }
+        if(in_map(id, this->map_components_meteor_periodic))
+        {
+            auto component = this->map_components_meteor_periodic.at(id);
+            this->remove<ComponentMeteorPeriodic>(component);
+        }
+        if(in_map(id, this->map_components_electric_damage))
+        {
+            auto component = this->map_components_electric_damage.at(id);
+            this->remove<ElectricDamage>(component);
+        }
+        if(in_map(id, this->map_components_sphere_spawn))
+        {
+            auto component = this->map_components_sphere_spawn.at(id);
+            this->remove<ComponentSphereSpawn>(component);
+        }
+        if(in_map(id, this->map_components_sphere))
+        {
+            auto component = this->map_components_sphere.at(id);
+            this->remove<ComponentSphere>(component);
+        }
+        if(in_map(id, this->map_components_actions))
+        {
+            auto component = this->map_components_actions.at(id);
+            this->remove<ComponentActions>(component);
+        }
+        if(in_map(id, this->map_components_gate))
+        {
+            auto component = this->map_components_gate.at(id);
+            this->remove<ComponentGate>(component);
+        }
+        if(in_map(id, this->map_components_level_up))
+        {
+            auto component = this->map_components_level_up.at(id);
+            this->remove<ComponentLevelUp>(component);
+        }
+        if(in_map(id, this->map_components_exp))
+        {
+            auto component = this->map_components_exp.at(id);
+            this->remove<ComponentExp>(component);
+        }
+        if(in_map(id, this->map_components_exp_drop))
+        {
+            auto component = this->map_components_exp_drop.at(id);
+            this->remove<ComponentExpDrop>(component);
+        }
+        if(in_map(id, this->map_components_stun))
+        {
+            auto component = this->map_components_stun.at(id);
+            this->remove<ComponentStun>(component);
+        }
+        if(in_map(id, this->map_components_fire_damage))
+        {
+            auto component = this->map_components_fire_damage.at(id);
+            this->remove<FireDamage>(component);
+        }
+        if(in_map(id, this->map_components_movement))
+        {
+            auto component = this->map_components_movement.at(id);
+            this->remove<ComponentMovement>(component);
+        }
+        if(in_map(id, this->map_components_move_direction))
+        {
+            auto component = this->map_components_move_direction.at(id);
+            this->remove<MoveDirection>(component);
+        }
+        if(in_map(id, this->map_components_move_to_target))
+        {
+            auto component = this->map_components_move_to_target.at(id);
+            this->remove<MoveToTarget>(component);
+        }
+        if(in_map(id, this->map_components_move_instant))
+        {
+            auto component = this->map_components_move_instant.at(id);
+            this->remove<MoveInstant>(component);
+        }
+        if(in_map(id, this->map_components_move_vertical))
+        {
+            auto component = this->map_components_move_vertical.at(id);
+            this->remove<MoveVertical>(component);
+        }
+        if(in_map(id, this->map_components_freezing))
+        {
+            auto component = this->map_components_freezing.at(id);
+            this->remove<Freezing>(component);
+        }
+        if(in_map(id, this->map_components_move_parabolic))
+        {
+            auto component = this->map_components_move_parabolic.at(id);
+            this->remove<MoveParabolic>(component);
+        }
+        if(in_map(id, this->map_components_create_movement_to_hero))
+        {
+            auto component = this->map_components_create_movement_to_hero.at(id);
+            this->remove<ComponentCreateMovementToHero>(component);
+        }
+        if(in_map(id, this->map_components_push))
+        {
+            auto component = this->map_components_push.at(id);
+            this->remove<ComponentPush>(component);
+        }
+        if(in_map(id, this->map_components_spawn))
+        {
+            auto component = this->map_components_spawn.at(id);
+            this->remove<ComponentSpawn>(component);
+        }
+        if(in_map(id, this->map_components_healing_on_change_max_hp))
+        {
+            auto component = this->map_components_healing_on_change_max_hp.at(id);
+            this->remove<ComponentHealingOnChangeMaxHp>(component);
+        }
+        if(in_map(id, this->map_components_drop_heart))
+        {
+            auto component = this->map_components_drop_heart.at(id);
+            this->remove<ComponentDropHeart>(component);
+        }
+        if(in_map(id, this->map_components_heart))
+        {
+            auto component = this->map_components_heart.at(id);
+            this->remove<ComponentHeart>(component);
+        }
+        if(in_map(id, this->map_components_heart_add_stats))
+        {
+            auto component = this->map_components_heart_add_stats.at(id);
+            this->remove<ComponentHeartAddStats>(component);
+        }
+        if(in_map(id, this->map_components_heart_add_stats_hp))
+        {
+            auto component = this->map_components_heart_add_stats_hp.at(id);
+            this->remove<ComponentHeartAddStatsHp>(component);
+        }
+        if(in_map(id, this->map_components_heart_add_stats_damage))
+        {
+            auto component = this->map_components_heart_add_stats_damage.at(id);
+            this->remove<ComponentHeartAddStatsDamage>(component);
+        }
+        if(in_map(id, this->map_components_random_healing))
+        {
+            auto component = this->map_components_random_healing.at(id);
+            this->remove<ComponentRandomHealing>(component);
+        }
+        if(in_map(id, this->map_components_vampire))
+        {
+            auto component = this->map_components_vampire.at(id);
+            this->remove<ComponentVampire>(component);
+        }
+        if(in_map(id, this->map_components_healing_low_hp))
+        {
+            auto component = this->map_components_healing_low_hp.at(id);
+            this->remove<ComponentHealingLowHp>(component);
+        }
+        if(in_map(id, this->map_components_body))
+        {
+            auto component = this->map_components_body.at(id);
+            this->remove<ComponentBody>(component);
+        }
+        if(in_map(id, this->map_components_sword_cast))
+        {
+            auto component = this->map_components_sword_cast.at(id);
+            this->remove<ComponentSwordCast>(component);
+        }
+        if(in_map(id, this->map_components_sword))
+        {
+            auto component = this->map_components_sword.at(id);
+            this->remove<ComponentSword>(component);
+        }
     }
 
     void ModelEcsBase::on_loaded()
@@ -2848,9 +3002,62 @@ namespace mg
 
     }
 
+    int ModelEcsBase::get_entity_with_name(const std::string& name) const
+    {
+        return 0;
+    }
+
+    float ModelEcsBase::get_health_rate() const
+    {
+        return 1.0f;
+    }
+
+    void ModelEcsBase::retain()
+    {
+        ++this->_reference_counter;
+    }
+
+    int ModelEcsBase::release()
+    {
+        --this->_reference_counter;
+        auto counter = this->_reference_counter;
+        if(counter == 0)
+        {
+            delete this;
+        }
+        return counter;
+    }
+
+    bool ModelEcsBase::operator ==(const ModelEcsBase& rhs) const
+    {
+        bool result = true;
+        result = result && ((this->user == rhs.user) || (this->user != nullptr && rhs.user != nullptr && *this->user == *rhs.user));
+        result = result && this->next_free_id == rhs.next_free_id;
+        result = result && this->player_id == rhs.player_id;
+        result = result && this->entities == rhs.entities;
+        result = result && this->game_timer == rhs.game_timer;
+        result = result && this->tasks == rhs.tasks;
+        result = result && ((this->data == rhs.data) || (this->data != nullptr && rhs.data != nullptr && *this->data == *rhs.data));
+        result = result && this->wave_index == rhs.wave_index;
+        result = result && ((this->ground == rhs.ground) || (this->ground != nullptr && rhs.ground != nullptr && *this->ground == *rhs.ground));
+        result = result && this->enemies_level == rhs.enemies_level;
+        result = result && this->enemies_rank == rhs.enemies_rank;
+        result = result && this->wave_finished == rhs.wave_finished;
+        result = result && this->timer_wave_interval == rhs.timer_wave_interval;
+        result = result && this->timer_wave_duration == rhs.timer_wave_duration;
+        result = result && this->has_skills == rhs.has_skills;
+        result = result && this->spawn_points == rhs.spawn_points;
+        return result;
+    }
+
     bool ModelEcsBase::operator !=(const ModelEcsBase& rhs) const
     {
         return !(*this == rhs);
+    }
+
+    ModelEcsBase::ModelEcsBase(const ModelEcsBase& rhs)
+    {
+        this->operator=(rhs);
     }
 
     const ModelEcsBase& ModelEcsBase::operator =(const ModelEcsBase& rhs)
@@ -2904,541 +3111,369 @@ namespace mg
         return *this;
     }
 
-    bool ModelEcsBase::operator ==(const ModelEcsBase& rhs) const
+    std::string ModelEcsBase::get_type() const
     {
-        bool result = true;
-        result = result && ((this->user == rhs.user) || (this->user != nullptr && rhs.user != nullptr && *this->user == *rhs.user));
-        result = result && this->next_free_id == rhs.next_free_id;
-        result = result && this->player_id == rhs.player_id;
-        result = result && this->entities == rhs.entities;
-        result = result && this->game_timer == rhs.game_timer;
-        result = result && this->tasks == rhs.tasks;
-        result = result && this->wave_index == rhs.wave_index;
-        result = result && ((this->ground == rhs.ground) || (this->ground != nullptr && rhs.ground != nullptr && *this->ground == *rhs.ground));
-        result = result && this->enemies_level == rhs.enemies_level;
-        result = result && this->enemies_rank == rhs.enemies_rank;
-        result = result && this->wave_finished == rhs.wave_finished;
-        result = result && this->timer_wave_interval == rhs.timer_wave_interval;
-        result = result && this->timer_wave_duration == rhs.timer_wave_duration;
-        result = result && this->has_skills == rhs.has_skills;
-        result = result && this->spawn_points == rhs.spawn_points;
-        return result;
+        return ModelEcsBase::TYPE;
     }
 
-    int ModelEcsBase::release()
+    void ModelEcsBase::clear_components_data()
     {
-
-        --this->_reference_counter;
-        auto counter = this->_reference_counter;
-        if(counter == 0)
-        {
-            delete this;
-        }
-        return counter;
-
+        map_clear(this->map_components_data);
+        list_clear(this->components_data);
     }
 
-    void ModelEcsBase::remove_entity(int id)
+    void ModelEcsBase::clear_components_transform()
     {
-        if(in_list(id, this->entities))
-        {
-            list_remove(this->entities, id);
-        }
-        this->event_remove_entity.notify(id);
-
-        if(in_map(id, this->map_components_data))
-        {
-            auto component = this->map_components_data.at(id);
-            this->remove<ComponentData>(component);
-        }
-
-        if(in_map(id, this->map_components_transform))
-        {
-            auto component = this->map_components_transform.at(id);
-            this->remove<Transform>(component);
-        }
-
-        if(in_map(id, this->map_components_stats))
-        {
-            auto component = this->map_components_stats.at(id);
-            this->remove<ComponentStats>(component);
-        }
-
-        if(in_map(id, this->map_components_side))
-        {
-            auto component = this->map_components_side.at(id);
-            this->remove<ComponentSide>(component);
-        }
-
-        if(in_map(id, this->map_components_targetable))
-        {
-            auto component = this->map_components_targetable.at(id);
-            this->remove<ComponentTargetable>(component);
-        }
-
-        if(in_map(id, this->map_components_health))
-        {
-            auto component = this->map_components_health.at(id);
-            this->remove<ComponentHealth>(component);
-        }
-
-        if(in_map(id, this->map_components_damage))
-        {
-            auto component = this->map_components_damage.at(id);
-            this->remove<ComponentDamage>(component);
-        }
-
-        if(in_map(id, this->map_components_user))
-        {
-            auto component = this->map_components_user.at(id);
-            this->remove<ComponentUser>(component);
-        }
-
-        if(in_map(id, this->map_components_spine_info))
-        {
-            auto component = this->map_components_spine_info.at(id);
-            this->remove<ComponentSpineInfo>(component);
-        }
-
-        if(in_map(id, this->map_components_busy))
-        {
-            auto component = this->map_components_busy.at(id);
-            this->remove<ComponentBusy>(component);
-        }
-
-        if(in_map(id, this->map_components_create_units_on_death))
-        {
-            auto component = this->map_components_create_units_on_death.at(id);
-            this->remove<ComponentCreateUnitsOnDeath>(component);
-        }
-
-        if(in_map(id, this->map_components_aura))
-        {
-            auto component = this->map_components_aura.at(id);
-            this->remove<ComponentAura>(component);
-        }
-
-        if(in_map(id, this->map_components_aura_of_slow))
-        {
-            auto component = this->map_components_aura_of_slow.at(id);
-            this->remove<ComponentAuraOfSlow>(component);
-        }
-
-        if(in_map(id, this->map_components_aura_damage))
-        {
-            auto component = this->map_components_aura_damage.at(id);
-            this->remove<ComponentAuraDamage>(component);
-        }
-
-        if(in_map(id, this->map_components_spirit))
-        {
-            auto component = this->map_components_spirit.at(id);
-            this->remove<ComponentSpirit>(component);
-        }
-
-        if(in_map(id, this->map_components_spirit_base_points))
-        {
-            auto component = this->map_components_spirit_base_points.at(id);
-            this->remove<ComponentSpiritBasePoints>(component);
-        }
-
-        if(in_map(id, this->map_components_spawn_spirit))
-        {
-            auto component = this->map_components_spawn_spirit.at(id);
-            this->remove<ComponentSpawnSpirit>(component);
-        }
-
-        if(in_map(id, this->map_components_recharge))
-        {
-            auto component = this->map_components_recharge.at(id);
-            this->remove<ComponentRecharge>(component);
-        }
-
-        if(in_map(id, this->map_components_bullet))
-        {
-            auto component = this->map_components_bullet.at(id);
-            this->remove<ComponentBullet>(component);
-        }
-
-        if(in_map(id, this->map_components_bullet_laser))
-        {
-            auto component = this->map_components_bullet_laser.at(id);
-            this->remove<ComponentBulletLaser>(component);
-        }
-
-        if(in_map(id, this->map_components_shoot_bullet))
-        {
-            auto component = this->map_components_shoot_bullet.at(id);
-            this->remove<ComponentShootBullet>(component);
-        }
-
-        if(in_map(id, this->map_components_melee_attack))
-        {
-            auto component = this->map_components_melee_attack.at(id);
-            this->remove<ComponentMeleeAttack>(component);
-        }
-
-        if(in_map(id, this->map_components_target_highlight))
-        {
-            auto component = this->map_components_target_highlight.at(id);
-            this->remove<ComponentTargetHighlight>(component);
-        }
-
-        if(in_map(id, this->map_components_bullet_split))
-        {
-            auto component = this->map_components_bullet_split.at(id);
-            this->remove<ComponentBulletSplit>(component);
-        }
-
-        if(in_map(id, this->map_components_shield))
-        {
-            auto component = this->map_components_shield.at(id);
-            this->remove<ComponentShield>(component);
-        }
-
-        if(in_map(id, this->map_components_effects))
-        {
-            auto component = this->map_components_effects.at(id);
-            this->remove<ComponentEffects>(component);
-        }
-
-        if(in_map(id, this->map_components_bullet_follow_to_target))
-        {
-            auto component = this->map_components_bullet_follow_to_target.at(id);
-            this->remove<ComponentBulletFollowToTarget>(component);
-        }
-
-        if(in_map(id, this->map_components_meteor_periodic))
-        {
-            auto component = this->map_components_meteor_periodic.at(id);
-            this->remove<ComponentMeteorPeriodic>(component);
-        }
-
-        if(in_map(id, this->map_components_electric_damage))
-        {
-            auto component = this->map_components_electric_damage.at(id);
-            this->remove<ElectricDamage>(component);
-        }
-
-        if(in_map(id, this->map_components_sphere_spawn))
-        {
-            auto component = this->map_components_sphere_spawn.at(id);
-            this->remove<ComponentSphereSpawn>(component);
-        }
-
-        if(in_map(id, this->map_components_sphere))
-        {
-            auto component = this->map_components_sphere.at(id);
-            this->remove<ComponentSphere>(component);
-        }
-
-        if(in_map(id, this->map_components_actions))
-        {
-            auto component = this->map_components_actions.at(id);
-            this->remove<ComponentActions>(component);
-        }
-
-        if(in_map(id, this->map_components_gate))
-        {
-            auto component = this->map_components_gate.at(id);
-            this->remove<ComponentGate>(component);
-        }
-
-        if(in_map(id, this->map_components_level_up))
-        {
-            auto component = this->map_components_level_up.at(id);
-            this->remove<ComponentLevelUp>(component);
-        }
-
-        if(in_map(id, this->map_components_exp))
-        {
-            auto component = this->map_components_exp.at(id);
-            this->remove<ComponentExp>(component);
-        }
-
-        if(in_map(id, this->map_components_exp_drop))
-        {
-            auto component = this->map_components_exp_drop.at(id);
-            this->remove<ComponentExpDrop>(component);
-        }
-
-        if(in_map(id, this->map_components_stun))
-        {
-            auto component = this->map_components_stun.at(id);
-            this->remove<ComponentStun>(component);
-        }
-
-        if(in_map(id, this->map_components_fire_damage))
-        {
-            auto component = this->map_components_fire_damage.at(id);
-            this->remove<FireDamage>(component);
-        }
-
-        if(in_map(id, this->map_components_movement))
-        {
-            auto component = this->map_components_movement.at(id);
-            this->remove<ComponentMovement>(component);
-        }
-
-        if(in_map(id, this->map_components_move_direction))
-        {
-            auto component = this->map_components_move_direction.at(id);
-            this->remove<MoveDirection>(component);
-        }
-
-        if(in_map(id, this->map_components_move_to_target))
-        {
-            auto component = this->map_components_move_to_target.at(id);
-            this->remove<MoveToTarget>(component);
-        }
-
-        if(in_map(id, this->map_components_move_instant))
-        {
-            auto component = this->map_components_move_instant.at(id);
-            this->remove<MoveInstant>(component);
-        }
-
-        if(in_map(id, this->map_components_move_vertical))
-        {
-            auto component = this->map_components_move_vertical.at(id);
-            this->remove<MoveVertical>(component);
-        }
-
-        if(in_map(id, this->map_components_freezing))
-        {
-            auto component = this->map_components_freezing.at(id);
-            this->remove<Freezing>(component);
-        }
-
-        if(in_map(id, this->map_components_move_parabolic))
-        {
-            auto component = this->map_components_move_parabolic.at(id);
-            this->remove<MoveParabolic>(component);
-        }
-
-        if(in_map(id, this->map_components_create_movement_to_hero))
-        {
-            auto component = this->map_components_create_movement_to_hero.at(id);
-            this->remove<ComponentCreateMovementToHero>(component);
-        }
-
-        if(in_map(id, this->map_components_push))
-        {
-            auto component = this->map_components_push.at(id);
-            this->remove<ComponentPush>(component);
-        }
-
-        if(in_map(id, this->map_components_spawn))
-        {
-            auto component = this->map_components_spawn.at(id);
-            this->remove<ComponentSpawn>(component);
-        }
-
-        if(in_map(id, this->map_components_healing_on_change_max_hp))
-        {
-            auto component = this->map_components_healing_on_change_max_hp.at(id);
-            this->remove<ComponentHealingOnChangeMaxHp>(component);
-        }
-
-        if(in_map(id, this->map_components_drop_heart))
-        {
-            auto component = this->map_components_drop_heart.at(id);
-            this->remove<ComponentDropHeart>(component);
-        }
-
-        if(in_map(id, this->map_components_heart))
-        {
-            auto component = this->map_components_heart.at(id);
-            this->remove<ComponentHeart>(component);
-        }
-
-        if(in_map(id, this->map_components_heart_add_stats))
-        {
-            auto component = this->map_components_heart_add_stats.at(id);
-            this->remove<ComponentHeartAddStats>(component);
-        }
-
-        if(in_map(id, this->map_components_heart_add_stats_hp))
-        {
-            auto component = this->map_components_heart_add_stats_hp.at(id);
-            this->remove<ComponentHeartAddStatsHp>(component);
-        }
-
-        if(in_map(id, this->map_components_heart_add_stats_damage))
-        {
-            auto component = this->map_components_heart_add_stats_damage.at(id);
-            this->remove<ComponentHeartAddStatsDamage>(component);
-        }
-
-        if(in_map(id, this->map_components_random_healing))
-        {
-            auto component = this->map_components_random_healing.at(id);
-            this->remove<ComponentRandomHealing>(component);
-        }
-
-        if(in_map(id, this->map_components_vampire))
-        {
-            auto component = this->map_components_vampire.at(id);
-            this->remove<ComponentVampire>(component);
-        }
-
-        if(in_map(id, this->map_components_healing_low_hp))
-        {
-            auto component = this->map_components_healing_low_hp.at(id);
-            this->remove<ComponentHealingLowHp>(component);
-        }
-
-        if(in_map(id, this->map_components_body))
-        {
-            auto component = this->map_components_body.at(id);
-            this->remove<ComponentBody>(component);
-        }
-
-        if(in_map(id, this->map_components_sword_cast))
-        {
-            auto component = this->map_components_sword_cast.at(id);
-            this->remove<ComponentSwordCast>(component);
-        }
-
-        if(in_map(id, this->map_components_sword))
-        {
-            auto component = this->map_components_sword.at(id);
-            this->remove<ComponentSword>(component);
-        }
+        map_clear(this->map_components_transform);
+        list_clear(this->components_transform);
     }
 
-    void ModelEcsBase::retain()
+    void ModelEcsBase::clear_components_stats()
     {
-        ++this->_reference_counter;
+        map_clear(this->map_components_stats);
+        list_clear(this->components_stats);
     }
 
-    void ModelEcsBase::subscribe()
+    void ModelEcsBase::clear_components_side()
     {
-
+        map_clear(this->map_components_side);
+        list_clear(this->components_side);
     }
 
-    void ModelEcsBase::unsubscribe()
+    void ModelEcsBase::clear_components_targetable()
     {
-
+        map_clear(this->map_components_targetable);
+        list_clear(this->components_targetable);
     }
 
-    void ModelEcsBase::update(float dt)
+    void ModelEcsBase::clear_components_health()
     {
-        this->game_timer += dt;
-        this->update_systems(dt);
+        map_clear(this->map_components_health);
+        list_clear(this->components_health);
     }
 
-    void ModelEcsBase::update_systems(float dt)
+    void ModelEcsBase::clear_components_damage()
     {
+        map_clear(this->map_components_damage);
+        list_clear(this->components_damage);
+    }
 
-        SystemShieldRestore s0;
-        s0.update(this, dt);
+    void ModelEcsBase::clear_components_user()
+    {
+        map_clear(this->map_components_user);
+        list_clear(this->components_user);
+    }
 
-        SystemRemoveDamage s1;
-        s1.update(this, dt);
-        s1.clean(this);
-        ;
+    void ModelEcsBase::clear_components_spine_info()
+    {
+        map_clear(this->map_components_spine_info);
+        list_clear(this->components_spine_info);
+    }
 
-        SystemSpawn s4;
-        s4.update(this, dt);
+    void ModelEcsBase::clear_components_busy()
+    {
+        map_clear(this->map_components_busy);
+        list_clear(this->components_busy);
+    }
 
-        SystemGate s5;
-        s5.update(this, dt);
+    void ModelEcsBase::clear_components_create_units_on_death()
+    {
+        map_clear(this->map_components_create_units_on_death);
+        list_clear(this->components_create_units_on_death);
+    }
 
-        SystemSpiritSpawn s6;
-        s6.update(this, dt);
-        ;
+    void ModelEcsBase::clear_components_aura()
+    {
+        map_clear(this->map_components_aura);
+        list_clear(this->components_aura);
+    }
 
-        SystemActions s9;
-        s9.update(this, dt);
+    void ModelEcsBase::clear_components_aura_of_slow()
+    {
+        map_clear(this->map_components_aura_of_slow);
+        list_clear(this->components_aura_of_slow);
+    }
 
-        SystemMeteor s10;
-        s10.update(this, dt);
-        ;
+    void ModelEcsBase::clear_components_aura_damage()
+    {
+        map_clear(this->map_components_aura_damage);
+        list_clear(this->components_aura_damage);
+    }
 
-        SystemHealingOnChangeMaxHp s13;
-        s13.update(this, dt);
-        ;
+    void ModelEcsBase::clear_components_spirit()
+    {
+        map_clear(this->map_components_spirit);
+        list_clear(this->components_spirit);
+    }
 
-        SystemAuraDamage s16;
-        s16.update(this, dt);
+    void ModelEcsBase::clear_components_spirit_base_points()
+    {
+        map_clear(this->map_components_spirit_base_points);
+        list_clear(this->components_spirit_base_points);
+    }
 
-        SystemShoot s17;
-        s17.update(this, dt);
+    void ModelEcsBase::clear_components_spawn_spirit()
+    {
+        map_clear(this->map_components_spawn_spirit);
+        list_clear(this->components_spawn_spirit);
+    }
 
-        SystemSwordsCast s18;
-        s18.update(this, dt);
-        s18.clean(this);
+    void ModelEcsBase::clear_components_recharge()
+    {
+        map_clear(this->map_components_recharge);
+        list_clear(this->components_recharge);
+    }
 
-        SystemSwords s19;
-        s19.update(this, dt);
+    void ModelEcsBase::clear_components_bullet()
+    {
+        map_clear(this->map_components_bullet);
+        list_clear(this->components_bullet);
+    }
 
-        SystemMeleeAttack s20;
-        s20.update(this, dt);
+    void ModelEcsBase::clear_components_bullet_laser()
+    {
+        map_clear(this->map_components_bullet_laser);
+        list_clear(this->components_bullet_laser);
+    }
 
-        SystemBullet s21;
-        s21.update(this, dt);
+    void ModelEcsBase::clear_components_shoot_bullet()
+    {
+        map_clear(this->map_components_shoot_bullet);
+        list_clear(this->components_shoot_bullet);
+    }
 
-        SystemFireDamage s22;
-        s22.update(this, dt);
+    void ModelEcsBase::clear_components_melee_attack()
+    {
+        map_clear(this->map_components_melee_attack);
+        list_clear(this->components_melee_attack);
+    }
 
-        SystemDamage s23;
-        s23.update(this, dt);
+    void ModelEcsBase::clear_components_target_highlight()
+    {
+        map_clear(this->map_components_target_highlight);
+        list_clear(this->components_target_highlight);
+    }
 
-        SystemCreateUnitsOnDeath s24;
-        s24.update(this, dt);
+    void ModelEcsBase::clear_components_bullet_split()
+    {
+        map_clear(this->map_components_bullet_split);
+        list_clear(this->components_bullet_split);
+    }
 
-        SystemExp s25;
-        s25.update(this, dt);
-        s25.clean(this);
+    void ModelEcsBase::clear_components_shield()
+    {
+        map_clear(this->map_components_shield);
+        list_clear(this->components_shield);
+    }
 
-        SystemDropHeart s26;
-        s26.update(this, dt);
-        s26.clean(this);
+    void ModelEcsBase::clear_components_effects()
+    {
+        map_clear(this->map_components_effects);
+        list_clear(this->components_effects);
+    }
 
-        SystemDeath s27;
-        s27.update(this, dt);
-        s27.clean(this);
+    void ModelEcsBase::clear_components_bullet_follow_to_target()
+    {
+        map_clear(this->map_components_bullet_follow_to_target);
+        list_clear(this->components_bullet_follow_to_target);
+    }
 
-        SystemBulletFollowToTarget s28;
-        s28.update(this, dt);
+    void ModelEcsBase::clear_components_meteor_periodic()
+    {
+        map_clear(this->map_components_meteor_periodic);
+        list_clear(this->components_meteor_periodic);
+    }
 
-        SystemEffects s29;
-        s29.update(this, dt);
+    void ModelEcsBase::clear_components_electric_damage()
+    {
+        map_clear(this->map_components_electric_damage);
+        list_clear(this->components_electric_damage);
+    }
 
-        SystemBulletClean s30;
-        s30.update(this, dt);
-        s30.clean(this);
-        ;
+    void ModelEcsBase::clear_components_sphere_spawn()
+    {
+        map_clear(this->map_components_sphere_spawn);
+        list_clear(this->components_sphere_spawn);
+    }
 
-        SystemFreezing s33;
-        s33.update(this, dt);
+    void ModelEcsBase::clear_components_sphere()
+    {
+        map_clear(this->map_components_sphere);
+        list_clear(this->components_sphere);
+    }
 
-        SystemStun s34;
-        s34.update(this, dt);
+    void ModelEcsBase::clear_components_actions()
+    {
+        map_clear(this->map_components_actions);
+        list_clear(this->components_actions);
+    }
 
-        SystemAuroOfSlow s35;
-        s35.update(this, dt);
+    void ModelEcsBase::clear_components_gate()
+    {
+        map_clear(this->map_components_gate);
+        list_clear(this->components_gate);
+    }
 
-        SystemCreateMovement s36;
-        s36.update(this, dt);
+    void ModelEcsBase::clear_components_level_up()
+    {
+        map_clear(this->map_components_level_up);
+        list_clear(this->components_level_up);
+    }
 
-        SystemMovement s37;
-        s37.update(this, dt);
-        s37.clean(this);
+    void ModelEcsBase::clear_components_exp()
+    {
+        map_clear(this->map_components_exp);
+        list_clear(this->components_exp);
+    }
 
-        SystemPush s38;
-        s38.update(this, dt);
-        s38.clean(this);
+    void ModelEcsBase::clear_components_exp_drop()
+    {
+        map_clear(this->map_components_exp_drop);
+        list_clear(this->components_exp_drop);
+    }
 
-        SystemResolveCollisions s39;
-        s39.update(this, dt);
+    void ModelEcsBase::clear_components_stun()
+    {
+        map_clear(this->map_components_stun);
+        list_clear(this->components_stun);
+    }
 
-        SystemSpiritMovement s40;
-        s40.update(this, dt);
+    void ModelEcsBase::clear_components_fire_damage()
+    {
+        map_clear(this->map_components_fire_damage);
+        list_clear(this->components_fire_damage);
+    }
 
-        SystemSphere s41;
-        s41.update(this, dt);
+    void ModelEcsBase::clear_components_movement()
+    {
+        map_clear(this->map_components_movement);
+        list_clear(this->components_movement);
+    }
+
+    void ModelEcsBase::clear_components_move_direction()
+    {
+        map_clear(this->map_components_move_direction);
+        list_clear(this->components_move_direction);
+    }
+
+    void ModelEcsBase::clear_components_move_to_target()
+    {
+        map_clear(this->map_components_move_to_target);
+        list_clear(this->components_move_to_target);
+    }
+
+    void ModelEcsBase::clear_components_move_instant()
+    {
+        map_clear(this->map_components_move_instant);
+        list_clear(this->components_move_instant);
+    }
+
+    void ModelEcsBase::clear_components_move_vertical()
+    {
+        map_clear(this->map_components_move_vertical);
+        list_clear(this->components_move_vertical);
+    }
+
+    void ModelEcsBase::clear_components_freezing()
+    {
+        map_clear(this->map_components_freezing);
+        list_clear(this->components_freezing);
+    }
+
+    void ModelEcsBase::clear_components_move_parabolic()
+    {
+        map_clear(this->map_components_move_parabolic);
+        list_clear(this->components_move_parabolic);
+    }
+
+    void ModelEcsBase::clear_components_create_movement_to_hero()
+    {
+        map_clear(this->map_components_create_movement_to_hero);
+        list_clear(this->components_create_movement_to_hero);
+    }
+
+    void ModelEcsBase::clear_components_push()
+    {
+        map_clear(this->map_components_push);
+        list_clear(this->components_push);
+    }
+
+    void ModelEcsBase::clear_components_spawn()
+    {
+        map_clear(this->map_components_spawn);
+        list_clear(this->components_spawn);
+    }
+
+    void ModelEcsBase::clear_components_healing_on_change_max_hp()
+    {
+        map_clear(this->map_components_healing_on_change_max_hp);
+        list_clear(this->components_healing_on_change_max_hp);
+    }
+
+    void ModelEcsBase::clear_components_drop_heart()
+    {
+        map_clear(this->map_components_drop_heart);
+        list_clear(this->components_drop_heart);
+    }
+
+    void ModelEcsBase::clear_components_heart()
+    {
+        map_clear(this->map_components_heart);
+        list_clear(this->components_heart);
+    }
+
+    void ModelEcsBase::clear_components_heart_add_stats()
+    {
+        map_clear(this->map_components_heart_add_stats);
+        list_clear(this->components_heart_add_stats);
+    }
+
+    void ModelEcsBase::clear_components_heart_add_stats_hp()
+    {
+        map_clear(this->map_components_heart_add_stats_hp);
+        list_clear(this->components_heart_add_stats_hp);
+    }
+
+    void ModelEcsBase::clear_components_heart_add_stats_damage()
+    {
+        map_clear(this->map_components_heart_add_stats_damage);
+        list_clear(this->components_heart_add_stats_damage);
+    }
+
+    void ModelEcsBase::clear_components_random_healing()
+    {
+        map_clear(this->map_components_random_healing);
+        list_clear(this->components_random_healing);
+    }
+
+    void ModelEcsBase::clear_components_vampire()
+    {
+        map_clear(this->map_components_vampire);
+        list_clear(this->components_vampire);
+    }
+
+    void ModelEcsBase::clear_components_healing_low_hp()
+    {
+        map_clear(this->map_components_healing_low_hp);
+        list_clear(this->components_healing_low_hp);
+    }
+
+    void ModelEcsBase::clear_components_body()
+    {
+        map_clear(this->map_components_body);
+        list_clear(this->components_body);
+    }
+
+    void ModelEcsBase::clear_components_sword_cast()
+    {
+        map_clear(this->map_components_sword_cast);
+        list_clear(this->components_sword_cast);
+    }
+
+    void ModelEcsBase::clear_components_sword()
+    {
+        map_clear(this->map_components_sword);
+        list_clear(this->components_sword);
     }
 
     void ModelEcsBase::build_maps()
@@ -3687,7 +3722,6 @@ namespace mg
 
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentData> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -3698,16 +3732,20 @@ namespace mg
         {
             list_remove(this->components_data, this->map_components_data.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_data.begin(), this->components_data.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_data.begin(), this->components_data.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_data.insert(iter, component);
-        assert(std::is_sorted(this->components_data.begin(), this->components_data.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_data.begin(), this->components_data.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_data[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<Transform> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -3718,16 +3756,20 @@ namespace mg
         {
             list_remove(this->components_transform, this->map_components_transform.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_transform.begin(), this->components_transform.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_transform.begin(), this->components_transform.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_transform.insert(iter, component);
-        assert(std::is_sorted(this->components_transform.begin(), this->components_transform.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_transform.begin(), this->components_transform.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_transform[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentStats> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -3738,16 +3780,20 @@ namespace mg
         {
             list_remove(this->components_stats, this->map_components_stats.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_stats.begin(), this->components_stats.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_stats.begin(), this->components_stats.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_stats.insert(iter, component);
-        assert(std::is_sorted(this->components_stats.begin(), this->components_stats.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_stats.begin(), this->components_stats.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_stats[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentSide> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -3758,16 +3804,20 @@ namespace mg
         {
             list_remove(this->components_side, this->map_components_side.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_side.begin(), this->components_side.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_side.begin(), this->components_side.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_side.insert(iter, component);
-        assert(std::is_sorted(this->components_side.begin(), this->components_side.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_side.begin(), this->components_side.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_side[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentTargetable> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -3778,16 +3828,20 @@ namespace mg
         {
             list_remove(this->components_targetable, this->map_components_targetable.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_targetable.begin(), this->components_targetable.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_targetable.begin(), this->components_targetable.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_targetable.insert(iter, component);
-        assert(std::is_sorted(this->components_targetable.begin(), this->components_targetable.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_targetable.begin(), this->components_targetable.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_targetable[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentHealth> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -3798,16 +3852,20 @@ namespace mg
         {
             list_remove(this->components_health, this->map_components_health.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_health.begin(), this->components_health.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_health.begin(), this->components_health.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_health.insert(iter, component);
-        assert(std::is_sorted(this->components_health.begin(), this->components_health.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_health.begin(), this->components_health.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_health[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentDamage> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -3818,16 +3876,20 @@ namespace mg
         {
             list_remove(this->components_damage, this->map_components_damage.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_damage.begin(), this->components_damage.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_damage.begin(), this->components_damage.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_damage.insert(iter, component);
-        assert(std::is_sorted(this->components_damage.begin(), this->components_damage.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_damage.begin(), this->components_damage.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_damage[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentUser> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -3838,16 +3900,20 @@ namespace mg
         {
             list_remove(this->components_user, this->map_components_user.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_user.begin(), this->components_user.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_user.begin(), this->components_user.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_user.insert(iter, component);
-        assert(std::is_sorted(this->components_user.begin(), this->components_user.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_user.begin(), this->components_user.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_user[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentSpineInfo> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -3858,16 +3924,20 @@ namespace mg
         {
             list_remove(this->components_spine_info, this->map_components_spine_info.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_spine_info.begin(), this->components_spine_info.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_spine_info.begin(), this->components_spine_info.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_spine_info.insert(iter, component);
-        assert(std::is_sorted(this->components_spine_info.begin(), this->components_spine_info.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_spine_info.begin(), this->components_spine_info.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_spine_info[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentBusy> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -3878,16 +3948,20 @@ namespace mg
         {
             list_remove(this->components_busy, this->map_components_busy.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_busy.begin(), this->components_busy.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_busy.begin(), this->components_busy.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_busy.insert(iter, component);
-        assert(std::is_sorted(this->components_busy.begin(), this->components_busy.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_busy.begin(), this->components_busy.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_busy[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentCreateUnitsOnDeath> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -3898,16 +3972,20 @@ namespace mg
         {
             list_remove(this->components_create_units_on_death, this->map_components_create_units_on_death.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_create_units_on_death.begin(), this->components_create_units_on_death.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_create_units_on_death.begin(), this->components_create_units_on_death.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_create_units_on_death.insert(iter, component);
-        assert(std::is_sorted(this->components_create_units_on_death.begin(), this->components_create_units_on_death.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_create_units_on_death.begin(), this->components_create_units_on_death.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_create_units_on_death[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentAura> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -3918,17 +3996,21 @@ namespace mg
         {
             list_remove(this->components_aura, this->map_components_aura.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_aura.begin(), this->components_aura.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_aura.begin(), this->components_aura.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_aura.insert(iter, component);
-        assert(std::is_sorted(this->components_aura.begin(), this->components_aura.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_aura.begin(), this->components_aura.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_aura[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentAuraOfSlow> component, int component_id)
     {
         this->add<ComponentAura>(intrusive_ptr<ComponentAura>(component), component_id);
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -3939,17 +4021,21 @@ namespace mg
         {
             list_remove(this->components_aura_of_slow, this->map_components_aura_of_slow.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_aura_of_slow.begin(), this->components_aura_of_slow.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_aura_of_slow.begin(), this->components_aura_of_slow.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_aura_of_slow.insert(iter, component);
-        assert(std::is_sorted(this->components_aura_of_slow.begin(), this->components_aura_of_slow.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_aura_of_slow.begin(), this->components_aura_of_slow.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_aura_of_slow[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentAuraDamage> component, int component_id)
     {
         this->add<ComponentAura>(intrusive_ptr<ComponentAura>(component), component_id);
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -3960,16 +4046,20 @@ namespace mg
         {
             list_remove(this->components_aura_damage, this->map_components_aura_damage.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_aura_damage.begin(), this->components_aura_damage.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_aura_damage.begin(), this->components_aura_damage.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_aura_damage.insert(iter, component);
-        assert(std::is_sorted(this->components_aura_damage.begin(), this->components_aura_damage.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_aura_damage.begin(), this->components_aura_damage.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_aura_damage[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentSpirit> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -3980,16 +4070,20 @@ namespace mg
         {
             list_remove(this->components_spirit, this->map_components_spirit.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_spirit.begin(), this->components_spirit.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_spirit.begin(), this->components_spirit.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_spirit.insert(iter, component);
-        assert(std::is_sorted(this->components_spirit.begin(), this->components_spirit.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_spirit.begin(), this->components_spirit.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_spirit[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentSpiritBasePoints> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4000,16 +4094,20 @@ namespace mg
         {
             list_remove(this->components_spirit_base_points, this->map_components_spirit_base_points.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_spirit_base_points.begin(), this->components_spirit_base_points.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_spirit_base_points.begin(), this->components_spirit_base_points.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_spirit_base_points.insert(iter, component);
-        assert(std::is_sorted(this->components_spirit_base_points.begin(), this->components_spirit_base_points.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_spirit_base_points.begin(), this->components_spirit_base_points.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_spirit_base_points[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentSpawnSpirit> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4020,16 +4118,20 @@ namespace mg
         {
             list_remove(this->components_spawn_spirit, this->map_components_spawn_spirit.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_spawn_spirit.begin(), this->components_spawn_spirit.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_spawn_spirit.begin(), this->components_spawn_spirit.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_spawn_spirit.insert(iter, component);
-        assert(std::is_sorted(this->components_spawn_spirit.begin(), this->components_spawn_spirit.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_spawn_spirit.begin(), this->components_spawn_spirit.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_spawn_spirit[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentRecharge> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4040,16 +4142,20 @@ namespace mg
         {
             list_remove(this->components_recharge, this->map_components_recharge.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_recharge.begin(), this->components_recharge.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_recharge.begin(), this->components_recharge.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_recharge.insert(iter, component);
-        assert(std::is_sorted(this->components_recharge.begin(), this->components_recharge.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_recharge.begin(), this->components_recharge.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_recharge[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentBullet> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4060,17 +4166,21 @@ namespace mg
         {
             list_remove(this->components_bullet, this->map_components_bullet.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_bullet.begin(), this->components_bullet.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_bullet.begin(), this->components_bullet.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_bullet.insert(iter, component);
-        assert(std::is_sorted(this->components_bullet.begin(), this->components_bullet.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_bullet.begin(), this->components_bullet.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_bullet[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentBulletLaser> component, int component_id)
     {
         this->add<ComponentBullet>(intrusive_ptr<ComponentBullet>(component), component_id);
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4081,16 +4191,20 @@ namespace mg
         {
             list_remove(this->components_bullet_laser, this->map_components_bullet_laser.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_bullet_laser.begin(), this->components_bullet_laser.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_bullet_laser.begin(), this->components_bullet_laser.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_bullet_laser.insert(iter, component);
-        assert(std::is_sorted(this->components_bullet_laser.begin(), this->components_bullet_laser.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_bullet_laser.begin(), this->components_bullet_laser.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_bullet_laser[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentShootBullet> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4101,16 +4215,20 @@ namespace mg
         {
             list_remove(this->components_shoot_bullet, this->map_components_shoot_bullet.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_shoot_bullet.begin(), this->components_shoot_bullet.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_shoot_bullet.begin(), this->components_shoot_bullet.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_shoot_bullet.insert(iter, component);
-        assert(std::is_sorted(this->components_shoot_bullet.begin(), this->components_shoot_bullet.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_shoot_bullet.begin(), this->components_shoot_bullet.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_shoot_bullet[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentMeleeAttack> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4121,16 +4239,20 @@ namespace mg
         {
             list_remove(this->components_melee_attack, this->map_components_melee_attack.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_melee_attack.begin(), this->components_melee_attack.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_melee_attack.begin(), this->components_melee_attack.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_melee_attack.insert(iter, component);
-        assert(std::is_sorted(this->components_melee_attack.begin(), this->components_melee_attack.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_melee_attack.begin(), this->components_melee_attack.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_melee_attack[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentTargetHighlight> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4141,16 +4263,20 @@ namespace mg
         {
             list_remove(this->components_target_highlight, this->map_components_target_highlight.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_target_highlight.begin(), this->components_target_highlight.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_target_highlight.begin(), this->components_target_highlight.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_target_highlight.insert(iter, component);
-        assert(std::is_sorted(this->components_target_highlight.begin(), this->components_target_highlight.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_target_highlight.begin(), this->components_target_highlight.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_target_highlight[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentBulletSplit> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4161,16 +4287,20 @@ namespace mg
         {
             list_remove(this->components_bullet_split, this->map_components_bullet_split.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_bullet_split.begin(), this->components_bullet_split.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_bullet_split.begin(), this->components_bullet_split.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_bullet_split.insert(iter, component);
-        assert(std::is_sorted(this->components_bullet_split.begin(), this->components_bullet_split.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_bullet_split.begin(), this->components_bullet_split.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_bullet_split[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentShield> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4181,16 +4311,20 @@ namespace mg
         {
             list_remove(this->components_shield, this->map_components_shield.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_shield.begin(), this->components_shield.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_shield.begin(), this->components_shield.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_shield.insert(iter, component);
-        assert(std::is_sorted(this->components_shield.begin(), this->components_shield.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_shield.begin(), this->components_shield.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_shield[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentEffects> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4201,16 +4335,20 @@ namespace mg
         {
             list_remove(this->components_effects, this->map_components_effects.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_effects.begin(), this->components_effects.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_effects.begin(), this->components_effects.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_effects.insert(iter, component);
-        assert(std::is_sorted(this->components_effects.begin(), this->components_effects.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_effects.begin(), this->components_effects.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_effects[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentBulletFollowToTarget> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4221,16 +4359,20 @@ namespace mg
         {
             list_remove(this->components_bullet_follow_to_target, this->map_components_bullet_follow_to_target.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_bullet_follow_to_target.begin(), this->components_bullet_follow_to_target.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_bullet_follow_to_target.begin(), this->components_bullet_follow_to_target.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_bullet_follow_to_target.insert(iter, component);
-        assert(std::is_sorted(this->components_bullet_follow_to_target.begin(), this->components_bullet_follow_to_target.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_bullet_follow_to_target.begin(), this->components_bullet_follow_to_target.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_bullet_follow_to_target[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentMeteorPeriodic> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4241,16 +4383,20 @@ namespace mg
         {
             list_remove(this->components_meteor_periodic, this->map_components_meteor_periodic.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_meteor_periodic.begin(), this->components_meteor_periodic.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_meteor_periodic.begin(), this->components_meteor_periodic.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_meteor_periodic.insert(iter, component);
-        assert(std::is_sorted(this->components_meteor_periodic.begin(), this->components_meteor_periodic.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_meteor_periodic.begin(), this->components_meteor_periodic.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_meteor_periodic[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ElectricDamage> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4261,16 +4407,20 @@ namespace mg
         {
             list_remove(this->components_electric_damage, this->map_components_electric_damage.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_electric_damage.begin(), this->components_electric_damage.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_electric_damage.begin(), this->components_electric_damage.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_electric_damage.insert(iter, component);
-        assert(std::is_sorted(this->components_electric_damage.begin(), this->components_electric_damage.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_electric_damage.begin(), this->components_electric_damage.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_electric_damage[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentSphereSpawn> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4281,16 +4431,20 @@ namespace mg
         {
             list_remove(this->components_sphere_spawn, this->map_components_sphere_spawn.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_sphere_spawn.begin(), this->components_sphere_spawn.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_sphere_spawn.begin(), this->components_sphere_spawn.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_sphere_spawn.insert(iter, component);
-        assert(std::is_sorted(this->components_sphere_spawn.begin(), this->components_sphere_spawn.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_sphere_spawn.begin(), this->components_sphere_spawn.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_sphere_spawn[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentSphere> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4301,16 +4455,20 @@ namespace mg
         {
             list_remove(this->components_sphere, this->map_components_sphere.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_sphere.begin(), this->components_sphere.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_sphere.begin(), this->components_sphere.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_sphere.insert(iter, component);
-        assert(std::is_sorted(this->components_sphere.begin(), this->components_sphere.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_sphere.begin(), this->components_sphere.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_sphere[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentActions> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4321,16 +4479,20 @@ namespace mg
         {
             list_remove(this->components_actions, this->map_components_actions.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_actions.begin(), this->components_actions.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_actions.begin(), this->components_actions.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_actions.insert(iter, component);
-        assert(std::is_sorted(this->components_actions.begin(), this->components_actions.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_actions.begin(), this->components_actions.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_actions[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentGate> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4341,16 +4503,20 @@ namespace mg
         {
             list_remove(this->components_gate, this->map_components_gate.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_gate.begin(), this->components_gate.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_gate.begin(), this->components_gate.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_gate.insert(iter, component);
-        assert(std::is_sorted(this->components_gate.begin(), this->components_gate.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_gate.begin(), this->components_gate.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_gate[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentLevelUp> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4361,16 +4527,20 @@ namespace mg
         {
             list_remove(this->components_level_up, this->map_components_level_up.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_level_up.begin(), this->components_level_up.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_level_up.begin(), this->components_level_up.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_level_up.insert(iter, component);
-        assert(std::is_sorted(this->components_level_up.begin(), this->components_level_up.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_level_up.begin(), this->components_level_up.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_level_up[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentExp> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4381,16 +4551,20 @@ namespace mg
         {
             list_remove(this->components_exp, this->map_components_exp.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_exp.begin(), this->components_exp.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_exp.begin(), this->components_exp.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_exp.insert(iter, component);
-        assert(std::is_sorted(this->components_exp.begin(), this->components_exp.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_exp.begin(), this->components_exp.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_exp[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentExpDrop> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4401,16 +4575,20 @@ namespace mg
         {
             list_remove(this->components_exp_drop, this->map_components_exp_drop.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_exp_drop.begin(), this->components_exp_drop.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_exp_drop.begin(), this->components_exp_drop.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_exp_drop.insert(iter, component);
-        assert(std::is_sorted(this->components_exp_drop.begin(), this->components_exp_drop.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_exp_drop.begin(), this->components_exp_drop.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_exp_drop[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentStun> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4421,16 +4599,20 @@ namespace mg
         {
             list_remove(this->components_stun, this->map_components_stun.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_stun.begin(), this->components_stun.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_stun.begin(), this->components_stun.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_stun.insert(iter, component);
-        assert(std::is_sorted(this->components_stun.begin(), this->components_stun.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_stun.begin(), this->components_stun.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_stun[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<FireDamage> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4441,16 +4623,20 @@ namespace mg
         {
             list_remove(this->components_fire_damage, this->map_components_fire_damage.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_fire_damage.begin(), this->components_fire_damage.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_fire_damage.begin(), this->components_fire_damage.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_fire_damage.insert(iter, component);
-        assert(std::is_sorted(this->components_fire_damage.begin(), this->components_fire_damage.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_fire_damage.begin(), this->components_fire_damage.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_fire_damage[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentMovement> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4461,17 +4647,21 @@ namespace mg
         {
             list_remove(this->components_movement, this->map_components_movement.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_movement.begin(), this->components_movement.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_movement.begin(), this->components_movement.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_movement.insert(iter, component);
-        assert(std::is_sorted(this->components_movement.begin(), this->components_movement.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_movement.begin(), this->components_movement.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_movement[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<MoveDirection> component, int component_id)
     {
         this->add<ComponentMovement>(intrusive_ptr<ComponentMovement>(component), component_id);
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4482,17 +4672,21 @@ namespace mg
         {
             list_remove(this->components_move_direction, this->map_components_move_direction.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_move_direction.begin(), this->components_move_direction.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_move_direction.begin(), this->components_move_direction.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_move_direction.insert(iter, component);
-        assert(std::is_sorted(this->components_move_direction.begin(), this->components_move_direction.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_move_direction.begin(), this->components_move_direction.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_move_direction[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<MoveToTarget> component, int component_id)
     {
         this->add<ComponentMovement>(intrusive_ptr<ComponentMovement>(component), component_id);
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4503,17 +4697,21 @@ namespace mg
         {
             list_remove(this->components_move_to_target, this->map_components_move_to_target.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_move_to_target.begin(), this->components_move_to_target.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_move_to_target.begin(), this->components_move_to_target.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_move_to_target.insert(iter, component);
-        assert(std::is_sorted(this->components_move_to_target.begin(), this->components_move_to_target.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_move_to_target.begin(), this->components_move_to_target.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_move_to_target[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<MoveInstant> component, int component_id)
     {
         this->add<ComponentMovement>(intrusive_ptr<ComponentMovement>(component), component_id);
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4524,17 +4722,21 @@ namespace mg
         {
             list_remove(this->components_move_instant, this->map_components_move_instant.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_move_instant.begin(), this->components_move_instant.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_move_instant.begin(), this->components_move_instant.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_move_instant.insert(iter, component);
-        assert(std::is_sorted(this->components_move_instant.begin(), this->components_move_instant.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_move_instant.begin(), this->components_move_instant.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_move_instant[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<MoveVertical> component, int component_id)
     {
         this->add<ComponentMovement>(intrusive_ptr<ComponentMovement>(component), component_id);
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4545,16 +4747,20 @@ namespace mg
         {
             list_remove(this->components_move_vertical, this->map_components_move_vertical.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_move_vertical.begin(), this->components_move_vertical.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_move_vertical.begin(), this->components_move_vertical.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_move_vertical.insert(iter, component);
-        assert(std::is_sorted(this->components_move_vertical.begin(), this->components_move_vertical.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_move_vertical.begin(), this->components_move_vertical.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_move_vertical[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<Freezing> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4565,16 +4771,20 @@ namespace mg
         {
             list_remove(this->components_freezing, this->map_components_freezing.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_freezing.begin(), this->components_freezing.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_freezing.begin(), this->components_freezing.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_freezing.insert(iter, component);
-        assert(std::is_sorted(this->components_freezing.begin(), this->components_freezing.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_freezing.begin(), this->components_freezing.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_freezing[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<MoveParabolic> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4585,16 +4795,20 @@ namespace mg
         {
             list_remove(this->components_move_parabolic, this->map_components_move_parabolic.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_move_parabolic.begin(), this->components_move_parabolic.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_move_parabolic.begin(), this->components_move_parabolic.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_move_parabolic.insert(iter, component);
-        assert(std::is_sorted(this->components_move_parabolic.begin(), this->components_move_parabolic.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_move_parabolic.begin(), this->components_move_parabolic.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_move_parabolic[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentCreateMovementToHero> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4605,16 +4819,20 @@ namespace mg
         {
             list_remove(this->components_create_movement_to_hero, this->map_components_create_movement_to_hero.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_create_movement_to_hero.begin(), this->components_create_movement_to_hero.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_create_movement_to_hero.begin(), this->components_create_movement_to_hero.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_create_movement_to_hero.insert(iter, component);
-        assert(std::is_sorted(this->components_create_movement_to_hero.begin(), this->components_create_movement_to_hero.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_create_movement_to_hero.begin(), this->components_create_movement_to_hero.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_create_movement_to_hero[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentPush> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4625,16 +4843,20 @@ namespace mg
         {
             list_remove(this->components_push, this->map_components_push.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_push.begin(), this->components_push.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_push.begin(), this->components_push.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_push.insert(iter, component);
-        assert(std::is_sorted(this->components_push.begin(), this->components_push.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_push.begin(), this->components_push.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_push[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentSpawn> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4645,16 +4867,20 @@ namespace mg
         {
             list_remove(this->components_spawn, this->map_components_spawn.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_spawn.begin(), this->components_spawn.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_spawn.begin(), this->components_spawn.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_spawn.insert(iter, component);
-        assert(std::is_sorted(this->components_spawn.begin(), this->components_spawn.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_spawn.begin(), this->components_spawn.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_spawn[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentHealingOnChangeMaxHp> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4665,16 +4891,20 @@ namespace mg
         {
             list_remove(this->components_healing_on_change_max_hp, this->map_components_healing_on_change_max_hp.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_healing_on_change_max_hp.begin(), this->components_healing_on_change_max_hp.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_healing_on_change_max_hp.begin(), this->components_healing_on_change_max_hp.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_healing_on_change_max_hp.insert(iter, component);
-        assert(std::is_sorted(this->components_healing_on_change_max_hp.begin(), this->components_healing_on_change_max_hp.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_healing_on_change_max_hp.begin(), this->components_healing_on_change_max_hp.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_healing_on_change_max_hp[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentDropHeart> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4685,16 +4915,20 @@ namespace mg
         {
             list_remove(this->components_drop_heart, this->map_components_drop_heart.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_drop_heart.begin(), this->components_drop_heart.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_drop_heart.begin(), this->components_drop_heart.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_drop_heart.insert(iter, component);
-        assert(std::is_sorted(this->components_drop_heart.begin(), this->components_drop_heart.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_drop_heart.begin(), this->components_drop_heart.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_drop_heart[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentHeart> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4705,16 +4939,20 @@ namespace mg
         {
             list_remove(this->components_heart, this->map_components_heart.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_heart.begin(), this->components_heart.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_heart.begin(), this->components_heart.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_heart.insert(iter, component);
-        assert(std::is_sorted(this->components_heart.begin(), this->components_heart.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_heart.begin(), this->components_heart.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_heart[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentHeartAddStats> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4725,17 +4963,21 @@ namespace mg
         {
             list_remove(this->components_heart_add_stats, this->map_components_heart_add_stats.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_heart_add_stats.begin(), this->components_heart_add_stats.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_heart_add_stats.begin(), this->components_heart_add_stats.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_heart_add_stats.insert(iter, component);
-        assert(std::is_sorted(this->components_heart_add_stats.begin(), this->components_heart_add_stats.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_heart_add_stats.begin(), this->components_heart_add_stats.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_heart_add_stats[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentHeartAddStatsHp> component, int component_id)
     {
         this->add<ComponentHeartAddStats>(intrusive_ptr<ComponentHeartAddStats>(component), component_id);
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4746,17 +4988,21 @@ namespace mg
         {
             list_remove(this->components_heart_add_stats_hp, this->map_components_heart_add_stats_hp.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_heart_add_stats_hp.begin(), this->components_heart_add_stats_hp.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_heart_add_stats_hp.begin(), this->components_heart_add_stats_hp.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_heart_add_stats_hp.insert(iter, component);
-        assert(std::is_sorted(this->components_heart_add_stats_hp.begin(), this->components_heart_add_stats_hp.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_heart_add_stats_hp.begin(), this->components_heart_add_stats_hp.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_heart_add_stats_hp[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentHeartAddStatsDamage> component, int component_id)
     {
         this->add<ComponentHeartAddStats>(intrusive_ptr<ComponentHeartAddStats>(component), component_id);
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4767,16 +5013,20 @@ namespace mg
         {
             list_remove(this->components_heart_add_stats_damage, this->map_components_heart_add_stats_damage.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_heart_add_stats_damage.begin(), this->components_heart_add_stats_damage.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_heart_add_stats_damage.begin(), this->components_heart_add_stats_damage.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_heart_add_stats_damage.insert(iter, component);
-        assert(std::is_sorted(this->components_heart_add_stats_damage.begin(), this->components_heart_add_stats_damage.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_heart_add_stats_damage.begin(), this->components_heart_add_stats_damage.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_heart_add_stats_damage[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentRandomHealing> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4787,16 +5037,20 @@ namespace mg
         {
             list_remove(this->components_random_healing, this->map_components_random_healing.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_random_healing.begin(), this->components_random_healing.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_random_healing.begin(), this->components_random_healing.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_random_healing.insert(iter, component);
-        assert(std::is_sorted(this->components_random_healing.begin(), this->components_random_healing.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_random_healing.begin(), this->components_random_healing.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_random_healing[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentVampire> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4807,16 +5061,20 @@ namespace mg
         {
             list_remove(this->components_vampire, this->map_components_vampire.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_vampire.begin(), this->components_vampire.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_vampire.begin(), this->components_vampire.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_vampire.insert(iter, component);
-        assert(std::is_sorted(this->components_vampire.begin(), this->components_vampire.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_vampire.begin(), this->components_vampire.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_vampire[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentHealingLowHp> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4827,16 +5085,20 @@ namespace mg
         {
             list_remove(this->components_healing_low_hp, this->map_components_healing_low_hp.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_healing_low_hp.begin(), this->components_healing_low_hp.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_healing_low_hp.begin(), this->components_healing_low_hp.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_healing_low_hp.insert(iter, component);
-        assert(std::is_sorted(this->components_healing_low_hp.begin(), this->components_healing_low_hp.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_healing_low_hp.begin(), this->components_healing_low_hp.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_healing_low_hp[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentBody> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4847,16 +5109,20 @@ namespace mg
         {
             list_remove(this->components_body, this->map_components_body.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_body.begin(), this->components_body.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_body.begin(), this->components_body.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_body.insert(iter, component);
-        assert(std::is_sorted(this->components_body.begin(), this->components_body.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_body.begin(), this->components_body.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_body[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentSwordCast> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4867,16 +5133,20 @@ namespace mg
         {
             list_remove(this->components_sword_cast, this->map_components_sword_cast.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_sword_cast.begin(), this->components_sword_cast.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_sword_cast.begin(), this->components_sword_cast.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_sword_cast.insert(iter, component);
-        assert(std::is_sorted(this->components_sword_cast.begin(), this->components_sword_cast.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_sword_cast.begin(), this->components_sword_cast.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_sword_cast[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(intrusive_ptr<ComponentSword> component, int component_id)
     {
-
         assert(component->id == 0 || component->id == component_id || component_id == 0);
         if(component_id != 0)
         {
@@ -4887,13 +5157,18 @@ namespace mg
         {
             list_remove(this->components_sword, this->map_components_sword.at(component->id));
         }
-
-        auto iter = std::lower_bound(this->components_sword.begin(), this->components_sword.end(), component, [](const auto& a, const auto& b){return a->id < b->id;});
+        auto iter = std::lower_bound(this->components_sword.begin(), this->components_sword.end(), component, [](const auto& a, const auto& b)
+        {
+            return a->id < b->id;
+        });
         this->components_sword.insert(iter, component);
-        assert(std::is_sorted(this->components_sword.begin(), this->components_sword.end(), [](const auto& l, const auto& r){return l->id < r->id;}));
-
+        assert(std::is_sorted(this->components_sword.begin(), this->components_sword.end(), [](const auto& l, const auto& r)
+        {
+            return l->id < r->id;
+        }));
         this->map_components_sword[component->id] = component;
     }
+
     template<> void ModelEcsBase::add(ComponentData* component, int component_id)
     {
         this->add(intrusive_ptr<ComponentData>(component), component_id);
@@ -5560,318 +5835,318 @@ namespace mg
 
     void ModelEcsBase::serialize_xml(SerializerXml& serializer) const
     {
-        serializer.serialize(components_actions, "components_actions");
-        serializer.serialize(components_aura, "components_aura");
-        serializer.serialize(components_aura_damage, "components_aura_damage");
-        serializer.serialize(components_aura_of_slow, "components_aura_of_slow");
-        serializer.serialize(components_body, "components_body");
-        serializer.serialize(components_bullet, "components_bullet");
-        serializer.serialize(components_bullet_follow_to_target, "components_bullet_follow_to_target");
-        serializer.serialize(components_bullet_laser, "components_bullet_laser");
-        serializer.serialize(components_bullet_split, "components_bullet_split");
-        serializer.serialize(components_busy, "components_busy");
-        serializer.serialize(components_create_movement_to_hero, "components_create_movement_to_hero");
-        serializer.serialize(components_create_units_on_death, "components_create_units_on_death");
-        serializer.serialize(components_damage, "components_damage");
-        serializer.serialize(components_data, "components_data");
-        serializer.serialize(components_drop_heart, "components_drop_heart");
-        serializer.serialize(components_effects, "components_effects");
-        serializer.serialize(components_electric_damage, "components_electric_damage");
-        serializer.serialize(components_exp, "components_exp");
-        serializer.serialize(components_exp_drop, "components_exp_drop");
-        serializer.serialize(components_fire_damage, "components_fire_damage");
-        serializer.serialize(components_freezing, "components_freezing");
-        serializer.serialize(components_gate, "components_gate");
-        serializer.serialize(components_healing_low_hp, "components_healing_low_hp");
-        serializer.serialize(components_healing_on_change_max_hp, "components_healing_on_change_max_hp");
-        serializer.serialize(components_health, "components_health");
-        serializer.serialize(components_heart, "components_heart");
-        serializer.serialize(components_heart_add_stats, "components_heart_add_stats");
-        serializer.serialize(components_heart_add_stats_damage, "components_heart_add_stats_damage");
-        serializer.serialize(components_heart_add_stats_hp, "components_heart_add_stats_hp");
-        serializer.serialize(components_level_up, "components_level_up");
-        serializer.serialize(components_melee_attack, "components_melee_attack");
-        serializer.serialize(components_meteor_periodic, "components_meteor_periodic");
-        serializer.serialize(components_move_direction, "components_move_direction");
-        serializer.serialize(components_move_instant, "components_move_instant");
-        serializer.serialize(components_move_parabolic, "components_move_parabolic");
-        serializer.serialize(components_move_to_target, "components_move_to_target");
-        serializer.serialize(components_move_vertical, "components_move_vertical");
-        serializer.serialize(components_movement, "components_movement");
-        serializer.serialize(components_push, "components_push");
-        serializer.serialize(components_random_healing, "components_random_healing");
-        serializer.serialize(components_recharge, "components_recharge");
-        serializer.serialize(components_shield, "components_shield");
-        serializer.serialize(components_shoot_bullet, "components_shoot_bullet");
-        serializer.serialize(components_side, "components_side");
-        serializer.serialize(components_spawn, "components_spawn");
-        serializer.serialize(components_spawn_spirit, "components_spawn_spirit");
-        serializer.serialize(components_sphere, "components_sphere");
-        serializer.serialize(components_sphere_spawn, "components_sphere_spawn");
-        serializer.serialize(components_spine_info, "components_spine_info");
-        serializer.serialize(components_spirit, "components_spirit");
-        serializer.serialize(components_spirit_base_points, "components_spirit_base_points");
-        serializer.serialize(components_stats, "components_stats");
-        serializer.serialize(components_stun, "components_stun");
-        serializer.serialize(components_sword, "components_sword");
-        serializer.serialize(components_sword_cast, "components_sword_cast");
-        serializer.serialize(components_target_highlight, "components_target_highlight");
-        serializer.serialize(components_targetable, "components_targetable");
-        serializer.serialize(components_transform, "components_transform");
-        serializer.serialize(components_user, "components_user");
-        serializer.serialize(components_vampire, "components_vampire");
-        serializer.serialize(data, "data");
-        serializer.serialize(enemies_level, "enemies_level", int(-1));
-        serializer.serialize(enemies_rank, "enemies_rank", int(-1));
-        serializer.serialize(entities, "entities");
-        serializer.serialize(game_timer, "game_timer", float(0.0));
-        serializer.serialize(ground, "ground");
-        serializer.serialize(has_skills, "has_skills");
         serializer.serialize(next_free_id, "next_free_id", int(1));
         serializer.serialize(player_id, "player_id", int(0));
-        serializer.serialize(spawn_points, "spawn_points");
+        serializer.serialize(entities, "entities");
+        serializer.serialize(game_timer, "game_timer", float(0.0));
         serializer.serialize(tasks, "tasks");
-        serializer.serialize(timer_wave_duration, "timer_wave_duration", float(0));
-        serializer.serialize(timer_wave_interval, "timer_wave_interval", float(0));
-        serializer.serialize(wave_finished, "wave_finished", bool(false));
+        serializer.serialize(data, "data");
         serializer.serialize(wave_index, "wave_index", int(0));
+        serializer.serialize(ground, "ground");
+        serializer.serialize(enemies_level, "enemies_level", int(-1));
+        serializer.serialize(enemies_rank, "enemies_rank", int(-1));
+        serializer.serialize(wave_finished, "wave_finished", bool(false));
+        serializer.serialize(timer_wave_interval, "timer_wave_interval", float(0));
+        serializer.serialize(timer_wave_duration, "timer_wave_duration", float(0));
+        serializer.serialize(has_skills, "has_skills");
+        serializer.serialize(spawn_points, "spawn_points");
+        serializer.serialize(components_data, "components_data");
+        serializer.serialize(components_transform, "components_transform");
+        serializer.serialize(components_stats, "components_stats");
+        serializer.serialize(components_side, "components_side");
+        serializer.serialize(components_targetable, "components_targetable");
+        serializer.serialize(components_health, "components_health");
+        serializer.serialize(components_damage, "components_damage");
+        serializer.serialize(components_user, "components_user");
+        serializer.serialize(components_spine_info, "components_spine_info");
+        serializer.serialize(components_busy, "components_busy");
+        serializer.serialize(components_create_units_on_death, "components_create_units_on_death");
+        serializer.serialize(components_aura, "components_aura");
+        serializer.serialize(components_aura_of_slow, "components_aura_of_slow");
+        serializer.serialize(components_aura_damage, "components_aura_damage");
+        serializer.serialize(components_spirit, "components_spirit");
+        serializer.serialize(components_spirit_base_points, "components_spirit_base_points");
+        serializer.serialize(components_spawn_spirit, "components_spawn_spirit");
+        serializer.serialize(components_recharge, "components_recharge");
+        serializer.serialize(components_bullet, "components_bullet");
+        serializer.serialize(components_bullet_laser, "components_bullet_laser");
+        serializer.serialize(components_shoot_bullet, "components_shoot_bullet");
+        serializer.serialize(components_melee_attack, "components_melee_attack");
+        serializer.serialize(components_target_highlight, "components_target_highlight");
+        serializer.serialize(components_bullet_split, "components_bullet_split");
+        serializer.serialize(components_shield, "components_shield");
+        serializer.serialize(components_effects, "components_effects");
+        serializer.serialize(components_bullet_follow_to_target, "components_bullet_follow_to_target");
+        serializer.serialize(components_meteor_periodic, "components_meteor_periodic");
+        serializer.serialize(components_electric_damage, "components_electric_damage");
+        serializer.serialize(components_sphere_spawn, "components_sphere_spawn");
+        serializer.serialize(components_sphere, "components_sphere");
+        serializer.serialize(components_actions, "components_actions");
+        serializer.serialize(components_gate, "components_gate");
+        serializer.serialize(components_level_up, "components_level_up");
+        serializer.serialize(components_exp, "components_exp");
+        serializer.serialize(components_exp_drop, "components_exp_drop");
+        serializer.serialize(components_stun, "components_stun");
+        serializer.serialize(components_fire_damage, "components_fire_damage");
+        serializer.serialize(components_movement, "components_movement");
+        serializer.serialize(components_move_direction, "components_move_direction");
+        serializer.serialize(components_move_to_target, "components_move_to_target");
+        serializer.serialize(components_move_instant, "components_move_instant");
+        serializer.serialize(components_move_vertical, "components_move_vertical");
+        serializer.serialize(components_freezing, "components_freezing");
+        serializer.serialize(components_move_parabolic, "components_move_parabolic");
+        serializer.serialize(components_create_movement_to_hero, "components_create_movement_to_hero");
+        serializer.serialize(components_push, "components_push");
+        serializer.serialize(components_spawn, "components_spawn");
+        serializer.serialize(components_healing_on_change_max_hp, "components_healing_on_change_max_hp");
+        serializer.serialize(components_drop_heart, "components_drop_heart");
+        serializer.serialize(components_heart, "components_heart");
+        serializer.serialize(components_heart_add_stats, "components_heart_add_stats");
+        serializer.serialize(components_heart_add_stats_hp, "components_heart_add_stats_hp");
+        serializer.serialize(components_heart_add_stats_damage, "components_heart_add_stats_damage");
+        serializer.serialize(components_random_healing, "components_random_healing");
+        serializer.serialize(components_vampire, "components_vampire");
+        serializer.serialize(components_healing_low_hp, "components_healing_low_hp");
+        serializer.serialize(components_body, "components_body");
+        serializer.serialize(components_sword_cast, "components_sword_cast");
+        serializer.serialize(components_sword, "components_sword");
     }
 
     void ModelEcsBase::deserialize_xml(DeserializerXml& deserializer)
     {
-        deserializer.deserialize(components_actions, "components_actions");
-        deserializer.deserialize(components_aura, "components_aura");
-        deserializer.deserialize(components_aura_damage, "components_aura_damage");
-        deserializer.deserialize(components_aura_of_slow, "components_aura_of_slow");
-        deserializer.deserialize(components_body, "components_body");
-        deserializer.deserialize(components_bullet, "components_bullet");
-        deserializer.deserialize(components_bullet_follow_to_target, "components_bullet_follow_to_target");
-        deserializer.deserialize(components_bullet_laser, "components_bullet_laser");
-        deserializer.deserialize(components_bullet_split, "components_bullet_split");
-        deserializer.deserialize(components_busy, "components_busy");
-        deserializer.deserialize(components_create_movement_to_hero, "components_create_movement_to_hero");
-        deserializer.deserialize(components_create_units_on_death, "components_create_units_on_death");
-        deserializer.deserialize(components_damage, "components_damage");
-        deserializer.deserialize(components_data, "components_data");
-        deserializer.deserialize(components_drop_heart, "components_drop_heart");
-        deserializer.deserialize(components_effects, "components_effects");
-        deserializer.deserialize(components_electric_damage, "components_electric_damage");
-        deserializer.deserialize(components_exp, "components_exp");
-        deserializer.deserialize(components_exp_drop, "components_exp_drop");
-        deserializer.deserialize(components_fire_damage, "components_fire_damage");
-        deserializer.deserialize(components_freezing, "components_freezing");
-        deserializer.deserialize(components_gate, "components_gate");
-        deserializer.deserialize(components_healing_low_hp, "components_healing_low_hp");
-        deserializer.deserialize(components_healing_on_change_max_hp, "components_healing_on_change_max_hp");
-        deserializer.deserialize(components_health, "components_health");
-        deserializer.deserialize(components_heart, "components_heart");
-        deserializer.deserialize(components_heart_add_stats, "components_heart_add_stats");
-        deserializer.deserialize(components_heart_add_stats_damage, "components_heart_add_stats_damage");
-        deserializer.deserialize(components_heart_add_stats_hp, "components_heart_add_stats_hp");
-        deserializer.deserialize(components_level_up, "components_level_up");
-        deserializer.deserialize(components_melee_attack, "components_melee_attack");
-        deserializer.deserialize(components_meteor_periodic, "components_meteor_periodic");
-        deserializer.deserialize(components_move_direction, "components_move_direction");
-        deserializer.deserialize(components_move_instant, "components_move_instant");
-        deserializer.deserialize(components_move_parabolic, "components_move_parabolic");
-        deserializer.deserialize(components_move_to_target, "components_move_to_target");
-        deserializer.deserialize(components_move_vertical, "components_move_vertical");
-        deserializer.deserialize(components_movement, "components_movement");
-        deserializer.deserialize(components_push, "components_push");
-        deserializer.deserialize(components_random_healing, "components_random_healing");
-        deserializer.deserialize(components_recharge, "components_recharge");
-        deserializer.deserialize(components_shield, "components_shield");
-        deserializer.deserialize(components_shoot_bullet, "components_shoot_bullet");
-        deserializer.deserialize(components_side, "components_side");
-        deserializer.deserialize(components_spawn, "components_spawn");
-        deserializer.deserialize(components_spawn_spirit, "components_spawn_spirit");
-        deserializer.deserialize(components_sphere, "components_sphere");
-        deserializer.deserialize(components_sphere_spawn, "components_sphere_spawn");
-        deserializer.deserialize(components_spine_info, "components_spine_info");
-        deserializer.deserialize(components_spirit, "components_spirit");
-        deserializer.deserialize(components_spirit_base_points, "components_spirit_base_points");
-        deserializer.deserialize(components_stats, "components_stats");
-        deserializer.deserialize(components_stun, "components_stun");
-        deserializer.deserialize(components_sword, "components_sword");
-        deserializer.deserialize(components_sword_cast, "components_sword_cast");
-        deserializer.deserialize(components_target_highlight, "components_target_highlight");
-        deserializer.deserialize(components_targetable, "components_targetable");
-        deserializer.deserialize(components_transform, "components_transform");
-        deserializer.deserialize(components_user, "components_user");
-        deserializer.deserialize(components_vampire, "components_vampire");
-        deserializer.deserialize(data, "data");
-        deserializer.deserialize(enemies_level, "enemies_level", int(-1));
-        deserializer.deserialize(enemies_rank, "enemies_rank", int(-1));
-        deserializer.deserialize(entities, "entities");
-        deserializer.deserialize(game_timer, "game_timer", float(0.0));
-        deserializer.deserialize(ground, "ground");
-        deserializer.deserialize(has_skills, "has_skills");
         deserializer.deserialize(next_free_id, "next_free_id", int(1));
         deserializer.deserialize(player_id, "player_id", int(0));
-        deserializer.deserialize(spawn_points, "spawn_points");
+        deserializer.deserialize(entities, "entities");
+        deserializer.deserialize(game_timer, "game_timer", float(0.0));
         deserializer.deserialize(tasks, "tasks");
-        deserializer.deserialize(timer_wave_duration, "timer_wave_duration", float(0));
-        deserializer.deserialize(timer_wave_interval, "timer_wave_interval", float(0));
-        deserializer.deserialize(wave_finished, "wave_finished", bool(false));
+        deserializer.deserialize(data, "data");
         deserializer.deserialize(wave_index, "wave_index", int(0));
+        deserializer.deserialize(ground, "ground");
+        deserializer.deserialize(enemies_level, "enemies_level", int(-1));
+        deserializer.deserialize(enemies_rank, "enemies_rank", int(-1));
+        deserializer.deserialize(wave_finished, "wave_finished", bool(false));
+        deserializer.deserialize(timer_wave_interval, "timer_wave_interval", float(0));
+        deserializer.deserialize(timer_wave_duration, "timer_wave_duration", float(0));
+        deserializer.deserialize(has_skills, "has_skills");
+        deserializer.deserialize(spawn_points, "spawn_points");
+        deserializer.deserialize(components_data, "components_data");
+        deserializer.deserialize(components_transform, "components_transform");
+        deserializer.deserialize(components_stats, "components_stats");
+        deserializer.deserialize(components_side, "components_side");
+        deserializer.deserialize(components_targetable, "components_targetable");
+        deserializer.deserialize(components_health, "components_health");
+        deserializer.deserialize(components_damage, "components_damage");
+        deserializer.deserialize(components_user, "components_user");
+        deserializer.deserialize(components_spine_info, "components_spine_info");
+        deserializer.deserialize(components_busy, "components_busy");
+        deserializer.deserialize(components_create_units_on_death, "components_create_units_on_death");
+        deserializer.deserialize(components_aura, "components_aura");
+        deserializer.deserialize(components_aura_of_slow, "components_aura_of_slow");
+        deserializer.deserialize(components_aura_damage, "components_aura_damage");
+        deserializer.deserialize(components_spirit, "components_spirit");
+        deserializer.deserialize(components_spirit_base_points, "components_spirit_base_points");
+        deserializer.deserialize(components_spawn_spirit, "components_spawn_spirit");
+        deserializer.deserialize(components_recharge, "components_recharge");
+        deserializer.deserialize(components_bullet, "components_bullet");
+        deserializer.deserialize(components_bullet_laser, "components_bullet_laser");
+        deserializer.deserialize(components_shoot_bullet, "components_shoot_bullet");
+        deserializer.deserialize(components_melee_attack, "components_melee_attack");
+        deserializer.deserialize(components_target_highlight, "components_target_highlight");
+        deserializer.deserialize(components_bullet_split, "components_bullet_split");
+        deserializer.deserialize(components_shield, "components_shield");
+        deserializer.deserialize(components_effects, "components_effects");
+        deserializer.deserialize(components_bullet_follow_to_target, "components_bullet_follow_to_target");
+        deserializer.deserialize(components_meteor_periodic, "components_meteor_periodic");
+        deserializer.deserialize(components_electric_damage, "components_electric_damage");
+        deserializer.deserialize(components_sphere_spawn, "components_sphere_spawn");
+        deserializer.deserialize(components_sphere, "components_sphere");
+        deserializer.deserialize(components_actions, "components_actions");
+        deserializer.deserialize(components_gate, "components_gate");
+        deserializer.deserialize(components_level_up, "components_level_up");
+        deserializer.deserialize(components_exp, "components_exp");
+        deserializer.deserialize(components_exp_drop, "components_exp_drop");
+        deserializer.deserialize(components_stun, "components_stun");
+        deserializer.deserialize(components_fire_damage, "components_fire_damage");
+        deserializer.deserialize(components_movement, "components_movement");
+        deserializer.deserialize(components_move_direction, "components_move_direction");
+        deserializer.deserialize(components_move_to_target, "components_move_to_target");
+        deserializer.deserialize(components_move_instant, "components_move_instant");
+        deserializer.deserialize(components_move_vertical, "components_move_vertical");
+        deserializer.deserialize(components_freezing, "components_freezing");
+        deserializer.deserialize(components_move_parabolic, "components_move_parabolic");
+        deserializer.deserialize(components_create_movement_to_hero, "components_create_movement_to_hero");
+        deserializer.deserialize(components_push, "components_push");
+        deserializer.deserialize(components_spawn, "components_spawn");
+        deserializer.deserialize(components_healing_on_change_max_hp, "components_healing_on_change_max_hp");
+        deserializer.deserialize(components_drop_heart, "components_drop_heart");
+        deserializer.deserialize(components_heart, "components_heart");
+        deserializer.deserialize(components_heart_add_stats, "components_heart_add_stats");
+        deserializer.deserialize(components_heart_add_stats_hp, "components_heart_add_stats_hp");
+        deserializer.deserialize(components_heart_add_stats_damage, "components_heart_add_stats_damage");
+        deserializer.deserialize(components_random_healing, "components_random_healing");
+        deserializer.deserialize(components_vampire, "components_vampire");
+        deserializer.deserialize(components_healing_low_hp, "components_healing_low_hp");
+        deserializer.deserialize(components_body, "components_body");
+        deserializer.deserialize(components_sword_cast, "components_sword_cast");
+        deserializer.deserialize(components_sword, "components_sword");
     }
 
     void ModelEcsBase::serialize_json(SerializerJson& serializer) const
     {
-        serializer.serialize(components_actions, "components_actions");
-        serializer.serialize(components_aura, "components_aura");
-        serializer.serialize(components_aura_damage, "components_aura_damage");
-        serializer.serialize(components_aura_of_slow, "components_aura_of_slow");
-        serializer.serialize(components_body, "components_body");
-        serializer.serialize(components_bullet, "components_bullet");
-        serializer.serialize(components_bullet_follow_to_target, "components_bullet_follow_to_target");
-        serializer.serialize(components_bullet_laser, "components_bullet_laser");
-        serializer.serialize(components_bullet_split, "components_bullet_split");
-        serializer.serialize(components_busy, "components_busy");
-        serializer.serialize(components_create_movement_to_hero, "components_create_movement_to_hero");
-        serializer.serialize(components_create_units_on_death, "components_create_units_on_death");
-        serializer.serialize(components_damage, "components_damage");
-        serializer.serialize(components_data, "components_data");
-        serializer.serialize(components_drop_heart, "components_drop_heart");
-        serializer.serialize(components_effects, "components_effects");
-        serializer.serialize(components_electric_damage, "components_electric_damage");
-        serializer.serialize(components_exp, "components_exp");
-        serializer.serialize(components_exp_drop, "components_exp_drop");
-        serializer.serialize(components_fire_damage, "components_fire_damage");
-        serializer.serialize(components_freezing, "components_freezing");
-        serializer.serialize(components_gate, "components_gate");
-        serializer.serialize(components_healing_low_hp, "components_healing_low_hp");
-        serializer.serialize(components_healing_on_change_max_hp, "components_healing_on_change_max_hp");
-        serializer.serialize(components_health, "components_health");
-        serializer.serialize(components_heart, "components_heart");
-        serializer.serialize(components_heart_add_stats, "components_heart_add_stats");
-        serializer.serialize(components_heart_add_stats_damage, "components_heart_add_stats_damage");
-        serializer.serialize(components_heart_add_stats_hp, "components_heart_add_stats_hp");
-        serializer.serialize(components_level_up, "components_level_up");
-        serializer.serialize(components_melee_attack, "components_melee_attack");
-        serializer.serialize(components_meteor_periodic, "components_meteor_periodic");
-        serializer.serialize(components_move_direction, "components_move_direction");
-        serializer.serialize(components_move_instant, "components_move_instant");
-        serializer.serialize(components_move_parabolic, "components_move_parabolic");
-        serializer.serialize(components_move_to_target, "components_move_to_target");
-        serializer.serialize(components_move_vertical, "components_move_vertical");
-        serializer.serialize(components_movement, "components_movement");
-        serializer.serialize(components_push, "components_push");
-        serializer.serialize(components_random_healing, "components_random_healing");
-        serializer.serialize(components_recharge, "components_recharge");
-        serializer.serialize(components_shield, "components_shield");
-        serializer.serialize(components_shoot_bullet, "components_shoot_bullet");
-        serializer.serialize(components_side, "components_side");
-        serializer.serialize(components_spawn, "components_spawn");
-        serializer.serialize(components_spawn_spirit, "components_spawn_spirit");
-        serializer.serialize(components_sphere, "components_sphere");
-        serializer.serialize(components_sphere_spawn, "components_sphere_spawn");
-        serializer.serialize(components_spine_info, "components_spine_info");
-        serializer.serialize(components_spirit, "components_spirit");
-        serializer.serialize(components_spirit_base_points, "components_spirit_base_points");
-        serializer.serialize(components_stats, "components_stats");
-        serializer.serialize(components_stun, "components_stun");
-        serializer.serialize(components_sword, "components_sword");
-        serializer.serialize(components_sword_cast, "components_sword_cast");
-        serializer.serialize(components_target_highlight, "components_target_highlight");
-        serializer.serialize(components_targetable, "components_targetable");
-        serializer.serialize(components_transform, "components_transform");
-        serializer.serialize(components_user, "components_user");
-        serializer.serialize(components_vampire, "components_vampire");
-        serializer.serialize(data, "data");
-        serializer.serialize(enemies_level, "enemies_level", int(-1));
-        serializer.serialize(enemies_rank, "enemies_rank", int(-1));
-        serializer.serialize(entities, "entities");
-        serializer.serialize(game_timer, "game_timer", float(0.0));
-        serializer.serialize(ground, "ground");
-        serializer.serialize(has_skills, "has_skills");
         serializer.serialize(next_free_id, "next_free_id", int(1));
         serializer.serialize(player_id, "player_id", int(0));
-        serializer.serialize(spawn_points, "spawn_points");
+        serializer.serialize(entities, "entities");
+        serializer.serialize(game_timer, "game_timer", float(0.0));
         serializer.serialize(tasks, "tasks");
-        serializer.serialize(timer_wave_duration, "timer_wave_duration", float(0));
-        serializer.serialize(timer_wave_interval, "timer_wave_interval", float(0));
-        serializer.serialize(wave_finished, "wave_finished", bool(false));
+        serializer.serialize(data, "data");
         serializer.serialize(wave_index, "wave_index", int(0));
+        serializer.serialize(ground, "ground");
+        serializer.serialize(enemies_level, "enemies_level", int(-1));
+        serializer.serialize(enemies_rank, "enemies_rank", int(-1));
+        serializer.serialize(wave_finished, "wave_finished", bool(false));
+        serializer.serialize(timer_wave_interval, "timer_wave_interval", float(0));
+        serializer.serialize(timer_wave_duration, "timer_wave_duration", float(0));
+        serializer.serialize(has_skills, "has_skills");
+        serializer.serialize(spawn_points, "spawn_points");
+        serializer.serialize(components_data, "components_data");
+        serializer.serialize(components_transform, "components_transform");
+        serializer.serialize(components_stats, "components_stats");
+        serializer.serialize(components_side, "components_side");
+        serializer.serialize(components_targetable, "components_targetable");
+        serializer.serialize(components_health, "components_health");
+        serializer.serialize(components_damage, "components_damage");
+        serializer.serialize(components_user, "components_user");
+        serializer.serialize(components_spine_info, "components_spine_info");
+        serializer.serialize(components_busy, "components_busy");
+        serializer.serialize(components_create_units_on_death, "components_create_units_on_death");
+        serializer.serialize(components_aura, "components_aura");
+        serializer.serialize(components_aura_of_slow, "components_aura_of_slow");
+        serializer.serialize(components_aura_damage, "components_aura_damage");
+        serializer.serialize(components_spirit, "components_spirit");
+        serializer.serialize(components_spirit_base_points, "components_spirit_base_points");
+        serializer.serialize(components_spawn_spirit, "components_spawn_spirit");
+        serializer.serialize(components_recharge, "components_recharge");
+        serializer.serialize(components_bullet, "components_bullet");
+        serializer.serialize(components_bullet_laser, "components_bullet_laser");
+        serializer.serialize(components_shoot_bullet, "components_shoot_bullet");
+        serializer.serialize(components_melee_attack, "components_melee_attack");
+        serializer.serialize(components_target_highlight, "components_target_highlight");
+        serializer.serialize(components_bullet_split, "components_bullet_split");
+        serializer.serialize(components_shield, "components_shield");
+        serializer.serialize(components_effects, "components_effects");
+        serializer.serialize(components_bullet_follow_to_target, "components_bullet_follow_to_target");
+        serializer.serialize(components_meteor_periodic, "components_meteor_periodic");
+        serializer.serialize(components_electric_damage, "components_electric_damage");
+        serializer.serialize(components_sphere_spawn, "components_sphere_spawn");
+        serializer.serialize(components_sphere, "components_sphere");
+        serializer.serialize(components_actions, "components_actions");
+        serializer.serialize(components_gate, "components_gate");
+        serializer.serialize(components_level_up, "components_level_up");
+        serializer.serialize(components_exp, "components_exp");
+        serializer.serialize(components_exp_drop, "components_exp_drop");
+        serializer.serialize(components_stun, "components_stun");
+        serializer.serialize(components_fire_damage, "components_fire_damage");
+        serializer.serialize(components_movement, "components_movement");
+        serializer.serialize(components_move_direction, "components_move_direction");
+        serializer.serialize(components_move_to_target, "components_move_to_target");
+        serializer.serialize(components_move_instant, "components_move_instant");
+        serializer.serialize(components_move_vertical, "components_move_vertical");
+        serializer.serialize(components_freezing, "components_freezing");
+        serializer.serialize(components_move_parabolic, "components_move_parabolic");
+        serializer.serialize(components_create_movement_to_hero, "components_create_movement_to_hero");
+        serializer.serialize(components_push, "components_push");
+        serializer.serialize(components_spawn, "components_spawn");
+        serializer.serialize(components_healing_on_change_max_hp, "components_healing_on_change_max_hp");
+        serializer.serialize(components_drop_heart, "components_drop_heart");
+        serializer.serialize(components_heart, "components_heart");
+        serializer.serialize(components_heart_add_stats, "components_heart_add_stats");
+        serializer.serialize(components_heart_add_stats_hp, "components_heart_add_stats_hp");
+        serializer.serialize(components_heart_add_stats_damage, "components_heart_add_stats_damage");
+        serializer.serialize(components_random_healing, "components_random_healing");
+        serializer.serialize(components_vampire, "components_vampire");
+        serializer.serialize(components_healing_low_hp, "components_healing_low_hp");
+        serializer.serialize(components_body, "components_body");
+        serializer.serialize(components_sword_cast, "components_sword_cast");
+        serializer.serialize(components_sword, "components_sword");
     }
 
     void ModelEcsBase::deserialize_json(DeserializerJson& deserializer)
     {
-        deserializer.deserialize(components_actions, "components_actions");
-        deserializer.deserialize(components_aura, "components_aura");
-        deserializer.deserialize(components_aura_damage, "components_aura_damage");
-        deserializer.deserialize(components_aura_of_slow, "components_aura_of_slow");
-        deserializer.deserialize(components_body, "components_body");
-        deserializer.deserialize(components_bullet, "components_bullet");
-        deserializer.deserialize(components_bullet_follow_to_target, "components_bullet_follow_to_target");
-        deserializer.deserialize(components_bullet_laser, "components_bullet_laser");
-        deserializer.deserialize(components_bullet_split, "components_bullet_split");
-        deserializer.deserialize(components_busy, "components_busy");
-        deserializer.deserialize(components_create_movement_to_hero, "components_create_movement_to_hero");
-        deserializer.deserialize(components_create_units_on_death, "components_create_units_on_death");
-        deserializer.deserialize(components_damage, "components_damage");
-        deserializer.deserialize(components_data, "components_data");
-        deserializer.deserialize(components_drop_heart, "components_drop_heart");
-        deserializer.deserialize(components_effects, "components_effects");
-        deserializer.deserialize(components_electric_damage, "components_electric_damage");
-        deserializer.deserialize(components_exp, "components_exp");
-        deserializer.deserialize(components_exp_drop, "components_exp_drop");
-        deserializer.deserialize(components_fire_damage, "components_fire_damage");
-        deserializer.deserialize(components_freezing, "components_freezing");
-        deserializer.deserialize(components_gate, "components_gate");
-        deserializer.deserialize(components_healing_low_hp, "components_healing_low_hp");
-        deserializer.deserialize(components_healing_on_change_max_hp, "components_healing_on_change_max_hp");
-        deserializer.deserialize(components_health, "components_health");
-        deserializer.deserialize(components_heart, "components_heart");
-        deserializer.deserialize(components_heart_add_stats, "components_heart_add_stats");
-        deserializer.deserialize(components_heart_add_stats_damage, "components_heart_add_stats_damage");
-        deserializer.deserialize(components_heart_add_stats_hp, "components_heart_add_stats_hp");
-        deserializer.deserialize(components_level_up, "components_level_up");
-        deserializer.deserialize(components_melee_attack, "components_melee_attack");
-        deserializer.deserialize(components_meteor_periodic, "components_meteor_periodic");
-        deserializer.deserialize(components_move_direction, "components_move_direction");
-        deserializer.deserialize(components_move_instant, "components_move_instant");
-        deserializer.deserialize(components_move_parabolic, "components_move_parabolic");
-        deserializer.deserialize(components_move_to_target, "components_move_to_target");
-        deserializer.deserialize(components_move_vertical, "components_move_vertical");
-        deserializer.deserialize(components_movement, "components_movement");
-        deserializer.deserialize(components_push, "components_push");
-        deserializer.deserialize(components_random_healing, "components_random_healing");
-        deserializer.deserialize(components_recharge, "components_recharge");
-        deserializer.deserialize(components_shield, "components_shield");
-        deserializer.deserialize(components_shoot_bullet, "components_shoot_bullet");
-        deserializer.deserialize(components_side, "components_side");
-        deserializer.deserialize(components_spawn, "components_spawn");
-        deserializer.deserialize(components_spawn_spirit, "components_spawn_spirit");
-        deserializer.deserialize(components_sphere, "components_sphere");
-        deserializer.deserialize(components_sphere_spawn, "components_sphere_spawn");
-        deserializer.deserialize(components_spine_info, "components_spine_info");
-        deserializer.deserialize(components_spirit, "components_spirit");
-        deserializer.deserialize(components_spirit_base_points, "components_spirit_base_points");
-        deserializer.deserialize(components_stats, "components_stats");
-        deserializer.deserialize(components_stun, "components_stun");
-        deserializer.deserialize(components_sword, "components_sword");
-        deserializer.deserialize(components_sword_cast, "components_sword_cast");
-        deserializer.deserialize(components_target_highlight, "components_target_highlight");
-        deserializer.deserialize(components_targetable, "components_targetable");
-        deserializer.deserialize(components_transform, "components_transform");
-        deserializer.deserialize(components_user, "components_user");
-        deserializer.deserialize(components_vampire, "components_vampire");
-        deserializer.deserialize(data, "data");
-        deserializer.deserialize(enemies_level, "enemies_level", int(-1));
-        deserializer.deserialize(enemies_rank, "enemies_rank", int(-1));
-        deserializer.deserialize(entities, "entities");
-        deserializer.deserialize(game_timer, "game_timer", float(0.0));
-        deserializer.deserialize(ground, "ground");
-        deserializer.deserialize(has_skills, "has_skills");
         deserializer.deserialize(next_free_id, "next_free_id", int(1));
         deserializer.deserialize(player_id, "player_id", int(0));
-        deserializer.deserialize(spawn_points, "spawn_points");
+        deserializer.deserialize(entities, "entities");
+        deserializer.deserialize(game_timer, "game_timer", float(0.0));
         deserializer.deserialize(tasks, "tasks");
-        deserializer.deserialize(timer_wave_duration, "timer_wave_duration", float(0));
-        deserializer.deserialize(timer_wave_interval, "timer_wave_interval", float(0));
-        deserializer.deserialize(wave_finished, "wave_finished", bool(false));
+        deserializer.deserialize(data, "data");
         deserializer.deserialize(wave_index, "wave_index", int(0));
+        deserializer.deserialize(ground, "ground");
+        deserializer.deserialize(enemies_level, "enemies_level", int(-1));
+        deserializer.deserialize(enemies_rank, "enemies_rank", int(-1));
+        deserializer.deserialize(wave_finished, "wave_finished", bool(false));
+        deserializer.deserialize(timer_wave_interval, "timer_wave_interval", float(0));
+        deserializer.deserialize(timer_wave_duration, "timer_wave_duration", float(0));
+        deserializer.deserialize(has_skills, "has_skills");
+        deserializer.deserialize(spawn_points, "spawn_points");
+        deserializer.deserialize(components_data, "components_data");
+        deserializer.deserialize(components_transform, "components_transform");
+        deserializer.deserialize(components_stats, "components_stats");
+        deserializer.deserialize(components_side, "components_side");
+        deserializer.deserialize(components_targetable, "components_targetable");
+        deserializer.deserialize(components_health, "components_health");
+        deserializer.deserialize(components_damage, "components_damage");
+        deserializer.deserialize(components_user, "components_user");
+        deserializer.deserialize(components_spine_info, "components_spine_info");
+        deserializer.deserialize(components_busy, "components_busy");
+        deserializer.deserialize(components_create_units_on_death, "components_create_units_on_death");
+        deserializer.deserialize(components_aura, "components_aura");
+        deserializer.deserialize(components_aura_of_slow, "components_aura_of_slow");
+        deserializer.deserialize(components_aura_damage, "components_aura_damage");
+        deserializer.deserialize(components_spirit, "components_spirit");
+        deserializer.deserialize(components_spirit_base_points, "components_spirit_base_points");
+        deserializer.deserialize(components_spawn_spirit, "components_spawn_spirit");
+        deserializer.deserialize(components_recharge, "components_recharge");
+        deserializer.deserialize(components_bullet, "components_bullet");
+        deserializer.deserialize(components_bullet_laser, "components_bullet_laser");
+        deserializer.deserialize(components_shoot_bullet, "components_shoot_bullet");
+        deserializer.deserialize(components_melee_attack, "components_melee_attack");
+        deserializer.deserialize(components_target_highlight, "components_target_highlight");
+        deserializer.deserialize(components_bullet_split, "components_bullet_split");
+        deserializer.deserialize(components_shield, "components_shield");
+        deserializer.deserialize(components_effects, "components_effects");
+        deserializer.deserialize(components_bullet_follow_to_target, "components_bullet_follow_to_target");
+        deserializer.deserialize(components_meteor_periodic, "components_meteor_periodic");
+        deserializer.deserialize(components_electric_damage, "components_electric_damage");
+        deserializer.deserialize(components_sphere_spawn, "components_sphere_spawn");
+        deserializer.deserialize(components_sphere, "components_sphere");
+        deserializer.deserialize(components_actions, "components_actions");
+        deserializer.deserialize(components_gate, "components_gate");
+        deserializer.deserialize(components_level_up, "components_level_up");
+        deserializer.deserialize(components_exp, "components_exp");
+        deserializer.deserialize(components_exp_drop, "components_exp_drop");
+        deserializer.deserialize(components_stun, "components_stun");
+        deserializer.deserialize(components_fire_damage, "components_fire_damage");
+        deserializer.deserialize(components_movement, "components_movement");
+        deserializer.deserialize(components_move_direction, "components_move_direction");
+        deserializer.deserialize(components_move_to_target, "components_move_to_target");
+        deserializer.deserialize(components_move_instant, "components_move_instant");
+        deserializer.deserialize(components_move_vertical, "components_move_vertical");
+        deserializer.deserialize(components_freezing, "components_freezing");
+        deserializer.deserialize(components_move_parabolic, "components_move_parabolic");
+        deserializer.deserialize(components_create_movement_to_hero, "components_create_movement_to_hero");
+        deserializer.deserialize(components_push, "components_push");
+        deserializer.deserialize(components_spawn, "components_spawn");
+        deserializer.deserialize(components_healing_on_change_max_hp, "components_healing_on_change_max_hp");
+        deserializer.deserialize(components_drop_heart, "components_drop_heart");
+        deserializer.deserialize(components_heart, "components_heart");
+        deserializer.deserialize(components_heart_add_stats, "components_heart_add_stats");
+        deserializer.deserialize(components_heart_add_stats_hp, "components_heart_add_stats_hp");
+        deserializer.deserialize(components_heart_add_stats_damage, "components_heart_add_stats_damage");
+        deserializer.deserialize(components_random_healing, "components_random_healing");
+        deserializer.deserialize(components_vampire, "components_vampire");
+        deserializer.deserialize(components_healing_low_hp, "components_healing_low_hp");
+        deserializer.deserialize(components_body, "components_body");
+        deserializer.deserialize(components_sword_cast, "components_sword_cast");
+        deserializer.deserialize(components_sword, "components_sword");
     }
 
 } //namespace mg

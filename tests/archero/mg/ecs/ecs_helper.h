@@ -1,4 +1,3 @@
-
 #ifndef __mg_ecs_helper_h__
 #define __mg_ecs_helper_h__
 
@@ -29,7 +28,6 @@ auto join_two_sorted(
     return result;
 }
 
-// 2) join для вектора кортежей + ещё один отсортированный контейнер
 template<typename Tuple, typename C>
 auto join_tuple_vector(
     const std::vector<Tuple>& partial,
@@ -47,7 +45,6 @@ auto join_tuple_vector(
 
     size_t i = 0, j = 0;
     while (i < partial.size() && j < vc.size()) {
-        // id берётся из первого элемента вложенного кортежа:
         int idP = std::get<0>(partial[i])->id;
         int idC = vc[j]->id;
         if      (idP < idC) ++i;
@@ -62,9 +59,6 @@ auto join_tuple_vector(
     return result;
 }
 
-// 3) Обобщённая join_all: перегруженная по количеству аргументов
-
-// 3.1. Базовый случай: ровно два контейнера → pair
 template<typename A, typename B>
 auto join_all(
     const std::vector<intrusive_ptr<A>>& va,
@@ -73,7 +67,6 @@ auto join_all(
     return join_two_sorted(va, vb);
 }
 
-// 3.2. Рекурсивный случай: частичный вектор кортежей + >2-й контейнер
 template<typename Tuple, typename C, typename... Rest>
 auto join_all(
     const std::vector<Tuple>&                  partial,

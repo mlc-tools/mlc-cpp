@@ -1,7 +1,10 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "ActionMoveDirection.h"
 #include "ActionMoveToCenterHorizontalOrVertical.h"
 #include "Transform.h"
+#include "Vector.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"

@@ -2,6 +2,7 @@
 #include "../mg_Factory.h"
 #include "ComponentBase.h"
 #include "ModelEcsBase.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -28,7 +29,6 @@ namespace mg
 
     int ComponentBase::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -36,7 +36,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool ComponentBase::operator ==(const ComponentBase& rhs) const

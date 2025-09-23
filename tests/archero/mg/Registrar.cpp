@@ -22,7 +22,6 @@
 #include "ecs/DataWaveOnRadius.h"
 #include "ecs/DataWaveOnRadiusWithInterval.h"
 #include "ecs/EntityBase.h"
-#include "ecs/ComponentBase.h"
 #include "ecs/Math.h"
 #include "ecs/ControllerDungeonBase.h"
 #include "ecs/BuilderEntity.h"
@@ -187,7 +186,6 @@ void mg::register_classes()
     Factory::shared().registrationCommand<DataWaveOnRadius>(DataWaveOnRadius::TYPE);
     Factory::shared().registrationCommand<DataWaveOnRadiusWithInterval>(DataWaveOnRadiusWithInterval::TYPE);
     Factory::shared().registrationCommand<EntityBase>(EntityBase::TYPE);
-    Factory::shared().registrationCommand<ComponentBase>(ComponentBase::TYPE);
     Factory::shared().registrationCommand<Math>(Math::TYPE);
     Factory::shared().registrationCommand<ControllerDungeonBase>(ControllerDungeonBase::TYPE);
     Factory::shared().registrationCommand<BuilderEntity>(BuilderEntity::TYPE);

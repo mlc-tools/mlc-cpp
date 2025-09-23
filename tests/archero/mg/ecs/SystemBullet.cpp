@@ -26,6 +26,7 @@
 #include "Transform.h"
 #include "UnitStat.h"
 #include "Vector.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -65,6 +66,7 @@ namespace mg
                 component->ignore_target_id = -1;
             }
         }
+
         if(auto movement = model->get<MoveToTarget>(component->id))
         {
             if(!model->get<ComponentHealth>(movement->target_id))
@@ -81,6 +83,7 @@ namespace mg
                 return;
             }
         }
+
         auto move_parabolic = model->get<MoveParabolic>(component->id);
         auto move_vertical = model->get<MoveVertical>(component->id);
         auto push_speed = bullet_stats->get(model, UnitStat::push_target);
@@ -89,6 +92,7 @@ namespace mg
         {
             bullet_size = 20;
         }
+
         if(!move_parabolic && !move_vertical)
         {
             model->each_if<ComponentSide, Transform, ComponentStats, ComponentTargetable, ComponentSpineInfo>(
@@ -296,16 +300,19 @@ namespace mg
         auto base_angle = Vector::get_angle(direction);
         auto angle1 = base_angle + 45.f * M_PI / 180.f;
         auto angle2 = base_angle - 45.f * M_PI / 180.f;
+
         float base_damage = bullet->damage;
         if(base_damage <= 0)
         {
             base_damage = SystemDamage::compute_damage(model, bullet->shooter_id, target_id);
         }
+
         auto id1 = BuilderBullet(bullet->shooter_id).set_name(bullet->data->name).set_direction(Vector::build_vector(angle1)).set_position_create(transform->position).build(model);
         auto b1 = model->get<ComponentBullet>(id1);
         b1->damage = base_damage * 0.25f;
         b1->split_on_hit = false;
         b1->ignore_target_id = target_id;
+
         auto id2 = BuilderBullet(bullet->shooter_id).set_name(bullet->data->name).set_direction(Vector::build_vector(angle2)).set_position_create(transform->position).build(model);
         auto b2 = model->get<ComponentBullet>(id2);
         b2->damage = base_damage * 0.25f;
@@ -324,6 +331,7 @@ namespace mg
         auto transform = model->get<Transform>(component->id);
         auto radius = stats->get(model, UnitStat::damage_mass_radius);
         auto side = model->get<ComponentSide>(component->id)->side;
+
         model->each_if<Transform, ComponentSide, ComponentTargetable>(
         [&](auto& target_transform, auto& component_side, auto& targetable)
         {
@@ -343,6 +351,7 @@ namespace mg
         {
             health->remove_future_damage(bullet->shooter_id);
         }
+
         auto component_split = model->get<ComponentBulletSplit>(bullet->id);
         if(component_split && !component_split->was_split && component_split->split_on_remove)
         {
@@ -370,7 +379,6 @@ namespace mg
 
     int SystemBullet::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -378,7 +386,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool SystemBullet::operator ==(const SystemBullet& rhs) const

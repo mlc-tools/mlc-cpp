@@ -1,7 +1,10 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "ComponentBase.h"
 #include "ComponentShield.h"
+#include "ComponentShieldType.h"
 #include "ModelEcsBase.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -14,7 +17,7 @@ namespace mg
     : initialized(false)
     , active(true)
     , timer(0)
-    , activate_type(ComponentShieldType::wave)
+    , activate_type()
     {
 
     }

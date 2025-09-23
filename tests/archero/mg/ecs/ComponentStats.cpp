@@ -1,12 +1,15 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
 #include "../systems/SystemEquipment.h"
+#include "ComponentBase.h"
 #include "ComponentStats.h"
 #include "ComponentUser.h"
 #include "DataStatUpgrade.h"
+#include "DataUnit.h"
 #include "ModelEcsBase.h"
 #include "Modifier.h"
 #include "UnitStat.h"
+#include <map>
 #include <string>
 #include <vector>
 #include "../mg_extensions.h"
@@ -35,7 +38,9 @@ namespace mg
     void ComponentStats::add_upgrade(const DataStatUpgrade* data)
     {
         assert(data->stats.size() == data->modifiers.size());
+
         this->upgrades.push_back(data);
+
         auto size = data->stats.size();
         for(int i=0; i<size; ++i)
         {
@@ -66,13 +71,11 @@ namespace mg
         list_remove(this->upgrades, data);
         for(auto stat : data->stats)
         {
-
             auto iter = std::remove_if(this->stats[stat].begin(), this->stats[stat].end(), [&](const auto& modifier)
             {
                 return modifier.name == data->name;
             });
-            this->stats[stat].erase(iter, this->stats[stat].end())
-            ;
+            this->stats[stat].erase(iter, this->stats[stat].end());;
             map_remove(this->cashe, stat);
             map_remove(this->cashe_string, stat);
         }
@@ -104,6 +107,7 @@ namespace mg
         {
             return this->cashe[stat];
         }
+
         auto base = this->get_stat_base(stat);
         float result = 0;
         if(this->parent_id > 0)
@@ -119,6 +123,7 @@ namespace mg
         {
             result = base;
         }
+
         auto component_user = model->get<ComponentUser>(this->id);
         if(component_user)
         {
@@ -128,11 +133,13 @@ namespace mg
                 result = system->get_stat(stat, result);
             }
         }
+
         auto& modifiers = this->stats[stat];
         for(auto& modifier : modifiers)
         {
             result = modifier.modify(result);
         }
+
         this->cashe[stat] = result;
         return result;
     }
@@ -143,7 +150,9 @@ namespace mg
         {
             return this->cashe_string[stat];
         }
+
         auto value = this->get_stat_string_base(stat);
+
         auto component_user = model->get<ComponentUser>(this->id);
         if(component_user)
         {
@@ -157,6 +166,7 @@ namespace mg
                 }
             }
         }
+
         auto& modifiers = this->stats[stat];
         if(list_size(modifiers) > 0)
         {
@@ -178,6 +188,7 @@ namespace mg
     {
         bool result = this->ComponentBase::operator ==(rhs);
         result = result && this->parent_id == rhs.parent_id;
+        result = result && ((this->data == rhs.data) || (this->data != nullptr && rhs.data != nullptr && *this->data == *rhs.data));
         result = result && this->upgrades == rhs.upgrades;
         result = result && this->stats == rhs.stats;
         result = result && this->cashe == rhs.cashe;

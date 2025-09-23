@@ -1,7 +1,11 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "ComponentBase.h"
+#include "ComponentMovement.h"
 #include "ModelEcsBase.h"
 #include "MoveToTarget.h"
+#include "Vector.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -14,7 +18,7 @@ namespace mg
     : target_id(0)
     , offset()
     , changed_direction()
-    , timer_to_move_by_changed_direction(0.0)
+    , timer_to_move_by_changed_direction(0.0f)
     {
 
     }
@@ -79,7 +83,7 @@ namespace mg
         serializer.serialize(target_id, "target_id", int(0));
         serializer.serialize(offset, "offset");
         serializer.serialize(changed_direction, "changed_direction");
-        serializer.serialize(timer_to_move_by_changed_direction, "timer_to_move_by_changed_direction", float(0.0));
+        serializer.serialize(timer_to_move_by_changed_direction, "timer_to_move_by_changed_direction", float(0.0f));
     }
 
     void MoveToTarget::deserialize_xml(DeserializerXml& deserializer)
@@ -88,7 +92,7 @@ namespace mg
         deserializer.deserialize(target_id, "target_id", int(0));
         deserializer.deserialize(offset, "offset");
         deserializer.deserialize(changed_direction, "changed_direction");
-        deserializer.deserialize(timer_to_move_by_changed_direction, "timer_to_move_by_changed_direction", float(0.0));
+        deserializer.deserialize(timer_to_move_by_changed_direction, "timer_to_move_by_changed_direction", float(0.0f));
     }
 
     void MoveToTarget::serialize_json(SerializerJson& serializer) const
@@ -97,7 +101,7 @@ namespace mg
         serializer.serialize(target_id, "target_id", int(0));
         serializer.serialize(offset, "offset");
         serializer.serialize(changed_direction, "changed_direction");
-        serializer.serialize(timer_to_move_by_changed_direction, "timer_to_move_by_changed_direction", float(0.0));
+        serializer.serialize(timer_to_move_by_changed_direction, "timer_to_move_by_changed_direction", float(0.0f));
     }
 
     void MoveToTarget::deserialize_json(DeserializerJson& deserializer)
@@ -106,7 +110,7 @@ namespace mg
         deserializer.deserialize(target_id, "target_id", int(0));
         deserializer.deserialize(offset, "offset");
         deserializer.deserialize(changed_direction, "changed_direction");
-        deserializer.deserialize(timer_to_move_by_changed_direction, "timer_to_move_by_changed_direction", float(0.0));
+        deserializer.deserialize(timer_to_move_by_changed_direction, "timer_to_move_by_changed_direction", float(0.0f));
     }
 
 } //namespace mg

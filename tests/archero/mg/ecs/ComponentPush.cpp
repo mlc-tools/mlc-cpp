@@ -1,7 +1,10 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "ComponentBase.h"
 #include "ComponentPush.h"
 #include "ModelEcsBase.h"
+#include "Vector.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -13,7 +16,7 @@ namespace mg
     ComponentPush::ComponentPush()
     : direction()
     , duration(0.1)
-    , speed(0.0)
+    , speed(0.0f)
     {
 
     }
@@ -75,7 +78,7 @@ namespace mg
         ComponentBase::serialize_xml(serializer);
         serializer.serialize(direction, "direction");
         serializer.serialize(duration, "duration", float(0.1));
-        serializer.serialize(speed, "speed", float(0.0));
+        serializer.serialize(speed, "speed", float(0.0f));
     }
 
     void ComponentPush::deserialize_xml(DeserializerXml& deserializer)
@@ -83,7 +86,7 @@ namespace mg
         ComponentBase::deserialize_xml(deserializer);
         deserializer.deserialize(direction, "direction");
         deserializer.deserialize(duration, "duration", float(0.1));
-        deserializer.deserialize(speed, "speed", float(0.0));
+        deserializer.deserialize(speed, "speed", float(0.0f));
     }
 
     void ComponentPush::serialize_json(SerializerJson& serializer) const
@@ -91,7 +94,7 @@ namespace mg
         ComponentBase::serialize_json(serializer);
         serializer.serialize(direction, "direction");
         serializer.serialize(duration, "duration", float(0.1));
-        serializer.serialize(speed, "speed", float(0.0));
+        serializer.serialize(speed, "speed", float(0.0f));
     }
 
     void ComponentPush::deserialize_json(DeserializerJson& deserializer)
@@ -99,7 +102,7 @@ namespace mg
         ComponentBase::deserialize_json(deserializer);
         deserializer.deserialize(direction, "direction");
         deserializer.deserialize(duration, "duration", float(0.1));
-        deserializer.deserialize(speed, "speed", float(0.0));
+        deserializer.deserialize(speed, "speed", float(0.0f));
     }
 
 } //namespace mg

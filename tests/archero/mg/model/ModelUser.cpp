@@ -3,9 +3,11 @@
 #include "../DataStorage.h"
 #include "../data/DataParams.h"
 #include "ModelUser.h"
+#include "ModelUserBase.h"
 #include "System.h"
 #include "UserProfile.h"
 #include <string>
+#include <vector>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -58,6 +60,7 @@ namespace mg
         {
             this->profile = make_intrusive<UserProfile>();
         }
+
         auto params = DataStorage::shared().get<DataParams>(DataParams::DEFAULT);
         for(auto& system : params->user_systems)
         {
@@ -67,6 +70,7 @@ namespace mg
                 this->systems[type] = Factory::shared().build<System>(type);
             }
         }
+
         for (auto&& pair : this->systems)
         {
             auto& type = pair.first;

@@ -1,12 +1,15 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
 #include "DataUnit.h"
+#include "DataWaveBase.h"
 #include "DataWaveOnRadius.h"
 #include "ModelEcsBase.h"
 #include "SpawnInfo.h"
 #include "Transform.h"
 #include "UnitStat.h"
 #include "Vector.h"
+#include <string>
+#include <vector>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -17,8 +20,8 @@ namespace mg
 
     DataWaveOnRadius::DataWaveOnRadius()
     : units()
-    , min_distance_to_player(0.0)
-    , max_distance_to_player(0.0)
+    , min_distance_to_player(0.0f)
+    , max_distance_to_player(0.0f)
     {
 
     }
@@ -31,6 +34,7 @@ namespace mg
     {
         std::vector<SpawnInfo> result;
         assert(max_distance_to_player >= min_distance_to_player);
+
         auto transform = model->get<Transform>(model->player_id);
         auto count = units.size();
         while(count > 0)
@@ -45,6 +49,7 @@ namespace mg
                 result.emplace_back(pos, units.at(count));
             }
         }
+
         return result;
     }
 
@@ -85,32 +90,32 @@ namespace mg
     {
         DataWaveBase::serialize_xml(serializer);
         serializer.serialize(units, "units");
-        serializer.serialize(min_distance_to_player, "min_distance_to_player", float(0.0));
-        serializer.serialize(max_distance_to_player, "max_distance_to_player", float(0.0));
+        serializer.serialize(min_distance_to_player, "min_distance_to_player", float(0.0f));
+        serializer.serialize(max_distance_to_player, "max_distance_to_player", float(0.0f));
     }
 
     void DataWaveOnRadius::deserialize_xml(DeserializerXml& deserializer)
     {
         DataWaveBase::deserialize_xml(deserializer);
         deserializer.deserialize(units, "units");
-        deserializer.deserialize(min_distance_to_player, "min_distance_to_player", float(0.0));
-        deserializer.deserialize(max_distance_to_player, "max_distance_to_player", float(0.0));
+        deserializer.deserialize(min_distance_to_player, "min_distance_to_player", float(0.0f));
+        deserializer.deserialize(max_distance_to_player, "max_distance_to_player", float(0.0f));
     }
 
     void DataWaveOnRadius::serialize_json(SerializerJson& serializer) const
     {
         DataWaveBase::serialize_json(serializer);
         serializer.serialize(units, "units");
-        serializer.serialize(min_distance_to_player, "min_distance_to_player", float(0.0));
-        serializer.serialize(max_distance_to_player, "max_distance_to_player", float(0.0));
+        serializer.serialize(min_distance_to_player, "min_distance_to_player", float(0.0f));
+        serializer.serialize(max_distance_to_player, "max_distance_to_player", float(0.0f));
     }
 
     void DataWaveOnRadius::deserialize_json(DeserializerJson& deserializer)
     {
         DataWaveBase::deserialize_json(deserializer);
         deserializer.deserialize(units, "units");
-        deserializer.deserialize(min_distance_to_player, "min_distance_to_player", float(0.0));
-        deserializer.deserialize(max_distance_to_player, "max_distance_to_player", float(0.0));
+        deserializer.deserialize(min_distance_to_player, "min_distance_to_player", float(0.0f));
+        deserializer.deserialize(max_distance_to_player, "max_distance_to_player", float(0.0f));
     }
 
 } //namespace mg

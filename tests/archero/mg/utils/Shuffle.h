@@ -20,13 +20,15 @@ namespace mg
     public:
         Shuffle();
         ~Shuffle();
-        template<class T> static T shuffle(const std::map<T, float>& weights, float random_value=-1)
+        static template <class T> T shuffle(const std::map<T, float>& weights, float random_value=-1)
         {
+
             float total = 0;
             T last;
             bool has_any = false;
             std::vector<float> prefix;
             std::vector<T> keys;
+
             for (auto&& pair : weights)
             {
                 auto& key = pair.first;
@@ -51,10 +53,12 @@ namespace mg
             {
                 return last;
             }
+
             if(random_value < 0)
             {
                 random_value = random_float() * total;
             }
+
             int l = 0;
             int rgt = prefix.size() - 1;
             while(l < rgt)
@@ -70,6 +74,7 @@ namespace mg
                 }
             }
             return keys[l];
+
         }
         void retain();
         int release();

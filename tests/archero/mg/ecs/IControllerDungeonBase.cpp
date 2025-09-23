@@ -7,7 +7,6 @@
 
 namespace mg
 {
-    const std::string IControllerDungeonBase::TYPE("IControllerDungeonBase");
 
     IControllerDungeonBase::IControllerDungeonBase()
     {
@@ -37,11 +36,6 @@ namespace mg
     const IControllerDungeonBase& IControllerDungeonBase::operator =(const IControllerDungeonBase& rhs)
     {
         return *this;
-    }
-
-    std::string IControllerDungeonBase::get_type() const
-    {
-        return IControllerDungeonBase::TYPE;
     }
 
     void IControllerDungeonBase::serialize_xml(SerializerXml& serializer) const

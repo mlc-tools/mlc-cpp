@@ -1,6 +1,9 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "../VisualItem.h"
 #include "DataMergeLevel.h"
+#include <string>
+#include <vector>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -32,7 +35,6 @@ namespace mg
 
     int DataMergeLevel::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -40,7 +42,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool DataMergeLevel::operator ==(const DataMergeLevel& rhs) const
@@ -49,6 +50,7 @@ namespace mg
         result = result && this->name == rhs.name;
         result = result && this->visual == rhs.visual;
         result = result && this->index == rhs.index;
+        result = result && ((this->next == rhs.next) || (this->next != nullptr && rhs.next != nullptr && *this->next == *rhs.next));
         result = result && this->require_items_to_merge == rhs.require_items_to_merge;
         result = result && this->count_items_to_merge == rhs.count_items_to_merge;
         return result;

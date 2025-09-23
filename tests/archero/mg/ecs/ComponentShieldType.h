@@ -21,7 +21,8 @@ namespace mg
         ComponentShieldType();
 
         ComponentShieldType(const BaseEnum& rhs):BaseEnum(rhs){}
-        const ComponentShieldType& operator =(const BaseEnum& rhs) { this->value = rhs.operator int(); return *this; } ComponentShieldType(int _value);
+        const ComponentShieldType& operator =(const BaseEnum& rhs) { this->value = rhs.operator int(); return *this; }
+        ComponentShieldType(int _value);
         ComponentShieldType(const ComponentShieldType& rhs);
         ComponentShieldType(const std::string& _value);
         const ComponentShieldType& operator =(const ComponentShieldType& rhs);
@@ -37,8 +38,8 @@ namespace mg
         operator std::string() const;
         std::string str() const;
 
-        static constexpr BaseEnum wave = (1 << 0);
-        static constexpr BaseEnum timer = (1 << 1);
+        static constexpr BaseEnum wave = (1);
+        static constexpr BaseEnum timer = (2);
 
     };
 } //namespace mg

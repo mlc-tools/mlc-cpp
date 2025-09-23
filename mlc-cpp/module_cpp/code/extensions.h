@@ -3136,8 +3136,9 @@ namespace mg
 )__EXT__";
 
 #pragma mark OBSERVER_HPP
-const std::string OBSERVER_HPP = R"__EXT__(#ifndef __@{namespace}_Observer_h__
-#define __@{namespace}_Observer_h__
+const std::string OBSERVER_HPP = R"__EXT__(
+#ifndef __@{namespace}_Observable_h__
+#define __@{namespace}_Observable_h__
 #include <assert.h>
 #include <functional>
 #include <set>
@@ -3153,7 +3154,7 @@ namespace @{namespace}
         virtual void remove(void* object) = 0;
         virtual void remove(int object) = 0;
     };
-    
+
     template<class R> class Observable;
 
     template<class R, class... A>
@@ -3301,7 +3302,7 @@ const std::vector<std::pair<std::string, std::string>> FILES_DICT = {
     {"Pimpl.h", SERIALIZER_PIMPL},
     {"SerializerCommon.h", SERIALIZER_COMMON},
     {"BaseEnum.h", BASE_ENUM_HPP},
-    {"Observer.h", OBSERVER_HPP},
+    {"Observable.h", OBSERVER_HPP},
 };
 
 #endif /* extensions_h */

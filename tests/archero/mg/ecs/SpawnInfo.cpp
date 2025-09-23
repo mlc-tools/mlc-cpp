@@ -3,6 +3,7 @@
 #include "DataUnit.h"
 #include "SpawnInfo.h"
 #include "Vector.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -31,7 +32,6 @@ namespace mg
 
     int SpawnInfo::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -39,13 +39,13 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool SpawnInfo::operator ==(const SpawnInfo& rhs) const
     {
         bool result = true;
         result = result && this->position == rhs.position;
+        result = result && ((this->unit == rhs.unit) || (this->unit != nullptr && rhs.unit != nullptr && *this->unit == *rhs.unit));
         return result;
     }
 

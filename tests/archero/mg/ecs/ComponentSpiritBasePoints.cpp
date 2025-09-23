@@ -1,8 +1,11 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "ComponentBase.h"
 #include "ComponentSpiritBasePoints.h"
 #include "ModelEcsBase.h"
 #include "Vector.h"
+#include <map>
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"

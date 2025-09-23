@@ -123,9 +123,14 @@ void Object::set_default_initial_value()
     {
         value = "0";
     }
-    else if(type == Objects::FLOAT.type) value = "0.0f";
-    else if(type == Objects::DOUBLE.type) value = "0.0";
-    else if(type == Objects::BOOL.type) value = "false";
-    else if(type == Objects::STRING.type) value = "\"\"";
-    else if(is_pointer) value = "nullptr";
+    else if(type == Objects::FLOAT.type)
+        value = "0.0f";
+    else if(type == Objects::DOUBLE.type)
+        value = "0.0";
+    else if(type == Objects::BOOL.type)
+        value = "false";
+    else if(type == Objects::STRING.type)
+        value = "\"\"";
+    else if(is_pointer || is_link)
+        value = "nullptr";
 }

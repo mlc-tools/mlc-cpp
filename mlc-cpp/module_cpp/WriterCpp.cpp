@@ -56,10 +56,9 @@ WriterCpp::writeClass(const std::shared_ptr<Class> &cls) {
 
     // Custom generator hook
     //TODO: customGenerator
-//    if (_model->customGenerator) {
-//        std::tie(header, source) =
-//            _model->customGenerator->modifySources(*_model, cls, header, source);
-//    }
+    if (_model->customGenerator) {
+        _model->customGenerator->modifySources(*_model, cls, header, source);
+    }
 
     // Return files
     return {
@@ -398,7 +397,7 @@ std::string WriterCpp::writeFunctionHpp(const Function &method) {
         std::cout << "";
     }
     // pattern: "{virtual}{static}{friend}{type} {name}({args}){const}{override}{abstract}"
-    std::string pat = "{virtual}{static}{friend}{templates}{type} {name}({args}){const}{override}{abstract}";
+    std::string pat = "{virtual}{friend}{templates}{static}{type} {name}({args}){const}{override}{abstract}";
     // return type
     std::string ret = "";
     if (method.name != currentClass_->name)
@@ -407,12 +406,13 @@ std::string WriterCpp::writeFunctionHpp(const Function &method) {
     std::string args = createFunctionHppArgs(method);
     // qualifiers
     std::string virt = (method.is_virtual||method.is_abstract||currentClass_->is_virtual) && method.name != currentClass_->name ? "virtual " : "";
-    std::string stat = method.is_static  ? "static " : "";
+    std::string stat = method.is_static  ? " static " : "";
     std::string frnd = method.is_friend  ? "friend " : "";
     std::string cst  = method.is_const   ? " const" : "";
     std::string ovrd = isOverride(method, currentClass_) ? " override" : "";
     std::string absr = method.is_abstract ? " = 0" : "";
     std::string tmpl;
+    
     if(!method.template_args.empty()){
         std::stringstream ss;
         ss << "template <";
@@ -422,10 +422,13 @@ std::string WriterCpp::writeFunctionHpp(const Function &method) {
                 ss << ", ";
             }
         }
-        ss << "> ";
+        ss << ">\n";
         tmpl = ss.str();
         
-        pat += "\n{\n{body}\n}\n";
+        if(method.specific_implementations.empty())
+            pat += "\n{\n{body}\n}\n";
+        else
+            pat += ";\n";
     }
     else {
         pat += ";\n";
@@ -447,10 +450,11 @@ std::string WriterCpp::writeFunctionHpp(const Function &method) {
 
 // Function CPP definition
 std::string WriterCpp::writeFunctionCpp(const Function &method) {
-    if (method.is_external || method.is_abstract || !method.template_args.empty())
-        return "";
     if (!method.specific_implementations.empty())
         return method.specific_implementations;
+    if (method.is_external || method.is_abstract || !method.template_args.empty())
+        return "";
+
     // pattern:
     std::string pat = "{type} {scope}{name}({args}){const}\n{\n{body}\n}\n\n";
     std::string ret="", scope="", args="";
@@ -582,6 +586,38 @@ WriterCpp::getIncludesForHeader(const std::shared_ptr<Class> &cls)
     }
     // functions
     static const std::set<std::string> stdIns = {"map","list","string"};
+    static std::vector<std::string> mg_extensions = {"in_map",
+        "in_list",
+        "list_push",
+        "list_insert",
+        "list_remove",
+        "list_erase",
+        "list_truncate",
+        "list_size",
+        "list_index",
+        "list_clear",
+        "list_resize",
+        "map_size",
+        "map_clear",
+        "map_remove",
+        "string_empty",
+        "string_size",
+        "random_float",
+        "random_int",
+        "mg_swap",
+        "split",
+        "join",
+        "strTo",
+        "toStr",
+        "serialize_command_to_xml",
+        "create_command_from_xml",
+        "serialize_command_to_json",
+        "create_command_from_json",
+        "clone_object",
+        "fs_get_string",
+        "Default",
+        "format",
+        };
     for (auto &fn : cls->functions) {
         for (auto &arg : fn.callable_args) {
             auto &t = arg.type;
@@ -596,6 +632,15 @@ WriterCpp::getIncludesForHeader(const std::shared_ptr<Class> &cls)
             addObj(inc, fn.return_type);
         else
             addObj(fwd, fn.return_type);
+        
+        if(!fn.template_args.empty() || fn.is_template){
+            for(auto& func : mg_extensions){
+                if(fn.body.find(func) != std::string::npos){
+                    inc.insert("mg_extensions");
+                    break;
+                }
+            }
+        }
     }
     // superclasses
     if(!cls->parent_class_name.empty())
@@ -659,11 +704,14 @@ std::string WriterCpp::buildIncludes(
         {"std::map",   "<map>"},
         {"std::set",   "<set>"},
         {"std::string","<string>"},
+        {"std::tuple","<tuple>"},
         {"std::atomic","<atomic>"},
         {"Json::Value","\"jsoncpp/json.h\""},
         {"pugi::xml_node","\"pugixml/pugixml.hpp\""},
         {"Observer","\"Observer.h\""},
-        {"intrusive_ptr","\"intrusive_ptr.h\""}
+        {"intrusive_ptr","\"intrusive_ptr.h\""},
+        {"ecs_helper", "\"" + getPathToRoot(cls) + "ecs_helper.h\""},
+        {"mg_extensions", "\"" + getPathToRoot(cls) + "mg_extensions.h\""},
     };
     std::vector<std::string> lines;
     for (auto &t : incs) {

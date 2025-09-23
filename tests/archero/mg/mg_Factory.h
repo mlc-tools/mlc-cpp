@@ -9,6 +9,15 @@
 #include <sstream>
 #include "pugixml/pugixml.hpp"
 
+#define REGISTRATION_OBJECT(TType)                                      \\
+class registration__##TType                                             \\
+{                                                                       \\
+public:                                                                 \\
+    registration__##TType()                                             \\
+    {                                                                   \\
+        Factory::shared().registrationCommand<TType>(TType::TYPE);      \\
+    }                                                                   \\
+} ___registration___##TType;
 
 namespace mg
 {
@@ -76,4 +85,4 @@ namespace mg
     };
 }
 
-#endif // __mg_Factory_h__
+#endif

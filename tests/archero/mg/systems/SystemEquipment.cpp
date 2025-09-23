@@ -1,6 +1,7 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
 #include "../DataStorage.h"
+#include "../Observable.h"
 #include "../data/DataEquipment.h"
 #include "../data/DataMergeLevel.h"
 #include "../data/EquipmentSlot.h"
@@ -8,7 +9,11 @@
 #include "../model/ModelEquipment.h"
 #include "../model/ModelEquipmentSlot.h"
 #include "../model/ModelUser.h"
+#include "../model/System.h"
 #include "SystemEquipment.h"
+#include <map>
+#include <string>
+#include <vector>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -80,6 +85,7 @@ namespace mg
         {
             unequip(this->slots[slot]->item);
         }
+
         this->slots[slot]->item = model;
         model->equip = true;
         this->event_slot_changed.notify(slot);

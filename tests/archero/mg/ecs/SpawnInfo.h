@@ -14,8 +14,6 @@ namespace mg
     class DeserializerXml;
     class SerializerJson;
     class DeserializerJson;
-    class DataUnit;
-    class Vector;
 
     class SpawnInfo
     {

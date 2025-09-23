@@ -5,6 +5,7 @@
 #include "ModelEcsBase.h"
 #include "SystemFreezing.h"
 #include "UnitStat.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -35,11 +36,13 @@ namespace mg
         {
             return;
         }
+
         if(target_stats)
         {
             auto resist = target_stats->get(model, UnitStat::freezing_resist);
             damage *= (1 - resist);
         }
+
         freeze->damage += damage;
         if(freeze->damage >= 1 && target_stats)
         {
@@ -89,7 +92,6 @@ namespace mg
 
     int SystemFreezing::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -97,7 +99,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool SystemFreezing::operator ==(const SystemFreezing& rhs) const

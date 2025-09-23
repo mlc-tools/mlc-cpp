@@ -7,6 +7,7 @@
 #include "SystemDamage.h"
 #include "SystemFireDamage.h"
 #include "UnitStat.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -82,7 +83,6 @@ namespace mg
 
     int SystemFireDamage::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -90,7 +90,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool SystemFireDamage::operator ==(const SystemFireDamage& rhs) const

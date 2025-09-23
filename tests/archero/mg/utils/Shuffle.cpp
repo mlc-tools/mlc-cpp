@@ -1,6 +1,9 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "../mg_extensions.h"
 #include "Shuffle.h"
+#include <map>
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -26,7 +29,6 @@ namespace mg
 
     int Shuffle::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -34,7 +36,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool Shuffle::operator ==(const Shuffle& rhs) const

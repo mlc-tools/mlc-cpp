@@ -5,6 +5,7 @@
 #include "Ground.h"
 #include "Polygon.h"
 #include "Vector.h"
+#include <string>
 #include <vector>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
@@ -99,7 +100,6 @@ namespace mg
 
     int Ground::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -107,7 +107,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool Ground::operator ==(const Ground& rhs) const

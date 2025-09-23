@@ -1,6 +1,8 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
 #include "Vector.h"
+#include <string>
+#include <vector>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -114,6 +116,7 @@ namespace mg
     Vector& Vector::normalize(float desired_length)
     {
         assert(std::fabs(desired_length) > FLOAT_SMALL);
+
         auto len = this->length();
         if(len > FLOAT_SMALL)
         {
@@ -181,6 +184,7 @@ namespace mg
     std::vector<Vector> Vector::get_points_on_radius(float radius, int count)
     {
         std::vector<Vector> points;
+
         float pi = std::acos(-1.0f);
         float step = 2.0f * pi / static_cast<float>(count);
         for (int i=0; i<count; ++i)
@@ -190,6 +194,7 @@ namespace mg
             float py    = std::sin(angle) * radius;
             points.push_back(Vector(px, py));
         }
+
         return points;
     }
 
@@ -214,9 +219,12 @@ namespace mg
         {
             return 0.0f;
         }
+
         float cosVal = dot / len_prod;
+
         if (cosVal >  1.0f) cosVal =  1.0f;
         if (cosVal < -1.0f) cosVal = -1.0f;
+
         float rad = std::acos(cosVal);
         return rad;
     }
@@ -227,8 +235,10 @@ namespace mg
         {
             return 0.0f;
         }
+
         float cross = a.x * b.y - a.y * b.x;
         float dot   = a.x * b.x + a.y * b.y;
+
         float rad = std::atan2(cross, dot);
         return rad;
     }
@@ -240,7 +250,6 @@ namespace mg
 
     int Vector::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -248,7 +257,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool Vector::operator ==(const Vector& rhs) const

@@ -1,7 +1,10 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "ComponentBase.h"
 #include "ComponentHeartAddStats.h"
+#include "DataStatUpgrade.h"
 #include "ModelEcsBase.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -25,6 +28,7 @@ namespace mg
     {
         bool result = this->ComponentBase::operator ==(rhs);
         result = result && this->percent == rhs.percent;
+        result = result && ((this->stat_upgrade == rhs.stat_upgrade) || (this->stat_upgrade != nullptr && rhs.stat_upgrade != nullptr && *this->stat_upgrade == *rhs.stat_upgrade));
         return result;
     }
 

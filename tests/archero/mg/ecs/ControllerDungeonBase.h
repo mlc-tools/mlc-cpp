@@ -41,7 +41,7 @@ namespace mg
         virtual bool operator !=(const ControllerDungeonBase& rhs) const;
         ControllerDungeonBase(const ControllerDungeonBase& rhs);
         virtual const ControllerDungeonBase& operator =(const ControllerDungeonBase& rhs);
-        virtual std::string get_type() const override;
+        virtual std::string get_type() const;
         virtual void serialize_xml(SerializerXml& serializer) const override;
         virtual void deserialize_xml(DeserializerXml& deserializer) override;
         virtual void serialize_json(SerializerJson& serializer) const override;

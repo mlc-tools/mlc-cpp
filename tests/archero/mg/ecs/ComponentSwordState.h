@@ -21,7 +21,8 @@ namespace mg
         ComponentSwordState();
 
         ComponentSwordState(const BaseEnum& rhs):BaseEnum(rhs){}
-        const ComponentSwordState& operator =(const BaseEnum& rhs) { this->value = rhs.operator int(); return *this; } ComponentSwordState(int _value);
+        const ComponentSwordState& operator =(const BaseEnum& rhs) { this->value = rhs.operator int(); return *this; }
+        ComponentSwordState(int _value);
         ComponentSwordState(const ComponentSwordState& rhs);
         ComponentSwordState(const std::string& _value);
         const ComponentSwordState& operator =(const ComponentSwordState& rhs);
@@ -37,9 +38,9 @@ namespace mg
         operator std::string() const;
         std::string str() const;
 
-        static constexpr BaseEnum appearance = (1 << 0);
-        static constexpr BaseEnum prepare_to_fly = (1 << 1);
-        static constexpr BaseEnum fly = (1 << 2);
+        static constexpr BaseEnum appearance = (1);
+        static constexpr BaseEnum prepare_to_fly = (2);
+        static constexpr BaseEnum fly = (4);
 
     };
 } //namespace mg

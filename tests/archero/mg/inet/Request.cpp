@@ -1,6 +1,9 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "CommandBase.h"
 #include "Request.h"
+#include "ResponseError.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"

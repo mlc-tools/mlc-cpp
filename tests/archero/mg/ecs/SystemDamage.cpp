@@ -15,6 +15,7 @@
 #include "SystemVampire.h"
 #include "Transform.h"
 #include "UnitStat.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -148,6 +149,7 @@ namespace mg
         {
             damage = health->get_future_damage(shooter_id);
         }
+
         if(auto component_effects = model->get<ComponentEffects>(shooter_id))
         {
             damage = component_effects->modify_damage(damage);
@@ -293,7 +295,6 @@ namespace mg
 
     int SystemDamage::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -301,7 +302,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool SystemDamage::operator ==(const SystemDamage& rhs) const

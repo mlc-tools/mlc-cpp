@@ -1,6 +1,8 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
 #include "Modifier.h"
+#include "ModifierType.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -10,8 +12,8 @@ namespace mg
     const std::string Modifier::TYPE("Modifier");
 
     Modifier::Modifier()
-    : type(ModifierType::add)
-    , value(0.0)
+    : type()
+    , value(0.0f)
     , string_value("")
     , priority(0)
     , name("")
@@ -43,7 +45,6 @@ namespace mg
 
     int Modifier::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -51,7 +52,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool Modifier::operator ==(const Modifier& rhs) const
@@ -94,7 +94,7 @@ namespace mg
     void Modifier::serialize_xml(SerializerXml& serializer) const
     {
         serializer.serialize(type, "type");
-        serializer.serialize(value, "value", float(0.0));
+        serializer.serialize(value, "value", float(0.0f));
         serializer.serialize(string_value, "string_value", std::string(""));
         serializer.serialize(priority, "priority", int(0));
         serializer.serialize(name, "name", std::string(""));
@@ -103,7 +103,7 @@ namespace mg
     void Modifier::deserialize_xml(DeserializerXml& deserializer)
     {
         deserializer.deserialize(type, "type");
-        deserializer.deserialize(value, "value", float(0.0));
+        deserializer.deserialize(value, "value", float(0.0f));
         deserializer.deserialize(string_value, "string_value", std::string(""));
         deserializer.deserialize(priority, "priority", int(0));
         deserializer.deserialize(name, "name", std::string(""));
@@ -112,7 +112,7 @@ namespace mg
     void Modifier::serialize_json(SerializerJson& serializer) const
     {
         serializer.serialize(type, "type");
-        serializer.serialize(value, "value", float(0.0));
+        serializer.serialize(value, "value", float(0.0f));
         serializer.serialize(string_value, "string_value", std::string(""));
         serializer.serialize(priority, "priority", int(0));
         serializer.serialize(name, "name", std::string(""));
@@ -121,7 +121,7 @@ namespace mg
     void Modifier::deserialize_json(DeserializerJson& deserializer)
     {
         deserializer.deserialize(type, "type");
-        deserializer.deserialize(value, "value", float(0.0));
+        deserializer.deserialize(value, "value", float(0.0f));
         deserializer.deserialize(string_value, "string_value", std::string(""));
         deserializer.deserialize(priority, "priority", int(0));
         deserializer.deserialize(name, "name", std::string(""));

@@ -4,6 +4,7 @@
 #include "Response.h"
 #include "ResponseError.h"
 #include "ResponseOk.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"

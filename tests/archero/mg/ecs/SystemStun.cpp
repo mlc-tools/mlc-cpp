@@ -3,6 +3,7 @@
 #include "ComponentStun.h"
 #include "ModelEcsBase.h"
 #include "SystemStun.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -57,6 +58,7 @@ namespace mg
         {
             return;
         }
+
         stun->activated = true;
         stun->timer = std::max(stun->timer, duration);
         model->event_stun_activated[target_id].notify();
@@ -69,7 +71,6 @@ namespace mg
 
     int SystemStun::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -77,7 +78,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool SystemStun::operator ==(const SystemStun& rhs) const

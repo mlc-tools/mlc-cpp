@@ -14,7 +14,6 @@ namespace mg
     class DeserializerXml;
     class SerializerJson;
     class DeserializerJson;
-    class Vector;
 
     class Segment : public PhysicalBody
     {

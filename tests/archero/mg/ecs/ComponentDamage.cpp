@@ -1,7 +1,9 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "ComponentBase.h"
 #include "ComponentDamage.h"
 #include "ModelEcsBase.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -14,7 +16,7 @@ namespace mg
     : attacker_id(0)
     , bullet_id(0)
     , target_id(0)
-    , damage(0.0)
+    , damage(0.0f)
     {
 
     }
@@ -79,7 +81,7 @@ namespace mg
         serializer.serialize(attacker_id, "attacker_id", int(0));
         serializer.serialize(bullet_id, "bullet_id", int(0));
         serializer.serialize(target_id, "target_id", int(0));
-        serializer.serialize(damage, "damage", float(0.0));
+        serializer.serialize(damage, "damage", float(0.0f));
     }
 
     void ComponentDamage::deserialize_xml(DeserializerXml& deserializer)
@@ -88,7 +90,7 @@ namespace mg
         deserializer.deserialize(attacker_id, "attacker_id", int(0));
         deserializer.deserialize(bullet_id, "bullet_id", int(0));
         deserializer.deserialize(target_id, "target_id", int(0));
-        deserializer.deserialize(damage, "damage", float(0.0));
+        deserializer.deserialize(damage, "damage", float(0.0f));
     }
 
     void ComponentDamage::serialize_json(SerializerJson& serializer) const
@@ -97,7 +99,7 @@ namespace mg
         serializer.serialize(attacker_id, "attacker_id", int(0));
         serializer.serialize(bullet_id, "bullet_id", int(0));
         serializer.serialize(target_id, "target_id", int(0));
-        serializer.serialize(damage, "damage", float(0.0));
+        serializer.serialize(damage, "damage", float(0.0f));
     }
 
     void ComponentDamage::deserialize_json(DeserializerJson& deserializer)
@@ -106,7 +108,7 @@ namespace mg
         deserializer.deserialize(attacker_id, "attacker_id", int(0));
         deserializer.deserialize(bullet_id, "bullet_id", int(0));
         deserializer.deserialize(target_id, "target_id", int(0));
-        deserializer.deserialize(damage, "damage", float(0.0));
+        deserializer.deserialize(damage, "damage", float(0.0f));
     }
 
 } //namespace mg

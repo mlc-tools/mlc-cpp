@@ -8,6 +8,7 @@
 #include "SystemCreateUnitsOnDeath.h"
 #include "Transform.h"
 #include "Vector.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -66,7 +67,6 @@ namespace mg
 
     int SystemCreateUnitsOnDeath::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -74,7 +74,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool SystemCreateUnitsOnDeath::operator ==(const SystemCreateUnitsOnDeath& rhs) const

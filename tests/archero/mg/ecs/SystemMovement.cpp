@@ -19,6 +19,8 @@
 #include "Transform.h"
 #include "UnitStat.h"
 #include "Vector.h"
+#include <map>
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -66,10 +68,7 @@ namespace mg
             {
                 auto __size__ = model->components_move_direction.size();
                 model->remove_entity(component->id);
-                if(__size__ != model->components_move_direction.size())
-                {
-                    __index__ -= 1;
-                }
+                if(__size__ != model->components_move_direction.size()) { --__index__; }
             }
         }
     }
@@ -177,6 +176,7 @@ namespace mg
         bool can = true;
         Vector wall_normal;
         bool has_wall_collision = false;
+
         {
             bool slide_handled = false;
             auto body = model->get<ComponentBody>(transform->id);
@@ -223,10 +223,12 @@ namespace mg
                 }
             }
         }
+
         if(!can && in_map(transform->id, SystemMovement::event_on_wall))
         {
             SystemMovement::event_on_wall[transform->id].notify();
         }
+
         if(can)
         {
             transform->set(new_pos);
@@ -271,7 +273,6 @@ namespace mg
 
     int SystemMovement::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -279,7 +280,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool SystemMovement::operator ==(const SystemMovement& rhs) const

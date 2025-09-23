@@ -4,6 +4,7 @@
 #include "ModelEcsBase.h"
 #include "SystemGate.h"
 #include "Transform.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -35,7 +36,6 @@ namespace mg
                 gate->clean = true;
             }
         });
-
         for(int __index__ = 0; __index__ < model->components_gate.size(); ++__index__)
         {
             auto& gate = model->components_gate.at(__index__);
@@ -43,10 +43,7 @@ namespace mg
             {
                 auto __size__ = model->components_gate.size();
                 model->remove_entity(gate->id);
-                if(__size__ != model->components_gate.size())
-                {
-                    __index__ -= 1;
-                }
+                if(__size__ != model->components_gate.size()) { --__index__; }
             }
         }
     }
@@ -58,7 +55,6 @@ namespace mg
 
     int SystemGate::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -66,7 +62,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool SystemGate::operator ==(const SystemGate& rhs) const

@@ -1,6 +1,8 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
 #include "DataLadderLevels.h"
+#include <string>
+#include <vector>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -34,6 +36,7 @@ namespace mg
         int min_index = 0;
         int max_index = list_size(this->values);
         int index = round(std::ceil((max_index + min_index) / 2));
+
         while(max_index - min_index > 1)
         {
             auto value = this->values.at(index);
@@ -98,7 +101,6 @@ namespace mg
 
     int DataLadderLevels::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -106,7 +108,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool DataLadderLevels::operator ==(const DataLadderLevels& rhs) const

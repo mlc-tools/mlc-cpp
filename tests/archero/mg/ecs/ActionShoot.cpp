@@ -1,9 +1,11 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "ActionBase.h"
 #include "ActionShoot.h"
 #include "BuilderBullet.h"
 #include "ComponentBusy.h"
 #include "ComponentSpineInfo.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"

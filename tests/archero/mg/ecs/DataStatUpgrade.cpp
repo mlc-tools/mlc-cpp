@@ -2,8 +2,12 @@
 #include "../mg_Factory.h"
 #include "ComponentBase.h"
 #include "DataStatUpgrade.h"
+#include "DataStatUpgradeVisual.h"
 #include "Modifier.h"
+#include "SkillRarity.h"
 #include "UnitStat.h"
+#include <string>
+#include <vector>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -14,7 +18,7 @@ namespace mg
 
     DataStatUpgrade::DataStatUpgrade()
     : name("")
-    , rarity(SkillRarity::fine)
+    , rarity()
     , stats()
     , modifiers()
     , components()
@@ -37,7 +41,6 @@ namespace mg
 
     int DataStatUpgrade::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -45,7 +48,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool DataStatUpgrade::operator ==(const DataStatUpgrade& rhs) const

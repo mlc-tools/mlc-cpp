@@ -1,8 +1,10 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "ComponentBase.h"
 #include "ComponentSide.h"
 #include "ModelEcsBase.h"
 #include "Side.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -12,7 +14,7 @@ namespace mg
     const std::string ComponentSide::TYPE("ComponentSide");
 
     ComponentSide::ComponentSide()
-    : side(Side::ally)
+    : side()
     {
 
     }

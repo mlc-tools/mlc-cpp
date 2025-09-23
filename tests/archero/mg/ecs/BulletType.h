@@ -21,7 +21,8 @@ namespace mg
         BulletType();
 
         BulletType(const BaseEnum& rhs):BaseEnum(rhs){}
-        const BulletType& operator =(const BaseEnum& rhs) { this->value = rhs.operator int(); return *this; } BulletType(int _value);
+        const BulletType& operator =(const BaseEnum& rhs) { this->value = rhs.operator int(); return *this; }
+        BulletType(int _value);
         BulletType(const BulletType& rhs);
         BulletType(const std::string& _value);
         const BulletType& operator =(const BulletType& rhs);
@@ -37,13 +38,13 @@ namespace mg
         operator std::string() const;
         std::string str() const;
 
-        static constexpr BaseEnum arrow = (1 << 0);
-        static constexpr BaseEnum fireball = (1 << 1);
-        static constexpr BaseEnum balistic = (1 << 2);
-        static constexpr BaseEnum lightning = (1 << 3);
-        static constexpr BaseEnum laser = (1 << 4);
-        static constexpr BaseEnum meteor = (1 << 5);
-        static constexpr BaseEnum none = (1 << 6);
+        static constexpr BaseEnum arrow = (1);
+        static constexpr BaseEnum fireball = (2);
+        static constexpr BaseEnum balistic = (4);
+        static constexpr BaseEnum lightning = (8);
+        static constexpr BaseEnum laser = (16);
+        static constexpr BaseEnum meteor = (32);
+        static constexpr BaseEnum none = (64);
 
     };
 } //namespace mg

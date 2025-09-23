@@ -19,6 +19,7 @@
 #include "Transform.h"
 #include "UnitStat.h"
 #include "Vector.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -74,6 +75,7 @@ namespace mg
     {
         assert(component->recharge <= 0);
         auto component_stats = model->get<ComponentStats>(component->id);
+
         int target = -1;
         auto target_highlight = model->get<ComponentTargetHighlight>(component->id);
         if(target_highlight)
@@ -81,11 +83,13 @@ namespace mg
             target = this->find_target(model, component);
             target_highlight->target_id = target;
         }
+
         bool can_shoot_on_move = component_stats->get(model, UnitStat::attack_on_move) > 0;
         if(!can_shoot_on_move && (model->get<MoveDirection>(component->id) || model->get<MoveToTarget>(component->id)))
         {
             return;
         }
+
         if(target == -1)
         {
             target = this->find_target(model, component);
@@ -110,6 +114,7 @@ namespace mg
         auto min_radius_sq = radius * radius;
         auto min_hp = 10000;
         auto result = 0;
+
         model->each_if<ComponentSide, ComponentTargetable, ComponentHealth, Transform>(
         [&](auto& component_side, auto& targetable, auto& health, auto& transform)
         {
@@ -125,6 +130,7 @@ namespace mg
                 min_hp = health->get_future_value();
             }
         });
+
         if(result == 0 && with_future)
         {
             return get_nearest_entity_in_radius(model, shooter, radius, side_shooter, transform_shooter, false);
@@ -136,6 +142,7 @@ namespace mg
     {
         auto stats = model->get<ComponentStats>(component->id);
         model->event_prepare_to_shoot[component->id].notify(target);
+
         float bullets_count = 1 + stats->get(model, UnitStat::bullets_count);
         auto direction = model->get<Transform>(target)->position - model->get<Transform>(component->id)->position;
         auto normal = Vector(0, 0);
@@ -151,6 +158,7 @@ namespace mg
 
             offset -= normal;
         }
+
         float bullets_count_back = stats->get(model, UnitStat::bullets_count_back);
         if(bullets_count_back > 0)
         {
@@ -164,6 +172,7 @@ namespace mg
                 back_offset -= back_normal;
             }
         }
+
         float bullets_count_side = stats->get(model, UnitStat::bullets_count_side);
         if(bullets_count_side > 0)
         {
@@ -199,18 +208,24 @@ namespace mg
                 }
             }
         }
+
         auto meteor_chance = stats->get(model, UnitStat::meteor_chance);
         if(meteor_chance > 0 && random_float() < meteor_chance)
         {
             int meteor_count = 1 + stats->get(model, UnitStat::meteor_count);
             SystemMeteor::create_meteor(model, component->id, meteor_count, target);
         }
+
         model->event_shoot[component->id].notify(target);
         component->recharge = model->get<ComponentStats>(component->id)->get(model, UnitStat::recharge);
         auto __tmp_attack_animation_timer = model->get<ComponentSpineInfo>(component->id);
+
         if(__tmp_attack_animation_timer)
+
         {
+
             component->attack_animation_timer = __tmp_attack_animation_timer->get_animation_duration("attack");
+
         }
     }
 
@@ -221,7 +236,6 @@ namespace mg
 
     int SystemShoot::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -229,7 +243,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool SystemShoot::operator ==(const SystemShoot& rhs) const

@@ -1,7 +1,10 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "BBox.h"
 #include "Polygon.h"
 #include "Vector.h"
+#include <string>
+#include <vector>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -29,8 +32,10 @@ namespace mg
         {
             return false;
         }
+
         float last_cross = 0.0f;
         bool has_sign = false;
+
         for (int i = 0; i < n; ++i)
         {
             Vector a = points[i];
@@ -61,6 +66,7 @@ namespace mg
                 }
             }
         }
+
         return true;
     }
 
@@ -71,7 +77,6 @@ namespace mg
 
     int Polygon::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -79,7 +84,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool Polygon::operator ==(const Polygon& rhs) const

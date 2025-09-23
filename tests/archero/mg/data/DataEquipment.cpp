@@ -1,8 +1,13 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "../VisualItem.h"
 #include "../ecs/UnitStat.h"
 #include "DataEquipment.h"
 #include "DataEquipmentStat.h"
+#include "EquipmentSlot.h"
+#include <map>
+#include <string>
+#include <vector>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -15,8 +20,8 @@ namespace mg
     : visual()
     , name("")
     , stats()
-    , main_stat(UnitStat::none)
-    , slot(EquipmentSlot::weapon)
+    , main_stat()
+    , slot()
     , merge_stats()
     , _reference_counter(1)
     {
@@ -34,7 +39,6 @@ namespace mg
 
     int DataEquipment::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -42,7 +46,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool DataEquipment::operator ==(const DataEquipment& rhs) const

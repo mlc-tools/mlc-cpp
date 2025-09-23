@@ -5,6 +5,7 @@
 #include "ModelEcsBase.h"
 #include "SystemDeath.h"
 #include "UnitStat.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -36,7 +37,6 @@ namespace mg
 
     void SystemDeath::clean(ModelEcsBase* model)
     {
-
         for(int __index__ = 0; __index__ < model->components_health.size(); ++__index__)
         {
             auto& component = model->components_health.at(__index__);
@@ -44,10 +44,7 @@ namespace mg
             {
                 auto __size__ = model->components_health.size();
                 model->remove_entity(component->id);
-                if(__size__ != model->components_health.size())
-                {
-                    __index__ -= 1;
-                }
+                if(__size__ != model->components_health.size()) { --__index__; }
             }
         }
     }
@@ -79,7 +76,6 @@ namespace mg
 
     int SystemDeath::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -87,7 +83,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool SystemDeath::operator ==(const SystemDeath& rhs) const

@@ -3,7 +3,9 @@
 #include "../ecs/SkillRarity.h"
 #include "../model/System.h"
 #include "DataParams.h"
+#include <map>
 #include <string>
+#include <vector>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -38,7 +40,6 @@ namespace mg
 
     int DataParams::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -46,7 +47,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool DataParams::operator ==(const DataParams& rhs) const

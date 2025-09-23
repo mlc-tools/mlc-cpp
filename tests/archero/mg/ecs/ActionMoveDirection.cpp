@@ -1,8 +1,11 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "ActionBase.h"
 #include "ActionMoveDirection.h"
 #include "MoveDirection.h"
 #include "SystemMovement.h"
+#include "Vector.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -26,6 +29,7 @@ namespace mg
         movement->direction = this->choose_direction();
         model->add(movement, this->entity_id);
         this->common_dictionary->vectors["move_direction"] = movement->direction;
+
         SystemMovement::event_on_wall[this->entity_id].add(this, [this]()
         {
             auto movement = this->model->get<MoveDirection>(this->entity_id);
@@ -50,11 +54,6 @@ namespace mg
                 this->_finished = true;
             }
 
-
-
-
-
-
         });
     }
 
@@ -71,6 +70,7 @@ namespace mg
     void ActionMoveDirection::on_finish()
     {
         model->remove(model->get<MoveDirection>(this->entity_id));
+
         map_remove(SystemMovement::event_on_wall, this->entity_id);
     }
 

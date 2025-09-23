@@ -1,7 +1,9 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "ComponentBase.h"
 #include "ComponentBody.h"
 #include "ModelEcsBase.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -11,7 +13,7 @@ namespace mg
     const std::string ComponentBody::TYPE("ComponentBody");
 
     ComponentBody::ComponentBody()
-    : size(0.0)
+    : size(0.0f)
     {
 
     }
@@ -67,25 +69,25 @@ namespace mg
     void ComponentBody::serialize_xml(SerializerXml& serializer) const
     {
         ComponentBase::serialize_xml(serializer);
-        serializer.serialize(size, "size", float(0.0));
+        serializer.serialize(size, "size", float(0.0f));
     }
 
     void ComponentBody::deserialize_xml(DeserializerXml& deserializer)
     {
         ComponentBase::deserialize_xml(deserializer);
-        deserializer.deserialize(size, "size", float(0.0));
+        deserializer.deserialize(size, "size", float(0.0f));
     }
 
     void ComponentBody::serialize_json(SerializerJson& serializer) const
     {
         ComponentBase::serialize_json(serializer);
-        serializer.serialize(size, "size", float(0.0));
+        serializer.serialize(size, "size", float(0.0f));
     }
 
     void ComponentBody::deserialize_json(DeserializerJson& deserializer)
     {
         ComponentBase::deserialize_json(deserializer);
-        deserializer.deserialize(size, "size", float(0.0));
+        deserializer.deserialize(size, "size", float(0.0f));
     }
 
 } //namespace mg

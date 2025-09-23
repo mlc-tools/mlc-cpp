@@ -41,6 +41,13 @@ inline std::vector<std::pair<SerializeFormat, std::string>> getAllSerializeForma
 }
 
 class Parser;
+class Model;
+
+class CustomGenerator{
+public:
+    virtual void generate(Model& model) = 0;
+    virtual void modifySources(Model& model, const std::shared_ptr<Class>& cls, std::string& header, std::string& source) = 0;
+};
 
 class Model {
 public:
@@ -52,72 +59,21 @@ public:
     Model& operator=(const Model&) = default;
     Model& operator=(Model&&) noexcept = default;
 
-    // Создаёт пустую копию с теми же настройками, но без сущностей
-    Model emptyCopy() const {
-        Model m = *this;
-        m.classes.clear();
-        m.classesForData.clear();
-        m.classesDict.clear();
-        m.includes.clear();
-        return m;
-    }
+    Model emptyCopy() const;
+    void clearData();
+    void add_class(const std::shared_ptr<Class>& cls);
+    void add_classes(const std::vector<std::shared_ptr<Class>>& clsList);
+    std::shared_ptr<Class> get_class(const std::string& name) const;
+    bool hasClass(const std::string& name) const;
 
-    // Очищает данные (парсер не трогать)
-    void clearData() {
-        parser = nullptr;
-        classes.clear();
-        classesForData.clear();
-        classesDict.clear();
-        out_dict.clear();
-        files.clear();
-        created_files.clear();
-    }
-
-    // Добавление классов
-    void add_class(const std::shared_ptr<Class>& cls) {
-        classesDict[cls->name] = cls;
-        classes.push_back(cls);
-    }
-
-    void add_classes(const std::vector<std::shared_ptr<Class>>& clsList) {
-        for (auto& cls : clsList) {
-            classesDict[cls->name] = cls;
-            classes.push_back(cls);
-        }
-    }
-
-    // Поиск
-    std::shared_ptr<Class> get_class(const std::string& name) const {
-        auto it = classesDict.find(name);
-        return it != classesDict.end() ? it->second : nullptr;
-    }
-    bool hasClass(const std::string& name) const {
-        return classesDict.find(name) != classesDict.end();
-    }
-
-    // Фильтры по стороне и языку
-    bool is_side(const Side& s) const {
-        return static_cast<int>(side) & static_cast<int>(s);
-    }
-    bool isLang(const std::string& lang) const {
-        return lang.empty() || lang == language;
-    }
+    bool is_side(const Side& s) const;
+    bool isLang(const std::string& lang) const;
 
     // Работа с файлами
-    void addFile(const std::shared_ptr<Class>& cls, const std::string& localPath, const std::string& content) {
-        files.emplace_back(cls, localPath, content);
-    }
+    void addFile(const std::shared_ptr<Class>& cls, const std::string& localPath, const std::string& content);
 
     // Получить подклассы по имени супер-класса
-    std::vector<std::shared_ptr<Class>> getSubclassesOfClass(const std::string& superName) const {
-        std::vector<std::shared_ptr<Class>> result;
-        for (auto& cls : classes) {
-            if (cls->parent_class_name == superName || (!cls->parent.expired() && cls->parent.lock()->name == superName)) {
-                result.push_back(cls);
-            }
-        }
-        return result;
-    }
+    std::vector<std::shared_ptr<Class>> getSubclassesOfClass(const std::string& superName) const;
     
     void create_std_types();
     
@@ -155,7 +111,7 @@ public:
     bool generateFactory = true;
     std::function<bool(const std::string&)> filterCode;
     std::function<bool(const std::string&)> filterData;
-    std::shared_ptr<void> customGenerator = nullptr;
+    std::shared_ptr<CustomGenerator> customGenerator = nullptr;
     std::vector<SerializeFormat> serializeProtocol;
     bool joinToOneFile = false;
     bool autoRegistration = true;

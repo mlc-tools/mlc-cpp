@@ -2,6 +2,7 @@
 #include "../mg_Factory.h"
 #include "Dictionary.h"
 #include "Vector.h"
+#include <map>
 #include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
@@ -30,7 +31,6 @@ namespace mg
 
     int Dictionary::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -38,7 +38,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool Dictionary::operator ==(const Dictionary& rhs) const

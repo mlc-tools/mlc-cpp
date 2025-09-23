@@ -2,10 +2,12 @@
 #include "../mg_Factory.h"
 #include "Circle.h"
 #include "CollisionChecker.h"
+#include "CollisionResult.h"
 #include "Polygon.h"
 #include "Ray.h"
 #include "Segment.h"
 #include "Vector.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -28,23 +30,28 @@ namespace mg
     {
         auto len = ray.direction.length();
         assert(fabs(len - 1) < 0.01f);
+
         auto m = ray.origin - circle.center;
         float b = m.dot(ray.direction);
         float c = m.dot(m) - circle.radius * circle.radius;
+
         if (c > 0.0f && b > 0.0f)
         {
             return false;
         }
+
         float disc = b * b - c;
         if (disc < 0.0f)
         {
             return false;
         }
+
         float tEnter = -b - sqrtf(std::max(0.0f, disc));
         if (c <= 0.0f)
         {
             tEnter = 0.0f;
         }
+
         return (tEnter >= 0.0f && tEnter <= std::numeric_limits<float>::infinity());
     }
 
@@ -56,6 +63,7 @@ namespace mg
         {
             return seg.start.get_distance_sq(circle.center) <= circle.radius * circle.radius;
         }
+
         float t = (circle.center - seg.start).dot(d) / len_sq;
         if (t < 0.0f)
         {
@@ -65,6 +73,7 @@ namespace mg
         {
             t = 1.0f;
         }
+
         Vector closest = seg.start + d * t;
         return closest.get_distance_sq(circle.center) <= circle.radius * circle.radius;
     }
@@ -73,10 +82,12 @@ namespace mg
     {
         auto len = ray.direction.length();
         assert(fabs(len - 1) < 0.01f);
+
         if (polygon.points.size() < 3)
         {
             return false;
         }
+
         {
             float tmin = -std::numeric_limits<float>::infinity();
             float tmax = std::numeric_limits<float>::infinity();
@@ -110,8 +121,10 @@ namespace mg
                 return false;
             }
         }
+
         float closest_t = std::numeric_limits<float>::infinity();
         bool hit = false;
+
         int count = polygon.points.size();
         for (int i = 0; i < count; ++i)
         {
@@ -132,10 +145,12 @@ namespace mg
                 hit = true;
             }
         }
+
         if (hit)
         {
             collision_point = ray.origin + ray.direction * closest_t;
         }
+
         return hit;
     }
 
@@ -145,11 +160,13 @@ namespace mg
         {
             return false;
         }
+
         if (point.x < polygon.bbox.min.x || point.x > polygon.bbox.max.x ||
         point.y < polygon.bbox.min.y || point.y > polygon.bbox.max.y)
         {
             return false;
         }
+
         bool inside = false;
         int count = polygon.points.size();
         for (int i = 0, j = count - 1; i < count; j = i++)
@@ -177,6 +194,7 @@ namespace mg
                 }
             }
         }
+
         return inside;
     }
 
@@ -188,6 +206,7 @@ namespace mg
         {
             return result;
         }
+
         if (circle.center.x + circle.radius < polygon.bbox.min.x ||
         circle.center.x - circle.radius > polygon.bbox.max.x ||
         circle.center.y + circle.radius < polygon.bbox.min.y ||
@@ -195,8 +214,10 @@ namespace mg
         {
             return result;
         }
+
         float minOverlap = std::numeric_limits<float>::infinity();
         Vector smallestAxis;
+
         for (int i = 0; i < vertexCount; ++i)
         {
             Vector edge = polygon.points[(i + 1) % vertexCount] - polygon.points[i];
@@ -227,6 +248,7 @@ namespace mg
                 smallestAxis = axis;
             }
         }
+
         {
             float minDistSq = std::numeric_limits<float>::infinity();
             Vector closestVertex;
@@ -269,14 +291,19 @@ namespace mg
                 }
             }
         }
+
         result.collision = true;
+
         Vector polyCenter(0, 0);
         for (const auto& p : polygon.points) polyCenter += p;
         polyCenter /= (float)polygon.points.size();
+
         float centerDot = (circle.center - polyCenter).dot(smallestAxis);
         float sign = (centerDot < 0) ? -1.0f : 1.0f;
+
         result.mtv = smallestAxis * (minOverlap * sign);
         result.penetration = minOverlap;
+
         return result;
     }
 
@@ -287,7 +314,6 @@ namespace mg
 
     int CollisionChecker::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -295,7 +321,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool CollisionChecker::operator ==(const CollisionChecker& rhs) const

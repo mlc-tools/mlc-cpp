@@ -8,6 +8,7 @@
 #include "ModelEcsBase.h"
 #include "SystemHealingOnChangeMaxHp.h"
 #include "UnitStat.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -54,6 +55,7 @@ namespace mg
             }
 
         });
+
         if(!model->wave_finished)
         {
             model->each_if<ComponentRandomHealing,ComponentHealth>(
@@ -109,7 +111,6 @@ namespace mg
 
     int SystemHealingOnChangeMaxHp::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -117,7 +118,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool SystemHealingOnChangeMaxHp::operator ==(const SystemHealingOnChangeMaxHp& rhs) const

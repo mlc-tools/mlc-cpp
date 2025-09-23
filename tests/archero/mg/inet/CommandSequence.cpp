@@ -3,6 +3,8 @@
 #include "CommandBase.h"
 #include "CommandSequence.h"
 #include "IVisitorResponse.h"
+#include <string>
+#include <vector>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"

@@ -15,6 +15,8 @@
 #include "Transform.h"
 #include "UnitStat.h"
 #include "Vector.h"
+#include <string>
+#include <vector>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -113,6 +115,7 @@ namespace mg
         {
             sword_cast->points = this->generate_base_points(model, idle_swords);
         }
+
         int index = 0;
         for(auto& component : model->components_sword)
         {
@@ -149,6 +152,7 @@ namespace mg
         {
             sword->pos_destination = player_transform->position + sword->player_offset;
         }
+
         else
         {
             auto t = 1.f - sword->timer / sword->appearance_duration;
@@ -172,14 +176,18 @@ namespace mg
         auto center = sword->prepare_fly_start_position;
         auto offset_to_target = target_position - center;
         offset_to_target.normalize();
+
         auto normal = Vector::get_normal_to(offset_to_target);
         if((sword->player_offset.x > 0 && normal.x < 0) || (sword->player_offset.x < 0 && normal.x > 0))
         {
             normal = -normal;
         }
+
         auto t = 1.f - sword->timer / sword->prepare_to_fly_duration;
         t = Math::ease_in_out(t);
+
         auto offset = normal * (100 * t) - offset_to_target * (sin(M_PI * t) * 50);
+
         auto pos = center + offset;
         sword->pos_destination = pos;
     }
@@ -240,7 +248,6 @@ namespace mg
 
     int SystemSwords::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -248,7 +255,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool SystemSwords::operator ==(const SystemSwords& rhs) const

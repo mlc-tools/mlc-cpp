@@ -21,7 +21,8 @@ namespace mg
         SkillRarity();
 
         SkillRarity(const BaseEnum& rhs):BaseEnum(rhs){}
-        const SkillRarity& operator =(const BaseEnum& rhs) { this->value = rhs.operator int(); return *this; }static SkillRarity get_random();
+        const SkillRarity& operator =(const BaseEnum& rhs) { this->value = rhs.operator int(); return *this; }
+        static SkillRarity get_random();
         SkillRarity(int _value);
         SkillRarity(const SkillRarity& rhs);
         SkillRarity(const std::string& _value);

@@ -1,4 +1,3 @@
-
 #ifndef __mg_functions_h__
 #define __mg_functions_h__
 

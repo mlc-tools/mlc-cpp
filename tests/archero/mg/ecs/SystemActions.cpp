@@ -4,6 +4,7 @@
 #include "ComponentStun.h"
 #include "ModelEcsBase.h"
 #include "SystemActions.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -63,6 +64,7 @@ namespace mg
     void SystemActions::switch_to_next(ModelEcsBase* model, ComponentActions* component)
     {
         assert(component->current_action == nullptr);
+
         if(string_size(component->next_action) == 0)
         {
             component->next_action = component->first_action;
@@ -78,7 +80,6 @@ namespace mg
 
     int SystemActions::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -86,7 +87,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool SystemActions::operator ==(const SystemActions& rhs) const

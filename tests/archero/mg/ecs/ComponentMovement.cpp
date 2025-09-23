@@ -1,7 +1,11 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "ComponentAuraOfSlow.h"
+#include "ComponentBase.h"
 #include "ComponentMovement.h"
 #include "ModelEcsBase.h"
+#include "Vector.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"

@@ -19,6 +19,8 @@
 #include "SavePluginCpp.hpp"
 #include "SerializerCpp.hpp"
 #include "TranslatorCpp.hpp"
+#include "GeneratorEcsCpp.hpp"
+
 
 Mlc::Mlc(bool use_colors, bool disable_logs)
   : _filter_code(nullptr)
@@ -99,6 +101,8 @@ void Mlc::generate() {
 
     // 6. Пользовательский генератор
 //    runUserGeneratorInternal();
+    _model.customGenerator = std::make_shared<GeneratorEcsCpp>();
+    _model.customGenerator->generate(_model);
 
     // 7. Регистрация: создаём Registrar.h/.cpp только когда авто-регистрация выключена
     Registrar().generate(_model);
@@ -108,7 +112,9 @@ void Mlc::generate() {
 
     // 9. Трансляция, сериализация и запись
     TranslatorCpp().translate(_model);
+
     SerializerCpp().generateMethods(_model);
+
     WriterCpp().save(_model);
     SavePluginCpp(_model).save_files(_model.joinToOneFile);
 }

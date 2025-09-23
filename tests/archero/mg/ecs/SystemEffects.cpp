@@ -3,6 +3,7 @@
 #include "ComponentEffects.h"
 #include "ModelEcsBase.h"
 #include "SystemEffects.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -44,7 +45,6 @@ namespace mg
 
     int SystemEffects::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -52,7 +52,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool SystemEffects::operator ==(const SystemEffects& rhs) const

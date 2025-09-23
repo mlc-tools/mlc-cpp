@@ -1,9 +1,13 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "BulletType.h"
 #include "ComponentBase.h"
 #include "DataUnit.h"
+#include "DataUnitVisual.h"
 #include "UnitStat.h"
+#include <map>
 #include <string>
+#include <vector>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -36,7 +40,6 @@ namespace mg
 
     int DataUnit::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -44,7 +47,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool DataUnit::operator ==(const DataUnit& rhs) const

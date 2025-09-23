@@ -1,12 +1,15 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
 #include "DataUnit.h"
+#include "DataWaveBase.h"
 #include "DataWaveOnRadiusWithInterval.h"
 #include "ModelEcsBase.h"
 #include "SpawnInfo.h"
 #include "Transform.h"
 #include "UnitStat.h"
 #include "Vector.h"
+#include <string>
+#include <vector>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -17,8 +20,8 @@ namespace mg
 
     DataWaveOnRadiusWithInterval::DataWaveOnRadiusWithInterval()
     : units()
-    , min_distance_to_player(0.0)
-    , max_distance_to_player(0.0)
+    , min_distance_to_player(0.0f)
+    , max_distance_to_player(0.0f)
     , duration(60)
     , interval(1)
     , count_at_once(1)
@@ -39,6 +42,7 @@ namespace mg
     {
         model->timer_wave_interval += dt;
         model->timer_wave_duration += dt;
+
         if(model->timer_wave_interval >= this->interval)
         {
             model->timer_wave_interval = 0;
@@ -62,6 +66,7 @@ namespace mg
     {
         std::vector<SpawnInfo> result;
         assert(max_distance_to_player >= min_distance_to_player);
+
         auto transform = model->get<Transform>(model->player_id);
         auto count = this->count_at_once;
         while(count > 0)
@@ -77,6 +82,7 @@ namespace mg
                 result.emplace_back(pos, units.at(rand_index));
             }
         }
+
         return result;
     }
 
@@ -123,8 +129,8 @@ namespace mg
     {
         DataWaveBase::serialize_xml(serializer);
         serializer.serialize(units, "units");
-        serializer.serialize(min_distance_to_player, "min_distance_to_player", float(0.0));
-        serializer.serialize(max_distance_to_player, "max_distance_to_player", float(0.0));
+        serializer.serialize(min_distance_to_player, "min_distance_to_player", float(0.0f));
+        serializer.serialize(max_distance_to_player, "max_distance_to_player", float(0.0f));
         serializer.serialize(duration, "duration", float(60));
         serializer.serialize(interval, "interval", float(1));
         serializer.serialize(count_at_once, "count_at_once", float(1));
@@ -134,8 +140,8 @@ namespace mg
     {
         DataWaveBase::deserialize_xml(deserializer);
         deserializer.deserialize(units, "units");
-        deserializer.deserialize(min_distance_to_player, "min_distance_to_player", float(0.0));
-        deserializer.deserialize(max_distance_to_player, "max_distance_to_player", float(0.0));
+        deserializer.deserialize(min_distance_to_player, "min_distance_to_player", float(0.0f));
+        deserializer.deserialize(max_distance_to_player, "max_distance_to_player", float(0.0f));
         deserializer.deserialize(duration, "duration", float(60));
         deserializer.deserialize(interval, "interval", float(1));
         deserializer.deserialize(count_at_once, "count_at_once", float(1));
@@ -145,8 +151,8 @@ namespace mg
     {
         DataWaveBase::serialize_json(serializer);
         serializer.serialize(units, "units");
-        serializer.serialize(min_distance_to_player, "min_distance_to_player", float(0.0));
-        serializer.serialize(max_distance_to_player, "max_distance_to_player", float(0.0));
+        serializer.serialize(min_distance_to_player, "min_distance_to_player", float(0.0f));
+        serializer.serialize(max_distance_to_player, "max_distance_to_player", float(0.0f));
         serializer.serialize(duration, "duration", float(60));
         serializer.serialize(interval, "interval", float(1));
         serializer.serialize(count_at_once, "count_at_once", float(1));
@@ -156,8 +162,8 @@ namespace mg
     {
         DataWaveBase::deserialize_json(deserializer);
         deserializer.deserialize(units, "units");
-        deserializer.deserialize(min_distance_to_player, "min_distance_to_player", float(0.0));
-        deserializer.deserialize(max_distance_to_player, "max_distance_to_player", float(0.0));
+        deserializer.deserialize(min_distance_to_player, "min_distance_to_player", float(0.0f));
+        deserializer.deserialize(max_distance_to_player, "max_distance_to_player", float(0.0f));
         deserializer.deserialize(duration, "duration", float(60));
         deserializer.deserialize(interval, "interval", float(1));
         deserializer.deserialize(count_at_once, "count_at_once", float(1));

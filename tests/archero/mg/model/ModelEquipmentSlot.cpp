@@ -1,8 +1,12 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "../data/EquipmentSlot.h"
 #include "../ecs/ComponentBase.h"
 #include "../ecs/UnitStat.h"
+#include "ModelEquipment.h"
 #include "ModelEquipmentSlot.h"
+#include <string>
+#include <vector>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -12,7 +16,7 @@ namespace mg
     const std::string ModelEquipmentSlot::TYPE("ModelEquipmentSlot");
 
     ModelEquipmentSlot::ModelEquipmentSlot()
-    : slot(EquipmentSlot::weapon)
+    : slot()
     , item(nullptr)
     , upgrade_level(0)
     , _reference_counter(1)
@@ -81,6 +85,7 @@ namespace mg
         {
             return result;
         }
+
         for(auto& level : this->item->data->merge_stats)
         {
             if(level.merge_level->index > this->item->merge_level->index)
@@ -103,7 +108,6 @@ namespace mg
 
     int ModelEquipmentSlot::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -111,7 +115,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool ModelEquipmentSlot::operator ==(const ModelEquipmentSlot& rhs) const

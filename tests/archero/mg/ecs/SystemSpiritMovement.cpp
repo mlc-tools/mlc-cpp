@@ -6,6 +6,8 @@
 #include "SystemSpiritMovement.h"
 #include "Transform.h"
 #include "Vector.h"
+#include <string>
+#include <vector>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -89,7 +91,6 @@ namespace mg
 
     int SystemSpiritMovement::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -97,7 +98,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool SystemSpiritMovement::operator ==(const SystemSpiritMovement& rhs) const

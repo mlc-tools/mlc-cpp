@@ -7,6 +7,7 @@
 #include "Side.h"
 #include "SystemSpiritSpawn.h"
 #include "Transform.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -51,7 +52,6 @@ namespace mg
 
     int SystemSpiritSpawn::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -59,7 +59,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool SystemSpiritSpawn::operator ==(const SystemSpiritSpawn& rhs) const

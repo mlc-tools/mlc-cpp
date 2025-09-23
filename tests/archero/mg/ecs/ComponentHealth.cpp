@@ -1,7 +1,10 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "ComponentBase.h"
 #include "ComponentHealth.h"
 #include "ModelEcsBase.h"
+#include <map>
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -14,7 +17,7 @@ namespace mg
     : current(0)
     , max(0)
     , future_damage()
-    , sum_future_damage(0.0)
+    , sum_future_damage(0.0f)
     , ressurection_count(0)
     {
 
@@ -59,6 +62,7 @@ namespace mg
     {
         map_remove(this->future_damage, damager);
         this->calculate_future_damage();
+
         this->current -= std::min(this->current, damage);
     }
 
@@ -138,7 +142,7 @@ namespace mg
         serializer.serialize(current, "current", float(0));
         serializer.serialize(max, "max", float(0));
         serializer.serialize(future_damage, "future_damage");
-        serializer.serialize(sum_future_damage, "sum_future_damage", float(0.0));
+        serializer.serialize(sum_future_damage, "sum_future_damage", float(0.0f));
         serializer.serialize(ressurection_count, "ressurection_count", int(0));
     }
 
@@ -148,7 +152,7 @@ namespace mg
         deserializer.deserialize(current, "current", float(0));
         deserializer.deserialize(max, "max", float(0));
         deserializer.deserialize(future_damage, "future_damage");
-        deserializer.deserialize(sum_future_damage, "sum_future_damage", float(0.0));
+        deserializer.deserialize(sum_future_damage, "sum_future_damage", float(0.0f));
         deserializer.deserialize(ressurection_count, "ressurection_count", int(0));
     }
 
@@ -158,7 +162,7 @@ namespace mg
         serializer.serialize(current, "current", float(0));
         serializer.serialize(max, "max", float(0));
         serializer.serialize(future_damage, "future_damage");
-        serializer.serialize(sum_future_damage, "sum_future_damage", float(0.0));
+        serializer.serialize(sum_future_damage, "sum_future_damage", float(0.0f));
         serializer.serialize(ressurection_count, "ressurection_count", int(0));
     }
 
@@ -168,7 +172,7 @@ namespace mg
         deserializer.deserialize(current, "current", float(0));
         deserializer.deserialize(max, "max", float(0));
         deserializer.deserialize(future_damage, "future_damage");
-        deserializer.deserialize(sum_future_damage, "sum_future_damage", float(0.0));
+        deserializer.deserialize(sum_future_damage, "sum_future_damage", float(0.0f));
         deserializer.deserialize(ressurection_count, "ressurection_count", int(0));
     }
 

@@ -1,7 +1,11 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "BulletType.h"
+#include "ComponentBase.h"
 #include "ComponentBullet.h"
+#include "DataUnit.h"
 #include "ModelEcsBase.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -13,12 +17,12 @@ namespace mg
     ComponentBullet::ComponentBullet()
     : shooter_id(0)
     , target_id(0)
-    , damage(0.0)
+    , damage(0.0f)
     , data(nullptr)
     , clean(false)
     , through_walls(false)
     , pierce(false)
-    , bullet_type(BulletType::arrow)
+    , bullet_type()
     , ricochet_bounce(0)
     , ricochet_wall(0)
     , split_on_hit(false)
@@ -39,6 +43,7 @@ namespace mg
         result = result && this->shooter_id == rhs.shooter_id;
         result = result && this->target_id == rhs.target_id;
         result = result && this->damage == rhs.damage;
+        result = result && ((this->data == rhs.data) || (this->data != nullptr && rhs.data != nullptr && *this->data == *rhs.data));
         result = result && this->clean == rhs.clean;
         result = result && this->through_walls == rhs.through_walls;
         result = result && this->pierce == rhs.pierce;
@@ -107,7 +112,7 @@ namespace mg
         ComponentBase::serialize_xml(serializer);
         serializer.serialize(shooter_id, "shooter_id", int(0));
         serializer.serialize(target_id, "target_id", int(0));
-        serializer.serialize(damage, "damage", float(0.0));
+        serializer.serialize(damage, "damage", float(0.0f));
         serializer.serialize(data, "data");
         serializer.serialize(clean, "clean", bool(false));
         serializer.serialize(through_walls, "through_walls", bool(false));
@@ -126,7 +131,7 @@ namespace mg
         ComponentBase::deserialize_xml(deserializer);
         deserializer.deserialize(shooter_id, "shooter_id", int(0));
         deserializer.deserialize(target_id, "target_id", int(0));
-        deserializer.deserialize(damage, "damage", float(0.0));
+        deserializer.deserialize(damage, "damage", float(0.0f));
         deserializer.deserialize(data, "data");
         deserializer.deserialize(clean, "clean", bool(false));
         deserializer.deserialize(through_walls, "through_walls", bool(false));
@@ -145,7 +150,7 @@ namespace mg
         ComponentBase::serialize_json(serializer);
         serializer.serialize(shooter_id, "shooter_id", int(0));
         serializer.serialize(target_id, "target_id", int(0));
-        serializer.serialize(damage, "damage", float(0.0));
+        serializer.serialize(damage, "damage", float(0.0f));
         serializer.serialize(data, "data");
         serializer.serialize(clean, "clean", bool(false));
         serializer.serialize(through_walls, "through_walls", bool(false));
@@ -164,7 +169,7 @@ namespace mg
         ComponentBase::deserialize_json(deserializer);
         deserializer.deserialize(shooter_id, "shooter_id", int(0));
         deserializer.deserialize(target_id, "target_id", int(0));
-        deserializer.deserialize(damage, "damage", float(0.0));
+        deserializer.deserialize(damage, "damage", float(0.0f));
         deserializer.deserialize(data, "data");
         deserializer.deserialize(clean, "clean", bool(false));
         deserializer.deserialize(through_walls, "through_walls", bool(false));

@@ -1,8 +1,10 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "ComponentBase.h"
 #include "ComponentData.h"
 #include "DataUnit.h"
 #include "ModelEcsBase.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -24,6 +26,7 @@ namespace mg
     bool ComponentData::operator ==(const ComponentData& rhs) const
     {
         bool result = this->ComponentBase::operator ==(rhs);
+        result = result && ((this->data == rhs.data) || (this->data != nullptr && rhs.data != nullptr && *this->data == *rhs.data));
         return result;
     }
 

@@ -1,7 +1,10 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "ComponentBase.h"
 #include "ComponentSphereSpawn.h"
+#include "DataUnit.h"
 #include "ModelEcsBase.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -27,6 +30,7 @@ namespace mg
         bool result = this->ComponentBase::operator ==(rhs);
         result = result && this->spawned == rhs.spawned;
         result = result && this->count == rhs.count;
+        result = result && ((this->data == rhs.data) || (this->data != nullptr && rhs.data != nullptr && *this->data == *rhs.data));
         return result;
     }
 

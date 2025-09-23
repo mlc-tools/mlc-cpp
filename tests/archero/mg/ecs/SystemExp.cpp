@@ -12,6 +12,7 @@
 #include "Side.h"
 #include "SystemExp.h"
 #include "Transform.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -33,6 +34,7 @@ namespace mg
     void SystemExp::update(ModelEcsBase* model, float dt)
     {
         this->create_exp(model);
+
         auto player_transform = model->get<Transform>(model->player_id);
         auto dist = 100 * 100;
         model->each<ComponentExp,Transform>(
@@ -47,6 +49,7 @@ namespace mg
                 exp->clean = true;
             }
         });
+
         auto ladder = DataStorage::shared().get<DataLadderLevels>("hero_exp");
         for(auto& level_up : model->components_level_up)
         {
@@ -61,7 +64,6 @@ namespace mg
 
     void SystemExp::clean(ModelEcsBase* model)
     {
-
         for(int __index__ = 0; __index__ < model->components_exp.size(); ++__index__)
         {
             auto& component = model->components_exp.at(__index__);
@@ -69,10 +71,7 @@ namespace mg
             {
                 auto __size__ = model->components_exp.size();
                 model->remove_entity(component->id);
-                if(__size__ != model->components_exp.size())
-                {
-                    __index__ -= 1;
-                }
+                if(__size__ != model->components_exp.size()) { --__index__; }
             }
         }
     }
@@ -103,7 +102,6 @@ namespace mg
 
     int SystemExp::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -111,7 +109,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool SystemExp::operator ==(const SystemExp& rhs) const

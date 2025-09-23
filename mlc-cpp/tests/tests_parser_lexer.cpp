@@ -81,6 +81,7 @@ void test_parser_class_with_member() {
     Parser p(m);
     std::string code = R"(
         class MyClass {
+            @include Other
             int value
             fn void method() { }
         }
@@ -95,6 +96,8 @@ void test_parser_class_with_member() {
     assert(cls->members[0].name == "value");
     assert(cls->functions.size() == 1);
     assert(cls->functions[0].name == "method");
+    assert(cls->user_includes.size() == 1);;
+    assert(cls->user_includes.count("Other") == 1);
 }
 
 void test_parser_class_with_inner() {

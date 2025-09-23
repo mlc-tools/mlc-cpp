@@ -10,6 +10,7 @@
 #include "ComponentSide.h"
 #include "ComponentSpineInfo.h"
 #include "ComponentStats.h"
+#include "DataUnit.h"
 #include "ModelEcsBase.h"
 #include "MoveDirection.h"
 #include "MoveInstant.h"
@@ -21,6 +22,7 @@
 #include "Transform.h"
 #include "UnitStat.h"
 #include "Vector.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -53,72 +55,64 @@ namespace mg
 
     BuilderBullet& BuilderBullet::set_name(const std::string& value)
     {
-        this->bullet_name = value;
-        return *this;
+        this->bullet_name = value; return *this;
     }
 
     BuilderBullet& BuilderBullet::set_target_id(int value)
     {
-        this->target_id = value;
-        return *this;
+        this->target_id = value; return *this;
     }
 
     BuilderBullet& BuilderBullet::set_damage(float value)
     {
-        this->damage = value;
-        return *this;
+        this->damage = value; return *this;
     }
 
     BuilderBullet& BuilderBullet::set_side(Side value)
     {
-        this->side = value;
-        return *this;
+        this->side = value; return *this;
     }
 
     BuilderBullet& BuilderBullet::set_position_create(const Vector& value)
     {
-        this->position_create = value;
-        return *this;
+        this->position_create = value; return *this;
     }
 
     BuilderBullet& BuilderBullet::set_position_to_shoot(const Vector& value)
     {
-        this->position_to_shoot = value;
-        return *this;
+        this->position_to_shoot = value; return *this;
     }
 
     BuilderBullet& BuilderBullet::set_direction(const Vector& value)
     {
-        this->direction = value;
-        return *this;
+        this->direction = value; return *this;
     }
 
     BuilderBullet& BuilderBullet::set_offset_create(const Vector& value)
     {
-        this->offset_create = value;
-        return *this;
+        this->offset_create = value; return *this;
     }
 
     BuilderBullet& BuilderBullet::set_deviation_from_direction(float value)
     {
-        this->deviation_from_direction = value;
-        return *this;
+        this->deviation_from_direction = value; return *this;
     }
 
     BuilderBullet& BuilderBullet::set_spine_bone_of_create_bullet(const std::string& value)
     {
-        this->spine_bone_of_create_bullet = value;
-        return *this;
+        this->spine_bone_of_create_bullet = value; return *this;
     }
 
     int BuilderBullet::build(ModelEcsBase* model)
     {
         assert(this->shooter_id > 0);
+
         auto shooter_side = model->get<ComponentSide>(this->shooter_id);
         if(!shooter_side)
         {
             return 0;
         }
+
         if(this->side == Side::none)
         {
             this->side = shooter_side->side;
@@ -127,7 +121,9 @@ namespace mg
         auto bullet_name = this->get_bullet_name(model, shooter_stats);
         this->data = DataStorage::shared().get<DataUnit>(bullet_name);
         auto position_bullet = this->get_position_to_create(model);
+
         auto id = BuilderEntity(this->data).set_side(side).set_position(position_bullet).build(model);
+
         auto component_bullet = model->get<ComponentBullet>(id);
         component_bullet->shooter_id = this->shooter_id;
         component_bullet->target_id = this->target_id;
@@ -139,7 +135,9 @@ namespace mg
         component_bullet->ricochet_bounce = shooter_stats->get(model, UnitStat::ricochet_bounce);
         component_bullet->ricochet_wall = shooter_stats->get(model, UnitStat::ricochet_wall);
         component_bullet->split_on_hit = shooter_stats->get(model, UnitStat::bullet_split) > 0;
+
         component_bullet->damage = this->damage;
+
         if(this->target_id > 0)
         {
             if(component_bullet->damage == 0)
@@ -152,6 +150,7 @@ namespace mg
                 health_target->add_future_damage(this->shooter_id, component_bullet->damage);
             }
         }
+
         if(shooter_stats->get(model, UnitStat::bullet_follow_target) > 0)
         {
             auto follow = make_intrusive<ComponentBulletFollowToTarget>();
@@ -159,6 +158,7 @@ namespace mg
             follow->change_angle_speed = shooter_stats->get(model, UnitStat::bullet_follow_target);
             model->add(follow, id);
         }
+
         if(data->bullet_type == BulletType::arrow || data->bullet_type == BulletType::fireball)
         {
             auto movement = make_intrusive<MoveDirection>();
@@ -200,6 +200,7 @@ namespace mg
         {
             assert(0);
         }
+
         model->event_create_bullet.notify(id, position_bullet);
         return id;
     }
@@ -214,9 +215,13 @@ namespace mg
         auto spine_self = model->get<ComponentSpineInfo>(this->shooter_id);
         auto position_bullet = transform->position + this->offset_create;
         auto __tmp_position_bullet = spine_self;
+
         if(__tmp_position_bullet)
+
         {
+
             position_bullet += __tmp_position_bullet->get_bone_position(spine_bone_of_create_bullet);
+
         }
         return position_bullet;
     }
@@ -235,6 +240,7 @@ namespace mg
             auto spine_target = model->get<ComponentSpineInfo>(this->target_id);
             result += spine_target->get_bone_position("head");
         }
+
         if(side == Side::ally)
         {
             Vector move_direction;
@@ -253,6 +259,7 @@ namespace mg
                 result = this->get_preemption(transform->position, move_direction, target_speed, this->get_position_to_create(model), bullet_speed);
             }
         }
+
         return result;
     }
 
@@ -260,11 +267,15 @@ namespace mg
     {
         Vector result = target_pos;
         Vector target_velocity = target_direction.get_normalized() * target_speed;
+
         Vector displacement = target_pos - shooter_pos;
+
         float a = target_velocity.dot(target_velocity) - bullet_speed * bullet_speed;
         float b = 2 * displacement.dot(target_velocity);
         float c = displacement.dot(displacement);
+
         float discriminant = b*b - 4*a*c;
+
         if (discriminant >= 0 && std::abs(a) > 1e-6) {
         float sqrt_disc = sqrt(discriminant);
         float t1 = (-b + sqrt_disc) / (2 * a);
@@ -283,154 +294,153 @@ return result;
 
 Vector BuilderBullet::get_direction(ModelEcsBase* model) const
 {
-if(this->direction != Vector::ZERO)
-{
-    return this->direction;
-}
-auto from_pos = this->get_position_to_create(model);
-auto to_pos = this->get_target_position(model);
-return (to_pos - from_pos).normalize();
+    if(this->direction != Vector::ZERO)
+    {
+        return this->direction;
+    }
+    auto from_pos = this->get_position_to_create(model);
+    auto to_pos = this->get_target_position(model);
+    return (to_pos - from_pos).normalize();
 }
 
 std::string BuilderBullet::get_bullet_name(ModelEcsBase* model, ComponentStats* stats) const
 {
-if(string_size(this->bullet_name) > 0)
-{
-    return this->bullet_name;
-}
-return stats->get_string(model, UnitStat::bullet);
+    if(string_size(this->bullet_name) > 0)
+    {
+        return this->bullet_name;
+    }
+    return stats->get_string(model, UnitStat::bullet);
 }
 
 void BuilderBullet::retain()
 {
-++this->_reference_counter;
+    ++this->_reference_counter;
 }
 
 int BuilderBullet::release()
 {
-
---this->_reference_counter;
-auto counter = this->_reference_counter;
-if(counter == 0)
-{
-    delete this;
-}
-return counter;
-
+    --this->_reference_counter;
+    auto counter = this->_reference_counter;
+    if(counter == 0)
+    {
+        delete this;
+    }
+    return counter;
 }
 
 bool BuilderBullet::operator ==(const BuilderBullet& rhs) const
 {
-bool result = true;
-result = result && this->shooter_id == rhs.shooter_id;
-result = result && this->target_id == rhs.target_id;
-result = result && this->bullet_name == rhs.bullet_name;
-result = result && this->position_create == rhs.position_create;
-result = result && this->position_to_shoot == rhs.position_to_shoot;
-result = result && this->direction == rhs.direction;
-result = result && this->offset_create == rhs.offset_create;
-result = result && this->deviation_from_direction == rhs.deviation_from_direction;
-result = result && this->side == rhs.side;
-result = result && this->spine_bone_of_create_bullet == rhs.spine_bone_of_create_bullet;
-result = result && this->damage == rhs.damage;
-return result;
+    bool result = true;
+    result = result && this->shooter_id == rhs.shooter_id;
+    result = result && this->target_id == rhs.target_id;
+    result = result && this->bullet_name == rhs.bullet_name;
+    result = result && this->position_create == rhs.position_create;
+    result = result && this->position_to_shoot == rhs.position_to_shoot;
+    result = result && this->direction == rhs.direction;
+    result = result && this->offset_create == rhs.offset_create;
+    result = result && this->deviation_from_direction == rhs.deviation_from_direction;
+    result = result && this->side == rhs.side;
+    result = result && this->spine_bone_of_create_bullet == rhs.spine_bone_of_create_bullet;
+    result = result && ((this->data == rhs.data) || (this->data != nullptr && rhs.data != nullptr && *this->data == *rhs.data));
+    result = result && this->damage == rhs.damage;
+    return result;
 }
 
 bool BuilderBullet::operator !=(const BuilderBullet& rhs) const
 {
-return !(*this == rhs);
+    return !(*this == rhs);
 }
 
 BuilderBullet::BuilderBullet(const BuilderBullet& rhs)
 {
-this->operator=(rhs);
+    this->operator=(rhs);
 }
 
 const BuilderBullet& BuilderBullet::operator =(const BuilderBullet& rhs)
 {
-this->shooter_id = rhs.shooter_id;
-this->target_id = rhs.target_id;
-this->bullet_name = rhs.bullet_name;
-this->position_create = rhs.position_create;
-this->position_to_shoot = rhs.position_to_shoot;
-this->direction = rhs.direction;
-this->offset_create = rhs.offset_create;
-this->deviation_from_direction = rhs.deviation_from_direction;
-this->side = rhs.side;
-this->spine_bone_of_create_bullet = rhs.spine_bone_of_create_bullet;
-this->data = rhs.data;
-this->damage = rhs.damage;
-this->_reference_counter = rhs._reference_counter;
-return *this;
+    this->shooter_id = rhs.shooter_id;
+    this->target_id = rhs.target_id;
+    this->bullet_name = rhs.bullet_name;
+    this->position_create = rhs.position_create;
+    this->position_to_shoot = rhs.position_to_shoot;
+    this->direction = rhs.direction;
+    this->offset_create = rhs.offset_create;
+    this->deviation_from_direction = rhs.deviation_from_direction;
+    this->side = rhs.side;
+    this->spine_bone_of_create_bullet = rhs.spine_bone_of_create_bullet;
+    this->data = rhs.data;
+    this->damage = rhs.damage;
+    this->_reference_counter = rhs._reference_counter;
+    return *this;
 }
 
 std::string BuilderBullet::get_type() const
 {
-return BuilderBullet::TYPE;
+    return BuilderBullet::TYPE;
 }
 
 void BuilderBullet::serialize_xml(SerializerXml& serializer) const
 {
-serializer.serialize(shooter_id, "shooter_id", int(0));
-serializer.serialize(target_id, "target_id", int(0));
-serializer.serialize(bullet_name, "bullet_name", std::string(""));
-serializer.serialize(position_create, "position_create");
-serializer.serialize(position_to_shoot, "position_to_shoot");
-serializer.serialize(direction, "direction");
-serializer.serialize(offset_create, "offset_create");
-serializer.serialize(deviation_from_direction, "deviation_from_direction", float(0));
-serializer.serialize(side, "side");
-serializer.serialize(spine_bone_of_create_bullet, "spine_bone_of_create_bullet", std::string("shot"));
-serializer.serialize(data, "data");
-serializer.serialize(damage, "damage", float(0));
+    serializer.serialize(shooter_id, "shooter_id", int(0));
+    serializer.serialize(target_id, "target_id", int(0));
+    serializer.serialize(bullet_name, "bullet_name", std::string(""));
+    serializer.serialize(position_create, "position_create");
+    serializer.serialize(position_to_shoot, "position_to_shoot");
+    serializer.serialize(direction, "direction");
+    serializer.serialize(offset_create, "offset_create");
+    serializer.serialize(deviation_from_direction, "deviation_from_direction", float(0));
+    serializer.serialize(side, "side");
+    serializer.serialize(spine_bone_of_create_bullet, "spine_bone_of_create_bullet", std::string("shot"));
+    serializer.serialize(data, "data");
+    serializer.serialize(damage, "damage", float(0));
 }
 
 void BuilderBullet::deserialize_xml(DeserializerXml& deserializer)
 {
-deserializer.deserialize(shooter_id, "shooter_id", int(0));
-deserializer.deserialize(target_id, "target_id", int(0));
-deserializer.deserialize(bullet_name, "bullet_name", std::string(""));
-deserializer.deserialize(position_create, "position_create");
-deserializer.deserialize(position_to_shoot, "position_to_shoot");
-deserializer.deserialize(direction, "direction");
-deserializer.deserialize(offset_create, "offset_create");
-deserializer.deserialize(deviation_from_direction, "deviation_from_direction", float(0));
-deserializer.deserialize(side, "side");
-deserializer.deserialize(spine_bone_of_create_bullet, "spine_bone_of_create_bullet", std::string("shot"));
-deserializer.deserialize(data, "data");
-deserializer.deserialize(damage, "damage", float(0));
+    deserializer.deserialize(shooter_id, "shooter_id", int(0));
+    deserializer.deserialize(target_id, "target_id", int(0));
+    deserializer.deserialize(bullet_name, "bullet_name", std::string(""));
+    deserializer.deserialize(position_create, "position_create");
+    deserializer.deserialize(position_to_shoot, "position_to_shoot");
+    deserializer.deserialize(direction, "direction");
+    deserializer.deserialize(offset_create, "offset_create");
+    deserializer.deserialize(deviation_from_direction, "deviation_from_direction", float(0));
+    deserializer.deserialize(side, "side");
+    deserializer.deserialize(spine_bone_of_create_bullet, "spine_bone_of_create_bullet", std::string("shot"));
+    deserializer.deserialize(data, "data");
+    deserializer.deserialize(damage, "damage", float(0));
 }
 
 void BuilderBullet::serialize_json(SerializerJson& serializer) const
 {
-serializer.serialize(shooter_id, "shooter_id", int(0));
-serializer.serialize(target_id, "target_id", int(0));
-serializer.serialize(bullet_name, "bullet_name", std::string(""));
-serializer.serialize(position_create, "position_create");
-serializer.serialize(position_to_shoot, "position_to_shoot");
-serializer.serialize(direction, "direction");
-serializer.serialize(offset_create, "offset_create");
-serializer.serialize(deviation_from_direction, "deviation_from_direction", float(0));
-serializer.serialize(side, "side");
-serializer.serialize(spine_bone_of_create_bullet, "spine_bone_of_create_bullet", std::string("shot"));
-serializer.serialize(data, "data");
-serializer.serialize(damage, "damage", float(0));
+    serializer.serialize(shooter_id, "shooter_id", int(0));
+    serializer.serialize(target_id, "target_id", int(0));
+    serializer.serialize(bullet_name, "bullet_name", std::string(""));
+    serializer.serialize(position_create, "position_create");
+    serializer.serialize(position_to_shoot, "position_to_shoot");
+    serializer.serialize(direction, "direction");
+    serializer.serialize(offset_create, "offset_create");
+    serializer.serialize(deviation_from_direction, "deviation_from_direction", float(0));
+    serializer.serialize(side, "side");
+    serializer.serialize(spine_bone_of_create_bullet, "spine_bone_of_create_bullet", std::string("shot"));
+    serializer.serialize(data, "data");
+    serializer.serialize(damage, "damage", float(0));
 }
 
 void BuilderBullet::deserialize_json(DeserializerJson& deserializer)
 {
-deserializer.deserialize(shooter_id, "shooter_id", int(0));
-deserializer.deserialize(target_id, "target_id", int(0));
-deserializer.deserialize(bullet_name, "bullet_name", std::string(""));
-deserializer.deserialize(position_create, "position_create");
-deserializer.deserialize(position_to_shoot, "position_to_shoot");
-deserializer.deserialize(direction, "direction");
-deserializer.deserialize(offset_create, "offset_create");
-deserializer.deserialize(deviation_from_direction, "deviation_from_direction", float(0));
-deserializer.deserialize(side, "side");
-deserializer.deserialize(spine_bone_of_create_bullet, "spine_bone_of_create_bullet", std::string("shot"));
-deserializer.deserialize(data, "data");
-deserializer.deserialize(damage, "damage", float(0));
+    deserializer.deserialize(shooter_id, "shooter_id", int(0));
+    deserializer.deserialize(target_id, "target_id", int(0));
+    deserializer.deserialize(bullet_name, "bullet_name", std::string(""));
+    deserializer.deserialize(position_create, "position_create");
+    deserializer.deserialize(position_to_shoot, "position_to_shoot");
+    deserializer.deserialize(direction, "direction");
+    deserializer.deserialize(offset_create, "offset_create");
+    deserializer.deserialize(deviation_from_direction, "deviation_from_direction", float(0));
+    deserializer.deserialize(side, "side");
+    deserializer.deserialize(spine_bone_of_create_bullet, "spine_bone_of_create_bullet", std::string("shot"));
+    deserializer.deserialize(data, "data");
+    deserializer.deserialize(damage, "damage", float(0));
 }
 
 } //namespace mg

@@ -1,7 +1,10 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "ComponentBase.h"
 #include "ComponentSpawnSpirit.h"
+#include "DataUnit.h"
 #include "ModelEcsBase.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -23,6 +26,7 @@ namespace mg
     bool ComponentSpawnSpirit::operator ==(const ComponentSpawnSpirit& rhs) const
     {
         bool result = this->ComponentBase::operator ==(rhs);
+        result = result && ((this->spirit == rhs.spirit) || (this->spirit != nullptr && rhs.spirit != nullptr && *this->spirit == *rhs.spirit));
         return result;
     }
 

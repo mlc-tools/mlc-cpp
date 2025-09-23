@@ -17,6 +17,5 @@ public:
     GeneratorObserverCpp() = default;
     void generate(Model& model);
 protected:
-    void generate_file(Model& model);
     std::shared_ptr<Class> generate_class();
 };

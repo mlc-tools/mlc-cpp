@@ -1,4 +1,3 @@
-
 #include <cstdlib>
 #include <sstream>
 #include <vector>
@@ -290,4 +289,3 @@ namespace mg
         return buffer;
     }   
 }
-

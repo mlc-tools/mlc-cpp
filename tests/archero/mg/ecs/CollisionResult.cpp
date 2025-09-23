@@ -1,6 +1,8 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
 #include "CollisionResult.h"
+#include "Vector.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -29,7 +31,6 @@ namespace mg
 
     int CollisionResult::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -37,7 +38,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool CollisionResult::operator ==(const CollisionResult& rhs) const

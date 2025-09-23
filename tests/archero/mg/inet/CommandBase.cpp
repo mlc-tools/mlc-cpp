@@ -2,6 +2,7 @@
 #include "../mg_Factory.h"
 #include "CommandBase.h"
 #include "IVisitorResponse.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -33,7 +34,6 @@ namespace mg
 
     int CommandBase::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -41,7 +41,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool CommandBase::operator ==(const CommandBase& rhs) const

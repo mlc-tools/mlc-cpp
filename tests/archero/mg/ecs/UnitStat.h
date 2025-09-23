@@ -21,7 +21,8 @@ namespace mg
         UnitStat();
 
         UnitStat(const BaseEnum& rhs):BaseEnum(rhs){}
-        const UnitStat& operator =(const BaseEnum& rhs) { this->value = rhs.operator int(); return *this; } UnitStat(int _value);
+        const UnitStat& operator =(const BaseEnum& rhs) { this->value = rhs.operator int(); return *this; }
+        UnitStat(int _value);
         UnitStat(const UnitStat& rhs);
         UnitStat(const std::string& _value);
         const UnitStat& operator =(const UnitStat& rhs);

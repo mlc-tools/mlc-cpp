@@ -7,6 +7,7 @@
 #include "SystemAuraDamage.h"
 #include "Transform.h"
 #include "UnitStat.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -70,7 +71,6 @@ namespace mg
 
     int SystemAuraDamage::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -78,7 +78,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool SystemAuraDamage::operator ==(const SystemAuraDamage& rhs) const

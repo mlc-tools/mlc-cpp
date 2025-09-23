@@ -1,6 +1,7 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
 #include "../DataStorage.h"
+#include "ActionBase.h"
 #include "ActionRunToPlayer.h"
 #include "ComponentBusy.h"
 #include "ComponentStats.h"
@@ -9,6 +10,7 @@
 #include "SystemMovement.h"
 #include "SystemResolveCollisions.h"
 #include "Transform.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -32,16 +34,20 @@ namespace mg
         auto transform = model->get<Transform>(this->entity_id);
         auto transform_hero = model->get<Transform>(model->player_id);
         auto direction = transform_hero->position - transform->position;
+
         auto movement = make_intrusive<MoveDirection>();
         movement->direction = direction;
         movement->direction.normalize();
         model->add(movement, this->entity_id);
+
         auto stats = model->get<ComponentStats>(this->entity_id);
         auto buf = DataStorage::shared().get<DataStatUpgrade>("enemy_skill_run_add_speed");
         stats->add_upgrade(buf);
+
         model->get<ComponentBusy>(this->entity_id)->is_busy = true;
         model->event_turn_to[this->entity_id].notify(model->player_id);
         model->event_skill_animate[this->entity_id].notify(this->animation, true);
+
         SystemResolveCollisions::event_collision[this->entity_id].add(this, [this](int target_id)
         {
             if(target_id == model->player_id)
@@ -76,10 +82,13 @@ namespace mg
     void ActionRunToPlayer::finalize()
     {
         model->remove(model->get<MoveDirection>(this->entity_id));
+
         auto stats = model->get<ComponentStats>(this->entity_id);
         auto buf = DataStorage::shared().get<DataStatUpgrade>("enemy_skill_run_add_speed");
         stats->remove_upgrade(buf);
+
         model->get<ComponentBusy>(this->entity_id)->is_busy = false;
+
         map_remove(SystemResolveCollisions::event_collision, this->entity_id);
         map_remove(SystemMovement::event_on_wall, this->entity_id);
     }

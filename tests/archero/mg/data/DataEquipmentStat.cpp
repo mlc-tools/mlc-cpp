@@ -1,6 +1,11 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "../ecs/ComponentBase.h"
+#include "../ecs/Modifier.h"
+#include "../ecs/UnitStat.h"
 #include "DataEquipmentStat.h"
+#include "DataMergeLevel.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -11,7 +16,7 @@ namespace mg
 
     DataEquipmentStat::DataEquipmentStat()
     : merge_level(nullptr)
-    , stat(UnitStat::none)
+    , stat()
     , modifier()
     , desc("")
     , component(nullptr)
@@ -32,7 +37,6 @@ namespace mg
 
     int DataEquipmentStat::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -40,12 +44,12 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool DataEquipmentStat::operator ==(const DataEquipmentStat& rhs) const
     {
         bool result = true;
+        result = result && ((this->merge_level == rhs.merge_level) || (this->merge_level != nullptr && rhs.merge_level != nullptr && *this->merge_level == *rhs.merge_level));
         result = result && this->stat == rhs.stat;
         result = result && this->modifier == rhs.modifier;
         result = result && this->desc == rhs.desc;

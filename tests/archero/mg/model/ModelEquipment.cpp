@@ -1,7 +1,10 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "../data/DataEquipment.h"
+#include "../data/DataMergeLevel.h"
 #include "../ecs/UnitStat.h"
 #include "ModelEquipment.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -59,7 +62,6 @@ namespace mg
 
     int ModelEquipment::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -67,12 +69,13 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool ModelEquipment::operator ==(const ModelEquipment& rhs) const
     {
         bool result = true;
+        result = result && ((this->data == rhs.data) || (this->data != nullptr && rhs.data != nullptr && *this->data == *rhs.data));
+        result = result && ((this->merge_level == rhs.merge_level) || (this->merge_level != nullptr && rhs.merge_level != nullptr && *this->merge_level == *rhs.merge_level));
         result = result && this->equip == rhs.equip;
         return result;
     }

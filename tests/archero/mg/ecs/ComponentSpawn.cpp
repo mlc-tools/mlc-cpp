@@ -1,7 +1,11 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "ComponentBase.h"
 #include "ComponentSpawn.h"
+#include "DataUnit.h"
 #include "ModelEcsBase.h"
+#include "Vector.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -27,6 +31,7 @@ namespace mg
     bool ComponentSpawn::operator ==(const ComponentSpawn& rhs) const
     {
         bool result = this->ComponentBase::operator ==(rhs);
+        result = result && ((this->unit == rhs.unit) || (this->unit != nullptr && rhs.unit != nullptr && *this->unit == *rhs.unit));
         result = result && this->position == rhs.position;
         result = result && this->timer == rhs.timer;
         result = result && this->create_marker == rhs.create_marker;

@@ -21,7 +21,8 @@ namespace mg
         Side();
 
         Side(const BaseEnum& rhs):BaseEnum(rhs){}
-        const Side& operator =(const BaseEnum& rhs) { this->value = rhs.operator int(); return *this; } Side(int _value);
+        const Side& operator =(const BaseEnum& rhs) { this->value = rhs.operator int(); return *this; }
+        Side(int _value);
         Side(const Side& rhs);
         Side(const std::string& _value);
         const Side& operator =(const Side& rhs);
@@ -37,10 +38,10 @@ namespace mg
         operator std::string() const;
         std::string str() const;
 
-        static constexpr BaseEnum ally = (1 << 0);
-        static constexpr BaseEnum enemy = (1 << 1);
-        static constexpr BaseEnum neutral = (1 << 2);
-        static constexpr BaseEnum none = (1 << 3);
+        static constexpr BaseEnum ally = (1);
+        static constexpr BaseEnum enemy = (2);
+        static constexpr BaseEnum neutral = (4);
+        static constexpr BaseEnum none = (8);
 
     };
 } //namespace mg

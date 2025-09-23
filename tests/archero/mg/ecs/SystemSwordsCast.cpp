@@ -12,6 +12,7 @@
 #include "SystemSwordsCast.h"
 #include "Transform.h"
 #include "UnitStat.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -65,7 +66,6 @@ namespace mg
 
     void SystemSwordsCast::clean(ModelEcsBase* model)
     {
-
         for(int __index__ = 0; __index__ < model->components_sword.size(); ++__index__)
         {
             auto& sword = model->components_sword.at(__index__);
@@ -73,10 +73,7 @@ namespace mg
             {
                 auto __size__ = model->components_sword.size();
                 this->remove_sword(model, sword);
-                if(__size__ != model->components_sword.size())
-                {
-                    __index__ -= 1;
-                }
+                if(__size__ != model->components_sword.size()) { --__index__; }
             }
         }
     }
@@ -118,7 +115,6 @@ namespace mg
 
     int SystemSwordsCast::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -126,7 +122,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool SystemSwordsCast::operator ==(const SystemSwordsCast& rhs) const

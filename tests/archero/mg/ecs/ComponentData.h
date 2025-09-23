@@ -14,7 +14,6 @@ namespace mg
     class DeserializerXml;
     class SerializerJson;
     class DeserializerJson;
-    class DataUnit;
     class ModelEcsBase;
 
     class ComponentData : public ComponentBase

@@ -23,4 +23,5 @@ void GeneratorCpp::generate(Model& model){
     GeneratorObserverCpp().generate(model);
     GeneratorRefCounterCpp().generate(model);
     GeneratorOperatorEqualsCpp().generate(model);
+    
 }

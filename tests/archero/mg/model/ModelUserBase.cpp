@@ -1,7 +1,9 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "Model.h"
 #include "ModelUserBase.h"
 #include "System.h"
+#include <map>
 #include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"

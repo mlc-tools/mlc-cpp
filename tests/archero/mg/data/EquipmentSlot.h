@@ -21,7 +21,8 @@ namespace mg
         EquipmentSlot();
 
         EquipmentSlot(const BaseEnum& rhs):BaseEnum(rhs){}
-        const EquipmentSlot& operator =(const BaseEnum& rhs) { this->value = rhs.operator int(); return *this; } EquipmentSlot(int _value);
+        const EquipmentSlot& operator =(const BaseEnum& rhs) { this->value = rhs.operator int(); return *this; }
+        EquipmentSlot(int _value);
         EquipmentSlot(const EquipmentSlot& rhs);
         EquipmentSlot(const std::string& _value);
         const EquipmentSlot& operator =(const EquipmentSlot& rhs);
@@ -37,12 +38,12 @@ namespace mg
         operator std::string() const;
         std::string str() const;
 
-        static constexpr BaseEnum weapon = (1 << 0);
-        static constexpr BaseEnum ring = (1 << 1);
-        static constexpr BaseEnum amulet = (1 << 2);
-        static constexpr BaseEnum armor = (1 << 3);
-        static constexpr BaseEnum head = (1 << 4);
-        static constexpr BaseEnum boots = (1 << 5);
+        static constexpr BaseEnum weapon = (1);
+        static constexpr BaseEnum ring = (2);
+        static constexpr BaseEnum amulet = (4);
+        static constexpr BaseEnum armor = (8);
+        static constexpr BaseEnum head = (16);
+        static constexpr BaseEnum boots = (32);
 
     };
 } //namespace mg

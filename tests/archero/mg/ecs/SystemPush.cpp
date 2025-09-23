@@ -7,6 +7,7 @@
 #include "SystemResolveCollisions.h"
 #include "Transform.h"
 #include "UnitStat.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -48,7 +49,6 @@ namespace mg
 
     void SystemPush::clean(ModelEcsBase* model)
     {
-
         for(int __index__ = 0; __index__ < model->components_push.size(); ++__index__)
         {
             auto& push = model->components_push.at(__index__);
@@ -56,10 +56,7 @@ namespace mg
             {
                 auto __size__ = model->components_push.size();
                 model->remove(push);
-                if(__size__ != model->components_push.size())
-                {
-                    __index__ -= 1;
-                }
+                if(__size__ != model->components_push.size()) { --__index__; }
             }
         }
     }
@@ -71,7 +68,6 @@ namespace mg
 
     int SystemPush::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -79,7 +75,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool SystemPush::operator ==(const SystemPush& rhs) const

@@ -1,7 +1,11 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "ComponentBase.h"
+#include "ComponentBullet.h"
 #include "ComponentBulletLaser.h"
 #include "ModelEcsBase.h"
+#include "Segment.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"

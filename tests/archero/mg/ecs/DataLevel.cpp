@@ -3,6 +3,7 @@
 #include "DataLevel.h"
 #include "DataWaveBase.h"
 #include <string>
+#include <vector>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -15,8 +16,8 @@ namespace mg
     : name("")
     , tmx_maps()
     , waves()
-    , enemies_hp_rate(0.0)
-    , enemies_damage_rate(0.0)
+    , enemies_hp_rate(0.0f)
+    , enemies_damage_rate(0.0f)
     , _reference_counter(1)
     {
 
@@ -38,7 +39,6 @@ namespace mg
 
     int DataLevel::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -46,7 +46,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool DataLevel::operator ==(const DataLevel& rhs) const
@@ -91,8 +90,8 @@ namespace mg
         serializer.serialize(name, "name", std::string(""));
         serializer.serialize(tmx_maps, "tmx_maps");
         serializer.serialize(waves, "waves");
-        serializer.serialize(enemies_hp_rate, "enemies_hp_rate", float(0.0));
-        serializer.serialize(enemies_damage_rate, "enemies_damage_rate", float(0.0));
+        serializer.serialize(enemies_hp_rate, "enemies_hp_rate", float(0.0f));
+        serializer.serialize(enemies_damage_rate, "enemies_damage_rate", float(0.0f));
     }
 
     void DataLevel::deserialize_xml(DeserializerXml& deserializer)
@@ -100,8 +99,8 @@ namespace mg
         deserializer.deserialize(name, "name", std::string(""));
         deserializer.deserialize(tmx_maps, "tmx_maps");
         deserializer.deserialize(waves, "waves");
-        deserializer.deserialize(enemies_hp_rate, "enemies_hp_rate", float(0.0));
-        deserializer.deserialize(enemies_damage_rate, "enemies_damage_rate", float(0.0));
+        deserializer.deserialize(enemies_hp_rate, "enemies_hp_rate", float(0.0f));
+        deserializer.deserialize(enemies_damage_rate, "enemies_damage_rate", float(0.0f));
     }
 
     void DataLevel::serialize_json(SerializerJson& serializer) const
@@ -109,8 +108,8 @@ namespace mg
         serializer.serialize(name, "name", std::string(""));
         serializer.serialize(tmx_maps, "tmx_maps");
         serializer.serialize(waves, "waves");
-        serializer.serialize(enemies_hp_rate, "enemies_hp_rate", float(0.0));
-        serializer.serialize(enemies_damage_rate, "enemies_damage_rate", float(0.0));
+        serializer.serialize(enemies_hp_rate, "enemies_hp_rate", float(0.0f));
+        serializer.serialize(enemies_damage_rate, "enemies_damage_rate", float(0.0f));
     }
 
     void DataLevel::deserialize_json(DeserializerJson& deserializer)
@@ -118,8 +117,8 @@ namespace mg
         deserializer.deserialize(name, "name", std::string(""));
         deserializer.deserialize(tmx_maps, "tmx_maps");
         deserializer.deserialize(waves, "waves");
-        deserializer.deserialize(enemies_hp_rate, "enemies_hp_rate", float(0.0));
-        deserializer.deserialize(enemies_damage_rate, "enemies_damage_rate", float(0.0));
+        deserializer.deserialize(enemies_hp_rate, "enemies_hp_rate", float(0.0f));
+        deserializer.deserialize(enemies_damage_rate, "enemies_damage_rate", float(0.0f));
     }
 
 } //namespace mg

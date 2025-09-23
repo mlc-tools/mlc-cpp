@@ -22,6 +22,7 @@
 #include "Transform.h"
 #include "UnitStat.h"
 #include "Vector.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -33,7 +34,7 @@ namespace mg
     BuilderEntity::BuilderEntity(const DataUnit* data)
     : id(0)
     , level(0)
-    , side(Side::ally)
+    , side()
     , position()
     , data(nullptr)
     , user(nullptr)
@@ -75,22 +76,28 @@ namespace mg
         assert(this->data);
         id = model->get_free_id();
         model->add(make_intrusive<ComponentData>(this->data), id);
+
         auto stats = make_intrusive<ComponentStats>();
         stats->data = this->data;
         model->add(stats, id);
+
         if(this->user)
         {
             auto component = make_intrusive<ComponentUser>();
             component->user = this->user;
             model->add(component, id);
         }
+
         auto transform = make_intrusive<Transform>();
         transform->position = this->position;
         model->add(transform, id);
+
         auto component_side = make_intrusive<ComponentSide>();
         component_side->side = this->side;
         model->add(component_side, id);
+
         model->add(make_intrusive<ComponentBusy>(), id);
+
         if(in_map(UnitStat::size, this->data->stats) && this->data->bullet_type == BulletType::none)
         {
             auto component = make_intrusive<ComponentBody>();
@@ -112,8 +119,10 @@ namespace mg
 
             model->add(make_intrusive<Freezing>(), id);
         }
+
         this->add_components_from_data(model, id);
         this->add_components_from_equipment(model, id);
+
         return id;
     }
 
@@ -159,7 +168,6 @@ namespace mg
 
     int BuilderEntity::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -167,7 +175,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool BuilderEntity::operator ==(const BuilderEntity& rhs) const
@@ -177,6 +184,7 @@ namespace mg
         result = result && this->level == rhs.level;
         result = result && this->side == rhs.side;
         result = result && this->position == rhs.position;
+        result = result && ((this->data == rhs.data) || (this->data != nullptr && rhs.data != nullptr && *this->data == *rhs.data));
         result = result && ((this->user == rhs.user) || (this->user != nullptr && rhs.user != nullptr && *this->user == *rhs.user));
         return result;
     }

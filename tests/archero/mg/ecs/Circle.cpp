@@ -1,7 +1,9 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
 #include "Circle.h"
+#include "PhysicalBody.h"
 #include "Vector.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -12,7 +14,7 @@ namespace mg
 
     Circle::Circle(const Vector& center, float radius)
     : center()
-    , radius(0.0)
+    , radius(0.0f)
     {
         this->center = center;
         this->radius = radius;
@@ -57,28 +59,28 @@ namespace mg
     {
         PhysicalBody::serialize_xml(serializer);
         serializer.serialize(center, "center");
-        serializer.serialize(radius, "radius", float(0.0));
+        serializer.serialize(radius, "radius", float(0.0f));
     }
 
     void Circle::deserialize_xml(DeserializerXml& deserializer)
     {
         PhysicalBody::deserialize_xml(deserializer);
         deserializer.deserialize(center, "center");
-        deserializer.deserialize(radius, "radius", float(0.0));
+        deserializer.deserialize(radius, "radius", float(0.0f));
     }
 
     void Circle::serialize_json(SerializerJson& serializer) const
     {
         PhysicalBody::serialize_json(serializer);
         serializer.serialize(center, "center");
-        serializer.serialize(radius, "radius", float(0.0));
+        serializer.serialize(radius, "radius", float(0.0f));
     }
 
     void Circle::deserialize_json(DeserializerJson& deserializer)
     {
         PhysicalBody::deserialize_json(deserializer);
         deserializer.deserialize(center, "center");
-        deserializer.deserialize(radius, "radius", float(0.0));
+        deserializer.deserialize(radius, "radius", float(0.0f));
     }
 
 } //namespace mg

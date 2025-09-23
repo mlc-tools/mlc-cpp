@@ -8,6 +8,7 @@
 #include "SystemBulletFollowToTarget.h"
 #include "Transform.h"
 #include "Vector.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -38,6 +39,7 @@ namespace mg
             auto hero_target = model->get<ComponentTargetHighlight>(model->player_id);
             follow->target_id = hero_target->target_id;
         });
+
         model->each_if<ComponentBulletFollowToTarget, MoveDirection, Transform>(
         [&](auto& follow, auto& movement, auto& transform)
         {
@@ -67,7 +69,6 @@ namespace mg
 
     int SystemBulletFollowToTarget::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -75,7 +76,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool SystemBulletFollowToTarget::operator ==(const SystemBulletFollowToTarget& rhs) const

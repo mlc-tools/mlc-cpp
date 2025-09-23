@@ -2,6 +2,8 @@
 #include "../mg_Factory.h"
 #include "BBox.h"
 #include "Vector.h"
+#include <string>
+#include <vector>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -48,7 +50,6 @@ namespace mg
 
     int BBox::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -56,7 +57,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool BBox::operator ==(const BBox& rhs) const

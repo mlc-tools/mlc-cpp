@@ -1,8 +1,10 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "ActionShoot.h"
 #include "ActionShootByMoveDirection.h"
 #include "BuilderBullet.h"
 #include "Transform.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -24,6 +26,7 @@ namespace mg
     {
         auto direction = this->common_dictionary->vectors["move_direction"];
         auto transform = model->get<Transform>(this->entity_id);
+
         BuilderBullet(this->entity_id).set_spine_bone_of_create_bullet("shot").set_direction(direction).build(model);
         BuilderBullet(this->entity_id).set_spine_bone_of_create_bullet("shot2").set_direction(-direction).build(model);
     }

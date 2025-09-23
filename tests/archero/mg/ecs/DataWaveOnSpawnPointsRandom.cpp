@@ -1,11 +1,14 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
 #include "DataUnit.h"
+#include "DataWaveBase.h"
 #include "DataWaveOnSpawnPointsRandom.h"
 #include "ModelEcsBase.h"
 #include "SpawnInfo.h"
 #include "Transform.h"
 #include "Vector.h"
+#include <string>
+#include <vector>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -16,7 +19,7 @@ namespace mg
 
     DataWaveOnSpawnPointsRandom::DataWaveOnSpawnPointsRandom()
     : units()
-    , min_distance_to_player(0.0)
+    , min_distance_to_player(0.0f)
     {
 
     }
@@ -38,6 +41,7 @@ namespace mg
             result.push_back(SpawnInfo(points.at(index), unit));
             list_erase(points, index);
         }
+
         return result;
     }
 
@@ -95,28 +99,28 @@ namespace mg
     {
         DataWaveBase::serialize_xml(serializer);
         serializer.serialize(units, "units");
-        serializer.serialize(min_distance_to_player, "min_distance_to_player", float(0.0));
+        serializer.serialize(min_distance_to_player, "min_distance_to_player", float(0.0f));
     }
 
     void DataWaveOnSpawnPointsRandom::deserialize_xml(DeserializerXml& deserializer)
     {
         DataWaveBase::deserialize_xml(deserializer);
         deserializer.deserialize(units, "units");
-        deserializer.deserialize(min_distance_to_player, "min_distance_to_player", float(0.0));
+        deserializer.deserialize(min_distance_to_player, "min_distance_to_player", float(0.0f));
     }
 
     void DataWaveOnSpawnPointsRandom::serialize_json(SerializerJson& serializer) const
     {
         DataWaveBase::serialize_json(serializer);
         serializer.serialize(units, "units");
-        serializer.serialize(min_distance_to_player, "min_distance_to_player", float(0.0));
+        serializer.serialize(min_distance_to_player, "min_distance_to_player", float(0.0f));
     }
 
     void DataWaveOnSpawnPointsRandom::deserialize_json(DeserializerJson& deserializer)
     {
         DataWaveBase::deserialize_json(deserializer);
         deserializer.deserialize(units, "units");
-        deserializer.deserialize(min_distance_to_player, "min_distance_to_player", float(0.0));
+        deserializer.deserialize(min_distance_to_player, "min_distance_to_player", float(0.0f));
     }
 
 } //namespace mg

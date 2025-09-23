@@ -1,8 +1,11 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "ComponentBase.h"
 #include "ComponentSwordCast.h"
 #include "ModelEcsBase.h"
 #include "Vector.h"
+#include <string>
+#include <vector>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -14,8 +17,8 @@ namespace mg
     ComponentSwordCast::ComponentSwordCast()
     : wave_event_listen(false)
     , points()
-    , timer_1(0.0)
-    , timer_10(0.0)
+    , timer_1(0.0f)
+    , timer_10(0.0f)
     {
 
     }
@@ -79,8 +82,8 @@ namespace mg
         ComponentBase::serialize_xml(serializer);
         serializer.serialize(wave_event_listen, "wave_event_listen", bool(false));
         serializer.serialize(points, "points");
-        serializer.serialize(timer_1, "timer_1", float(0.0));
-        serializer.serialize(timer_10, "timer_10", float(0.0));
+        serializer.serialize(timer_1, "timer_1", float(0.0f));
+        serializer.serialize(timer_10, "timer_10", float(0.0f));
     }
 
     void ComponentSwordCast::deserialize_xml(DeserializerXml& deserializer)
@@ -88,8 +91,8 @@ namespace mg
         ComponentBase::deserialize_xml(deserializer);
         deserializer.deserialize(wave_event_listen, "wave_event_listen", bool(false));
         deserializer.deserialize(points, "points");
-        deserializer.deserialize(timer_1, "timer_1", float(0.0));
-        deserializer.deserialize(timer_10, "timer_10", float(0.0));
+        deserializer.deserialize(timer_1, "timer_1", float(0.0f));
+        deserializer.deserialize(timer_10, "timer_10", float(0.0f));
     }
 
     void ComponentSwordCast::serialize_json(SerializerJson& serializer) const
@@ -97,8 +100,8 @@ namespace mg
         ComponentBase::serialize_json(serializer);
         serializer.serialize(wave_event_listen, "wave_event_listen", bool(false));
         serializer.serialize(points, "points");
-        serializer.serialize(timer_1, "timer_1", float(0.0));
-        serializer.serialize(timer_10, "timer_10", float(0.0));
+        serializer.serialize(timer_1, "timer_1", float(0.0f));
+        serializer.serialize(timer_10, "timer_10", float(0.0f));
     }
 
     void ComponentSwordCast::deserialize_json(DeserializerJson& deserializer)
@@ -106,8 +109,8 @@ namespace mg
         ComponentBase::deserialize_json(deserializer);
         deserializer.deserialize(wave_event_listen, "wave_event_listen", bool(false));
         deserializer.deserialize(points, "points");
-        deserializer.deserialize(timer_1, "timer_1", float(0.0));
-        deserializer.deserialize(timer_10, "timer_10", float(0.0));
+        deserializer.deserialize(timer_1, "timer_1", float(0.0f));
+        deserializer.deserialize(timer_10, "timer_10", float(0.0f));
     }
 
 } //namespace mg

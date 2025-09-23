@@ -35,6 +35,7 @@ namespace mg
         bool initialized;
         int timestamp;
         bool ready_to_write;
+
     private:
         int _reference_counter;
     public:

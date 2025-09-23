@@ -24,7 +24,7 @@ namespace mg
         virtual ~ModelUser();
         void update();
         static intrusive_ptr<ModelUser> get_instance();
-        void initialize(int current_time);
+        virtual void initialize(int current_time);
         void upgrade(int current_time);
         bool is_payer() const;
         void update_profile(UserProfile* profile) const;
@@ -39,6 +39,7 @@ namespace mg
         virtual void deserialize_json(DeserializerJson& deserializer) override;
 
         static intrusive_ptr<ModelUser> instance;
+
         int session_time_start;
         bool accepted_policy;
         std::vector<std::string> complete_tutorial;

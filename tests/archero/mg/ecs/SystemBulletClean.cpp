@@ -5,6 +5,7 @@
 #include "ModelEcsBase.h"
 #include "SystemBullet.h"
 #include "SystemBulletClean.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -30,7 +31,6 @@ namespace mg
 
     void SystemBulletClean::clean(ModelEcsBase* model)
     {
-
         for(int __index__ = 0; __index__ < model->components_bullet.size(); ++__index__)
         {
             auto& component = model->components_bullet.at(__index__);
@@ -38,13 +38,9 @@ namespace mg
             {
                 auto __size__ = model->components_bullet.size();
                 SystemBullet::remove_bullet(model, component);
-                if(__size__ != model->components_bullet.size())
-                {
-                    __index__ -= 1;
-                }
+                if(__size__ != model->components_bullet.size()) { --__index__; }
             }
         }
-
         for(int __index__ = 0; __index__ < model->components_bullet_laser.size(); ++__index__)
         {
             auto& bullet = model->components_bullet_laser.at(__index__);
@@ -52,10 +48,7 @@ namespace mg
             {
                 auto __size__ = model->components_bullet_laser.size();
                 SystemBullet::remove_bullet(model, bullet);
-                if(__size__ != model->components_bullet_laser.size())
-                {
-                    __index__ -= 1;
-                }
+                if(__size__ != model->components_bullet_laser.size()) { --__index__; }
             }
         }
     }
@@ -67,7 +60,6 @@ namespace mg
 
     int SystemBulletClean::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -75,7 +67,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool SystemBulletClean::operator ==(const SystemBulletClean& rhs) const

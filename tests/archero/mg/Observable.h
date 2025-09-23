@@ -16,8 +16,7 @@ namespace mg
         virtual void remove(void* object) = 0;
         virtual void remove(int object) = 0;
     };
-    
-    
+
     template<class R> class Observable;
 
     template<class R, class... A>

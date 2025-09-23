@@ -13,6 +13,8 @@
 #include "Transform.h"
 #include "UnitStat.h"
 #include "Vector.h"
+#include <map>
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -35,6 +37,7 @@ namespace mg
     void SystemResolveCollisions::update(ModelEcsBase* model, float dt)
     {
         this->resole_collision_with_poly(model);
+
         int index = 0;
         model->each<ComponentBody, Transform>(
         [&](auto& body_a, auto& transform_a)
@@ -124,6 +127,7 @@ namespace mg
     {
         auto bullet = model->get<ComponentBullet>(entity_id);
         auto bullet_type = bullet ? bullet->bullet_type : BulletType::none;
+
         if(bullet_type == BulletType::none)
         {
             return !is_wall(model, entity_id, pos, radius);
@@ -190,7 +194,6 @@ namespace mg
 
     int SystemResolveCollisions::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -198,7 +201,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool SystemResolveCollisions::operator ==(const SystemResolveCollisions& rhs) const

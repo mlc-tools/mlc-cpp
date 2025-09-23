@@ -149,6 +149,47 @@ catch(const std::exception& $4)
 {$5})",
             { "try", "catch" }
         }
+        ,
+        // compound assignment with conditional call shorthand
+        {
+            std::regex(R"((^|\n)(\s*)([^+\-*/=\n;]*?\b)(\w+)\s*(\+=|\-=|\*=|/=)\s*(.*?)([\w:\.\-\>\(\)<> ,\*]+)\s*\?->\s*([^;\n]+);)"),
+            std::string("$1$2auto __tmp_$4 = $7;\n") +
+            "$1$2if(__tmp_$4)\n" +
+            "$1$2{\n" +
+            "$1$2    $3$4 $5 $6__tmp_$4->$8;\n" +
+            "$1$2}",
+            { "?->" }
+        }
+        ,
+        // declaration assignment with conditional call shorthand
+        {
+            std::regex(R"((^|\n)(\s*)([A-Za-z_][\w:\s<>&\*]*?)\s+(\w+)\s*=\s*(.*?)([\w:\.\-\>\(\)<> ,\*]+)\s*\?->\s*([^;\n]+);)"),
+            std::string("$1$2auto __tmp_$4 = $6;\n") +
+            "$1$2$3 $4;\n" +
+            "$1$2if(__tmp_$4)\n" +
+            "$1$2{\n" +
+            "$1$2    $4 = $5__tmp_$4->$7;\n" +
+            "$1$2}",
+            { "?->" }
+        }
+        ,
+        // plain assignment with conditional call shorthand
+        {
+            std::regex(R"((^|\n)(\s*)([^=\n;]*?\b)(\w+)\s*=\s*(.*?)([\w:\.\-\>\(\)<> ,\*]+)\s*\?->\s*([^;\n]+);)"),
+            std::string("$1$2auto __tmp_$4 = $6;\n") +
+            "$1$2if(__tmp_$4)\n" +
+            "$1$2{\n" +
+            "$1$2    $3$4 = $5__tmp_$4->$7;\n" +
+            "$1$2}",
+            { "?->" }
+        }
+        ,
+        // bare conditional call shorthand: obj?->call; -> if(obj){ obj->call; }
+        {
+            std::regex(R"(([\w\-\>\.\:\[\]\(\)]+?)\s*\?->\s*([^;]+);)"),
+            std::string("if($1)\n{\n$1->$2;\n}"),
+            { "?->" }
+        }
     };
 
     /// Простые текстовые замены
@@ -156,4 +197,3 @@ catch(const std::exception& $4)
         { "std::round", "round" }
     };
 };
-

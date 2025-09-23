@@ -12,11 +12,15 @@
 #include "ControllerDungeonBase.h"
 #include "DataStatUpgrade.h"
 #include "DataUnit.h"
+#include "IControllerDungeonBase.h"
+#include "ModelEcsBase.h"
 #include "Side.h"
 #include "SpawnInfo.h"
 #include "SystemMovement.h"
 #include "SystemResolveCollisions.h"
 #include "Vector.h"
+#include <string>
+#include <vector>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -66,8 +70,8 @@ namespace mg
             {
                 return false;
             }
-        }
-        ;
+        };
+
         if(model->wave_index > 0 && model->wave_index-1 < list_size(model->data->waves))
         {
             auto wave_generator = model->data->waves.at(model->wave_index-1);
@@ -76,6 +80,7 @@ namespace mg
                 return wave_generator->is_finished(model);
             }
         }
+
         model->wave_finished = true;
         return true;
     }
@@ -90,6 +95,7 @@ namespace mg
         {
             model->update(dt);
         }
+
         if(this->paused == 0 && is_wave_finished() == true && !this->show_window_skill)
         {
             if(!model->data->is_change_view_on_next_wave())
@@ -105,6 +111,7 @@ namespace mg
                 generate_wave();
             }
         }
+
         auto wave_generator = model->data->waves.at(model->wave_index-1);
         if(wave_generator->is_interval_generate() && !this->show_window_skill)
         {
@@ -135,9 +142,11 @@ namespace mg
     {
         map_clear(SystemResolveCollisions::event_collision);
         map_clear(SystemMovement::event_on_wall);
+
         ++model->wave_index;
         this->model->data->waves.at(model->wave_index-1)->on_start(this->model);
         this->generate_units_on_wave();
+
         model->wave_finished = false;
         model->event_wave_start.notify();
     }
@@ -206,6 +215,7 @@ namespace mg
                 skills.push_back(&data);
             }
         }
+
         while(count-- > 0)
         {
             auto i = random_int(0, static_cast<int>(skills.size()));

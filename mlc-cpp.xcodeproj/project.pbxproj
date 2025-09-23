@@ -48,6 +48,7 @@
 		EF1E96B72E7D5E380090F967 /* json_reader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1E96A52E7D5E380090F967 /* json_reader.cpp */; };
 		EF1E96B82E7D5E380090F967 /* json_writer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1E96A92E7D5E380090F967 /* json_writer.cpp */; };
 		EF1E96B92E7D5E380090F967 /* json_value.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1E96A72E7D5E380090F967 /* json_value.cpp */; };
+		EF1E96DC2E823E7C0090F967 /* GeneratorEcsCpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EF1E96DB2E823E7C0090F967 /* GeneratorEcsCpp.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -158,6 +159,8 @@
 		EF1E96AF2E7D5E380090F967 /* pugiconfig.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = pugiconfig.hpp; sourceTree = "<group>"; };
 		EF1E96B02E7D5E380090F967 /* pugixml.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = pugixml.hpp; sourceTree = "<group>"; };
 		EF1E96B12E7D5E380090F967 /* pugixml.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = pugixml.cpp; sourceTree = "<group>"; };
+		EF1E96DA2E823E7C0090F967 /* GeneratorEcsCpp.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = GeneratorEcsCpp.hpp; sourceTree = "<group>"; };
+		EF1E96DB2E823E7C0090F967 /* GeneratorEcsCpp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = GeneratorEcsCpp.cpp; sourceTree = "<group>"; };
 		EF9A0EDE2E35B55500D4FCEA /* mlc-cpp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "mlc-cpp"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -259,6 +262,8 @@
 		EF1658A32E39E91400573EEE /* module_cpp */ = {
 			isa = PBXGroup;
 			children = (
+				EF1E96DA2E823E7C0090F967 /* GeneratorEcsCpp.hpp */,
+				EF1E96DB2E823E7C0090F967 /* GeneratorEcsCpp.cpp */,
 				EF1658B02E39EF5300573EEE /* code */,
 				EF1658A72E39EE0300573EEE /* GeneratorCpp.hpp */,
 				EF1658A82E39EE0300573EEE /* GeneratorCpp.cpp */,
@@ -439,6 +444,7 @@
 				EF1658D52E3B35AF00573EEE /* TranslatorBase.cpp in Sources */,
 				EF1E967B2E7D463C0090F967 /* Registrar.cpp in Sources */,
 				EF0F7E8E2E37190D0039F169 /* Linker.cpp in Sources */,
+				EF1E96DC2E823E7C0090F967 /* GeneratorEcsCpp.cpp in Sources */,
 				EF0F7E8F2E37190D0039F169 /* Object.cpp in Sources */,
 				EF0F7E902E37190D0039F169 /* Model.cpp in Sources */,
 				EF0F7E9C2E3767FE0039F169 /* CircularReference.cpp in Sources */,

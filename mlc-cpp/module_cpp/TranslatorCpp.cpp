@@ -164,16 +164,14 @@ std::vector<int> TranslatorCpp::convertToEnum(Class &cls) {
         auto ret = makeConstRef(cls.name, "");
         auto method = addMethod(ret, "operator =", false);
         method->callable_args.push_back(makeConstRef(ret.type, "rhs"));
-        method->body += "value = rhs.value;";
-        method->body += "return *this;";
+        method->body += "value = rhs.value;\nreturn *this;";
     }
     //   operator=(int)
     {
         auto ret = makeConstRef(cls.name, "");
         auto method = addMethod(ret, "operator =", false);
         method->callable_args.push_back(Object("int", "rhs"));
-        method->body += "value = rhs;";
-        method->body += "return *this;";
+        method->body += "value = rhs;\nreturn *this;";
     }
     //   operator=(const std::string&)
     {
@@ -186,7 +184,7 @@ std::vector<int> TranslatorCpp::convertToEnum(Class &cls) {
                 method->body += format_indexes("\nif(_value == \"{0}\") \n{\n value = {0}; \nreturn *this; \n}", mb.name);
             }
         }
-        method->body += "return *this;";
+        method->body += "\nreturn *this;";
     }
     //   operator==(Enum)
     {
@@ -239,7 +237,7 @@ std::vector<int> TranslatorCpp::convertToEnum(Class &cls) {
                 method->body += format_indexes("\nif(value == {0}) \n{\n return \"{0}\"; \n}", mb.name);
             }
         }
-        method->body += "return std::string();";
+        method->body += "\nreturn std::string();";
     }
     //   str()
     {
@@ -250,7 +248,7 @@ std::vector<int> TranslatorCpp::convertToEnum(Class &cls) {
                 method->body += format_indexes("\nif(value == {0}) \n{\n return \"{0}\"; \n}", mb.name);
             }
         }
-        method->body += "return std::string();";
+        method->body += "\nreturn std::string();";
     }
 
     return values;

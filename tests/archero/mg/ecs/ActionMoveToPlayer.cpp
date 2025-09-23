@@ -1,9 +1,11 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "ActionBase.h"
 #include "ActionMoveToPlayer.h"
 #include "MoveToTarget.h"
 #include "SystemMovement.h"
 #include "SystemResolveCollisions.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -26,6 +28,7 @@ namespace mg
         auto movement = make_intrusive<MoveToTarget>();
         movement->target_id = model->player_id;
         model->add(movement, this->entity_id);
+
         SystemResolveCollisions::event_collision[this->entity_id].add(this, [this](int target_id)
         {
             if(target_id == model->player_id)
@@ -55,6 +58,7 @@ namespace mg
     void ActionMoveToPlayer::finalize()
     {
         model->remove(model->get<MoveToTarget>(this->entity_id));
+
         map_remove(SystemResolveCollisions::event_collision, this->entity_id);
         map_remove(SystemMovement::event_on_wall, this->entity_id);
     }

@@ -1,6 +1,7 @@
 #include "intrusive_ptr.h"
 #include "mg_Factory.h"
 #include "VisualItem.h"
+#include <string>
 #include "mg_extensions.h"
 #include "SerializerJson.h"
 #include "SerializerXml.h"
@@ -29,7 +30,6 @@ namespace mg
 
     int VisualItem::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -37,7 +37,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool VisualItem::operator ==(const VisualItem& rhs) const

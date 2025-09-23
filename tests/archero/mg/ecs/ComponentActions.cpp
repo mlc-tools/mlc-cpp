@@ -2,8 +2,12 @@
 #include "../mg_Factory.h"
 #include "ActionBase.h"
 #include "ComponentActions.h"
+#include "ComponentBase.h"
+#include "Dictionary.h"
 #include "ModelEcsBase.h"
+#include <map>
 #include <string>
+#include <vector>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -37,7 +41,9 @@ namespace mg
     {
         assert(!this->initialized);
         this->initialized = true;
+
         this->dictionary = make_intrusive<Dictionary>();
+
         assert(this->map_actions.size() == 0);
         for(auto& action : this->actions)
         {

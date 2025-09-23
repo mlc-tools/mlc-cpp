@@ -1,8 +1,10 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "ComponentBase.h"
 #include "ModelEcsBase.h"
 #include "MoveParabolic.h"
 #include "Vector.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -15,11 +17,11 @@ namespace mg
     : start_position()
     , target_position()
     , offset()
-    , height(0.0)
-    , timer(0.0)
-    , duration(0.0)
+    , height(0.0f)
+    , timer(0.0f)
+    , duration(0.0f)
     , done(false)
-    , z(0.0)
+    , z(0.0f)
     {
 
     }
@@ -58,7 +60,9 @@ namespace mg
             this->done = true;
         }
         auto result = start_position + offset * t;
+
         this->z = sin(M_PI * t) * this->height;
+
         return result;
     }
 
@@ -126,11 +130,11 @@ namespace mg
         serializer.serialize(start_position, "start_position");
         serializer.serialize(target_position, "target_position");
         serializer.serialize(offset, "offset");
-        serializer.serialize(height, "height", float(0.0));
-        serializer.serialize(timer, "timer", float(0.0));
-        serializer.serialize(duration, "duration", float(0.0));
+        serializer.serialize(height, "height", float(0.0f));
+        serializer.serialize(timer, "timer", float(0.0f));
+        serializer.serialize(duration, "duration", float(0.0f));
         serializer.serialize(done, "done", bool(false));
-        serializer.serialize(z, "z", float(0.0));
+        serializer.serialize(z, "z", float(0.0f));
     }
 
     void MoveParabolic::deserialize_xml(DeserializerXml& deserializer)
@@ -139,11 +143,11 @@ namespace mg
         deserializer.deserialize(start_position, "start_position");
         deserializer.deserialize(target_position, "target_position");
         deserializer.deserialize(offset, "offset");
-        deserializer.deserialize(height, "height", float(0.0));
-        deserializer.deserialize(timer, "timer", float(0.0));
-        deserializer.deserialize(duration, "duration", float(0.0));
+        deserializer.deserialize(height, "height", float(0.0f));
+        deserializer.deserialize(timer, "timer", float(0.0f));
+        deserializer.deserialize(duration, "duration", float(0.0f));
         deserializer.deserialize(done, "done", bool(false));
-        deserializer.deserialize(z, "z", float(0.0));
+        deserializer.deserialize(z, "z", float(0.0f));
     }
 
     void MoveParabolic::serialize_json(SerializerJson& serializer) const
@@ -152,11 +156,11 @@ namespace mg
         serializer.serialize(start_position, "start_position");
         serializer.serialize(target_position, "target_position");
         serializer.serialize(offset, "offset");
-        serializer.serialize(height, "height", float(0.0));
-        serializer.serialize(timer, "timer", float(0.0));
-        serializer.serialize(duration, "duration", float(0.0));
+        serializer.serialize(height, "height", float(0.0f));
+        serializer.serialize(timer, "timer", float(0.0f));
+        serializer.serialize(duration, "duration", float(0.0f));
         serializer.serialize(done, "done", bool(false));
-        serializer.serialize(z, "z", float(0.0));
+        serializer.serialize(z, "z", float(0.0f));
     }
 
     void MoveParabolic::deserialize_json(DeserializerJson& deserializer)
@@ -165,11 +169,11 @@ namespace mg
         deserializer.deserialize(start_position, "start_position");
         deserializer.deserialize(target_position, "target_position");
         deserializer.deserialize(offset, "offset");
-        deserializer.deserialize(height, "height", float(0.0));
-        deserializer.deserialize(timer, "timer", float(0.0));
-        deserializer.deserialize(duration, "duration", float(0.0));
+        deserializer.deserialize(height, "height", float(0.0f));
+        deserializer.deserialize(timer, "timer", float(0.0f));
+        deserializer.deserialize(duration, "duration", float(0.0f));
         deserializer.deserialize(done, "done", bool(false));
-        deserializer.deserialize(z, "z", float(0.0));
+        deserializer.deserialize(z, "z", float(0.0f));
     }
 
 } //namespace mg

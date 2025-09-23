@@ -1,8 +1,10 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "ActionShoot.h"
 #include "ActionShoot4Dir.h"
 #include "BuilderBullet.h"
 #include "Vector.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -24,6 +26,7 @@ namespace mg
     {
         Vector horizont(1, 0);
         Vector vertical(0, 1);
+
         BuilderBullet(this->entity_id).set_spine_bone_of_create_bullet("shot").set_direction(-vertical).build(model);
         BuilderBullet(this->entity_id).set_spine_bone_of_create_bullet("shot2").set_direction(horizont).build(model);
         BuilderBullet(this->entity_id).set_spine_bone_of_create_bullet("shot3").set_direction(-horizont).build(model);

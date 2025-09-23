@@ -257,16 +257,14 @@ std::string WriterBase::prepareFileCodeStyleCpp(const std::string &text) const {
     }
 
     std::string prepared = out.str();
-    // strip leading/trailing whitespace
-    prepared = std::regex_replace(prepared, std::regex("^\\s+|\\s+$"), "");
-    // collapse triple newlines to double
+//    prepared = std::regex_replace(prepared, std::regex("^\\s+|\\s+$"), "");
+
     for (;;) {
         auto before = prepared.size();
         replace_all(prepared, "\n\n\n", "\n\n");
         if (prepared.size() == before) break;
     }
-    prepared.push_back('\n');
+//    prepared.push_back('\n');
 
-    // Then apply base prepareFile like the Python code
     return prepared;
 }

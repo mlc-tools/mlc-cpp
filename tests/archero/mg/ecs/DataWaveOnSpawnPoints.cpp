@@ -1,10 +1,13 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
 #include "DataUnit.h"
+#include "DataWaveBase.h"
 #include "DataWaveOnSpawnPoints.h"
 #include "ModelEcsBase.h"
 #include "SpawnInfo.h"
+#include <map>
 #include <string>
+#include <vector>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"

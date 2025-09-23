@@ -1,7 +1,9 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "ComponentBase.h"
 #include "ComponentRecharge.h"
 #include "ModelEcsBase.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -11,7 +13,7 @@ namespace mg
     const std::string ComponentRecharge::TYPE("ComponentRecharge");
 
     ComponentRecharge::ComponentRecharge()
-    : recharge(0.0)
+    : recharge(0.0f)
     , attack_animation_timer(0)
     {
 
@@ -70,28 +72,28 @@ namespace mg
     void ComponentRecharge::serialize_xml(SerializerXml& serializer) const
     {
         ComponentBase::serialize_xml(serializer);
-        serializer.serialize(recharge, "recharge", float(0.0));
+        serializer.serialize(recharge, "recharge", float(0.0f));
         serializer.serialize(attack_animation_timer, "attack_animation_timer", float(0));
     }
 
     void ComponentRecharge::deserialize_xml(DeserializerXml& deserializer)
     {
         ComponentBase::deserialize_xml(deserializer);
-        deserializer.deserialize(recharge, "recharge", float(0.0));
+        deserializer.deserialize(recharge, "recharge", float(0.0f));
         deserializer.deserialize(attack_animation_timer, "attack_animation_timer", float(0));
     }
 
     void ComponentRecharge::serialize_json(SerializerJson& serializer) const
     {
         ComponentBase::serialize_json(serializer);
-        serializer.serialize(recharge, "recharge", float(0.0));
+        serializer.serialize(recharge, "recharge", float(0.0f));
         serializer.serialize(attack_animation_timer, "attack_animation_timer", float(0));
     }
 
     void ComponentRecharge::deserialize_json(DeserializerJson& deserializer)
     {
         ComponentBase::deserialize_json(deserializer);
-        deserializer.deserialize(recharge, "recharge", float(0.0));
+        deserializer.deserialize(recharge, "recharge", float(0.0f));
         deserializer.deserialize(attack_animation_timer, "attack_animation_timer", float(0));
     }
 

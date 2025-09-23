@@ -1,7 +1,10 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
+#include "ComponentBase.h"
 #include "ComponentSphere.h"
 #include "ModelEcsBase.h"
+#include <map>
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -12,7 +15,7 @@ namespace mg
 
     ComponentSphere::ComponentSphere()
     : hero_id(0)
-    , angle(0.0)
+    , angle(0.0f)
     , radius(200)
     , speed(3.14)
     , ignore_targets()
@@ -80,7 +83,7 @@ namespace mg
     {
         ComponentBase::serialize_xml(serializer);
         serializer.serialize(hero_id, "hero_id", int(0));
-        serializer.serialize(angle, "angle", float(0.0));
+        serializer.serialize(angle, "angle", float(0.0f));
         serializer.serialize(radius, "radius", float(200));
         serializer.serialize(speed, "speed", float(3.14));
         serializer.serialize(ignore_targets, "ignore_targets");
@@ -90,7 +93,7 @@ namespace mg
     {
         ComponentBase::deserialize_xml(deserializer);
         deserializer.deserialize(hero_id, "hero_id", int(0));
-        deserializer.deserialize(angle, "angle", float(0.0));
+        deserializer.deserialize(angle, "angle", float(0.0f));
         deserializer.deserialize(radius, "radius", float(200));
         deserializer.deserialize(speed, "speed", float(3.14));
         deserializer.deserialize(ignore_targets, "ignore_targets");
@@ -100,7 +103,7 @@ namespace mg
     {
         ComponentBase::serialize_json(serializer);
         serializer.serialize(hero_id, "hero_id", int(0));
-        serializer.serialize(angle, "angle", float(0.0));
+        serializer.serialize(angle, "angle", float(0.0f));
         serializer.serialize(radius, "radius", float(200));
         serializer.serialize(speed, "speed", float(3.14));
         serializer.serialize(ignore_targets, "ignore_targets");
@@ -110,7 +113,7 @@ namespace mg
     {
         ComponentBase::deserialize_json(deserializer);
         deserializer.deserialize(hero_id, "hero_id", int(0));
-        deserializer.deserialize(angle, "angle", float(0.0));
+        deserializer.deserialize(angle, "angle", float(0.0f));
         deserializer.deserialize(radius, "radius", float(200));
         deserializer.deserialize(speed, "speed", float(3.14));
         deserializer.deserialize(ignore_targets, "ignore_targets");

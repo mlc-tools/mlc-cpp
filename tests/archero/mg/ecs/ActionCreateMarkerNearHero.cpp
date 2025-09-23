@@ -1,12 +1,14 @@
 #include "intrusive_ptr.h"
 #include "../mg_Factory.h"
 #include "../DataStorage.h"
+#include "ActionBase.h"
 #include "ActionCreateMarkerNearHero.h"
 #include "ComponentStats.h"
 #include "DataUnit.h"
 #include "Transform.h"
 #include "UnitStat.h"
 #include "Vector.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -31,12 +33,14 @@ namespace mg
     {
         auto bullet_name = model->get<ComponentStats>(this->entity_id)->get_string(model, UnitStat::bullet);
         auto data = DataStorage::shared().get<DataUnit>(bullet_name);
+
         auto radius_damage = data->stats.at(UnitStat::damage_mass_radius);
         auto radius_near_player = this->radius;
         if(radius_near_player == 0)
         {
             radius_near_player = radius_damage;
         }
+
         auto transform_hero = model->get<Transform>(model->player_id);
         auto pos = transform_hero->position + Vector::generate_random_point_in_radius(radius_near_player);
         if(!model->ground->is_bound(pos) || model->ground->has_collision_with_walls(pos, 0))
@@ -44,6 +48,7 @@ namespace mg
             pos = transform_hero->position + Vector::generate_random_point_in_radius(radius_near_player);
         }
         common_dictionary->vectors[this->marker_id] = pos;
+
         if(string_size(this->marker) > 0)
         {
             model->event_create_marker.notify(pos, 2, radius_damage, "");

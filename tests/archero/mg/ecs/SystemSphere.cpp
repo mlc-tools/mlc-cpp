@@ -9,6 +9,7 @@
 #include "SystemSphere.h"
 #include "Transform.h"
 #include "Vector.h"
+#include <string>
 #include "../mg_extensions.h"
 #include "../SerializerJson.h"
 #include "../SerializerXml.h"
@@ -57,6 +58,7 @@ namespace mg
             model->event_create_bullet.notify(id, hero_transform->position);
         }
         spawn->spawned = true;
+
         auto count = model->components_sphere.size();
         int i = 0;
         model->each<ComponentSphere>([&](auto& sphere)
@@ -90,7 +92,6 @@ namespace mg
 
     int SystemSphere::release()
     {
-
         --this->_reference_counter;
         auto counter = this->_reference_counter;
         if(counter == 0)
@@ -98,7 +99,6 @@ namespace mg
             delete this;
         }
         return counter;
-
     }
 
     bool SystemSphere::operator ==(const SystemSphere& rhs) const
