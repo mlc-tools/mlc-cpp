@@ -17,7 +17,7 @@ struct Class;
 struct Function;
 class Object;
 
-class GeneratorEcsCpp : public CustomGenerator {
+class GeneratorEcsCpp : public custom_generator {
 public:
     virtual void generate(Model &model) override;
     virtual void modifySources(Model& model, const std::shared_ptr<Class>& cls, std::string& header, std::string& source) override;

@@ -44,7 +44,7 @@ inline std::vector<std::pair<SerializeFormat, std::string>> getAllSerializeForma
 class Parser;
 class Model;
 
-class CustomGenerator{
+class custom_generator{
 public:
     virtual void generate(Model& model) = 0;
     virtual void modifySources(Model& model, const std::shared_ptr<Class>& cls, std::string& header, std::string& source) = 0;
@@ -98,33 +98,31 @@ public:
     std::unordered_set<std::string> includes;
 
     // Конфигурации и директории
-    std::string model_name;
     std::vector<std::string> configs_directories;
     std::vector<std::string> data_directories;
+    std::string out_directory;
     std::string out_data_directory;
 
-    std::string out_directory;
     std::string language = "cpp";
-    bool onlyData = false;
-    std::string namespaceName = "mg";
+    bool only_data = false;
+    std::string namespace_name = "mg";
     Side side = Side::both;
-    bool phpValidate = true;
-    bool allowDifferentVirtual = true;
-    std::string testScript;
-    std::string testScriptArgs;
-    bool generateTests = false;
-    bool generateIntrusive = true;
-    bool generateFactory = true;
-    std::function<bool(const std::string&)> filterCode;
-    std::function<bool(const std::string&)> filterData;
-    std::shared_ptr<CustomGenerator> customGenerator = nullptr;
-    std::vector<SerializeFormat> serializeProtocol;
-    bool joinToOneFile = false;
-    bool autoRegistration = true;
-    bool generateRefCounter = true;
-    bool userIncludes = false;
-    bool emptyMethods = false;
-    bool auto_registration = false;
+    bool php_validate = false;
+    bool allow_different_virtual = true;
+    std::string test_script;
+    std::string test_script_args;
+    bool generate_tests = false;
+    bool generate_intrusive = true;
+    bool generate_factory = true;
+    std::function<bool(const std::string&)> filter_code;
+    std::function<bool(const std::string&)> filter_data;
+    std::shared_ptr<custom_generator> custom_generator = nullptr;
+    std::vector<SerializeFormat> serialize_protocol;
+    bool join_to_one_file = false;
+    bool auto_registration = true;
+    bool generate_ref_counter = true;
+    bool user_includes = false;
+    bool empty_methods = false;
 
     // Простые типы
     static const std::unordered_set<std::string> simpleTypes;

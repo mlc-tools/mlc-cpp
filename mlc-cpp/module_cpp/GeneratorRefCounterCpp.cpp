@@ -43,7 +43,7 @@ GeneratorRefCounterCpp::GeneratorRefCounterCpp()
 }
 
 void GeneratorRefCounterCpp::generate(Model &model) {
-    if (!model.generateRefCounter) return;
+    if (!model.generate_ref_counter) return;
 
     // если серверная сторона — используем atomic
     if (model.side == Side::server) {

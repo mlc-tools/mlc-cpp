@@ -31,7 +31,7 @@ protected:
     Model* model;
     Class* currentClass;
     using ProtocolMap = std::vector<std::unordered_map<std::string, std::vector<std::string>>>;
-    ProtocolMap serializeProtocol;
+    ProtocolMap serialize_protocol;
     void createSerializationFunction(Class &cls,
                                      SerializationType t,
                                      const std::string &format);
@@ -60,5 +60,5 @@ protected:
                                     bool isPointer,
                                     bool isLink,
                                     const std::string &format);
-    void loadDefaultSerializeProtocol(const std::string& formatName);
+    void loadDefaultserialize_protocol(const std::string& formatName);
 };

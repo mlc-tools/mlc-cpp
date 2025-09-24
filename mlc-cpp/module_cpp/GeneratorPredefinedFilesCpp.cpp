@@ -30,8 +30,8 @@ void GeneratorPredefinedFiles::generate(Model &model) {
     generateBaseEnumClass(model);
 
     // при наличии пользовательского генератора дополняем список файлов
-//    if (model.customGenerator) {
-//        auto extra = model.customGenerator->getPredefinedFiles(model);
+//    if (model.custom_generator) {
+//        auto extra = model.custom_generator->getPredefinedFiles(model);
 //        FILES_DICT.insert(FILES_DICT.end(), extra.begin(), extra.end());
 //    }
 
@@ -40,9 +40,9 @@ void GeneratorPredefinedFiles::generate(Model &model) {
         std::string filename = p.first;
         // фильтрация по фичам
         if (filename.find("intrusive_ptr") != std::string::npos
-            && !model.generateIntrusive) continue;
+            && !model.generate_intrusive) continue;
         if (filename.find("Factory") != std::string::npos
-            && !model.generateFactory) continue;
+            && !model.generate_factory) continue;
 
         std::string content = p.second;
         // заместим namespace
@@ -64,7 +64,7 @@ void GeneratorPredefinedFiles::generate(Model &model) {
 
         // для Factory-файлов добавляем регистрацию, если нужно
         if (filename.find("Factory") != std::string::npos) {
-            std::string reg = model.autoRegistration
+            std::string reg = model.auto_registration
                 ? FACTORY_REGISTRATION
                 : std::string{};
             while ((pos = content.find("@{registration}")) != std::string::npos)

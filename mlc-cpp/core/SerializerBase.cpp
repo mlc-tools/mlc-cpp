@@ -31,8 +31,8 @@ void SerializerBase::generateMethods(Model &m) {
         if ((m.serializeFormats & fmtCode) == 0)
             continue;
 
-        // Load protocol into model.serializeProtocol
-        loadDefaultSerializeProtocol(name);
+        // Load protocol into model.serialize_protocol
+        loadDefaultserialize_protocol(name);
 
         // For each class
         for (auto &clsPtr : m.classes) {
@@ -177,7 +177,7 @@ std::string SerializerBase::dispatchSerializeOp(
     std::string defv = convertInitializeValue(fieldValue);
 
     // Lookup in protocol
-    auto &vec = serializeProtocol[t].at(keyType);
+    auto &vec = serialize_protocol[t].at(keyType);
     std::string pattern = vec.at(idx);
 
     replace_all(pattern, "{field}",         fieldName);
@@ -190,6 +190,6 @@ std::string SerializerBase::dispatchSerializeOp(
     return finalizeSerializeOperation(std::move(pattern));
 }
 
-void SerializerBase::loadDefaultSerializeProtocol(const std::string& formatName){
-//    serializeProtocol = m.serializeProtocol;
+void SerializerBase::loadDefaultserialize_protocol(const std::string& formatName){
+//    serialize_protocol = m.serialize_protocol;
 }

@@ -57,9 +57,9 @@ WriterCpp::writeClass(const std::shared_ptr<Class> &cls) {
     auto source = writeCpp(cls, incs, fwd, fwdOut);
 
     // Custom generator hook
-    //TODO: customGenerator
-    if (_model->customGenerator) {
-        _model->customGenerator->modifySources(*_model, cls, header, source);
+    //TODO: custom_generator
+    if (_model->custom_generator) {
+        _model->custom_generator->modifySources(*_model, cls, header, source);
     }
 
     // Return files
@@ -519,7 +519,7 @@ bool WriterCpp::isOverride(
             // return-type check
             if (fn.return_type.type != method.return_type.type) {
                 // validation
-                if (!_model->allowDifferentVirtual)
+                if (!_model->allow_different_virtual)
                     Error::exit(Error::ERROR_VIRTUAL_METHOD_HAS_DIFFERENT_DECLARATION,
                                 cls->name, method.name, supName);
                 continue;
@@ -528,7 +528,7 @@ bool WriterCpp::isOverride(
             if (fn.callable_args.size() != method.callable_args.size()
                 && !allowed.count(method.name))
             {
-                if (!_model->allowDifferentVirtual)
+                if (!_model->allow_different_virtual)
                     Error::exit(Error::ERROR_VIRTUAL_METHOD_HAS_DIFFERENT_DECLARATION,
                                 cls->name, method.name, supName);
                 continue;
@@ -537,7 +537,7 @@ bool WriterCpp::isOverride(
             bool cont = false;
             for (size_t i = 0; i < fn.callable_args.size(); ++i) {
                 if (fn.callable_args[i].type != method.callable_args[i].type) {
-                    if (!_model->allowDifferentVirtual && !allowed.count(method.name))
+                    if (!_model->allow_different_virtual && !allowed.count(method.name))
                     {
                         Error::exit(Error::ERROR_VIRTUAL_METHOD_HAS_DIFFERENT_DECLARATION,
                                     cls->name, method.name, supName);
@@ -630,7 +630,7 @@ WriterCpp::getIncludesForHeader(const std::shared_ptr<Class> &cls)
                 addObj(fwd, arg);
         }
         auto &rt = fn.return_type.type;
-        if (!_model->userIncludes || stdIns.count(rt))
+        if (!_model->user_includes || stdIns.count(rt))
             addObj(inc, fn.return_type);
         else
             addObj(fwd, fn.return_type);

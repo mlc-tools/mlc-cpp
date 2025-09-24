@@ -59,31 +59,31 @@ void Mlc::addDataDirectory(const std::string &dir) {
 }
 void Mlc::setOutDataDirectory(const std::string &dir) {_model.out_data_directory = dir; }
 void Mlc::setLanguage(const std::string &lang) {_model.language = lang; }
-void Mlc::setOnlyData(bool only) {_model.onlyData = only; }
-void Mlc::setNamespace(const std::string &ns) {_model.namespaceName = ns; }
+void Mlc::setonly_data(bool only) {_model.only_data = only; }
+void Mlc::setNamespace(const std::string &ns) {_model.namespace_name = ns; }
 void Mlc::setSide(const Side &side) {_model.side = side; }
-void Mlc::setPhpValidate(bool v) {_model.phpValidate = v; }
-//void Mlc::setValidateAllowDifferentVirtualMethod(bool v) {_model.val = v; }
-void Mlc::setTestScript(const std::string &script, const std::string &args) {
+void Mlc::setphp_validate(bool v) {_model.php_validate = v; }
+//void Mlc::setValidateallow_different_virtualMethod(bool v) {_model.val = v; }
+void Mlc::settest_script(const std::string &script, const std::string &args) {
 //TODO: impl
 }
-void Mlc::setGenerateTests(bool gen) {_model.generateTests = gen; }
-void Mlc::setGenerateIntrusive(bool gen) {_model.generateIntrusive = gen; }
-void Mlc::setGenerateFactory(bool gen) {_model.generateFactory = gen; }
-void Mlc::setJoinToOneFile(bool j) {_model.joinToOneFile = j; }
-void Mlc::setAutoRegistration(bool ar) {_model.auto_registration = ar; }
-void Mlc::setGenerateRefCounter(bool grc) {_model.generateRefCounter = grc; }
-void Mlc::setUserIncludes(bool ui) {_model.userIncludes = ui; }
-void Mlc::setEmptyMethods(bool em) {_model.emptyMethods = em; }
+void Mlc::setgenerate_tests(bool gen) {_model.generate_tests = gen; }
+void Mlc::setgenerate_intrusive(bool gen) {_model.generate_intrusive = gen; }
+void Mlc::setgenerate_factory(bool gen) {_model.generate_factory = gen; }
+void Mlc::setjoin_to_one_file(bool j) {_model.join_to_one_file = j; }
+void Mlc::setauto_registration(bool ar) {_model.auto_registration = ar; }
+void Mlc::setgenerate_ref_counter(bool grc) {_model.generate_ref_counter = grc; }
+void Mlc::setuser_includes(bool ui) {_model.user_includes = ui; }
+void Mlc::setempty_methods(bool em) {_model.empty_methods = em; }
 void Mlc::setSerializeFormats(int formats) {_model.serializeFormats = formats; }
-void Mlc::setFilterCode(std::function<bool(const std::string &)> f) {
+void Mlc::setfilter_code(std::function<bool(const std::string &)> f) {
     _filter_code = std::move(f);
 }
-void Mlc::setFilterData(std::function<bool(const std::string &)> f) {
+void Mlc::setfilter_data(std::function<bool(const std::string &)> f) {
     _filter_data = std::move(f);
 }
 
-void Mlc::setUserGenerator(std::shared_ptr<CustomGenerator> gen) {
+void Mlc::setUserGenerator(std::shared_ptr<custom_generator> gen) {
     _custom_generator = std::move(gen);
 }
 
@@ -97,7 +97,8 @@ void Mlc::generate() {
     for (auto &dir : _model.configs_directories) {
         auto files = FileUtils::listFilesRecursive(dir, {".mlc"});  // возвращает имена внутри dir
         for (auto &f : files) {
-            if (_filter_code && !_filter_code(f)) continue;
+            if (_filter_code && !_filter_code(f))
+                continue;
             mlc_files.push_back(f);
         }
     }
@@ -119,8 +120,8 @@ void Mlc::generate() {
 
     // 6. Пользовательский генератор
 //    runUserGeneratorInternal();
-    _model.customGenerator = std::make_shared<GeneratorEcsCpp>();
-    _model.customGenerator->generate(_model);
+    _model.custom_generator = std::make_shared<GeneratorEcsCpp>();
+    _model.custom_generator->generate(_model);
 
     // 7. Регистрация: создаём Registrar.h/.cpp только когда авто-регистрация выключена
     Registrar().generate(_model);
@@ -135,7 +136,7 @@ void Mlc::generate() {
 
     WriterCpp().save(_model);
     SavePluginCpp save(_model);
-    save.save_files(_model.joinToOneFile);
+    save.save_files(_model.join_to_one_file);
     save.removeOldFiles();
 }
 
@@ -155,14 +156,14 @@ void Mlc::generateData() {
 
 // --- runTest() ---
 void Mlc::runTest() {
-//    const auto &script = _model.testScript;
+//    const auto &script = _model.test_script;
 //    if (script.empty() || !std::filesystem::exists(script)) {
 //        Log::error("Test script (" + script + ") not found");
 //        std::exit(1);
 //    }
 //    std::string cmd = std::string(
 //        (PY_VERSION_MAJOR >= 3 ? "python3" : "python")) +
-//        " " + script + " " + _model.testScriptArgs;
+//        " " + script + " " + _model.test_script_args;
 //    Log::message("Run test (" + cmd + "):");
 //    int rc = std::system(cmd.c_str());
 //    if (rc != 0) {
@@ -187,7 +188,7 @@ void Mlc::watchAndServe(unsigned poll_ms, unsigned debounce_ms)
 
     // Первичная генерация
     try {
-        if (_model.onlyData) {
+        if (_model.only_data) {
             generateData();
         } else {
             generate();
@@ -326,8 +327,8 @@ void Mlc::generateIncremental(const std::vector<std::string>& changedFiles,
     
     Linker().link(_model);
     
-    if(_model.customGenerator)
-        _model.customGenerator->generate(_model);
+    if(_model.custom_generator)
+        _model.custom_generator->generate(_model);
     
     Registrar().generate(_model);
     
@@ -338,7 +339,7 @@ void Mlc::generateIncremental(const std::vector<std::string>& changedFiles,
         WriterCpp().save(_model);
     }
     
-    SavePluginCpp(_model).save_files(_model.joinToOneFile);
+    SavePluginCpp(_model).save_files(_model.join_to_one_file);
 
     _model.dirty_classes.clear();
     PROFILE_STEP(1, "Incremental generation finished");
