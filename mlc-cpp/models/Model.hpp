@@ -81,6 +81,11 @@ public:
     bool is_simple_type(const std::string& type) const;
     
     bool is_skip(const Object& obj);
+
+    // Удалить все классы, пришедшие из файла source_path. Заполняет removed именами классов.
+    void remove_classes_from_source(const std::string& source_path,
+                                    std::vector<std::string>* removed_names = nullptr,
+                                    std::vector<std::pair<std::string,std::string>>* removed_name_group = nullptr);
 public:
     // Парсер
     std::shared_ptr<Parser> parser; // указатель на конкретный парсер
@@ -134,9 +139,4 @@ public:
     std::unordered_map<std::string, std::vector<std::string>> source_to_classnames;
     // Набор «грязных» классов для инкрементальной генерации. Пусто = генерить все
     std::unordered_set<std::string> dirty_classes;
-
-    // Удалить все классы, пришедшие из файла source_path. Заполняет removed именами классов.
-    void remove_classes_from_source(const std::string& source_path,
-                                    std::vector<std::string>* removed_names = nullptr,
-                                    std::vector<std::pair<std::string,std::string>>* removed_name_group = nullptr);
 };
