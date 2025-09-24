@@ -51,8 +51,7 @@ void DataParser::flush(const std::string& out_data_directory) {
     std::string outDir = FileUtils::normalizePath(out_data_directory);
     std::string fullPath = outDir + filename;
     bool existed = FileUtils::exists(fullPath);
-    auto [ok, _] = FileUtils::write(fullPath, buffer);
-    if (ok) {
+    if (FileUtils::write(fullPath, buffer)) {
         Log::message(std::string(existed ? " Overwriting: " : " Create: ") + filename);
     }
 }

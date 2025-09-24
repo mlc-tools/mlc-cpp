@@ -9,6 +9,7 @@
 #include "../models/Object.hpp"
 #include <cassert>
 #include <iostream>
+#include <algorithm>
 
 const std::unordered_set<std::string> Model::simpleTypes = {
     "int",
@@ -54,6 +55,8 @@ void Model::clearData() {
     out_dict.clear();
     files.clear();
     created_files.clear();
+    source_to_classnames.clear();
+    dirty_classes.clear();
 }
 
 // Добавление классов
@@ -61,14 +64,32 @@ void Model::add_class(const std::shared_ptr<Class>& cls) {
     if(cls->name == "Observable"){
         std::cout << "";
     }
+    if(classesDict.count(cls->name) != 0)
+    {
+        auto iter = std::find_if(classes.begin(), classes.end(), [cls](auto& c){
+            return c->name == cls->name;
+        });
+        if(iter != classes.end())
+            classes.erase(iter);
+    }
+    
     classesDict[cls->name] = cls;
     classes.push_back(cls);
+    
+    std::sort(classes.begin(), classes.end(), [](const std::shared_ptr<Class>& lhs, const std::shared_ptr<Class>& rhs){
+        return lhs && rhs ?
+        (lhs->group == rhs->group ? lhs->name < rhs->name : lhs->group < rhs->group) :
+        lhs < rhs;
+    });
+
 }
 
 void Model::add_classes(const std::vector<std::shared_ptr<Class>>& clsList) {
     for (auto& cls : clsList) {
         classesDict[cls->name] = cls;
         classes.push_back(cls);
+        if (!cls->source_path.empty())
+            source_to_classnames[cls->source_path].push_back(cls->name);
     }
 }
 
@@ -94,8 +115,35 @@ void Model::addFile(const std::shared_ptr<Class>& cls, const std::string& localP
     if(cls && cls->name == "Observable"){
         std::cout << "";
     }
+    
+    auto iter = std::find_if(files.begin(), files.end(), [cls, &localPath](auto& entry){
+        return std::get<0>(entry) ? std::get<0>(entry)->name == cls->name &&  std::get<1>(entry) == localPath: false;
+    });
+    assert(iter == files.end());
 
     files.emplace_back(cls, localPath, content);
+}
+
+void Model::remove_classes_from_source(const std::string& source_path,
+                                       std::vector<std::string>* removed_names,
+                                       std::vector<std::pair<std::string,std::string>>* removed_name_group)
+{
+    auto it = source_to_classnames.find(source_path);
+    if (it == source_to_classnames.end()) return;
+    const auto& names = it->second;
+    // remove from classes vector
+    classes.erase(std::remove_if(classes.begin(), classes.end(), [&](const std::shared_ptr<Class>& c){
+        if (std::find(names.begin(), names.end(), c->name) != names.end()) {
+            classesDict.erase(c->name);
+            if (removed_names)
+                removed_names->push_back(c->name);
+            if (removed_name_group)
+                removed_name_group->emplace_back(c->name, c->group);
+            return true;
+        }
+        return false;
+    }), classes.end());
+    source_to_classnames.erase(it);
 }
 
 // Получить подклассы по имени супер-класса

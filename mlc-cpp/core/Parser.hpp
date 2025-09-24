@@ -30,6 +30,7 @@ public:
     
 private:
     Model &_model;
+    std::string _current_source_path;
 };
 
 Object parse_object(const std::string& str, bool with_name=false);

@@ -705,7 +705,7 @@ std::string WriterCpp::buildIncludes(
     const std::shared_ptr<Class> &cls,
     const std::set<std::string> &incs)
 {
-    static const std::unordered_map<std::string,std::string> mapTpl = {
+    const std::unordered_map<std::string,std::string> mapTpl = {
         {"std::vector","<vector>"},
         {"std::map",   "<map>"},
         {"std::set",   "<set>"},

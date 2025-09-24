@@ -36,7 +36,7 @@ void log(const std::shared_ptr<Class>& cls){
     }
 }
 
-int main() {
+int main(int argc, char** argv) {
     tests::run();
     
     auto start = std::chrono::steady_clock::now();
@@ -50,15 +50,25 @@ int main() {
         app.setSide(Side::client);
         app.setGenerateTests(false);
         app.setGenerateIntrusive(false);
-        app.addConfigsDirectory("/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/tests/archero/configs");
-        app.addDataDirectory("/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/tests/archero/configs/data");
+        app.addConfigsDirectory("/Users/vladimirtolmachev/work/mlc-cpp/tests/archero/configs");
+        app.addDataDirectory("/Users/vladimirtolmachev/work/mlc-cpp/tests/archero/configs/data");
         app.setFilterCode([](const std::string& path){
             return path.find("/unit_tests/") == std::string::npos;
         });
-        app.setOutDirectory("/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/tests/archero/mg/");
-        app.setOutDataDirectory("/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/tests/archero/");
-        app.generate();
-        app.generateData();
+        app.setOutDirectory("/Users/vladimirtolmachev/work/mlc-cpp/tests/archero/mg/");
+        app.setOutDataDirectory("/Users/vladimirtolmachev/work/mlc-cpp/tests/archero/");
+        // Проверим, нужно ли работать в режиме наблюдения
+        bool watch = false;
+        for (int i = 1; i < argc; ++i) {
+            std::string a = argv[i];
+            if (a == "--watch" || a == "-w") watch = true;
+        }
+        if (watch) {
+            app.watchAndServe(/*poll_ms*/300, /*debounce_ms*/200);
+        } else {
+            app.generate();
+            app.generateData();
+        }
     }
 //    {
 //        app.setSide(Side::client);

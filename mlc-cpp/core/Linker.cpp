@@ -11,6 +11,11 @@
 
 
 void Linker::link(Model &model) {
+    // Reset relations before linking to avoid duplicates on incremental runs
+    for (auto &cls : model.classes) {
+        cls->subclasses.clear();
+        cls->parent.reset();
+    }
     for(auto& cls : model.classes){
         model.classesDict[cls->name] = cls;
     }
@@ -82,22 +87,26 @@ void Linker::generateInlineFor(Class &cls) {
 void Linker::addGetTypeMethod(Model &model) {
     for (auto &cls : model.classes) {
         if (cls->type == "class" && cls->auto_generated) {
-            Object member;
-            member.is_static = true;
-            member.is_const = true;
-            member.type = "string";
-            member.name = "TYPE";
-            member.value = "\"" + cls->name + "\"";
-            member.access = AccessSpecifier::m_public;
-            cls->members.push_back(std::move(member));
+            if (!cls->has_member("TYPE")) {
+                Object member;
+                member.is_static = true;
+                member.is_const = true;
+                member.type = "string";
+                member.name = "TYPE";
+                member.value = "\"" + cls->name + "\"";
+                member.access = AccessSpecifier::m_public;
+                cls->members.push_back(std::move(member));
+            }
 
-            Function method;
-            method.name = "get_type";
-            method.return_type = Objects::STRING;
-            method.is_const = true;
-            method.body += "return " + cls->name + "::TYPE;";
-            method.is_virtual = cls->is_virtual || !cls->parent_class_name.empty() || !cls->subclasses.empty();
-            cls->functions.push_back(std::move(method));
+            if (!cls->has_method("get_type")) {
+                Function method;
+                method.name = "get_type";
+                method.return_type = Objects::STRING;
+                method.is_const = true;
+                method.body += "return " + cls->name + "::TYPE;";
+                method.is_virtual = cls->is_virtual || !cls->parent_class_name.empty() || !cls->subclasses.empty();
+                cls->functions.push_back(std::move(method));
+            }
         }
     }
 }

@@ -129,4 +129,14 @@ public:
     std::vector<FileEntry> files;
     std::vector<std::string> created_files;
     int serializeFormats = static_cast<int>(SerializeFormat::Xml) | static_cast<int>(SerializeFormat::Json);
+
+    // Карта: путь исходного .mlc → имена/классы, распарсенные из него
+    std::unordered_map<std::string, std::vector<std::string>> source_to_classnames;
+    // Набор «грязных» классов для инкрементальной генерации. Пусто = генерить все
+    std::unordered_set<std::string> dirty_classes;
+
+    // Удалить все классы, пришедшие из файла source_path. Заполняет removed именами классов.
+    void remove_classes_from_source(const std::string& source_path,
+                                    std::vector<std::string>* removed_names = nullptr,
+                                    std::vector<std::pair<std::string,std::string>>* removed_name_group = nullptr);
 };

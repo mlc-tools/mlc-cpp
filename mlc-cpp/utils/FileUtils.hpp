@@ -8,16 +8,11 @@
 
 #include <string>
 #include <vector>
+#include <unordered_map>
+#include <filesystem>
 
 namespace FileUtils {
 
-/**
- * @brief Recursively scans a directory and returns all file paths under it.
- *
- * @param directory The root directory to scan.
- * @return std::vector<std::string> A list of file paths (as strings) found in the directory and its subdirectories.
- * @throws std::filesystem::filesystem_error on access errors.
- */
 std::vector<std::string> listFilesRecursive(const std::string &directory, const std::vector<std::string> &extensions = {});
 
 std::string normalizePath(const std::string& path);
@@ -27,7 +22,22 @@ bool exists(const std::string& fullPath);
 void remove(const std::string& fullPath);
 
 std::string read(const std::string &path);
-std::pair<bool, std::fstream*> write(const std::string &fullPath, const std::string &content);
+bool write(const std::string &fullPath, const std::string &content);
 
+
+using FileTime = std::filesystem::file_time_type;
+
+struct Snapshot {
+    std::unordered_map<std::string, FileTime> mtimes;
+};
+
+Snapshot scan_dirs(const std::vector<std::string>& dirs,
+                   const std::vector<std::string>& exts = {});
+
+bool has_changes(const Snapshot& oldS, const Snapshot& newS);
+
+void diff_snapshots(const Snapshot& oldS, const Snapshot& newS,
+                    std::vector<std::string>& added_or_modified,
+                    std::vector<std::string>& removed);
 
 } // namespace FileUtils

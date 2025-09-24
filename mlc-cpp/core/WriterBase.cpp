@@ -15,6 +15,7 @@
 #include <sstream>
 #include <re2/re2.h>
 #include <cstring>
+#include <iostream>
 
 WriterBase::WriterBase()
   : _model(nullptr)
@@ -27,6 +28,8 @@ void WriterBase::save(Model &model) {
         if (!cls->auto_generated)
             continue;
         if(_model->is_skip(*cls))
+            continue;
+        if (!model.dirty_classes.empty() && model.dirty_classes.count(cls->name) == 0)
             continue;
         currentClass_ = cls;
         auto sources = writeClass(cls);

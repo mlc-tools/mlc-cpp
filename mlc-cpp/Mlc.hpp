@@ -60,6 +60,18 @@ public:
     
     Model& get_model() { return _model; }
 
+    // Непрерывный режим: следит за изменениями в конфигах и данных,
+    // автоматически вызывает generate()/generateData(). Блокирует поток.
+    // Параметры:
+    //  - poll_ms: период опроса ФС (мс)
+    //  - debounce_ms: дебаунс перед регенерацией (мс)
+    void watchAndServe(unsigned poll_ms = 300, unsigned debounce_ms = 200);
+
+    // Инкрементальная пересборка: перечитать изменённые .mlc,
+    // удалить классы из удалённых .mlc и сгенерировать только затронутые классы
+    void generateIncremental(const std::vector<std::string>& changedFiles,
+                             const std::vector<std::string>& removedFiles);
+
 private:
     Model _model;
     std::function<bool(const std::string &)> _filter_code;

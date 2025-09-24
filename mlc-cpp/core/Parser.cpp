@@ -28,6 +28,7 @@ void Parser::parseFiles(const std::vector<std::string> &filePaths) {
         std::ifstream ifs(path);
         std::stringstream buf;
         buf << ifs.rdbuf();
+        _current_source_path = path;
         parseText(buf.str());
     }
 }
@@ -70,6 +71,11 @@ void Parser::parseText(const std::string &input) {
         assert(cls->inner_classes.empty());
     }
     
+    // проставим исходный файл
+    for (auto &c : classes)
+        c->source_path = _current_source_path;
+    for (auto &c : inner_classes)
+        c->source_path = _current_source_path;
     _model.add_classes(classes);
     _model.add_classes(inner_classes);
 }
@@ -99,4 +105,3 @@ std::string Parser::removeComments(const std::string &txt) {
     }
     return out;
 }
-

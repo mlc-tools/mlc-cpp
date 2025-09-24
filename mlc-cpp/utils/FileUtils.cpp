@@ -7,6 +7,7 @@
 #include <filesystem>
 #include <fstream>
 #include <sstream>
+#include <iostream>
 #include <cstring>
 #include "FileUtils.hpp"
 
@@ -68,8 +69,12 @@ std::string read(const std::string &path) {
     return ss.str();
 }
 
-std::pair<bool, std::fstream*> write(const std::string &path, const std::string &content)
+bool write(const std::string &path, const std::string &content)
 {
+    if(path.find("Registrar.cpp") != std::string::npos)
+    {
+        std::cout << "";
+    }
     // Fast path: if file exists and size matches, compare bytes; otherwise skip read.
     if (std::filesystem::exists(path)) {
         try {
@@ -81,7 +86,7 @@ std::pair<bool, std::fstream*> write(const std::string &path, const std::string 
                     buf.resize(static_cast<size_t>(sz));
                     in.read(&buf[0], static_cast<std::streamsize>(sz));
                     if (in.good() && std::memcmp(buf.data(), content.data(), buf.size()) == 0) {
-                        return {false, nullptr};
+                        return false;
                     }
                 }
             }
@@ -97,15 +102,70 @@ std::pair<bool, std::fstream*> write(const std::string &path, const std::string 
     }
 
     // Open stream for writing (truncate)
-    auto *out = new std::fstream(path, std::ios::binary | std::ios::out);
-    if (!out->good()) {
-        delete out;
+    std::fstream out(path, std::ios::binary | std::ios::out);
+    if (!out.good()) {
         throw std::runtime_error("Cannot open file for writing: " + path);
     }
-    out->write(content.data(), static_cast<std::streamsize>(content.size()));
-    out->flush();
+    out.write(content.data(), static_cast<std::streamsize>(content.size()));
+    out.flush();
 
-    return {true, out};
+    return true;
+}
+
+
+Snapshot scan_dirs(const std::vector<std::string>& dirs, const std::vector<std::string>& exts)
+{
+    Snapshot s;
+    for (const auto& d : dirs) {
+        if (!std::filesystem::exists(d)) continue;
+        for (const auto &entry : std::filesystem::recursive_directory_iterator(d)) {
+            if (!entry.is_regular_file()) continue;
+            if (!exts.empty()) {
+                std::string ext = entry.path().extension().string();
+                bool matched = false;
+                for (const auto &fext : exts) {
+                    if (ext == fext) { matched = true; break; }
+                }
+                if (!matched) continue;
+            }
+            const auto path = entry.path().string();
+            std::error_code ec;
+            auto ft = std::filesystem::last_write_time(entry.path(), ec);
+            if (!ec) s.mtimes[path] = ft;
+        }
+    }
+    return s;
+}
+
+bool has_changes(const Snapshot& oldS, const Snapshot& newS)
+{
+    if (oldS.mtimes.size() != newS.mtimes.size()) return true;
+    // Check modified and added
+    for (const auto& [p, t] : newS.mtimes) {
+        auto it = oldS.mtimes.find(p);
+        if (it == oldS.mtimes.end()) return true; // added
+        if (it->second != t) return true; // modified
+    }
+    // Check removed
+    for (const auto& [p, _] : oldS.mtimes) {
+        if (!newS.mtimes.count(p)) return true; // removed
+    }
+    return false;
+}
+
+void diff_snapshots(const Snapshot& oldS, const Snapshot& newS, std::vector<std::string>& added_or_modified, std::vector<std::string>& removed)
+{
+    // added or modified
+    for (const auto& [p, t] : newS.mtimes) {
+        auto it = oldS.mtimes.find(p);
+        if (it == oldS.mtimes.end() || it->second != t) {
+            added_or_modified.push_back(p);
+        }
+    }
+    // removed
+    for (const auto& [p, _] : oldS.mtimes) {
+        if (!newS.mtimes.count(p)) removed.push_back(p);
+    }
 }
 
 }

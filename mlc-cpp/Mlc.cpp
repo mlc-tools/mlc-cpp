@@ -21,6 +21,24 @@
 #include "TranslatorCpp.hpp"
 #include "GeneratorEcsCpp.hpp"
 
+#include <unordered_map>
+#include <unordered_set>
+#include <thread>
+#include <atomic>
+#include <csignal>
+#include <functional>
+#include <iostream>
+
+namespace {
+
+static std::atomic<bool> g_stop{false};
+static std::atomic<bool> g_force_reload{false};
+
+void handle_sigint(int){ g_stop = true; }
+void handle_sighup(int){ g_force_reload = true; }
+
+
+}
 
 Mlc::Mlc(bool use_colors, bool disable_logs)
   : _filter_code(nullptr)
@@ -155,4 +173,158 @@ void Mlc::runUserGeneratorInternal() {
 //    if (_custom_generator) {
 //        _custom_generator->execute(_model);
 //    }
+}
+
+void Mlc::watchAndServe(unsigned poll_ms, unsigned debounce_ms)
+{
+    // Устанавливаем обработчики сигналов для аккуратного выхода/перезагрузки
+    std::signal(SIGINT, handle_sigint);
+#ifdef SIGHUP
+    std::signal(SIGHUP, handle_sighup);
+#endif
+
+    // Первичная генерация
+    try {
+        if (_model.onlyData) {
+            generateData();
+        } else {
+            generate();
+            generateData();
+        }
+    } catch (const std::exception& e) {
+        Log::error(std::string("Initial generation failed: ") + e.what());
+    }
+
+    // Снимки mtimes для .mlc и данных
+    const std::vector<std::string> code_exts = {".mlc"};
+    // Для данных следим за всем (xml,json, и пр.), можно ограничить при желании
+    const std::vector<std::string> data_exts = {}; // все файлы
+    FileUtils::Snapshot snap_code = FileUtils::scan_dirs(_model.configs_directories, code_exts);
+    FileUtils::Snapshot snap_data = FileUtils::scan_dirs(_model.data_directories, data_exts);
+
+    Log::message("Watching for changes. Press Ctrl+C to stop...");
+
+    while (!g_stop.load()) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(poll_ms));
+
+        bool changed_code = false;
+        bool changed_data = false;
+
+        // Пересканируем и сравним
+        FileUtils::Snapshot cur_code = FileUtils::scan_dirs(_model.configs_directories, code_exts);
+        FileUtils::Snapshot cur_data = FileUtils::scan_dirs(_model.data_directories, data_exts);
+
+        if (g_force_reload.exchange(false)) {
+            changed_code = true; // принудительно перегенерить всё
+            changed_data = true;
+        } else {
+            changed_code = has_changes(snap_code, cur_code);
+            changed_data = has_changes(snap_data, cur_data);
+        }
+
+        if (changed_code || changed_data) {
+            // Небольшой дебаунс, чтобы поймать пачки изменений
+            std::this_thread::sleep_for(std::chrono::milliseconds(debounce_ms));
+
+            try {
+                if (changed_code) {
+                    std::vector<std::string> changedFiles;
+                    std::vector<std::string> removedFiles;
+                    diff_snapshots(snap_code, cur_code, changedFiles, removedFiles);
+                    generateIncremental(changedFiles, removedFiles);
+                    generateData();
+                } else if (changed_data) {
+                    generateData();
+                }
+                snap_code = cur_code;
+                snap_data = cur_data;
+            } catch (const std::exception& e) {
+                Log::error(std::string("Regeneration failed: ") + e.what());
+            }
+        }
+    }
+    Log::message("Stopping watch loop.");
+}
+
+void Mlc::generateIncremental(const std::vector<std::string>& changedFiles,
+                              const std::vector<std::string>& removedFiles)
+{
+    PROFILE_START(0, "incremental");
+    // 1) Удалить классы из удалённых .mlc и собрать имена для удаления файлов
+    std::vector<std::string> removedClassNames;
+    std::vector<std::pair<std::string,std::string>> removedNameGroup;
+    for (const auto& rf : removedFiles) {
+        _model.remove_classes_from_source(rf, &removedClassNames, &removedNameGroup);
+    }
+
+    // 2) Перечитать изменённые файлы: перед парсингом удалим старые версии классов из этих файлов
+    std::vector<std::string> changedClassNames;
+    for (const auto& cf : changedFiles) {
+        _model.remove_classes_from_source(cf, &changedClassNames, nullptr);
+    }
+
+    // 3) Распарсить изменённые файлы заново
+    if (!changedFiles.empty()) {
+        if (!_model.parser)
+            _model.parser = std::make_shared<Parser>(_model);
+        _model.parser->parseFiles(changedFiles);
+    }
+
+
+    // 5) Построить множество грязных классов: изменённые + их все подклассы транзитивно
+    std::unordered_set<std::string> dirty;
+    for (const auto& name : changedClassNames)
+        dirty.insert(name);
+    for (const auto& cf : changedFiles) {
+        auto it = _model.source_to_classnames.find(cf);
+        if (it != _model.source_to_classnames.end()) {
+            for (const auto& n : it->second)
+                dirty.insert(n);
+        }
+    }
+    // транзитивно добавим всех наследников
+    std::function<void(const std::shared_ptr<Class>&)> add_subs;
+    add_subs = [&](const std::shared_ptr<Class>& c){
+        for (auto &w : c->subclasses) {
+            if (auto s = w.lock()) {
+                if (dirty.insert(s->name).second)
+                    add_subs(s);
+            }
+        }
+    };
+    for (const auto& n : std::vector<std::string>(dirty.begin(), dirty.end())) {
+        auto c = _model.get_class(n);
+        if (c)
+            add_subs(c);
+    }
+    _model.dirty_classes = std::move(dirty);
+
+    _model.files.clear();
+    _model.created_files.clear();
+    GeneratorCpp().generate(_model);
+    
+    Linker().link(_model);
+    
+    if(_model.customGenerator)
+        _model.customGenerator->generate(_model);
+    
+    Registrar().generate(_model);
+    TranslatorCpp().translate(_model);
+    SerializerCpp().generateMethods(_model);
+    WriterCpp().save(_model);
+    SavePluginCpp(_model).save_files(_model.joinToOneFile);
+
+    for (const auto& [name, group] : removedNameGroup) {
+        auto local_h = (group.empty() ? name + ".h" : group + "/" + name + ".h");
+        auto local_cpp = (group.empty() ? name + ".cpp" : group + "/" + name + ".cpp");
+        std::string full_h = FileUtils::normalizePath(_model.out_directory) + local_h;
+        std::string full_cpp = FileUtils::normalizePath(_model.out_directory) + local_cpp;
+        if (FileUtils::exists(full_h))
+            FileUtils::remove(full_h);
+        if (FileUtils::exists(full_cpp))
+            FileUtils::remove(full_cpp);
+    }
+
+    _model.dirty_classes.clear();
+    PROFILE_STEP(1, "incremental");
 }

@@ -19,11 +19,6 @@ SavePluginBase::SavePluginBase(Model &m)
 {}
 
 SavePluginBase::~SavePluginBase() {
-    for (auto *s : streams) {
-        if (s && s->is_open()) {
-            s->close();
-        }
-    }
 }
 
 void SavePluginBase::save_files(bool combineToOne) {
@@ -32,10 +27,6 @@ void SavePluginBase::save_files(bool combineToOne) {
         saveOne();
     } else {
         saveAll();
-    }
-
-    for (auto *s : streams) {
-        if (s && s->is_open()) s->close();
     }
 //    removeOldFiles();
 }
@@ -101,15 +92,8 @@ void SavePluginBase::saveFile(const std::string &localPath,
     std::string fullPath = FileUtils::normalizePath(model.out_directory) + localPath;
     bool existed = FileUtils::exists(fullPath);
 
-    auto [ok, stream] = FileUtils::write(fullPath, content);
-    if (ok && stream) {
-        streams.push_back(stream);
-        Log::message(
-            (existed
-                ? " Overwriting: " + localPath
-                : " Create:      " + localPath
-            )
-        );
+    if (FileUtils::write(fullPath, content)) {
+        Log::message(existed ? " Overwriting: " + localPath : " Create:      " + localPath);
     }
 }
 

@@ -14,6 +14,8 @@
 class Model;
 
 struct Class : public Object {
+    // Исходный .mlc файл, из которого распарсен этот класс
+    std::string source_path;
     std::string group;
     std::vector<std::string> includes;
     std::vector<Object> members;
