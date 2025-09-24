@@ -6,6 +6,7 @@
 #include "Registrar.hpp"
 
 #include <sstream>
+#include <iostream>
 #include <vector>
 #include <algorithm>
 
@@ -77,6 +78,8 @@ void Registrar::generate(Model &model) {
     std::string registrations;
 
     for (auto &cls : model.classes) {
+        if(cls->name == "Temp")
+            std::cout << "";
         if (cls->is_abstract || cls->has_abstract_method())
             continue;
         if (!cls->has_method("get_type"))

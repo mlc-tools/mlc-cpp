@@ -23,6 +23,7 @@ public:
     /// Save all files collected in model.files.
     /// If combineToOne==true, may merge them into a single file.
     void save_files(bool combineToOne = true);
+    void removeOldFiles();
 
 protected:
     Model &model;
@@ -52,7 +53,6 @@ private:
     void saveOne();
     void saveAll();
     void saveFile(const std::string &localPath, const std::string &content);
-    void removeOldFiles();
     void sortFiles();
     std::string addToCombineFile(const std::string &current, const std::string &next);
 

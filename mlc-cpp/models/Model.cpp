@@ -129,7 +129,8 @@ void Model::remove_classes_from_source(const std::string& source_path,
                                        std::vector<std::pair<std::string,std::string>>* removed_name_group)
 {
     auto it = source_to_classnames.find(source_path);
-    if (it == source_to_classnames.end()) return;
+    if (it == source_to_classnames.end())
+        return;
     const auto& names = it->second;
     // remove from classes vector
     classes.erase(std::remove_if(classes.begin(), classes.end(), [&](const std::shared_ptr<Class>& c){

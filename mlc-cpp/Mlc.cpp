@@ -134,7 +134,9 @@ void Mlc::generate() {
     SerializerCpp().generateMethods(_model);
 
     WriterCpp().save(_model);
-    SavePluginCpp(_model).save_files(_model.joinToOneFile);
+    SavePluginCpp save(_model);
+    save.save_files(_model.joinToOneFile);
+    save.removeOldFiles();
 }
 
 // --- generateData() ---
@@ -249,19 +251,20 @@ void Mlc::watchAndServe(unsigned poll_ms, unsigned debounce_ms)
 void Mlc::generateIncremental(const std::vector<std::string>& changedFiles,
                               const std::vector<std::string>& removedFiles)
 {
-    PROFILE_START(0, "incremental");
+    PROFILE_START(0, "Incremental generation start");
     // 1) Удалить классы из удалённых .mlc и собрать имена для удаления файлов
     std::vector<std::string> removedClassNames;
     std::vector<std::pair<std::string,std::string>> removedNameGroup;
+    std::vector<std::pair<std::string,std::string>> changedNameGroup;
     for (const auto& rf : removedFiles) {
         _model.remove_classes_from_source(rf, &removedClassNames, &removedNameGroup);
     }
-
-    // 2) Перечитать изменённые файлы: перед парсингом удалим старые версии классов из этих файлов
     std::vector<std::string> changedClassNames;
     for (const auto& cf : changedFiles) {
-        _model.remove_classes_from_source(cf, &changedClassNames, nullptr);
+        _model.remove_classes_from_source(cf, &changedClassNames, &changedNameGroup);
     }
+    removedClassNames.insert(removedClassNames.end(), changedClassNames.begin(), changedClassNames.end());
+    removedNameGroup.insert(removedNameGroup.end(), changedNameGroup.begin(), changedNameGroup.end());
 
     // 3) Распарсить изменённые файлы заново
     if (!changedFiles.empty()) {
@@ -269,8 +272,7 @@ void Mlc::generateIncremental(const std::vector<std::string>& changedFiles,
             _model.parser = std::make_shared<Parser>(_model);
         _model.parser->parseFiles(changedFiles);
     }
-
-
+    
     // 5) Построить множество грязных классов: изменённые + их все подклассы транзитивно
     std::unordered_set<std::string> dirty;
     for (const auto& name : changedClassNames)
@@ -298,6 +300,25 @@ void Mlc::generateIncremental(const std::vector<std::string>& changedFiles,
             add_subs(c);
     }
     _model.dirty_classes = std::move(dirty);
+    
+    for (const auto& [name, group] : removedNameGroup) {
+        if(_model.hasClass(name))
+            continue;
+        auto local_h = (group.empty() ? name + ".h" : group + "/" + name + ".h");
+        auto local_cpp = (group.empty() ? name + ".cpp" : group + "/" + name + ".cpp");
+        std::string full_h = FileUtils::normalizePath(_model.out_directory) + local_h;
+        std::string full_cpp = FileUtils::normalizePath(_model.out_directory) + local_cpp;
+        if (FileUtils::exists(full_h))
+        {
+            Log::message(" Removed:     " + local_h);
+            FileUtils::remove(full_h);
+        }
+        if (FileUtils::exists(full_cpp))
+        {
+            Log::message(" Removed:     " + local_cpp);
+            FileUtils::remove(full_cpp);
+        }
+    }
 
     _model.files.clear();
     _model.created_files.clear();
@@ -309,22 +330,16 @@ void Mlc::generateIncremental(const std::vector<std::string>& changedFiles,
         _model.customGenerator->generate(_model);
     
     Registrar().generate(_model);
-    TranslatorCpp().translate(_model);
-    SerializerCpp().generateMethods(_model);
-    WriterCpp().save(_model);
+    
+    if(!_model.dirty_classes.empty())
+    {
+        TranslatorCpp().translate(_model);
+        SerializerCpp().generateMethods(_model);
+        WriterCpp().save(_model);
+    }
+    
     SavePluginCpp(_model).save_files(_model.joinToOneFile);
 
-    for (const auto& [name, group] : removedNameGroup) {
-        auto local_h = (group.empty() ? name + ".h" : group + "/" + name + ".h");
-        auto local_cpp = (group.empty() ? name + ".cpp" : group + "/" + name + ".cpp");
-        std::string full_h = FileUtils::normalizePath(_model.out_directory) + local_h;
-        std::string full_cpp = FileUtils::normalizePath(_model.out_directory) + local_cpp;
-        if (FileUtils::exists(full_h))
-            FileUtils::remove(full_h);
-        if (FileUtils::exists(full_cpp))
-            FileUtils::remove(full_cpp);
-    }
-
     _model.dirty_classes.clear();
-    PROFILE_STEP(1, "incremental");
+    PROFILE_STEP(1, "Incremental generation finished");
 }
