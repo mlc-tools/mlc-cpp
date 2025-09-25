@@ -1,10 +1,13 @@
 cmake_minimum_required(VERSION 3.16)
 
-set(APP_NAME mlc-cpp)
+set(APP_NAME mlc)
 project(${APP_NAME} LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Provide standard install directory variables like CMAKE_INSTALL_BINDIR
+include(GNUInstallDirs)
 
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/mlc-cpp)
 set(THIRD_PARTY ${CMAKE_CURRENT_SOURCE_DIR}/third_party)
@@ -38,3 +41,7 @@ target_include_directories(${APP_NAME} PRIVATE ${SRC_DIR}/tests)
 target_include_directories(${APP_NAME} PRIVATE ${SRC_DIR}/utils)
 target_include_directories(${APP_NAME} PRIVATE ${SRC_DIR}/core)
 target_include_directories(${APP_NAME} PRIVATE ${THIRD_PARTY})
+
+# Install the utility into the system binary directory
+install(TARGETS ${APP_NAME}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})

@@ -3,3 +3,4 @@ test/build
 *.xcbkptlist
 test/gen/
 build/
+build*/
