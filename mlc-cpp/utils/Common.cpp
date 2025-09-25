@@ -15,6 +15,15 @@ template <> std::string to_string(const float& value) { return std::to_string(va
 template <> std::string to_string(const std::string& value) { return value; }
 template <> std::string to_string(const bool& value) { return value ? "yes" : "no"; }
 
+bool to_bool(const std::string& v, bool* ok){
+    std::string s; s.reserve(v.size());
+    for(char ch : v) s.push_back(static_cast<char>(::tolower(static_cast<unsigned char>(ch))));
+    bool val = (s == "1" || s == "true" || s == "yes" || s == "on");
+    if (ok) *ok = (s=="1"||s=="0"||s=="true"||s=="false"||s=="yes"||s=="no"||s=="on"||s=="off");
+    if (s == "0" || s == "false" || s == "no" || s == "off") val = false;
+    return val;
+};
+
 std::string format(const std::string& template_str, const std::unordered_map<std::string, std::string>& values)
 {
     std::string result = template_str;

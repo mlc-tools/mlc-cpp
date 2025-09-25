@@ -139,12 +139,12 @@ void GeneratorDataStorageBase::generate(Model &model) {
     createSharedMethod();
 
     // методы инициализации
-//    if (_model->serializeFormats & static_cast<int>(SerializeFormat::xml)) {
+    if (_model->config.serializeFormats & static_cast<int>(SerializeFormat::Xml)) {
         addInitializeFunctionXml();
-//    }
-//    if (_model->serializeFormats & static_cast<int>(SerializeFormat::json)) {
-//        addInitializeFunctionJson();
-//    }
+    }
+    if (_model->config.serializeFormats & static_cast<int>(SerializeFormat::Json)) {
+        addInitializeFunctionJson();
+    }
 
     // геттеры
     createGetters(_model->classes);

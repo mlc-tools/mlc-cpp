@@ -220,6 +220,74 @@ namespace mg
         }
     }
 
+    void DataStorage::initialize_json(const std::string& content) const
+    {
+        Json::Value json;
+        Json::Reader reader;
+        reader.parse(content, json);
+        auto non_const_this = const_cast<DataStorage*>(this);
+
+        auto level = json["levels"];
+        for (auto& node : level)
+        {
+            auto name = node["key"].asString();
+            non_const_this->levels.emplace(name, DataLevel());
+        }
+
+        auto unit = json["units"];
+        for (auto& node : unit)
+        {
+            auto name = node["key"].asString();
+            non_const_this->units.emplace(name, DataUnit());
+        }
+
+        auto stat_upgrade = json["stat_upgrades"];
+        for (auto& node : stat_upgrade)
+        {
+            auto name = node["key"].asString();
+            non_const_this->stat_upgrades.emplace(name, DataStatUpgrade());
+        }
+
+        auto ladder_levels = json["ladder_levelses"];
+        for (auto& node : ladder_levels)
+        {
+            auto name = node["key"].asString();
+            non_const_this->ladder_levelses.emplace(name, DataLadderLevels());
+        }
+
+        auto locale = json["locales"];
+        for (auto& node : locale)
+        {
+            auto name = node["key"].asString();
+            non_const_this->locales.emplace(name, DataLocale());
+        }
+
+        auto params = json["paramses"];
+        for (auto& node : params)
+        {
+            auto name = node["key"].asString();
+            non_const_this->paramses.emplace(name, DataParams());
+        }
+
+        auto equipment = json["equipments"];
+        for (auto& node : equipment)
+        {
+            auto name = node["key"].asString();
+            non_const_this->equipments.emplace(name, DataEquipment());
+        }
+
+        auto merge_level = json["merge_levels"];
+        for (auto& node : merge_level)
+        {
+            auto name = node["key"].asString();
+            non_const_this->merge_levels.emplace(name, DataMergeLevel());
+        }
+
+        DeserializerJson deserializer(json);
+        non_const_this->_loaded = true;
+        non_const_this->deserialize_json(deserializer);
+    }
+
 
     template<>const DataLevel* DataStorage::get(const std::string& name) const
     {

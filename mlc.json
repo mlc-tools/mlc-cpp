@@ -1,20 +1,18 @@
 {
-	"source":{
-		"configs": "tests/archero/configs",
-		"data": "tests/archero/configs/data/",
-	},
-	"generation": [
-		{
-			"out": "tests/archero/mg/",
-			"data_out": "tests/archero/",
-
-			"auto_registration": 0,
-			"generate_intrusive": 0,
-			"generate_tests": 0,
-			"language": "cpp",
-			"side": "client",
-			"filter_code": ["'!unit_tests/'"],
-		}
-	]
-	}
+  "source": {
+    "configs": "tests/archero/configs",
+    "data": "tests/archero/configs/data/"
+  },
+  "generation": [
+    {
+      "out": "tests/archero/mg/",
+      "data_out": "tests/archero/",
+      "auto_registration": false,
+      "generate_intrusive": false,
+      "generate_tests": false,
+      "language": "cpp",
+      "side": "client",
+      "filter_code": ["!unit_tests/"]
+    }
+  ]
 }

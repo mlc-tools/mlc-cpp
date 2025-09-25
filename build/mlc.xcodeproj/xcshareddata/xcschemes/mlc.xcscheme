@@ -15,10 +15,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "FC498BEEB6F2496BA6969A0A"
-               BuildableName = "mlc-cpp"
-               BlueprintName = "mlc-cpp"
-               ReferencedContainer = "container:build/mlc-cpp.xcodeproj">
+               BlueprintIdentifier = "4E0ECFA1ECE344ACBDA70142"
+               BuildableName = "mlc"
+               BlueprintName = "mlc"
+               ReferencedContainer = "container:build/mlc.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -35,7 +35,8 @@
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
-      useCustomWorkingDirectory = "NO"
+      useCustomWorkingDirectory = "YES"
+      customWorkingDirectory = "/Users/vladimirtolmachev/work/mlc-cpp"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
@@ -45,10 +46,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "FC498BEEB6F2496BA6969A0A"
-            BuildableName = "mlc-cpp"
-            BlueprintName = "mlc-cpp"
-            ReferencedContainer = "container:build/mlc-cpp.xcodeproj">
+            BlueprintIdentifier = "4E0ECFA1ECE344ACBDA70142"
+            BuildableName = "mlc"
+            BlueprintName = "mlc"
+            ReferencedContainer = "container:build/mlc.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <CommandLineArguments>
@@ -88,10 +89,10 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "FC498BEEB6F2496BA6969A0A"
-            BuildableName = "mlc-cpp"
-            BlueprintName = "mlc-cpp"
-            ReferencedContainer = "container:build/mlc-cpp.xcodeproj">
+            BlueprintIdentifier = "4E0ECFA1ECE344ACBDA70142"
+            BuildableName = "mlc"
+            BlueprintName = "mlc"
+            ReferencedContainer = "container:build/mlc.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

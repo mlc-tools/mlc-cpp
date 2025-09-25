@@ -85,6 +85,8 @@ inline void replace_all(std::string &s, const std::string &what, const std::stri
 template <typename T>
 std::string to_string(const T& value);
 
+bool to_bool(const std::string& v, bool* ok = nullptr);
+
 template <typename T>
 std::string join( const std::vector<T>& in, const char delimiter = ',')
 {

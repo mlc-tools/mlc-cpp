@@ -39,7 +39,7 @@ void DataParser::flush(const std::string& out_data_directory) {
 
     std::string buffer;
     std::string fmtName;
-    if (_model.serializeFormats & static_cast<int>(SerializeFormat::Xml)) {
+    if (_model.config.serializeFormats & static_cast<int>(SerializeFormat::Xml)) {
         buffer = flushXml();
         fmtName = "xml";
     } else {
@@ -60,9 +60,9 @@ void DataParser::parseDirectory(const std::string& directory) {
     auto files = FileUtils::listFilesRecursive(directory);
     for (auto &full_path : files) {
         if (filter_ && !filter_(full_path)) continue;
-        if (_model.serializeFormats & static_cast<int>(SerializeFormat::Xml) && full_path.size() >= 4 && full_path.rfind(".xml") == full_path.size()-4) {
+        if (_model.config.serializeFormats & static_cast<int>(SerializeFormat::Xml) && full_path.size() >= 4 && full_path.rfind(".xml") == full_path.size()-4) {
             parseXml(full_path);
-        } else if (_model.serializeFormats & static_cast<int>(SerializeFormat::Json) && full_path.size() >= 5 && full_path.rfind(".json") == full_path.size()-5) {
+        } else if (_model.config.serializeFormats & static_cast<int>(SerializeFormat::Json) && full_path.size() >= 5 && full_path.rfind(".json") == full_path.size()-5) {
             parseJson(full_path);
         }
     }

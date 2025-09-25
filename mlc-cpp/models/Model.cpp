@@ -6,6 +6,8 @@
 //
 
 #include "Model.hpp"
+#include "Serialize.hpp"
+#include "../utils/Config.hpp"
 #include "../models/Object.hpp"
 #include <cassert>
 #include <iostream>
@@ -104,10 +106,10 @@ bool Model::hasClass(const std::string& name) const {
 
 // Фильтры по стороне и языку
 bool Model::is_side(const Side& s) const {
-    return static_cast<int>(side) & static_cast<int>(s);
+    return static_cast<int>(config.side) & static_cast<int>(s);
 }
 bool Model::isLang(const std::string& lang) const {
-    return lang.empty() || lang == language;
+    return lang.empty() || lang == config.language;
 }
 
 // Работа с файлами
@@ -167,7 +169,7 @@ bool Model::is_simple_type(const std::string& type) const{
 }
 
 bool Model::is_skip(const Object& obj) {
-    if(!obj.lang_specific.empty() && obj.lang_specific.count(language) == 0)
+    if(!obj.lang_specific.empty() && obj.lang_specific.count(config.language) == 0)
         return true;
     if(!is_side(obj.side))
         return true;

@@ -519,6 +519,56 @@
 	},
 	"buffers":
 	[
+		{
+			"file": "tests/archero/configs/core.mlc",
+			"settings":
+			{
+				"buffer_size": 82,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			},
+			"undo_stack":
+			[
+				[
+					3,
+					1,
+					"duplicate_line",
+					null,
+					"AQAAAEIAAAAAAAAAUAAAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABBAAAAAAAAAEEAAAAAAAAAAAAAAAAA8L8"
+				],
+				[
+					4,
+					1,
+					"insert",
+					{
+						"characters": "2"
+					},
+					"AQAAAE8AAAAAAAAAUAAAAAAAAAAAAAAA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABPAAAAAAAAAE8AAAAAAAAAAAAAAAAA8L8"
+				]
+			]
+		},
+		{
+			"file": "mlc.sh",
+			"settings":
+			{
+				"buffer_size": 281,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			},
+			"undo_stack":
+			[
+				[
+					4,
+					3,
+					"left_delete",
+					null,
+					"AwAAABsBAAAAAAAAGwEAAAAAAAABAAAAdxoBAAAAAAAAGgEAAAAAAAABAAAALRkBAAAAAAAAGQEAAAAAAAABAAAAIA",
+					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAcAQAAAAAAABwBAAAAAAAA////////738"
+				]
+			]
+		}
 	],
 	"build_system": "",
 	"build_system_choices":
@@ -560,9 +610,14 @@
 	},
 	"console":
 	{
-		"height": 0.0,
+		"height": 353.0,
 		"history":
 		[
+			"show mlc logs",
+			"show mlc-daemon",
+			"mlc-daemon",
+			"ShowMlcLogs",
+			"ShowMlcLogsCommand"
 		]
 	},
 	"distraction_free":
@@ -580,6 +635,16 @@
 	],
 	"file_history":
 	[
+		"/Users/vladimirtolmachev/work/mlc-cpp/tests/archero/configs/params.mlc",
+		"/Users/vladimirtolmachev/work/mlc-cpp/tests/archero/configs/core.mlc",
+		"/Users/vladimirtolmachev/work/mlc-cpp/mlc-cpp.sublime-project",
+		"/Users/vladimirtolmachev/Library/Application Support/Sublime Text/Packages/User/mlc-daemon-on-open-project.py",
+		"/Users/vladimirtolmachev/work/mlc-cpp/mlc.sh",
+		"/Users/vladimirtolmachev/Library/Application Support/Sublime Text 3/Packages/User/mlc-daemon-on-open-project.py",
+		"/Users/vladimirtolmachev/work/mlc-cpp/.gitignore",
+		"/Users/vladimirtolmachev/Library/Application Support/Sublime Text 3/Packages/User/SublimeOnSaveBuild.sublime-settings",
+		"/Users/vladimirtolmachev/work/mlc-cpp/extern_plugin.py",
+		"/Users/vladimirtolmachev/work/mlc-cpp/CMakeLists.txt",
 		"/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/tests/archero/mg/Registrar.cpp",
 		"/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/tests/archero/configs/ecs/model.mlc",
 		"/Users/vladimirtolmachev/Documents/xcode/mlc-cpp/tests/archero/configs/ecs/systems/collisions.mlc",
@@ -697,17 +762,7 @@
 		"/Users/vladimirtolmachev/work/dungeon2/client/proj.android/app/build.gradle",
 		"/Users/vladimirtolmachev/work/archero/assets/ini/scenes/gameplay/ui/hp_indicator.xml",
 		"/Users/vladimirtolmachev/work/archero/assets/ini/scenes/gameplay/units/template.xml",
-		"/Users/vladimirtolmachev/work/archero/assets/ini/scenes/gameplay/bullets/spirit_fire_bullet.xml",
-		"/Users/vladimirtolmachev/work/archero/assets/ini/scenes/gameplay/bullets/sphere_fire_bullet.xml",
-		"/Users/vladimirtolmachev/work/archero/assets/ini/scenes/gameplay/bullets/spirit_ice_bullet.xml",
-		"/Users/vladimirtolmachev/work/archero/assets/ini/scenes/gameplay/units/spirit_lightning.xml",
-		"/Users/vladimirtolmachev/work/archero/assets/ini/scenes/gameplay/units/spirit_king.xml",
-		"/Users/vladimirtolmachev/work/archero/assets/ini/scenes/gameplay/units/spirit_fire.xml",
-		"/Users/vladimirtolmachev/work/archero/configs/ecs/vector.mlc",
-		"/Users/vladimirtolmachev/work/archero/configs/ecs/systems/actions/action_attack.mlc",
-		"/Users/vladimirtolmachev/work/archero/configs/ecs/components.mlc",
-		"/Users/vladimirtolmachev/work/legendary_adventure/tools/mlc_install.py",
-		"/Users/vladimirtolmachev/work/archero/patch.diff"
+		"/Users/vladimirtolmachev/work/archero/assets/ini/scenes/gameplay/bullets/spirit_fire_bullet.xml"
 	],
 	"find":
 	{
@@ -725,11 +780,17 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"on_load_project_async",
+			"_append_to_panel",
+			"_log_file_path",
+			".log",
+			"Mlc Logs",
+			"mlc-cpp"
 		],
 		"highlight": true,
 		"in_selection": false,
 		"preserve_case": false,
-		"regex": true,
+		"regex": false,
 		"replace_history":
 		[
 		],
@@ -746,6 +807,67 @@
 		{
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "tests/archero/configs/core.mlc",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 82,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								80,
+								80
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "mlc.sh",
+					"selected": true,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 281,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								26,
+								281
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ShellScript/Bash.sublime-syntax"
+						},
+						"translation.x": 571.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"stack_multiselect": false,
+					"type": "text"
+				}
 			]
 		}
 	],
@@ -786,7 +908,10 @@
 	},
 	"output.find_results":
 	{
-		"height": 0.0
+		"height": 0.0,
+		"history":
+		[
+		]
 	},
 	"pinned_build_system": "Packages/User/mlc_archero.sublime-build",
 	"project": "mlc-cpp.sublime-project",
@@ -812,7 +937,7 @@
 		[
 			[
 				"",
-				"~/work/legendary_adventure/tools/legendary-adventure.sublime-project"
+				"~/work/mlc-cpp/mlc-cpp.sublime-project"
 			]
 		],
 		"width": 381.0

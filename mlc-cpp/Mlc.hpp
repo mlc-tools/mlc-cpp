@@ -24,39 +24,10 @@ class Mlc {
 public:
     explicit Mlc(bool use_colors = false, bool disable_logs = false);
 
-    // Настройка путей и флагов
-    void addConfigsDirectory(const std::string &dir);
-    void setOutDirectory(const std::string &dir);
-    void addDataDirectory(const std::string &dir);
-    void setOutDataDirectory(const std::string &dir);
-    void setLanguage(const std::string &lang);
-    void setonly_data(bool only);
-    void setNamespace(const std::string &ns);
-    void setSide(const Side &side);
-    void setphp_validate(bool v);
-    void setValidateallow_different_virtualMethod(bool v);
-    void settest_script(const std::string &script, const std::string &args = "");
-    void setgenerate_tests(bool gen);
-    void setgenerate_intrusive(bool gen);
-    void setgenerate_factory(bool gen);
-    void setjoin_to_one_file(bool j);
-    void setauto_registration(bool ar);
-    void setgenerate_ref_counter(bool grc);
-    void setuser_includes(bool ui);
-    void setempty_methods(bool em);
-    void setSerializeFormats(int formats);
-
-    // Фильтры для .mlc-файлов и данных
-    void setfilter_code(std::function<bool(const std::string &path)> f);
-    void setfilter_data(std::function<bool(const std::string &path)> f);
-
     // Основные этапы
     void generate();
     void generateData();
     void runTest();
-
-    // Пользовательский генератор
-    void setUserGenerator(std::shared_ptr<custom_generator> gen);
     
     Model& get_model() { return _model; }
 
@@ -74,8 +45,6 @@ public:
 
 private:
     Model _model;
-    std::function<bool(const std::string &)> _filter_code;
-    std::function<bool(const std::string &)> _filter_data;
     std::shared_ptr<custom_generator> _custom_generator;
 
     void runUserGeneratorInternal();

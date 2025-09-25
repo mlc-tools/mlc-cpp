@@ -28,7 +28,7 @@ void SerializerBase::generateMethods(Model &m) {
     for (auto &fmt : SerializeFormat_getAll()) {
         int fmtCode = static_cast<int>(fmt);
         const auto &name = SerializeFormat_to_str(fmt);
-        if ((m.serializeFormats & fmtCode) == 0)
+        if ((m.config.serializeFormats & fmtCode) == 0)
             continue;
 
         // Load protocol into model.serialize_protocol

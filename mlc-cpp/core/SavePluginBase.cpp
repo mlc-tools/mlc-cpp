@@ -88,7 +88,7 @@ void SavePluginBase::saveFile(const std::string &localPath,
                               const std::string &content)
 {
     created.push_back(localPath);
-    std::string fullPath = FileUtils::normalizePath(model.out_directory) + localPath;
+    std::string fullPath = FileUtils::normalizePath(model.config.out_directory) + localPath;
     bool existed = FileUtils::exists(fullPath);
 
     if (FileUtils::write(fullPath, content)) {
@@ -121,7 +121,7 @@ std::string SavePluginBase::addToCombineFile(
 }
 
 void SavePluginBase::removeOldFiles() {
-    auto outDir = FileUtils::normalizePath(model.out_directory);
+    auto outDir = FileUtils::normalizePath(model.config.out_directory);
     auto files = FileUtils::listFilesRecursive(outDir);
     for (auto &p : files) {
         std::string_view local_path(p.data() + outDir.size(), p.size() - outDir.size());

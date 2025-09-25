@@ -162,9 +162,9 @@ std::string WriterBase::prepareFile(const std::string &text) const {
         RE2 block(
             "\\{\\{format=" + tag + "\\}\\}[\\s\\S]+?\\{\\{end_format=" + tag + "\\}\\}"
         );
-        if ((_model->serializeFormats & all) == all) {
+        if ((_model->config.serializeFormats & all) == all) {
             RE2::GlobalReplace(&out, block, "");
-        } else if (!(_model->serializeFormats & code)) {
+        } else if (!(_model->config.serializeFormats & code)) {
             RE2::GlobalReplace(&out, block, "");
         } else {
             // leave inner, but strip markers
@@ -174,7 +174,7 @@ std::string WriterBase::prepareFile(const std::string &text) const {
     }
     // handle "both"
     RE2 bothBlock("\\{\\{format=both\\}\\}[\\s\\S]+?\\{\\{end_format=both\\}\\}");
-    if (_model->serializeFormats != all) {
+    if (_model->config.serializeFormats != all) {
         RE2::GlobalReplace(&out, bothBlock, "");
     } else {
         RE2::GlobalReplace(&out, RE2("\\{\\{format=both\\}\\}"), "");

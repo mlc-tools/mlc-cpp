@@ -43,10 +43,10 @@ GeneratorRefCounterCpp::GeneratorRefCounterCpp()
 }
 
 void GeneratorRefCounterCpp::generate(Model &model) {
-    if (!model.generate_ref_counter) return;
+    if (!model.config.generate_ref_counter) return;
 
     // если серверная сторона — используем atomic
-    if (model.side == Side::server) {
+    if (model.config.side == Side::server) {
         preferType_ = "std::atomic<int>";
         retainBody_  = RETAIN_ATOMIC;
         releaseBody_ = RELEASE_ATOMIC;

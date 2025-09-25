@@ -68,7 +68,7 @@ std::string Registrar::get_include_path_to_class(const std::shared_ptr<Class>& f
 
 void Registrar::generate(Model &model) {
     // Mirror Python: skip when auto-registration is enabled
-    if (model.auto_registration)
+    if (model.config.auto_registration)
         return;
 
     auto mock = Registrar::get_mock();
@@ -92,7 +92,7 @@ void Registrar::generate(Model &model) {
     }
 
     // Files
-    const std::string ns = model.namespace_name.empty() ? std::string("mg") : model.namespace_name;
+    const std::string ns = model.config.namespace_name.empty() ? std::string("mg") : model.config.namespace_name;
     const std::string factory_header = ns + "_Factory.h";
     const std::string hpp = build_hpp(ns);
     const std::string cpp = build_cpp(ns, factory_header, includes, registrations);

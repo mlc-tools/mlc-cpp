@@ -122,7 +122,7 @@ class tests/TestCase:test
 )";
 
 void GeneratorUnitTestsInterface::generate(Model &model) {
-    if(!model.generate_tests)
+    if(!model.config.generate_tests)
         return;
     _model = &model;
 

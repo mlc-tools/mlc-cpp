@@ -221,7 +221,7 @@ std::string WriterCpp::writeCpp(const std::shared_ptr<Class> &cls,
             }
         }
     }
-    if(_model->auto_registration && !abstract && cls->has_method("get_type"))
+    if(_model->config.auto_registration && !abstract && cls->has_method("get_type"))
         reg="REGISTRATION_OBJECT("+cn+");\n";
 
     // Includes
@@ -519,7 +519,7 @@ bool WriterCpp::isOverride(
             // return-type check
             if (fn.return_type.type != method.return_type.type) {
                 // validation
-                if (!_model->allow_different_virtual)
+                if (!_model->config.allow_different_virtual)
                     Error::exit(Error::ERROR_VIRTUAL_METHOD_HAS_DIFFERENT_DECLARATION,
                                 cls->name, method.name, supName);
                 continue;
@@ -528,7 +528,7 @@ bool WriterCpp::isOverride(
             if (fn.callable_args.size() != method.callable_args.size()
                 && !allowed.count(method.name))
             {
-                if (!_model->allow_different_virtual)
+                if (!_model->config.allow_different_virtual)
                     Error::exit(Error::ERROR_VIRTUAL_METHOD_HAS_DIFFERENT_DECLARATION,
                                 cls->name, method.name, supName);
                 continue;
@@ -537,7 +537,7 @@ bool WriterCpp::isOverride(
             bool cont = false;
             for (size_t i = 0; i < fn.callable_args.size(); ++i) {
                 if (fn.callable_args[i].type != method.callable_args[i].type) {
-                    if (!_model->allow_different_virtual && !allowed.count(method.name))
+                    if (!_model->config.allow_different_virtual && !allowed.count(method.name))
                     {
                         Error::exit(Error::ERROR_VIRTUAL_METHOD_HAS_DIFFERENT_DECLARATION,
                                     cls->name, method.name, supName);
@@ -630,7 +630,7 @@ WriterCpp::getIncludesForHeader(const std::shared_ptr<Class> &cls)
                 addObj(fwd, arg);
         }
         auto &rt = fn.return_type.type;
-        if (!_model->user_includes || stdIns.count(rt))
+        if (!_model->config.user_includes || stdIns.count(rt))
             addObj(inc, fn.return_type);
         else
             addObj(fwd, fn.return_type);

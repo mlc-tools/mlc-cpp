@@ -13,33 +13,12 @@
 #include <tuple>
 #include <memory>
 #include <map>
-#include <array>
 #include <functional>
 #include "Class.hpp"
 #include "Object.hpp"
 #include "Function.hpp"
-
-// Битовые флаги для форматов сериализации
-enum class SerializeFormat {
-    Xml = 1 << 0,
-    Json = 1 << 1,
-    
-};
-std::array<SerializeFormat, 2> SerializeFormat_getAll();
-std::string SerializeFormat_to_str(SerializeFormat format);
-
-inline int operator|(SerializeFormat a, SerializeFormat b) {
-    return static_cast<int>(a) | static_cast<int>(b);
-}
-
-inline bool hasFlag(int flags, SerializeFormat f) {
-    return (flags & static_cast<int>(f)) != 0;
-}
-
-// Возвращает все поддерживаемые форматы
-inline std::vector<std::pair<SerializeFormat, std::string>> getAllSerializeFormats() {
-    return {{SerializeFormat::Xml, "xml"}, {SerializeFormat::Json, "json"}};
-}
+#include "Serialize.hpp"
+#include "../utils/Config.hpp"
 
 class Parser;
 class Model;
@@ -97,32 +76,10 @@ public:
     std::map<std::string, std::shared_ptr<Class>> classesDict;
     std::unordered_set<std::string> includes;
 
-    // Конфигурации и директории
-    std::vector<std::string> configs_directories;
-    std::vector<std::string> data_directories;
-    std::string out_directory;
-    std::string out_data_directory;
-
-    std::string language = "cpp";
-    bool only_data = false;
-    std::string namespace_name = "mg";
-    Side side = Side::both;
-    bool php_validate = false;
-    bool allow_different_virtual = true;
-    std::string test_script;
-    std::string test_script_args;
-    bool generate_tests = false;
-    bool generate_intrusive = true;
-    bool generate_factory = true;
-    std::function<bool(const std::string&)> filter_code;
-    std::function<bool(const std::string&)> filter_data;
+    // Конфигурация запуска (вместо отдельных флагов)
+    Config configuration;
+    Job config;
     std::shared_ptr<custom_generator> custom_generator = nullptr;
-    std::vector<SerializeFormat> serialize_protocol;
-    bool join_to_one_file = false;
-    bool auto_registration = true;
-    bool generate_ref_counter = true;
-    bool user_includes = false;
-    bool empty_methods = false;
 
     // Простые типы
     static const std::unordered_set<std::string> simpleTypes;
@@ -131,7 +88,6 @@ public:
     std::unordered_map<std::string, std::string> out_dict;
     std::vector<FileEntry> files;
     std::vector<std::string> created_files;
-    int serializeFormats = static_cast<int>(SerializeFormat::Xml) | static_cast<int>(SerializeFormat::Json);
 
     // Карта: путь исходного .mlc → имена/классы, распарсенные из него
     std::unordered_map<std::string, std::vector<std::string>> source_to_classnames;

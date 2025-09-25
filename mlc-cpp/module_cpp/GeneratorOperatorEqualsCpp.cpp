@@ -74,7 +74,7 @@ void GeneratorOperatorEqualsCpp::addCopyOperator(
             continue;
         if(_model->is_skip(m))
             continue;
-        if (_model->side == Side::server && m.name == "_reference_counter") {
+        if (_model->config.side == Side::server && m.name == "_reference_counter") {
             op.body += "\nthis->" + m.name + ".store(rhs." + m.name + ".load());";
         } else {
             op.body += "\nthis->" + m.name + " = rhs." + m.name + ";";
