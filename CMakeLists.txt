@@ -45,3 +45,10 @@ target_include_directories(${APP_NAME} PRIVATE ${THIRD_PARTY})
 # Install the utility into the system binary directory
 install(TARGETS ${APP_NAME}
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+# Install macOS update helper alongside the binary as `mlc-update`
+if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/scripts/update_osx.sh)
+  install(PROGRAMS ${CMAKE_CURRENT_SOURCE_DIR}/scripts/update_osx.sh
+          DESTINATION ${CMAKE_INSTALL_BINDIR}
+          RENAME mlc-update)
+endif()

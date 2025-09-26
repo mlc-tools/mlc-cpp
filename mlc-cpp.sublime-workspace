@@ -523,7 +523,7 @@
 			"file": "tests/archero/configs/core.mlc",
 			"settings":
 			{
-				"buffer_size": 82,
+				"buffer_size": 67,
 				"encoding": "UTF-8",
 				"line_ending": "Unix"
 			},
@@ -535,7 +535,7 @@
 					"duplicate_line",
 					null,
 					"AQAAAEIAAAAAAAAAUAAAAAAAAAAAAAAA",
-					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABBAAAAAAAAAEEAAAAAAAAAAAAAAAAA8L8"
+					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAEEAAAAAAAAAQQAAAAAAAAAAAAAAAADwvw"
 				],
 				[
 					4,
@@ -545,7 +545,7 @@
 						"characters": "2"
 					},
 					"AQAAAE8AAAAAAAAAUAAAAAAAAAAAAAAA",
-					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAABPAAAAAAAAAE8AAAAAAAAAAAAAAAAA8L8"
+					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAAE8AAAAAAAAATwAAAAAAAAAAAAAAAADwvw"
 				]
 			]
 		},
@@ -565,7 +565,140 @@
 					"left_delete",
 					null,
 					"AwAAABsBAAAAAAAAGwEAAAAAAAABAAAAdxoBAAAAAAAAGgEAAAAAAAABAAAALRkBAAAAAAAAGQEAAAAAAAABAAAAIA",
-					"AgAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAcAQAAAAAAABwBAAAAAAAA////////738"
+					"AwAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/AAAAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8L8AAAAAAQAAABwBAAAAAAAAHAEAAAAAAAD////////vfw"
+				]
+			]
+		},
+		{
+			"file": "AGENTS.md",
+			"settings":
+			{
+				"buffer_size": 289,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			},
+			"undo_stack":
+			[
+				[
+					3,
+					1,
+					"insert",
+					{
+						"characters": "\n\n"
+					},
+					"AgAAAOsAAAAAAAAA7AAAAAAAAAAAAAAA7AAAAAAAAADtAAAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAA6wAAAAAAAADrAAAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					5,
+					1,
+					"paste",
+					null,
+					"AQAAAOwAAAAAAAAAIAEAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAA7AAAAAAAAADsAAAAAAAAAAAAAAAAAAAA"
+				],
+				[
+					13,
+					1,
+					"right_delete",
+					null,
+					"AQAAACEBAAAAAAAAIQEAAAAAAABuCgAACiMgUmVwb3NpdG9yeSBHdWlkZWxpbmVzCgojIyBQcm9qZWN0IFN0cnVjdHVyZSAmIE1vZHVsZSBPcmdhbml6YXRpb24KLSBgbWxjLWNwcC9gOiBjb3JlIHNvdXJjZXMgYW5kIGVudHJ5IChgbWFpbi5jcHBgKTsgc3VibW9kdWxlczogYGNvcmUvYCwgYG1vZGVscy9gLCBgbW9kdWxlX2NwcC9gLCBgcGFyc2VyL2AsIGB1dGlscy9gLCBgdGVzdHMvYC4KLSBgdGhpcmRfcGFydHkvYDogdmVuZG9yZWQgZGVwZW5kZW5jaWVzIHVzZWQgYnkgdGhlIGJ1aWxkLgotIGB0ZXN0L2A6IHN0YW5kYWxvbmUgQ01ha2UgdGVzdCBoYXJuZXNzIGFuZCB0ZXN0IGFzc2V0cyAoYGFzc2V0cy9gLCBgY29uZmlnL2AsIGBkYXRhXypgKS4KLSBgdGVzdHMvYDogQ0xJIGV4YW1wbGVzIGFuZCBkYXRhIChlLmcuLCBgdGVzdHMvYXJjaGVyby8uLi5gKS4KLSBgY2kvYDogaGVscGVyIHNjcmlwdHMgdG8gYnVpbGQvaW5zdGFsbCBhbmQgcHVibGlzaCBiaW5hcmllcy4KLSBgYnVpbGQvYCwgYGJ1aWxkX2NsaS9gOiBsb2NhbCBidWlsZCBvdXRwdXQgKGlnbm9yZWQpLiBTdXBwb3J0aW5nIGZpbGVzOiBgbWxjLmpzb25gLCBgbWxjLnNoYC4KCiMjIEJ1aWxkLCBUZXN0LCBhbmQgRGV2ZWxvcG1lbnQgQ29tbWFuZHMKLSBQcmVyZXF1aXNpdGVzOiBDTWFrZSDiiaUgMy4xNiwgQysrMjMgY29tcGlsZXIsIFJFMiBpbnN0YWxsZWQgKHRhcmdldCBgcmUyOjpyZTJgKS4gRXhhbXBsZTogbWFjT1MgYGJyZXcgaW5zdGFsbCByZTJgLgotIENvbmZpZ3VyZTogYGNtYWtlIC1TIC4gLUIgYnVpbGRfY2xpIC1EQ01BS0VfQlVJTERfVFlQRT1SZWxlYXNlYAotIEJ1aWxkOiBgY21ha2UgLS1idWlsZCBidWlsZF9jbGkgLWo4YAotIEluc3RhbGwgKG9wdGlvbmFsKTogYGNtYWtlIC0taW5zdGFsbCBidWlsZF9jbGlgCi0gUnVuIENMSSB3aXRoIGNvbmZpZzogYC4vbWxjIC1qIG1sYy5qc29uYCAgb3IgdmlhIGhlbHBlcjogYGJhc2ggbWxjLnNoYAotIFJ1biBDTEkgZXhwbGljaXRseTogYC4vbWxjIC1jIHRlc3RzL2FyY2hlcm8vY29uZmlncyAtZCB0ZXN0cy9hcmNoZXJvL2NvbmZpZ3MvZGF0YSAtLW91dF9kaXJlY3RvcnkgdGVzdHMvYXJjaGVyby9tZy8gLS1vdXRfZGF0YV9kaXJlY3RvcnkgdGVzdHMvYXJjaGVyby8gLS1sYW5ndWFnZSBjcHAgLS1zaWRlIGNsaWVudCAtLWZpbHRlcl9jb2RlPSchdW5pdF90ZXN0cy8nYAotIFdhdGNoIG1vZGU6IGFwcGVuZCBgLS13YXRjaGAuCgojIyBDb2RpbmcgU3R5bGUgJiBOYW1pbmcgQ29udmVudGlvbnMKLSBDKysyMywgVVRG4oCROCwgNOKAkXNwYWNlIGluZGVudGF0aW9uOyBhdm9pZCB0YWJzLgotIEZpbGVzOiBoZWFkZXJzIGAuaHBwYCwgc291cmNlcyBgLmNwcGA7IHBsYWNlIGJyYWNlcyBvbiB0aGUgc2FtZSBsaW5lLgotIE5hbWVzOiBjbGFzc2VzL3R5cGVzIFBhc2NhbENhc2U7IGZ1bmN0aW9ucyBsb3dlcl9zbmFrZV9jYXNlOyBjb25zdGFudHMgVVBQRVJfU05BS0VfQ0FTRTsgZm9sbG93IGV4aXN0aW5nIHBhdHRlcm5zIGluIGVhY2ggbW9kdWxlLgotIEtlZXAgY29udHJvbCBzdGF0ZW1lbnRzIG11bHRp4oCRbGluZTsgYXZvaWQgc2luZ2xl4oCRbGluZSBgaWYvZm9yYCBmb3Jtczsga2VlcCBvbmUgYWN0aW9uIHBlciBsaW5lLgotIFByZWZlciBzdGFuZGFyZCBsaWJyYXJ5IHR5cGVzIGFuZCBSQUlJOyB1c2UgYHVuaXF1ZV9wdHJgL2BzaGFyZWRfcHRyYCBpbnRlbnRpb25hbGx5LgoKIyMgVGVzdGluZyBHdWlkZWxpbmVzCi0gTGlnaHR3ZWlnaHQgdW5pdCB0ZXN0cyBsaXZlIGluIGBtbGMtY3BwL3Rlc3RzL2AgKGUuZy4sIGB0ZXN0c18qLmNwcGApLiBVc2UgZm9jdXNlZCBhc3NlcnRpb25zIGFuZCBzbWFsbCBmaXh0dXJlcy4KLSBTZXBhcmF0ZSBoYXJuZXNzIGluIGB0ZXN0L2A6CiAgLSBDb25maWd1cmU6IGBjbWFrZSAtUyB0ZXN0IC1CIGJ1aWxkX3Rlc3RgCiAgLSBCdWlsZDogYGNtYWtlIC0tYnVpbGQgYnVpbGRfdGVzdGAKLSBUZXN0IGRhdGEvY29uZmlncyBhcmUgdW5kZXIgYHRlc3QvYCBhbmQgYHRlc3RzL2FyY2hlcm8vYC4gS2VlcCBuZXcgc2FtcGxlcyBtaW5pbWFsIGFuZCBkb2N1bWVudGVkLgoKIyMgQ29tbWl0ICYgUHVsbCBSZXF1ZXN0IEd1aWRlbGluZXMKLSBDb21taXRzOiBpbXBlcmF0aXZlIG1vb2Qgd2l0aCBzY29wZSwgZS5nLiwgYGNvcmU6IGZpeCBwYXJzZXIgZWRnZSBjYXNlc2AuCi0gSW5jbHVkZSByYXRpb25hbGUsIGtleSBjaGFuZ2VzLCBhbmQgYW55IG1pZ3JhdGlvbiBub3Rlcy4KLSBQUnM6IGNsZWFyIGRlc2NyaXB0aW9uLCBsaW5rZWQgaXNzdWVzLCByZXByb2R1Y3Rpb24gc3RlcHMsIGFuZCBsb2NhbCBidWlsZC90ZXN0IG91dHB1dC4gQXR0YWNoIGRpZmZzIG9yIHNuaXBwZXRzIGZvciBnZW5lcmF0ZWQgY29kZSB3aGVuIHJlbGV2YW50LgoKIyMgU2VjdXJpdHkgJiBDb25maWd1cmF0aW9uIFRpcHMKLSBQcmVmZXIgYG1sYy5qc29uYCBmb3IgcmVwcm9kdWNpYmxlIHJ1bnM7IGRvIG5vdCBjb21taXQgc2VjcmV0cyBvciBtYWNoaW5l4oCRc3BlY2lmaWMgcGF0aHMuCi0gUmVnZXggZmlsdGVycyB1c2UgUkUyOyB2YWxpZGF0ZSBpbmNsdWRlL2V4Y2x1ZGUgcGF0dGVybnMgbG9jYWxseSBiZWZvcmUgY29tbWl0dGluZy4K0LTQu9GPINC+0LTQvdC+0YHRgtGA0L7Rh9C90YvRhSBpZi9mb3Ig0L3QtSDQuNGB0L/QvtC70YzQt9GD0Lkg0YTQuNCz0YPRgNC90YvQuSDRgdC60L7QsdC60LgK",
+					"AQAAAAAAAAABAAAAIQEAAAAAAABbCwAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					14,
+					1,
+					"revert",
+					null,
+					"AgAAAAAAAAAAAAAAAAAAAAAAAAD/AQAA0L/RgNC4INC90LDQv9C40YHQsNC90LjQuCDQutC+0LTQsCwg0L3QtSDRjdC60L7QvdGMINGB0YLRgNC+0LrQuCwg0LXRgdC70Lgg0LXRgdGC0Ywg0L7QtNC90L7RgdGC0YDQvtC60L7QstCw0Y8g0LrQvtC90YHRgtGA0YPQutGG0LjRjyBpZihjb25kKSB0aGVuOyAtINGC0L4g0YDQsNC30L3QvtGB0Lgg0LjRhSDQv9C+INGA0LDQt9C90YvQvCDRgdGC0YDQvtC60LDQvC4g0YLQvtC20LUg0YHQsNC80L7QtSDQutCw0YHQsNC10YLRgdGPINC4INGG0LjQutC70L7QsgrRgdGC0LDRgNCw0LnRgdGPINCy0L3QvtGB0LjRgtGMINC80LjQvdC40LzRg9C8INC40LfQvNC10L3QtdC90LjQuSDQsiDRg9C20LUg0YHRg9GJ0LXRgdGC0LLRg9GO0YnQuNC5INC60L7QtCwg0LXRgdC70Lgg0L3QtSDRgdC60LDQt9Cw0L3QviDQvtCx0YDQsNGC0L3QvtC1CtC00LvRjyDQvtC00L3QvtGB0YLRgNC+0YfQvdGL0YUgaWYvZm9yINC90LUg0LjRgdC/0L7Qu9GM0LfRg9C5INGE0LjQs9GD0YDQvdGL0Lkg0YHQutC+0LHQutC4CgAAAAAAAAAAIQEAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAAIQEAAAAAAAAhAQAAAAAAAAAAAAAAAPC/"
+				]
+			]
+		},
+		{
+			"contents": "",
+			"settings":
+			{
+				"buffer_size": 0,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "ci/update.sh",
+			"settings":
+			{
+				"buffer_size": 1073,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			},
+			"undo_stack":
+			[
+				[
+					1,
+					1,
+					"paste",
+					null,
+					"AQAAAAAAAAAAAAAAMQQAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPC/"
+				]
+			]
+		},
+		{
+			"file": "scripts/update_osx.sh",
+			"settings":
+			{
+				"buffer_size": 2347,
+				"line_ending": "Unix"
+			},
+			"undo_stack":
+			[
+			]
+		},
+		{
+			"file": "ci/build_and_install.sh",
+			"settings":
+			{
+				"buffer_size": 153,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			},
+			"undo_stack":
+			[
+				[
+					3,
+					1,
+					"paste",
+					null,
+					"AQAAAHoAAAAAAAAAkgAAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAAegAAAAAAAAB6AAAAAAAAAAAAAAAAAPC/"
+				]
+			]
+		},
+		{
+			"file": "ci/build_and_upload_bin.sh",
+			"settings":
+			{
+				"buffer_size": 1341,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			},
+			"undo_stack":
+			[
+				[
+					3,
+					1,
+					"paste",
+					null,
+					"AQAAAI8DAAAAAAAApwMAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAAjwMAAAAAAACPAwAAAAAAAAAAAAAAAPC/"
+				],
+				[
+					4,
+					1,
+					"revert",
+					null,
+					"AgAAAAAAAAAAAAAAAAAAAAAAAADUBQAAcHVzaGQgLiA+IC9kZXYvbnVsbAoKZnVuY3Rpb24gaW5jcmVtZW50X3ZlcnNpb24oKXsKCXZlcnNpb249JChncmVwICdBUFBfVkVSU0lPTicgLi4vbWxjLWNwcC92ZXJzaW9uLmhwcCB8IHNlZCAtRSAncy8uKiIoW14iXSspIi4qL1wxLycpCgkjIGVjaG8gItCi0LXQutGD0YnQsNGPINCy0LXRgNGB0LjRjzogJHZlcnNpb24iCgoJIyAyLiDQoNCw0LfQsdC40YDQsNC10Lwg0LLQtdGA0YHQuNGOINC90LAg0YfQsNGB0YLQuAoJSUZTPScuJyByZWFkIC1yIG1ham9yIG1pbm9yIHBhdGNoIDw8PCAiJHZlcnNpb24iCgoJIyAzLiDQo9Cy0LXQu9C40YfQuNCy0LDQtdC8ICJwYXRjaCIgKNC/0L7RgdC70LXQtNC90LjQuSDQvdC+0LzQtdGAKQoJcGF0Y2g9JCgocGF0Y2ggKyAxKSkKCgkjIDQuINCh0L7QsdC40YDQsNC10Lwg0L3QvtCy0YPRjiDQstC10YDRgdC40Y4KCW5ld192ZXJzaW9uPSIkbWFqb3IuJG1pbm9yLiRwYXRjaCIKCgkjIGVjaG8gItCd0L7QstCw0Y8g0LLQtdGA0YHQuNGPOiAkbmV3X3ZlcnNpb24iCgoJIyA1LiDQl9Cw0L/QuNGB0YvQstCw0LXQvCDQsiDRhNCw0LnQuyAo0LXRgdC70Lgg0L3Rg9C20L3QviDQv9C10YDQtdC/0LjRgdCw0YLRjCB2ZXJzaW9uLmhwcCkKCSMgc2VkIC1pINGA0LDQsdC+0YLQsNC10YIg0L/Qvi3RgNCw0LfQvdC+0LzRgyDQvdCwIExpbnV4INC4IG1hY09TLCDQv9C+0Y3RgtC+0LzRgzoKCWlmIFtbICIkT1NUWVBFIiA9PSAiZGFyd2luIiogXV07IHRoZW4KCSAgc2VkIC1pICcnIC1FICJzLyhBUFBfVkVSU0lPTiA9IFwiKS4qKFwiOykvXDEkbmV3X3ZlcnNpb25cMi8iIC4uL21sYy1jcHAvdmVyc2lvbi5ocHAKCWVsc2UKCSAgc2VkIC1pIC1FICJzLyhBUFBfVkVSU0lPTiA9IFwiKS4qKFwiOykvXDEkbmV3X3ZlcnNpb25cMi8iIC4uL21sYy1jcHAvdmVyc2lvbi5ocHAKCWZpCgkKCWVjaG8gIiRuZXdfdmVyc2lvbiIKfQoKZnVuY3Rpb24gYnVpbGQoKXsKCW1rZGlyIC1wIC4uL2J1aWxkX2NsaQoJY2QgLi4vYnVpbGRfY2xpCgljbWFrZSAtRENNQUtFX0JVSUxEX1RZUEU9UmVsZWFzZSAuLgoJbWFrZSAtajgKCWNtYWtlIC0taW5zdGFsbCAuIC0tcHJlZml4ICIkSE9NRS8ubG9jYWwiCn0KCiMgJDEgLSB2ZXJzaW9uCmZ1bmN0aW9uIHVwbG9hZCgpewoJZ2l0IGNsb25lIGdpdEBnaXRodWIuY29tOm1sYy10b29scy9tbGMtYmluYXJ5LWFwcC12ZXJzaW9ucy5naXQgYmluIC0tZGVwdGggMQoJY3AgbWxjIGJpbi8KCgljZCBiaW4KCWdpdCBjaGVja291dCAtYiB2ZXJzaW9ucwoJTUVTU0FHRT0ib3N4LyQxIgoJZ2l0IGFkZCBtbGMKCWdpdCBjb21taXQgLW0gImFkZGVkIGJpbmFyeSAkTUVTU0FHRSIKCWdpdCB0YWcgJE1FU1NBR0UKCWdpdCBwdXNoIC0tYWxsIC1mCglnaXQgcHVzaCBvcmlnaW4gdmVyc2lvbnMKCWdpdCBwdXNoIG9yaWdpbiAtLXRhZ3MKfQoKVkVSU0lPTj0kKGluY3JlbWVudF92ZXJzaW9uKQplY2hvICRWRVJTSU9OCmJ1aWxkCnVwbG9hZCAkVkVSU0lPTgoKcG9wZCA+IC9kZXYvbnVsbAAAAAAAAAAAPQUAAAAAAAAAAAAA",
+					"AQAAAAAAAAABAAAApwMAAAAAAACnAwAAAAAAAAAAAAAAAPC/"
 				]
 			]
 		}
@@ -631,7 +764,10 @@
 	},
 	"expanded_folders":
 	[
-		"/Users/vladimirtolmachev/work/mlc-cpp"
+		"/Users/vladimirtolmachev/work/archero/tools/mlc-cpp",
+		"/Users/vladimirtolmachev/work/archero/tools/mlc-cpp/build_cli",
+		"/Users/vladimirtolmachev/work/archero/tools/mlc-cpp/ci",
+		"/Users/vladimirtolmachev/work/archero/tools/mlc-cpp/scripts"
 	],
 	"file_history":
 	[
@@ -766,7 +902,7 @@
 	],
 	"find":
 	{
-		"height": 23.0
+		"height": 24.0
 	},
 	"find_in_files":
 	{
@@ -813,15 +949,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 82,
+						"buffer_size": 67,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								80,
-								80
+								0,
+								0
 							]
 						],
 						"settings":
@@ -834,14 +970,13 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 7,
 					"stack_multiselect": false,
 					"type": "text"
 				},
 				{
 					"buffer": 1,
 					"file": "mlc.sh",
-					"selected": true,
 					"semi_transient": false,
 					"settings":
 					{
@@ -852,7 +987,7 @@
 						"selection":
 						[
 							[
-								26,
+								281,
 								281
 							]
 						],
@@ -864,7 +999,190 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
+					"stack_index": 6,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "AGENTS.md",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 289,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								289,
+								289
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Markdown/Markdown.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 0,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"default_dir": "/Users/vladimirtolmachev/work/archero/tools/mlc-cpp/ci",
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "ci/update.sh",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1073,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								449,
+								449
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ShellScript/Bash.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "scripts/update_osx.sh",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2347,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								260,
+								272
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ShellScript/Bash.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 798.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "ci/build_and_install.sh",
+					"selected": true,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 153,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								146,
+								146
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ShellScript/Bash.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
 					"stack_index": 0,
+					"stack_multiselect": false,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "ci/build_and_upload_bin.sh",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1341,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								935,
+								935
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ShellScript/Bash.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
 					"stack_multiselect": false,
 					"type": "text"
 				}
@@ -873,7 +1191,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 23.0
+		"height": 24.0
 	},
 	"input":
 	{
@@ -917,7 +1235,7 @@
 	"project": "mlc-cpp.sublime-project",
 	"replace":
 	{
-		"height": 42.0
+		"height": 44.0
 	},
 	"save_all_on_build": true,
 	"select_file":

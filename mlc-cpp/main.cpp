@@ -11,6 +11,7 @@
 #include "utils/Config.hpp"
 #include "utils/Common.hpp"
 #include "version.hpp"
+#include <cstdlib>
 
 std::string getFileContent(const std::string& path)
 {
@@ -221,13 +222,58 @@ bool try_load_argc(Mlc& app, Cli::ArgParser& args){
     return true;
 }
 
+void try_update_subcommand(int argc, char** argv)
+{
+    if (argc >= 2){
+        std::string sub = argv[1];
+        if (sub != "update")
+            return;
+    }
+
+    std::string version;
+    std::string extras;
+    for (int i = 2; i < argc; ++i) {
+        std::string a = argv[i];
+        if (a == "--version" && i + 1 < argc) {
+            version = argv[i + 1];
+            ++i;
+            continue;
+        }
+        extras += " ";
+        extras += a;
+    }
+    
+    if (version.empty()) {
+        std::cerr << "Usage: mlc update --version <x.y.z>" << std::endl;
+        exit(2);
+    }
+
+    if(version == APP_VERSION){
+        std::cout << "Current version is equals " << version << std::endl;
+        exit(0);
+    }
+
+
+    std::string cmd_path = "mlc-update --version " + version + extras;
+    int rc = std::system(cmd_path.c_str());
+    if (rc == -1)
+    {
+        std::cerr << "Failed to spawn updater 'mlc-update'. Is it installed?" << std::endl;
+        exit(1);
+    }
+    else
+    {
+        exit(WEXITSTATUS(rc));
+    }
+}
+
 int main(int argc, char** argv) {
 //    tests::run();
+    try_update_subcommand(argc, argv);
     
     auto start = std::chrono::steady_clock::now();
-    
-    Mlc app;
     {
+        Mlc app;
         // Значения по умолчанию для локального прогона (могут быть переопределены флагами)
         Cli::ArgParser args;
         confugure_args(args, argc, argv);
