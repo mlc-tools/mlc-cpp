@@ -15,7 +15,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "4E0ECFA1ECE344ACBDA70142"
+               BlueprintIdentifier = "6D54A9FB44B745CD87F90B2C"
                BuildableName = "mlc"
                BlueprintName = "mlc"
                ReferencedContainer = "container:build/mlc.xcodeproj">
@@ -46,7 +46,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4E0ECFA1ECE344ACBDA70142"
+            BlueprintIdentifier = "6D54A9FB44B745CD87F90B2C"
             BuildableName = "mlc"
             BlueprintName = "mlc"
             ReferencedContainer = "container:build/mlc.xcodeproj">
@@ -56,6 +56,10 @@
          <CommandLineArgument
             argument = "--watch"
             isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--version"
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--help"
@@ -89,7 +93,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "4E0ECFA1ECE344ACBDA70142"
+            BlueprintIdentifier = "6D54A9FB44B745CD87F90B2C"
             BuildableName = "mlc"
             BlueprintName = "mlc"
             ReferencedContainer = "container:build/mlc.xcodeproj">

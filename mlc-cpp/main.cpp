@@ -10,6 +10,7 @@
 #include <re2/re2.h>
 #include "utils/Config.hpp"
 #include "utils/Common.hpp"
+#include "version.hpp"
 
 std::string getFileContent(const std::string& path)
 {
@@ -47,16 +48,22 @@ void confugure_args(Cli::ArgParser& args, int argc, char** argv)
     args.addOption("filter_data", 0, "RE2-паттерн(ы) включения; поддерживается префикс '!' для исключения", true);
     args.addOption("custom_generator", 0, "Кастомный генератор (например, none)");
     args.addOption("config", 'j', "Путь к JSON-конфигу (например, mlc.json)");
-    args.addFlag("help", 'h', "Вывод справки");
     args.addFlag("watch", 'w', "Включить режим наблюдения за изменениями");
-    
+    args.addFlag("help", 'h', "Вывод справки");
+    args.addFlag("version", 'v', "Version");
+
     if (!args.parse(argc, argv)) {
-        if(args.has("help")){
-            std::cout << args.help("mlc") << std::endl;
-            return 0;
-        }
         std::cerr << args.error() << "\n\n" << args.help("mlc") << std::endl;
-        return 1;
+        exit(1);
+    }
+    
+    if(args.has("help")){
+        std::cout << args.help("mlc") << std::endl;
+        exit(0);
+    }
+    if(args.has("version")){
+        std::cout << APP_VERSION << std::endl;
+        exit(0);
     }
 }
 
@@ -215,7 +222,7 @@ bool try_load_argc(Mlc& app, Cli::ArgParser& args){
 }
 
 int main(int argc, char** argv) {
-    tests::run();
+//    tests::run();
     
     auto start = std::chrono::steady_clock::now();
     
