@@ -115,6 +115,8 @@ void Mlc::generateData() {
 
     for(auto& job : _model.configuration.jobs){
         _model.config = job;
+        if(_model.config.out_data_directory.empty())
+            continue;
         DataParser dataParser(_model, storage, _model.config.filter_data);
         dataParser.parse(_model.configuration.data_directories);
         dataParser.flush(_model.config.out_data_directory);
