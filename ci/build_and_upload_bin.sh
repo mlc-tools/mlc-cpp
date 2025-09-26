@@ -1,5 +1,7 @@
 pushd . > /dev/null
 
+set -e
+
 function increment_version(){
 	version=$(grep 'APP_VERSION' ../mlc-cpp/version.hpp | sed -E 's/.*"([^"]+)".*/\1/')
 	# echo "Текущая версия: $version"
@@ -36,11 +38,11 @@ function build(){
 
 # $1 - version
 function upload(){
-	git clone git@github.com:mlc-tools/mlc-binary-app-versions.git bin --depth 1
+	git clone git@github.com:mlc-tools/mlc-binary-app-versions.git bin --depth 1 | echo 'repository exist'
 	cp mlc bin/
 
 	cd bin
-	git checkout -b versions
+	git checkout -b versions | echo 'branch exist'
 	MESSAGE="osx/$1"
 	git add mlc
 	git commit -m "added binary $MESSAGE"

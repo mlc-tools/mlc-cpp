@@ -13,14 +13,6 @@
 #include "version.hpp"
 #include <cstdlib>
 
-std::string getFileContent(const std::string& path)
-{
-    std::fstream stream(path, std::ios::in);
-    if (stream.is_open() == false)
-        return "";
-    std::string str((std::istreambuf_iterator<char>(stream)), std::istreambuf_iterator<char>());
-    return str;
-}
 
 void confugure_args(Cli::ArgParser& args, int argc, char** argv)
 {
@@ -76,7 +68,14 @@ bool try_load_config(Mlc& app, Cli::ArgParser& args){
         cfg_path = "mlc.json";
     if (!cfg_path.empty()) {
         std::vector<Config> jobs; std::string err;
-        auto config = Config::loadFile(cfg_path, err);
+        
+        std::string config_data;
+        if(FileUtils::exists(cfg_path))
+            config_data = FileUtils::read(cfg_path);
+        else
+            config_data = cfg_path;
+        
+        auto config = Config::loadString(cfg_path, err);
         if (!config) {
             std::cerr << "Failed to parse config '" << cfg_path << "': " << err << std::endl;
             return 1;
@@ -253,7 +252,6 @@ void try_update_subcommand(int argc, char** argv)
         exit(0);
     }
 
-
     std::string cmd_path = "mlc-update --version " + version + extras;
     int rc = std::system(cmd_path.c_str());
     if (rc == -1)
@@ -279,11 +277,8 @@ int main(int argc, char** argv) {
         confugure_args(args, argc, argv);
 
         // Попытка загрузки параметров из конфига
-        if(try_load_config(app, args)){
-            
-        } else if(try_load_argc(app, args)){
-            
-        }
+        if(!try_load_config(app, args))
+            try_load_argc(app, args);
 
         // Выполнение
         bool watch = args.has("watch");
