@@ -77,8 +77,8 @@ bool try_load_config(Mlc& app, Cli::ArgParser& args){
         
         auto config = Config::loadString(cfg_path, err);
         if (!config) {
-            std::cerr << "Failed to parse config '" << cfg_path << "': " << err << std::endl;
-            return 1;
+//            std::cerr << "Failed to parse config '" << cfg_path << "': " << err << std::endl;
+            return false;
         }
         app.get_model().configuration = config;
         if(!config.jobs.empty())

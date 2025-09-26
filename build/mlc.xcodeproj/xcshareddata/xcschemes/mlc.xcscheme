@@ -63,7 +63,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--config &quot;{\&quot;source\&quot;: {\&quot;configs\&quot;: \&quot;tests/archero/configs\&quot;,\&quot;data\&quot;: \&quot;tests/archero/configs/data/\&quot;},\&quot;generation\&quot;: [{\&quot;out\&quot;: \&quot;tests/archero/mg/\&quot;,\&quot;data_out\&quot;: \&quot;tests/archero/\&quot;,\&quot;auto_registration\&quot;: false,\&quot;generate_intrusive\&quot;: false,\&quot;generate_tests\&quot;: false,\&quot;language\&quot;: \&quot;cpp\&quot;,\&quot;side\&quot;: \&quot;client\&quot;,\&quot;filter_code\&quot;: [\&quot;!unit_tests/\&quot;]}]}&quot;"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--help"
@@ -74,16 +74,32 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "--auto_registration no --generate_intrusive no --generate_tests no --language cpp --side client"
+            argument = "--auto_registration no --generate_intrusive no --language cpp --side client"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--generate_tests no"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "--configs_directories /Users/vladimirtolmachev/work/mlc-cpp/tests/archero/configs  --data_directories /Users/vladimirtolmachev/work/mlc-cpp/tests/archero/configs/data  --out_directory /Users/vladimirtolmachev/work/mlc-cpp/tests/archero/mg/  --out_data_directory /Users/vladimirtolmachev/work/mlc-cpp/tests/archero/"
+            argument = "--configs_directories /Users/vladimirtolmachev/work/archero/configs/  --data_directories /Users/vladimirtolmachev/work/archero/configs/data/"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = " --out_directory /Users/vladimirtolmachev/work/mlc-cpp/tests/archero/mg/  --out_data_directory /Users/vladimirtolmachev/work/mlc-cpp/tests/archero/"
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--filter_code=&apos;!unit_tests/&apos;"
             isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = " --out_directory /Users/vladimirtolmachev/work/archero/tests/unit_tests/mg/  --out_data_directory /Users/vladimirtolmachev/work/archero/assets/data/"
+            isEnabled = "YES">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--generate_tests yes"
+            isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>

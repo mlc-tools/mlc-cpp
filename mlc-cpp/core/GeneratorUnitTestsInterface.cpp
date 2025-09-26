@@ -167,14 +167,23 @@ GeneratorUnitTestsInterface::generateTestInterface(const shared_ptr<Class>& cls)
 
     // Для каждого метода оригинального класса
     for (auto &f : cls->functions) {
-        if ((f.name != "visit" && f.name != "accept")
-            && f.access == AccessSpecifier::m_public)
-        {
-            addMethod(test, "test_" + f.name);
+        if ((f.name != "visit" && f.name != "accept") && f.access == AccessSpecifier::m_public) {
+            std::string name = f.name;
+            if(name.find("operator") == 0)
+            {
+                replace_all(name, "+", "_add");
+                replace_all(name, "-", "_sub");
+                replace_all(name, "*", "_mul");
+                replace_all(name, "/", "_div");
+                replace_all(name, "=", "_equals");
+            }
+            name = "test_" + name;
+            if(!test->has_method(name))
+                addMethod(test, name);
         }
     }
     
-    if(cls->name == "ConstructableClass")
+    if(cls->name == "CollisionChecker")
     {
         std::cout << "\n";
     }
@@ -237,6 +246,7 @@ void GeneratorUnitTestsInterface::addMethod(
     method.name       = name;
     method.return_type = Objects::VOID;
     method.is_abstract = hasImplementation;
+    method.is_virtual = true;
     class_->functions.push_back(std::move(method));
 }
 
