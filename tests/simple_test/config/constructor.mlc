@@ -22,7 +22,7 @@ class ConstructableClassAuto
 {
     int a = -1
     int b = -1
-    // constructor():generate
+    constructor():generate
 }
 
 class TestConstructableClass<ITestConstructableClass>:test
@@ -44,10 +44,10 @@ class TestConstructableClass<ITestConstructableClass>:test
         this->assertTrue(cls->a == 1);
         this->assertTrue(cls->b == 2);
     }
-    // function void test_constructor_auto()
-    // {
-    //     auto cls = new ConstructableClassAuto(1, 2);
-    //     this->assertTrue(cls->a == 1);
-    //     this->assertTrue(cls->b == 2);
-    // }
+    function void test_constructor_auto()
+    {
+        auto cls = new ConstructableClassAuto(1, 2);
+        this->assertTrue(cls->a == 1);
+        this->assertTrue(cls->b == 2);
+    }
 }
