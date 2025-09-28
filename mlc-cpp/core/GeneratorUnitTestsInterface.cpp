@@ -153,17 +153,20 @@ GeneratorUnitTestsInterface::generateTestInterface(const shared_ptr<Class>& cls)
     if (cls->name.find("ITest", 0) == 0)
         return nullptr;
     
+    if(cls->name == "NullishOperator")
+        std::cout << "";
 
-    string testName = "ITest" + cls->name;
+    string test_interface_name = "ITest" + cls->name;
     // нет наследников — пропускаем
-    auto subs = _model->getSubclassesOfClass(testName);
-    if (subs.empty()) return nullptr;
+    auto subs = _model->getSubclassesOfClass(test_interface_name);
+    if (subs.empty())
+        return nullptr;
 
-    auto test = make_shared<Class>();
-    test->type = "class";
-    test->name = testName;
-    test->group = "tests";
-    test->parent_class_name = "TestCase";
+    auto i_test_interface = make_shared<Class>();
+    i_test_interface->type = "class";
+    i_test_interface->name = test_interface_name;
+    i_test_interface->group = "tests";
+    i_test_interface->parent_class_name = "TestCase";
 
     // Для каждого метода оригинального класса
     for (auto &f : cls->functions) {
@@ -178,8 +181,8 @@ GeneratorUnitTestsInterface::generateTestInterface(const shared_ptr<Class>& cls)
                 replace_all(name, "=", "_equals");
             }
             name = "test_" + name;
-            if(!test->has_method(name))
-                addMethod(test, name);
+            if(!i_test_interface->has_method(name))
+                addMethod(i_test_interface, name);
         }
     }
     
@@ -188,23 +191,23 @@ GeneratorUnitTestsInterface::generateTestInterface(const shared_ptr<Class>& cls)
         std::cout << "\n";
     }
     // Если есть реальная реализация без I
-    std::string test_class_name = test->name.substr(1);
-    if (_model->hasClass(test_class_name)) {
-        auto impl = _model->get_class(test_class_name);
+    std::string test_implementation_name = i_test_interface->name.substr(1);
+    if (_model->hasClass(test_implementation_name)) {
+        auto impl = _model->get_class(test_implementation_name);
         for (auto &f : impl->functions) {
             if (f.name.find("test_", 0) == 0) {
                 // если нет в тестовом интерфейсе
-                auto it = find_if(
-                  test->functions.begin(),
-                  test->functions.end(),
-                  [&](auto &mf){ return mf.name == f.name; });
-                if (it == test->functions.end()) {
+                auto it = find_if(i_test_interface->functions.begin(), i_test_interface->functions.end(), [&](auto &mf){
+                    return mf.name == f.name;
+                });
+                if (it == i_test_interface->functions.end()) {
                     Function m;
-                    m.name       = f.name;
+                    m.name = f.name;
                     m.return_type = Objects::VOID;
-                    m.is_abstract = true;
-                    test->functions.push_back(m);
-                    generateMessagesIfEmpty(impl, test->functions.back());
+//                    m.is_abstract = true;
+                    i_test_interface->functions.push_back(m);
+                    generateMessagesIfEmpty(impl, i_test_interface->functions.back());
+                    f.is_virtual = true;
                 }
             }
         }
@@ -212,23 +215,23 @@ GeneratorUnitTestsInterface::generateTestInterface(const shared_ptr<Class>& cls)
 
     // Генерируем execute()
     Function exec;
-    exec.name       = "execute";
+    exec.name = "execute";
     exec.return_type = Objects::VOID;
-    for (auto &mf : test->functions) {
+    for (auto &mf : i_test_interface->functions) {
         if (mf.name != "initialize" && mf.name != "execute") {
             exec.body += "this->" + mf.name + "();\n";
         }
     }
-    test->functions.push_back(std::move(exec));
+    i_test_interface->functions.push_back(std::move(exec));
 
-    tests_.push_back(test);
-    return test;
+    tests_.push_back(i_test_interface);
+    return i_test_interface;
 }
 
 void GeneratorUnitTestsInterface::addMethod(
     shared_ptr<Class>& class_, const string &name)
 {
-    if(class_->name == "ITestClassMissingTestMethod")
+    if(class_->name == "ITestNullishOperator")
         std::cout << "";
     bool hasImplementation = true;
     auto subs = _model->getSubclassesOfClass(class_->name);
@@ -236,10 +239,13 @@ void GeneratorUnitTestsInterface::addMethod(
         auto m = sub->get_method(name);
         if (!m || m->is_abstract) {
             hasImplementation = false;
-//            Error::warning(
-//              Error::WARNING_TEST_CLASS_NOT_IMPLEMENT_METHOD,
-//              class_->name, name);
+            Error::warning(
+              Error::WARNING_TEST_CLASS_NOT_IMPLEMENT_METHOD,
+              class_->name, name);
             break;
+        }
+        else if(m && !m->is_virtual){
+            m->is_virtual = true;
         }
     }
     Function method;

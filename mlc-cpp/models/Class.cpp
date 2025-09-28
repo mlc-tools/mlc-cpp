@@ -100,7 +100,7 @@ void Class::onLinked(Model& model)
 
     for(auto& func : functions)
     {
-        if (func.name.find("operator") != std::string::npos)
+        if (func.name.find("operator") == 0)
         {
             func.is_virtual = false;
             continue;
