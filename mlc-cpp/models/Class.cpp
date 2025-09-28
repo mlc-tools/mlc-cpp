@@ -40,6 +40,21 @@ void Class::set_modifier(const std::string_view& modifier)
     else Object::set_modifier(modifier);
 }
 
+bool Class::generate_constructor(){
+    for(auto& constructor : this->constructors){
+        if(constructor.is_generate) {
+            for(auto& member : this->members){
+                Object arg;
+                arg.type = member.type;
+                arg.name = member.name;
+                arg.set_default_initial_value();
+                constructor.callable_args.push_back(std::move(arg));
+                constructor.body += "this->" + member.name + " = " + member.name + ";\n";
+            }
+        }
+    }
+}
+
 bool Class::has_member(const std::string& name) const
 {
     for(auto& m : this->members){

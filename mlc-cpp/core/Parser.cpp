@@ -84,6 +84,7 @@ void Parser::parse_class(const std::shared_ptr<Class>& cls)
 {
     ParserLexem parser(cls->inner_body, _model);
     parser.parse(cls);
+    cls->generate_constructor();
 }
 
 std::string Parser::removeComments(const std::string &txt) {
