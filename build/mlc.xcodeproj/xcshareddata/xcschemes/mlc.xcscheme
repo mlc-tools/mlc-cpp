@@ -36,7 +36,7 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "YES"
-      customWorkingDirectory = "/Users/vladimirtolmachev/work/mlc-cpp"
+      customWorkingDirectory = "/Users/vladimirtolmachev/work/archero/tools/mlc-cpp"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
@@ -75,7 +75,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--auto_registration no --generate_intrusive no --language cpp --side client"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--generate_tests no"
@@ -83,7 +83,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--configs_directories /Users/vladimirtolmachev/work/archero/configs/  --data_directories /Users/vladimirtolmachev/work/archero/configs/data/"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = " --out_directory /Users/vladimirtolmachev/work/mlc-cpp/tests/archero/mg/  --out_data_directory /Users/vladimirtolmachev/work/mlc-cpp/tests/archero/"
@@ -95,10 +95,14 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = " --out_directory /Users/vladimirtolmachev/work/archero/tests/unit_tests/mg/  --out_data_directory /Users/vladimirtolmachev/work/archero/assets/data/"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--generate_tests yes"
+            isEnabled = "NO">
+         </CommandLineArgument>
+         <CommandLineArgument
+            argument = "--config tests/simple_test/mlc_xml.json"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

@@ -1,28 +1,64 @@
 {
-  "dicts": [
+  "adds" : 
+  [
     {
-      "key": "default",
-      "value": {
-        "name": "default",
-        "resources": [
+      "key" : "add_data",
+      "value" : 
+      {
+        "name" : "add_data"
+      }
+    }
+  ],
+  "complex_maps" : 
+  [
+    {
+      "key" : "test",
+      "value" : 
+      {
+        "complex_map" : 
+        [
           {
-            "key": "gold",
-            "value": 10
+            "key" : 1,
+            "value" : 
+            [
+              1,
+              2
+            ]
+          }
+        ],
+        "name" : "test"
+      }
+    }
+  ],
+  "dicts" : 
+  [
+    {
+      "key" : "default",
+      "value" : 
+      {
+        "name" : "default",
+        "resources" : 
+        [
+          {
+            "key" : "gold",
+            "value" : 10
           },
           {
-            "key": "gems",
-            "value": 20
+            "key" : "gems",
+            "value" : 20
           }
         ]
       }
     }
   ],
-  "list_list_bools": [
+  "list_list_bools" : 
+  [
     {
-      "key": "test",
-      "value": {
-        "name": "test",
-        "list_list_bool": [
+      "key" : "test",
+      "value" : 
+      {
+        "list_list_bool" : 
+        [
           [
             true,
             false
@@ -31,116 +67,105 @@
             false,
             true
           ]
-        ]
+        ],
+        "name" : "test"
       }
     }
   ],
-  "units": [
+  "units" : 
+  [
     {
-      "key": "unitname1",
-      "value": {
-        "name": "unitname1",
-        "unit_type": "attack",
-        "enum_with_int_value": "foo",
-        "visual": {
-          "name": "some_locale_key",
-          "icon": "some_image"
-        },
-        "link_to_data": "unitname2",
-        "all_units": [
+      "key" : "unitname1",
+      "value" : 
+      {
+        "all_units" : 
+        [
           "unitname1",
           "unitname2"
         ],
-        "map_units": [
+        "convert_float_to_int" : 1.0,
+        "enum_with_int_value" : "foo",
+        "link_to_data" : "unitname2",
+        "map_units" : 
+        [
           {
-            "key": "unitname1",
-            "value": 1
+            "key" : "unitname1",
+            "value" : 1
           },
           {
-            "key": "unitname2",
-            "value": 2
+            "key" : "unitname2",
+            "value" : 2
           }
         ],
-        "map_units_data": [
+        "map_units_data" : 
+        [
           {
-            "key": "unitname1",
-            "value": 1
+            "key" : "unitname1",
+            "value" : 1
           },
           {
-            "key": "unitname2",
-            "value": 2
+            "key" : "unitname2",
+            "value" : 2
           }
         ],
-        "skill": {
-          "type": "SkillFoo",
-          "foo": 1
+        "name" : "unitname1",
+        "skill" : 
+        {
+          "foo" : 1,
+          "type" : "SkillFoo"
         },
-        "convert_float_to_int": 1.0
+        "unit_type" : "attack",
+        "visual" : 
+        {
+          "icon" : "some_image",
+          "name" : "some_locale_key"
+        }
       }
     },
     {
-      "key": "unitname2",
-      "value": {
-        "name": "unitname2",
-        "unit_type": "defend",
-        "visual": {
-          "name": "some_locale_key_2",
-          "icon": "some_image_2"
-        },
-        "link_to_data": "unitname1",
-        "all_units": [
+      "key" : "unitname2",
+      "value" : 
+      {
+        "all_units" : 
+        [
           "unitname2",
           "unitname1"
         ],
-        "map_units": [
+        "convert_float_to_int" : 1.5,
+        "link_to_data" : "unitname1",
+        "map_units" : 
+        [
           {
-            "key": "unitname1",
-            "value": 1
+            "key" : "unitname1",
+            "value" : 1
           },
           {
-            "key": "unitname2",
-            "value": 2
+            "key" : "unitname2",
+            "value" : 2
           }
         ],
-        "map_units_data": [
+        "map_units_data" : 
+        [
           {
-            "key": "unitname1",
-            "value": 1
+            "key" : "unitname1",
+            "value" : 1
           },
           {
-            "key": "unitname2",
-            "value": 2
+            "key" : "unitname2",
+            "value" : 2
           }
         ],
-        "skill": {
-          "type": "SkillBase"
+        "name" : "unitname2",
+        "skill" : 
+        {
+          "type" : "SkillBase"
         },
-        "convert_float_to_int": 1.5
-      }
-    }
-  ],
-  "complex_maps": [
-    {
-      "key": "test",
-      "value": {
-        "name": "test",
-        "complex_map": [
-          {
-            "key": 1,
-            "value": [
-              1,
-              2
-            ]
-          }
-        ]
-      }
-    }
-  ],
-  "adds": [
-    {
-      "key": "add_data",
-      "value": {
-        "name": "add_data"
+        "unit_type" : "defend",
+        "visual" : 
+        {
+          "icon" : "some_image_2",
+          "name" : "some_locale_key_2"
+        }
       }
     }
   ]

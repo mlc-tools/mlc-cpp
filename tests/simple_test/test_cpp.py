@@ -15,7 +15,7 @@ def main(argv):
     else:
         if not os.path.isdir('{}simple_test/build_json'.format(root)):
             os.makedirs('{}simple_test/build_json'.format(root))
-        if os.system('cd {}simple_test/build_json; cmake .. -DBUILD_XML=OFF -DBUILD_JSON=ON -DBUILD_SIDE=SERVER; make -j8;'.format(root)) != 0:
+        if os.system('cd {}simple_test/build_json; cmake .. -DBUILD_XML=OFF -DBUILD_JSON=ON -DBUILD_SIDE=CLIENT; make -j8;'.format(root)) != 0:
             sys.exit(1)
 
     if os.system('{0}simple_test/build_{1}/test_mlc_{1} {0}simple_test/'.format(root, protocol)) != 0:

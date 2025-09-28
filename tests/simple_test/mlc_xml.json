@@ -1,0 +1,30 @@
+{
+  "source": {
+    "configs": ["config", "config_additional"],
+    "data": ["data_xml", "data_json", "data_additional"]
+  },
+  "generation": [
+    {
+      "out": "generated_cpp/xml",
+      "data_out": "assets",
+      "auto_registration": false,
+      "generate_intrusive": true,
+      "generate_tests": true,
+      "language": "cpp",
+      "side": "server",
+      "serialize_protocol": "xml",
+      "filter_code": []
+    },
+    {
+      "out": "generated_cpp/json",
+      "data_out": "assets",
+      "auto_registration": false,
+      "generate_intrusive": true,
+      "generate_tests": true,
+      "language": "cpp",
+      "side": "client",
+      "serialize_protocol": "json",
+      "filter_code": []
+    }
+  ]
+}

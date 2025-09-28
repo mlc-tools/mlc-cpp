@@ -1,86 +1,86 @@
 <?xml version="1.0"?>
 <data>
- <dicts>
-  <pair key="default">
-   <value name="default">
-    <resources>
-     <pair key="gold" value="10" />
-     <pair key="gems" value="20" />
-    </resources>
-   </value>
-  </pair>
- </dicts>
- <adds>
-  <pair key="add_data">
-   <value name="add_data" />
-  </pair>
- </adds>
- <list_list_bools>
-  <pair key="test">
-   <value name="test">
-    <list_list_bool>
-     <item>
-      <item value="true" />
-      <item value="false" />
-     </item>
-     <item>
-      <item value="false" />
-      <item value="true" />
-     </item>
-    </list_list_bool>
-   </value>
-  </pair>
- </list_list_bools>
- <complex_maps>
-  <pair key="test">
-   <value name="test">
-    <complex_map>
-     <pair key="1">
-      <value>
-       <item value="1" />
-       <item value="2" />
+  <dicts>
+    <pair key="default">
+      <value name="default">
+        <resources>
+          <pair key="gold" value="10" />
+          <pair key="gems" value="20" />
+        </resources>
       </value>
-     </pair>
-    </complex_map>
-   </value>
-  </pair>
- </complex_maps>
- <units>
-  <pair key="unitname1">
-   <value name="unitname1" link_to_data="unitname2" unit_type="attack" enum_with_int_value="foo" convert_float_to_int="1.0">
-    <visual icon="some_image" name="some_locale_key" />
-    <all_units>
-     <item value="unitname1" />
-     <item value="unitname2" />
-    </all_units>
-    <map_units>
-     <pair key="unitname1" value="1" />
-     <pair key="unitname2" value="2" />
-    </map_units>
-    <map_units_data>
-     <pair key="unitname1" value="1" />
-     <pair key="unitname2" value="2" />
-    </map_units_data>
-    <skill type="SkillFoo" foo="1" />
-   </value>
-  </pair>
-  <pair key="unitname2">
-   <value name="unitname2" link_to_data="unitname1" unit_type="defend" convert_float_to_int="1.5">
-    <visual name="some_locale_key" icon="some_image" />
-    <all_units>
-     <item value="unitname2" />
-     <item value="unitname1" />
-    </all_units>
-    <map_units>
-     <pair key="unitname1" value="1" />
-     <pair key="unitname2" value="2" />
-    </map_units>
-    <map_units_data>
-     <pair key="unitname1" value="1" />
-     <pair key="unitname2" value="2" />
-    </map_units_data>
-    <skill type="SkillBase" />
-   </value>
-  </pair>
- </units>
+    </pair>
+  </dicts>
+  <adds>
+    <pair key="add_data">
+      <value name="add_data" />
+    </pair>
+  </adds>
+  <list_list_bools>
+    <pair key="test">
+      <value name="test">
+        <list_list_bool>
+          <item>
+            <item value="true" />
+            <item value="false" />
+          </item>
+          <item>
+            <item value="false" />
+            <item value="true" />
+          </item>
+        </list_list_bool>
+      </value>
+    </pair>
+  </list_list_bools>
+  <complex_maps>
+    <pair key="test">
+      <value name="test">
+        <complex_map>
+          <pair key="1">
+            <value>
+              <item value="1" />
+              <item value="2" />
+            </value>
+          </pair>
+        </complex_map>
+      </value>
+    </pair>
+  </complex_maps>
+  <units>
+    <pair key="unitname1">
+      <value name="unitname1" link_to_data="unitname2" unit_type="attack" enum_with_int_value="foo" convert_float_to_int="1.0">
+        <visual icon="some_image" name="some_locale_key" />
+        <all_units>
+          <item value="unitname1" />
+          <item value="unitname2" />
+        </all_units>
+        <map_units>
+          <pair key="unitname1" value="1" />
+          <pair key="unitname2" value="2" />
+        </map_units>
+        <map_units_data>
+          <pair key="unitname1" value="1" />
+          <pair key="unitname2" value="2" />
+        </map_units_data>
+        <skill type="SkillFoo" foo="1" />
+      </value>
+    </pair>
+    <pair key="unitname2">
+      <value name="unitname2" link_to_data="unitname1" unit_type="defend" convert_float_to_int="1.5">
+        <visual name="some_locale_key" icon="some_image" />
+        <all_units>
+          <item value="unitname2" />
+          <item value="unitname1" />
+        </all_units>
+        <map_units>
+          <pair key="unitname1" value="1" />
+          <pair key="unitname2" value="2" />
+        </map_units>
+        <map_units_data>
+          <pair key="unitname1" value="1" />
+          <pair key="unitname2" value="2" />
+        </map_units_data>
+        <skill type="SkillBase" />
+      </value>
+    </pair>
+  </units>
 </data>
