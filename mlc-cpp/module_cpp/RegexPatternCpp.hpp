@@ -185,11 +185,14 @@ catch(const std::exception& \4)
             { "?->" }
         });
         // bare conditional call shorthand: obj?->call; -> if(obj){ obj->call; }
+        //TODO:
         v.push_back({
-            std::make_unique<RE2>(R"(([\w\-\>\.\:\[\]\(\)]+?)\s*\?->\s*([^;]+);)"),
-            R"(if(\1)\n{\n\1->\2;\n})",
+            std::make_unique<RE2>(R"(([\w\-\>\.\:\[\]\(\)]+?)\s*\?->\s*(.+?);)"),
+            R"__(if(\1)
+            {
+                \1->\2;
+            })__",
             { "?->" }
-            
         });
         return v;
     }();
