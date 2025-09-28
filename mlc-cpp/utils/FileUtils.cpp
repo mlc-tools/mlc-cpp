@@ -37,8 +37,30 @@ std::vector<std::string> listFilesRecursive(const std::string &directory, const 
 }
 
 std::string normalizePath(const std::string& path){
-    //TODO:
-    return path;
+    // Абсолютный нормализованный путь, даже если не существует на диске
+    std::filesystem::path p(path);
+    if(p.is_relative())
+        p = std::filesystem::current_path() / p;
+
+    p = p.lexically_normal();
+
+    std::string s = p.string();
+    char sep = std::filesystem::path::preferred_separator;
+    if(s.empty() || s.back() != sep)
+        s.push_back(sep);
+    return s;
+}
+
+std::string getFilePath(const std::string& directory, const std::string& localPath){
+    std::filesystem::path base(normalizePath(directory));
+    std::filesystem::path rel(localPath);
+    std::filesystem::path full = base / rel;
+    full = full.lexically_normal();
+    return full.string();
+}
+
+std::string directory_of_file(const std::string& path){
+    return std::filesystem::path(path).parent_path();
 }
 
 std::vector<std::string> listFiles(const std::string &directory){

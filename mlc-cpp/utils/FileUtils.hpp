@@ -13,11 +13,16 @@
 
 namespace FileUtils {
 
-std::vector<std::string> listFilesRecursive(const std::string &directory, const std::vector<std::string> &extensions = {});
-
 std::string normalizePath(const std::string& path);
 
+// Возвращает абсолютный нормализованный путь к файлу, составленный из каталога и локального пути.
+// Каталог может не существовать — путь всё равно будет корректно нормализован.
+std::string getFilePath(const std::string& directory, const std::string& localPath);
+std::string directory_of_file(const std::string& path);
+
 std::vector<std::string> listFiles(const std::string &directory);
+std::vector<std::string> listFilesRecursive(const std::string &directory, const std::vector<std::string> &extensions = {});
+
 bool exists(const std::string& fullPath);
 void remove(const std::string& fullPath);
 

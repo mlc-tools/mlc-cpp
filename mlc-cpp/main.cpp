@@ -70,16 +70,29 @@ bool try_load_config(Mlc& app, Cli::ArgParser& args){
         std::vector<Config> jobs; std::string err;
         
         std::string config_data;
-        if(FileUtils::exists(cfg_path))
+        bool fileExist = FileUtils::exists(cfg_path);
+        if(fileExist)
             config_data = FileUtils::read(cfg_path);
         else
             config_data = cfg_path;
         
-        auto config = Config::loadString(cfg_path, err);
+        auto config = Config::loadString(config_data, err);
         if (!config) {
-//            std::cerr << "Failed to parse config '" << cfg_path << "': " << err << std::endl;
+            //            std::cerr << "Failed to parse config '" << cfg_path << "': " << err << std::endl;
             return false;
         }
+        
+        if(fileExist){
+            for(auto& dir : config.configs_directories)
+                dir = FileUtils::normalizePath(FileUtils::directory_of_file(cfg_path) + "/" + dir);
+            for(auto& dir : config.data_directories)
+                dir = FileUtils::normalizePath(FileUtils::directory_of_file(cfg_path) + "/" + dir);
+            for(auto& job : config.jobs){
+                job.out_data_directory = FileUtils::normalizePath(FileUtils::directory_of_file(cfg_path) + "/" + job.out_data_directory) + "/";
+                job.out_directory = FileUtils::normalizePath(FileUtils::directory_of_file(cfg_path) + "/" + job.out_directory) + "/";
+            }
+        }
+        
         app.get_model().configuration = config;
         if(!config.jobs.empty())
             app.get_model().config = config.jobs.at(0);

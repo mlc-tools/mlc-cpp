@@ -57,8 +57,12 @@ std::vector<std::string> read_patterns(const Json::Value& v) {
 }
 
 void load_dirs(const Json::Value& v, std::vector<std::string>& out) {
-    if (v.isString()) out.push_back(v.asString());
-    else if (v.isArray()) { for (const auto& it : v) if (it.isString()) out.push_back(it.asString()); }
+    if (v.isString())
+        out.push_back(v.asString());
+    else if (v.isArray()) {
+        for (const auto& it : v)
+            if (it.isString()) out.push_back(it.asString());
+    }
 }
 
 Config Config::loadFile(const std::string& path, std::string& err) {
@@ -102,15 +106,24 @@ Config Config::loadString(const std::string& content, std::string& err) {
         config.data_directories    = src_data;
 
         Job job;
-        if (g.isMember("out")) job.out_directory = g["out"].asString();
-        if (g.isMember("data_out")) job.out_data_directory = g["data_out"].asString();
-        if (g.isMember("language")) job.language = g["language"].asString();
-        if (g.isMember("namespace_name")) job.namespace_name = g["namespace_name"].asString();
-        if (g.isMember("only_data")) job.only_data = g["only_data"].asBool();
-        if (g.isMember("php_validate")) job.php_validate = g["php_validate"].asBool();
-        if (g.isMember("allow_different_virtual")) job.allow_different_virtual = g["allow_different_virtual"].asBool();
-        if (g.isMember("test_script")) job.test_script = g["test_script"].asString();
-        if (g.isMember("test_script_args")) job.test_script_args = g["test_script_args"].asString();
+        if (g.isMember("out"))
+            job.out_directory = g["out"].asString();
+        if (g.isMember("data_out"))
+            job.out_data_directory = g["data_out"].asString();
+        if (g.isMember("language"))
+            job.language = g["language"].asString();
+        if (g.isMember("namespace_name"))
+            job.namespace_name = g["namespace_name"].asString();
+        if (g.isMember("only_data"))
+            job.only_data = g["only_data"].asBool();
+        if (g.isMember("php_validate"))
+            job.php_validate = g["php_validate"].asBool();
+        if (g.isMember("allow_different_virtual"))
+            job.allow_different_virtual = g["allow_different_virtual"].asBool();
+        if (g.isMember("test_script"))
+            job.test_script = g["test_script"].asString();
+        if (g.isMember("test_script_args"))
+            job.test_script_args = g["test_script_args"].asString();
 
         if (g.isMember("side") && g["side"].isString()) {
             std::string s = g["side"].asString();
