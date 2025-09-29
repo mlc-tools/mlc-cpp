@@ -219,14 +219,22 @@ static string to_snake(const string &s) {
 }
 
 bool GeneratorEcsCpp::isBased(const shared_ptr<Class>& cls, const string &name) {
-    if (!cls) return false;
-    if (cls->name == name) return true;
+    if (!cls)
+        return false;
+    if (cls->name == "Movement2")
+        std::cout << "";
+    if (cls->name == name)
+        return true;
+    if(cls->parent.expired())
+        cls->parent = _model->get_class(cls->parent_class_name);
     if (!cls->parent.expired()) {
         auto p = cls->parent.lock();
-        if (isBased(p, name)) return true;
+        if (isBased(p, name))
+            return true;
     } else if (!cls->parent_class_name.empty()) {
         // parent will be linked later, but we can compare by name if same group assumed
-        if (cls->parent_class_name == name) return true;
+        if (cls->parent_class_name == name)
+            return true;
     }
     return false;
 }
@@ -262,7 +270,7 @@ GeneratorEcsCpp::GeneratorEcsCpp(const FeatureEcs& feature)
 }
 // --- main entry ---
 void GeneratorEcsCpp::generate(Model &model) {
-    
+    _model = &model;
     if (!model.hasClass(_ecs_model_base_name))
         return;
     auto ecsBase = getClass(model, _ecs_model_base_name);

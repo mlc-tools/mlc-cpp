@@ -27,7 +27,7 @@ public:
 
 private:
     // helpers
-    static bool isBased(const std::shared_ptr<Class>& cls, const std::string &name);
+    bool isBased(const std::shared_ptr<Class>& cls, const std::string &name);
     static std::string componentsField(const std::shared_ptr<Class>& cls); // ComponentFoo -> foo
     static std::shared_ptr<Class> getClass(Model &model, const std::string &name);
     static Function makeFnDecl(const std::string &decl);
@@ -56,6 +56,7 @@ private:
     void addHelperFile(Model &model);
     
 private:
+    Model *_model;
     std::string _ecs_model_base_name;
     std::string _ecs_component_base_name;
 };

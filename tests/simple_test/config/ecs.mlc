@@ -22,12 +22,27 @@ class ecs/Movement<EcsComponent>
 	int x = 0
 	int y = 0
 }
+class ecs/Movement2<Movement>
+{
+}
 
 class ecs/SystemMovement
 {
 	fn void update(EcsModel* model)
 	{
 		model->each<Transform, Movement>(
+			[](auto& tranform, auto& movement)
+			{
+				tranform->x += movement->x;
+				tranform->y += movement->y;
+			});
+	}
+}
+class ecs/SystemMovement2
+{
+	fn void update(EcsModel* model)
+	{
+		model->each<Transform, Movement2>(
 			[](auto& tranform, auto& movement)
 			{
 				tranform->x += movement->x;

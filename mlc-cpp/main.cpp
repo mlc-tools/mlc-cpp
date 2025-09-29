@@ -229,11 +229,11 @@ bool try_load_argc(Mlc& app, Cli::ArgParser& args){
 
 void try_update_subcommand(int argc, char** argv)
 {
-    bool update = false;
+    bool update = true;
     if (argc >= 2){
         std::string sub = argv[1];
         if (sub != "update"){
-            update = true;
+            update = false;
             return;
         }
     }

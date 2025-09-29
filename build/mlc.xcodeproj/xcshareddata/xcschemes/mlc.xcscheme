@@ -105,6 +105,10 @@
             argument = "--config tests/simple_test/mlc_xml.json"
             isEnabled = "YES">
          </CommandLineArgument>
+         <CommandLineArgument
+            argument = "update 0.5.38 --user"
+            isEnabled = "NO">
+         </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>
    <ProfileAction
