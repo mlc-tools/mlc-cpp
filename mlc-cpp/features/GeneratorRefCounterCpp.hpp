@@ -11,21 +11,23 @@
 #include <vector>
 #include <memory>
 
+#include "FeatureGenerator.hpp"
+
 class Model;
 class Class;
 
-class GeneratorRefCounterCpp {
+class GeneratorRefCounterCpp : public FeatureGenerator {
 public:
     GeneratorRefCounterCpp();
 
-    // Добавляет счётчик ссылок, retain/release в немодельные классы
-    void generate(Model &model);
+    virtual void generate(Model &model) override;
+    virtual void modifySources(Model& model, const std::shared_ptr<Class>& cls, std::string& header, std::string& source) override{}
 
 private:
     std::string preferType_;
     std::string retainBody_;
     std::string releaseBody_;
 
-    // Обработка одного класса
     void addToClass(const std::shared_ptr<Class> &cls);
 };
+

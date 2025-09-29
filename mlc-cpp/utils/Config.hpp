@@ -45,7 +45,21 @@ public:
 class FeatureVisitor{
 public:
 };
+class FeatureUnitTests{
+public:
+};
 
+class FeatureDataStorage{
+public:
+};
+
+class FeatureRefCounter{
+public:
+};
+
+class FeatureOperatorEquals{
+public:
+};
 class FeatureEcs{
 public:
     std::string model_base;
@@ -60,7 +74,7 @@ public:
     std::vector<std::string> configs_directories;
     std::vector<std::string> data_directories;
     std::vector<Job> jobs;
-    std::map<std::string, std::variant<FeatureVisitor, FeatureEcs>> features;
+    std::vector<std::variant<FeatureVisitor, FeatureEcs, FeatureUnitTests, FeatureDataStorage, FeatureRefCounter, FeatureOperatorEquals>> features;
 
     // Загрузка конфигурации из JSON-файла. Возвращает набор задач.
     static Config loadFile(const std::string& path, std::string& err);

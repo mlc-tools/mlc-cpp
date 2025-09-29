@@ -11,16 +11,30 @@
 #include <string>
 #include <memory>
 
-#include "Model.hpp"
-#include "Class.hpp"
-#include "Function.hpp"
+#include "../models/Model.hpp"
+#include "../models/Class.hpp"
+#include "../models/Function.hpp"
+#include "FeatureGenerator.hpp"
 
-class GeneratorVisitor {
+class GeneratorVisitor : public FeatureGenerator {
 public:
     GeneratorVisitor();
 
     // Основной метод: model — ваша модель, supportOverride — флаг override-методов
     void generate(Model &model, bool supportOverride);
+
+    // FeatureGenerator interface
+    void generate(Model &model) override
+    {
+        generate(model, true);
+    }
+    void modifySources(Model& model, const std::shared_ptr<Class>& cls, std::string& header, std::string& source) override
+    {
+        (void)model;
+        (void)cls;
+        (void)header;
+        (void)source;
+    }
 
     // Добавить метод accept в класс cls
     static void addAcceptMethod(const std::shared_ptr<Class>& cls,

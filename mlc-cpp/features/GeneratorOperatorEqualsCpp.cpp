@@ -8,10 +8,10 @@
 #include "GeneratorOperatorEqualsCpp.hpp"
 //#include "AccessSpecifier.hpp"
 #include "Error.hpp"
-#include "Class.hpp"
-#include "Object.hpp"
-#include "Function.hpp"
-#include "Model.hpp"
+#include "../models/Class.hpp"
+#include "../models/Object.hpp"
+#include "../models/Function.hpp"
+#include "../models/Model.hpp"
 
 std::string GeneratorOperatorEqualsCpp::getEqualMethodName() const {
     return "operator ==";
@@ -43,7 +43,6 @@ void GeneratorOperatorEqualsCpp::addCopyConstructor(
     Function ctor;
     ctor.name       = cls->name;
     ctor.return_type = Objects::VOID;
-    // const Class& rhs
     ctor.callable_args.push_back(getConstRef(cls, "rhs"));
     ctor.body += "\nthis->operator=(rhs);";
     cls->functions.push_back(std::move(ctor));
@@ -52,7 +51,6 @@ void GeneratorOperatorEqualsCpp::addCopyConstructor(
 void GeneratorOperatorEqualsCpp::addMoveConstructor(
     const std::shared_ptr<Class>& /*cls*/)
 {
-    // no move-constructor by default
 }
 
 void GeneratorOperatorEqualsCpp::addCopyOperator(
@@ -63,24 +61,22 @@ void GeneratorOperatorEqualsCpp::addCopyOperator(
     op.return_type = getConstRef(cls, "");
     op.callable_args.emplace_back(getConstRef(cls, "rhs"));
 
-    // call parent operator= if needed
-    if (!cls->parent_class_name.empty() && cls->parent_class_name != "SerializedObject") {
+    if (!cls->parent_class_name.empty() && cls->parent_class_name != "SerializedObject")
         op.body += "\nthis->" + cls->parent_class_name + "::operator=(rhs);";
-    }
 
-    // assign each member
-    for (auto& m : cls->members) {
+    for (auto& m : cls->members)
+    {
         if (m.is_static)
             continue;
         if(_model->is_skip(m))
             continue;
-        if (_model->config.side == Side::server && m.name == "_reference_counter") {
+        if (_model->config.side == Side::server && m.name == "_reference_counter")
             op.body += "\nthis->" + m.name + ".store(rhs." + m.name + ".load());";
-        } else {
+        else
             op.body += "\nthis->" + m.name + " = rhs." + m.name + ";";
-        }
     }
 
     op.body += "\nreturn *this;";
     cls->functions.push_back(std::move(op));
 }
+

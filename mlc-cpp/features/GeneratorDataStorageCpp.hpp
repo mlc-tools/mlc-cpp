@@ -15,10 +15,15 @@
 #include <memory>
 
 #include "GeneratorDataStorageBase.hpp"
+#include "FeatureGenerator.hpp"
 
-class GeneratorDataStorageCpp : public GeneratorDataStorageBase {
+
+class GeneratorDataStorageCpp : public FeatureGenerator, public GeneratorDataStorageBase {
 public:
     GeneratorDataStorageCpp();
+
+    virtual void generate(Model &model) override;
+    virtual void modifySources(Model& model, const std::shared_ptr<Class>& cls, std::string& header, std::string& source) override{}
 
 protected:
     // Не создаём статический instance в C++

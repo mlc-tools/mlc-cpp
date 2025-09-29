@@ -29,12 +29,6 @@ void GeneratorPredefinedFiles::generate(Model &model) {
     // создаём базовый класс BaseEnum
     generateBaseEnumClass(model);
 
-    // при наличии пользовательского генератора дополняем список файлов
-//    if (model.custom_generator) {
-//        auto extra = model.custom_generator->getPredefinedFiles(model);
-//        FILES_DICT.insert(FILES_DICT.end(), extra.begin(), extra.end());
-//    }
-
     // вставляем файлы из FILES_DICT
     for (auto &p : FILES_DICT) {
         std::string filename = p.first;

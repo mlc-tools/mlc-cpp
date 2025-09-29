@@ -4,17 +4,21 @@
 //
 //  Created by Vladimir Tolmachev on 30.07.2025.
 //
+
 #pragma once
 
 #include <memory>
 #include <string>
 
+#include "FeatureGenerator.hpp"
 #include "../core/GeneratorOperatorEqualsBase.hpp"
 
-
-class GeneratorOperatorEqualsCpp : public GeneratorOperatorEqualsBase {
+class GeneratorOperatorEqualsCpp : public FeatureGenerator, public GeneratorOperatorEqualsBase {
 public:
     GeneratorOperatorEqualsCpp() = default;
+    
+    virtual void generate(Model &model) override { GeneratorOperatorEqualsBase::generate(model); }
+    virtual void modifySources(Model& model, const std::shared_ptr<Class>& cls, std::string& header, std::string& source) override{}
 
 protected:
     std::string getEqualMethodName() const override;

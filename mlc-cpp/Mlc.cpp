@@ -19,7 +19,12 @@
 #include "SavePluginCpp.hpp"
 #include "SerializerCpp.hpp"
 #include "TranslatorCpp.hpp"
-#include "GeneratorEcsCpp.hpp"
+#include "features/GeneratorEcsCpp.hpp"
+#include "features/GeneratorVisitor.hpp"
+#include "features/GeneratorUnitTestsInterface.hpp"
+#include "features/GeneratorDataStorageCpp.hpp"
+#include "features/GeneratorRefCounterCpp.hpp"
+#include "features/GeneratorOperatorEqualsCpp.hpp"
 
 #include <unordered_map>
 #include <unordered_set>
@@ -28,6 +33,7 @@
 #include <csignal>
 #include <functional>
 #include <iostream>
+#include <type_traits>
 
 namespace {
 
@@ -74,6 +80,11 @@ void Mlc::generate() {
             _model.classesDict[cls->name] = cls;
         }
         
+        // 6. Генераторы фич
+        buildFeatureGenerators();
+        for (auto &gen : _model.feature_generators)
+            gen->generate(_model);
+
         // 4. Генерация кода
         GeneratorCpp().generate(_model);
         
@@ -81,10 +92,6 @@ void Mlc::generate() {
         Linker().link(_model);
         //    Validator().validate(_model);
         
-        // 6. Пользовательский генератор
-        //    runUserGeneratorInternal();
-        _model.custom_generator = std::make_shared<GeneratorEcsCpp>();
-        _model.custom_generator->generate(_model);
         
         // 7. Регистрация: создаём Registrar.h/.cpp только когда авто-регистрация выключена
         Registrar().generate(_model);
@@ -140,11 +147,31 @@ void Mlc::runTest() {
 //    }
 }
 
-// --- Внутренний запуск пользовательского генератора ---
-void Mlc::runUserGeneratorInternal() {
-//    if (_custom_generator) {
-//        _custom_generator->execute(_model);
-//    }
+void Mlc::buildFeatureGenerators()
+{
+    _model.feature_generators.clear();
+    for (const auto &feature : _model.configuration.features)
+    {
+        auto gen = std::visit([](auto&& arg) -> std::shared_ptr<FeatureGenerator> {
+            using T = std::decay_t<decltype(arg)>;
+            if constexpr (std::is_same_v<T, FeatureEcs>)
+                return std::make_shared<GeneratorEcsCpp>(arg);
+            else if constexpr (std::is_same_v<T, FeatureVisitor>)
+                return std::make_shared<GeneratorVisitor>();
+            else if constexpr (std::is_same_v<T, FeatureUnitTests>)
+                return std::make_shared<GeneratorUnitTestsInterface>();
+            else if constexpr (std::is_same_v<T, FeatureDataStorage>)
+                return std::make_shared<GeneratorDataStorageCpp>();
+            else if constexpr (std::is_same_v<T, FeatureRefCounter>)
+                return std::make_shared<GeneratorRefCounterCpp>();
+            else if constexpr (std::is_same_v<T, FeatureOperatorEquals>)
+                return std::make_shared<GeneratorOperatorEqualsCpp>();
+            else
+                return nullptr;
+        }, feature);
+        if (gen)
+            _model.feature_generators.push_back(std::move(gen));
+    }
 }
 
 void Mlc::watchAndServe(unsigned poll_ms, unsigned debounce_ms)
@@ -292,10 +319,9 @@ void Mlc::generateIncremental(const std::vector<std::string>& changedFiles,
         _model.created_files.clear();
         GeneratorCpp().generate(_model);
         
+        for (auto &gen : _model.feature_generators)
+            gen->generate(_model);
         Linker().link(_model);
-        
-        if(_model.custom_generator)
-            _model.custom_generator->generate(_model);
         
         Registrar().generate(_model);
         

@@ -7,6 +7,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <unordered_map>
+#include <cassert>
 
 bool Log::use_colors = true;
 bool Log::disable_logs = false;
@@ -72,6 +73,7 @@ void Error::printAndExit(bool fatal, Code code, const std::vector<std::string>& 
     std::string full = prefix + std::to_string(static_cast<int>(code)) + ": " + text;
     if (fatal) {
         Log::error(full);
+        assert(0);
         std::exit(static_cast<int>(code));
     } else {
         Log::warning(full);

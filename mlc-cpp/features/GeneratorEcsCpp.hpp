@@ -10,15 +10,18 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include "Model.hpp"
+#include "../models/Model.hpp"
+#include "FeatureGenerator.hpp"
+#include "../utils/Config.hpp"
 
 class Model;
 struct Class;
 struct Function;
 class Object;
 
-class GeneratorEcsCpp : public custom_generator {
+class GeneratorEcsCpp : public FeatureGenerator {
 public:
+    GeneratorEcsCpp(const FeatureEcs& config);
     virtual void generate(Model &model) override;
     virtual void modifySources(Model& model, const std::shared_ptr<Class>& cls, std::string& header, std::string& source) override;
 

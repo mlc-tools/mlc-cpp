@@ -10,18 +10,19 @@
 #include <vector>
 #include <map>
 #include <memory>
+#include "FeatureGenerator.hpp"
 
 class Model;
 class Class;
 class Function;
 
-class GeneratorUnitTestsInterface {
+class GeneratorUnitTestsInterface : public FeatureGenerator {
 public:
     GeneratorUnitTestsInterface() = default;
 
     // Основная точка входа
-    void generate(Model &model);
-
+    virtual void generate(Model &model) override;
+    virtual void modifySources(Model& model, const std::shared_ptr<Class>& cls, std::string& header, std::string& source) override{};
 private:
     // Генерация «базовых» тестовых классов (TestCase, Logger и т.п.)
     void generateBaseClasses();
@@ -51,3 +52,4 @@ private:
     // Текст базовых классов
     static const std::string BASE_CLASSES;
 };
+

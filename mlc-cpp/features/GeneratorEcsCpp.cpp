@@ -5,7 +5,7 @@
 //  C++ port of plugin/ecs_generate.py logic
 //
 
-#include "GeneratorEcsCpp.hpp"
+#include "../features/GeneratorEcsCpp.hpp"
 
 #include <algorithm>
 #include <cctype>
@@ -251,18 +251,17 @@ Object GeneratorEcsCpp::makeObj(const string &decl, bool withName) {
     return parse_object(decl, withName);
 }
 
+GeneratorEcsCpp::GeneratorEcsCpp(const FeatureEcs& feature)
+{
+    _ecs_model_base_name = feature.model_base;
+    _ecs_component_base_name = feature.component_base;
+    if(_ecs_model_base_name.empty())
+        _ecs_model_base_name = "ModelEcsBase";
+    if(_ecs_component_base_name.empty())
+        _ecs_component_base_name = "ComponentBase";
+}
 // --- main entry ---
 void GeneratorEcsCpp::generate(Model &model) {
-    
-    if(model.configuration.features.count("ecs") > 0){
-        auto& feature = std::get<FeatureEcs>(model.configuration.features["ecs"]);
-        _ecs_model_base_name = feature.model_base;
-        _ecs_component_base_name = feature.component_base;
-    }
-    else {
-        _ecs_model_base_name = "ModelEcsBase";
-        _ecs_component_base_name = "ComponentBase";
-    }
     
     if (!model.hasClass(_ecs_model_base_name))
         return;

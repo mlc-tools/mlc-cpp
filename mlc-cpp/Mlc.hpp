@@ -18,8 +18,6 @@
 #include "Parser.hpp"
 #include "Linker.hpp"
 
-class custom_generator;  // вперед объявление, если есть
-
 class Mlc {
 public:
     explicit Mlc(bool use_colors = false, bool disable_logs = false);
@@ -45,7 +43,5 @@ public:
 
 private:
     Model _model;
-    std::shared_ptr<custom_generator> _custom_generator;
-
-    void runUserGeneratorInternal();
+    void buildFeatureGenerators();
 };

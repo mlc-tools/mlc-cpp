@@ -126,7 +126,6 @@ void GeneratorUnitTestsInterface::generate(Model &model) {
         return;
     _model = &model;
 
-    // 1) Тестовые интерфейсы ITest<Class>
     vector<shared_ptr<Class>> test_classes;
     for (auto &cls : model.classes) {
         if (auto t = generateTestInterface(cls)) {
@@ -345,3 +344,4 @@ string GeneratorUnitTestsInterface::getMemberName(
     }
     return out;
 }
+

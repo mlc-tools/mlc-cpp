@@ -7,15 +7,17 @@
 
 #include "GeneratorDataStorageCpp.hpp"
 #include "Error.hpp"
-//#include "SerializeFormat.hpp"
-#include "Parser.hpp"
-#include "Object.hpp"
-#include "Function.hpp"
-
+#include "../core/Parser.hpp"
+#include "../models/Object.hpp"
+#include "../models/Function.hpp"
 
 GeneratorDataStorageCpp::GeneratorDataStorageCpp()
   : GeneratorDataStorageBase()
 {}
+
+void GeneratorDataStorageCpp::generate(Model &model){
+    GeneratorDataStorageBase::generate(model);
+}
 
 bool GeneratorDataStorageCpp::isNeedCreateStaticInstance() const {
     return false;
@@ -44,7 +46,7 @@ void GeneratorDataStorageCpp::createGetters(const std::vector<std::shared_ptr<Cl
 }
 
 void GeneratorDataStorageCpp::generateImplementations(
-    const std::vector<std::shared_ptr<Class>>& classes,
+    const std::vector<std::shared_ptr<Class>>& /*classes*/,
     Function &getter)
 {
     std::ostringstream impl;
@@ -143,3 +145,4 @@ if(doc.root() != nullptr)
 )";
     return body.str();
 }
+

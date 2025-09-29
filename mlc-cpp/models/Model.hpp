@@ -18,16 +18,13 @@
 #include "Object.hpp"
 #include "Function.hpp"
 #include "Serialize.hpp"
+#include "../features/FeatureGenerator.hpp"
 #include "../utils/Config.hpp"
 
 class Parser;
 class Model;
 
-class custom_generator{
-public:
-    virtual void generate(Model& model) = 0;
-    virtual void modifySources(Model& model, const std::shared_ptr<Class>& cls, std::string& header, std::string& source) = 0;
-};
+// FeatureGenerator is declared in features/FeatureGenerator.hpp
 
 class Model {
 public:
@@ -79,7 +76,7 @@ public:
     // Конфигурация запуска (вместо отдельных флагов)
     Config configuration;
     Job config;
-    std::shared_ptr<custom_generator> custom_generator = nullptr;
+    std::vector<std::shared_ptr<FeatureGenerator>> feature_generators;
 
     // Простые типы
     static const std::unordered_set<std::string> simpleTypes;

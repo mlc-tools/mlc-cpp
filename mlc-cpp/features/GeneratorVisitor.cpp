@@ -5,7 +5,7 @@
 //  Created by Vladimir Tolmachev on 28.07.2025.
 //
 #include "GeneratorVisitor.hpp"
-#include "Parser.hpp"
+#include "../core/Parser.hpp"
 #include "../models/Object.hpp"
 #include "Error.hpp"
 #include <cassert>

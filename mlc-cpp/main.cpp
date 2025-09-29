@@ -39,7 +39,6 @@ void confugure_args(Cli::ArgParser& args, int argc, char** argv)
     args.addOption("empty_methods", 0, "Генерировать пустые методы (true/false)");
     args.addOption("filter_code", 0, "RE2-паттерн(ы) включения; поддерживается префикс '!' для исключения (--filter_code='!unit_tests/')", true);
     args.addOption("filter_data", 0, "RE2-паттерн(ы) включения; поддерживается префикс '!' для исключения", true);
-    args.addOption("custom_generator", 0, "Кастомный генератор (например, none)");
     args.addOption("config", 'j', "Путь к JSON-конфигу (например, mlc.json)");
     args.addFlag("watch", 'w', "Включить режим наблюдения за изменениями");
     args.addFlag("help", 'h', "Вывод справки");
@@ -219,15 +218,6 @@ bool try_load_argc(Mlc& app, Cli::ArgParser& args){
         job.filter_code = std::move(f);
     if (auto f = make_re2_filter_from_patterns(split_comma_allow_lists(args.getAll("filter_data"))); f)
         job.filter_data = std::move(f);
-
-    // Кастомный генератор
-    if (args.has("custom_generator")) {
-        std::string v = args.get("custom_generator");
-        for(char& ch : v)
-            ch = static_cast<char>(::tolower(static_cast<unsigned char>(ch)));
-        if (v == "none")
-            app.get_model().custom_generator = nullptr;
-    }
 
     // Заполняем модель
     configuration.jobs.push_back(job);

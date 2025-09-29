@@ -20,6 +20,7 @@
 #include "Model.hpp"
 #include "Common.hpp"
 #include <iostream>
+#include "../features/FeatureGenerator.hpp"
 
 WriterCpp::WriterCpp()
 {}
@@ -56,11 +57,9 @@ WriterCpp::writeClass(const std::shared_ptr<Class> &cls) {
     auto [header, incs, fwd, fwdOut] = writeHpp(cls);
     auto source = writeCpp(cls, incs, fwd, fwdOut);
 
-    // Custom generator hook
-    //TODO: custom_generator
-    if (_model->custom_generator) {
-        _model->custom_generator->modifySources(*_model, cls, header, source);
-    }
+    // Feature generators hook
+    for (auto &gen : _model->feature_generators)
+        gen->modifySources(*_model, cls, header, source);
 
     // Return files
     return {

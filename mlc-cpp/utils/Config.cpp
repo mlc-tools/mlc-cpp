@@ -203,15 +203,48 @@ Config Config::loadString(const std::string& content, std::string& err) {
     }
 
     const auto &features = root["features"];
+    const auto &feature_unit_tests = features["unit_tests"];
+    if(feature_unit_tests.isObject())
+    {
+        FeatureUnitTests feature;
+        config.features.push_back(std::move(feature));
+    }
+    const auto &feature_visitor = features["visitor"];
+    if(feature_visitor.isObject())
+    {
+        FeatureVisitor vis;
+        config.features.push_back(std::move(vis));
+    }
     const auto &feature_ecs = features["ecs"];
-    if(feature_ecs.isObject()) {
+    if(feature_ecs.isObject())
+    {
         FeatureEcs ecs;
         ecs.model_base = feature_ecs["model_base"].asString();
         ecs.component_base = feature_ecs["component_base"].asString();
-        config.features["ecs"] = std::move(ecs);
+        config.features.push_back(std::move(ecs));
+    }
+
+    const auto &feature_data_storage = features["data_storage"];
+    if(feature_data_storage.isObject())
+    {
+        FeatureDataStorage f;
+        config.features.push_back(std::move(f));
+    }
+
+    const auto &feature_ref_counter = features["ref_counter"];
+    if(feature_ref_counter.isObject())
+    {
+        FeatureRefCounter f;
+        config.features.push_back(std::move(f));
+    }
+
+    const auto &feature_operator_equals = features["operator_equals"];
+    if(feature_operator_equals.isObject())
+    {
+        FeatureOperatorEquals f;
+        config.features.push_back(std::move(f));
     }
 
     config.initialize();
     return config;
 }
-
