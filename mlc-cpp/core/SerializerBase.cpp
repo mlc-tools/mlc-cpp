@@ -42,9 +42,9 @@ void SerializerBase::generateMethods(Model &m) {
                 std::cout << "";
             currentClass = clsPtr.get();
             createSerializationFunction(*currentClass,
-                                        SERIALIZATION, name);
+                                        SerializationType::SERIALIZATION, name);
             createSerializationFunction(*currentClass,
-                                        DESERIALIZATION, name);
+                                        SerializationType::DESERIALIZATION, name);
         }
     }
 }
@@ -54,7 +54,7 @@ void SerializerBase::createSerializationFunction(Class &cls,
                                                 const std::string &format)
 {
     // Build method name
-    std::string methodName = (t==SERIALIZATION ? "serialize_" : "deserialize_") + format;
+    std::string methodName = (t==SerializationType::SERIALIZATION ? "serialize_" : "deserialize_") + format;
 
     // Check for existing
     if(cls.has_method(methodName))
@@ -68,7 +68,7 @@ void SerializerBase::createSerializationFunction(Class &cls,
     fn.name        = methodName;
     fn.return_type  = Objects::VOID;
     fn.is_virtual   = !cls.parent_class_name.empty() || !cls.subclasses.empty();
-    fn.is_const     = (t==SERIALIZATION);
+    fn.is_const     = (t==SerializationType::SERIALIZATION);
     fn.translated  = true;
 
     // Arg: e.g. (SerializerXml& s) or similar
@@ -177,7 +177,7 @@ std::string SerializerBase::dispatchSerializeOp(
     std::string defv = convertInitializeValue(fieldValue);
 
     // Lookup in protocol
-    auto &vec = serialize_protocol[t].at(keyType);
+    auto &vec = serialize_protocol[static_cast<int>(t)].at(keyType);
     std::string pattern = vec.at(idx);
 
     replace_all(pattern, "{field}",         fieldName);

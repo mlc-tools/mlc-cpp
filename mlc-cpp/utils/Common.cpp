@@ -16,6 +16,31 @@ template <> std::string to_string(const std::string& value) { return value; }
 template <> std::string to_string(const bool& value) { return value ? "yes" : "no"; }
 std::string to_string(std::string_view value) { return std::string(value); }
 
+std::vector<std::string> split(const std::string& values, char delimiter)
+{
+    std::vector<std::string> out;
+    if( !values.empty() )
+    {
+        std::string string = values;
+        do
+        {
+            size_t k = string.find_first_of( delimiter );
+            if( k == -1 )
+            {
+                out.push_back(string);
+                break;
+            }
+            
+            out.push_back(string.substr(0, k));
+            string = string.substr(k + 1);
+            if( string.empty() )
+                break;
+        }
+        while( true );
+    }
+    return out;
+}
+
 bool to_bool(const std::string& v, bool* ok){
     std::string s; s.reserve(v.size());
     for(char ch : v) s.push_back(static_cast<char>(::tolower(static_cast<unsigned char>(ch))));

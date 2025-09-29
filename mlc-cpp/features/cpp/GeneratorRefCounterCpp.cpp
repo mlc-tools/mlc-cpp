@@ -42,6 +42,8 @@ GeneratorRefCounterCpp::GeneratorRefCounterCpp()
 }
 
 void GeneratorRefCounterCpp::generate(Model &model) {
+    if (model.config.language != "cpp")
+        return;
     if (!model.config.generate_ref_counter)
         return;
 

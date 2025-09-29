@@ -25,6 +25,8 @@ WriterBase::WriterBase()
 void WriterBase::save(Model &model) {
     _model = &model;
     for (auto &cls : model.classes) {
+        if(cls->name == "DataListListBool")
+            std::cout << "";
         if (!cls->auto_generated)
             continue;
         if(_model->is_skip(*cls))
@@ -56,14 +58,12 @@ void WriterBase::setInitialValues(const std::shared_ptr<Class> &cls) {
 
 std::pair<std::string,std::string>
 WriterBase::getConstructorData(const std::shared_ptr<Class> &cls) {
-//    auto ctor = cls->constructor;
-//    std::string args, body;
-//    if (ctor) {
-//        args = createFunctionArgsString(*ctor);
-//        body = ctor->bodyText();  // предполагаем метод bodyText()
-//    }
-//    return { args, body };
-    return {"", ""};
+    std::string args, body;
+    if (!cls->constructors.empty()) {
+        args = createFunctionArgsString(cls->constructors.at(0));
+        body = cls->constructors.at(0).body;
+    }
+    return { args, body };
 }
 
 std::pair<std::string,std::string> WriterBase::writeFunction(const Function &method) {
@@ -89,13 +89,11 @@ std::string WriterBase::createFunctionArgsString(const Function &method) {
     for (auto &arg : method.callable_args) {
         auto pat = getMethodArgPattern(arg);
         auto type = getArgumentTypeName(arg);
-        assert(0);
-//        auto init = serializer_->convertInitialValue(arg.value);
-//        auto s = pat
-//          .replace("{name}", arg.first)
-//          .replace("{type}", type)
-//          .replace("{value}", init);
-//        parts.push_back(s);
+        auto init = convertInitializeValue(arg.value);
+        replace_all(pat, "{name}", arg.name);
+        replace_all(pat, "{type}", type);
+        replace_all(pat, "{value}", init);
+        parts.push_back(pat);
     }
     for (auto &tpl : method.template_args) {
         Object obj;

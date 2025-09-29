@@ -34,15 +34,7 @@ std::string TranslatorCpp::translateFunctionBody(Class &cls,
                                               Model &model,
                                               const std::vector<Object> &args)
 {
-    auto result = replaceByRegex(body, cls, method, model, args);
-    for(auto& inner : cls.inner_classes){
-        auto original_name = inner->name.substr(cls.name.size());
-        if(body.find(original_name) != std::string::npos){
-            RE2 regex("\\b" + original_name + "\\b");
-            RE2::GlobalReplace(&result, regex, inner->name);
-        }
-    }
-    return result;
+    return TranslatorBase::translateFunctionBody(cls, method, body, model, args);
 }
 
 std::string TranslatorCpp::replaceByRegex(const std::string &body,

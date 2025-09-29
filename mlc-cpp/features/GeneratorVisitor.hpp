@@ -21,13 +21,7 @@ public:
     GeneratorVisitor();
 
     // Основной метод: model — ваша модель, supportOverride — флаг override-методов
-    void generate(Model &model, bool supportOverride);
-
-    // FeatureGenerator interface
-    void generate(Model &model) override
-    {
-        generate(model, true);
-    }
+    void generate(Model &model) override;
     void modifySources(Model& model, const std::shared_ptr<Class>& cls, std::string& header, std::string& source) override
     {
         (void)model;

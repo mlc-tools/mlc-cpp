@@ -15,10 +15,6 @@ GeneratorDataStorageCpp::GeneratorDataStorageCpp()
   : GeneratorDataStorageBase()
 {}
 
-void GeneratorDataStorageCpp::generate(Model &model){
-    GeneratorDataStorageBase::generate(model);
-}
-
 bool GeneratorDataStorageCpp::isNeedCreateStaticInstance() const {
     return false;
 }

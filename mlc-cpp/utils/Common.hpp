@@ -47,32 +47,7 @@ inline std::vector<std::string> smartSplit(
     return parts;
 }
 
-
-template <typename T>
-std::vector<T> split(const std::string& values, char delimiter = ',')
-{
-    std::vector<T> out;
-    if( !values.empty() )
-    {
-        std::string string = values;
-        do
-        {
-            size_t k = string.find_first_of( delimiter );
-            if( k == -1 )
-            {
-                out.push_back( strTo<T>(string) );
-                break;
-            }
-            
-            out.push_back(strTo<T>(string.substr(0, k)));
-            string = string.substr(k + 1);
-            if( string.empty() )
-                break;
-        }
-        while( true );
-    }
-    return out;
-}
+std::vector<std::string> split(const std::string& values, char delimiter = ',');
 
 inline void replace_all(std::string &s, const std::string &what, const std::string &with) {
     size_t pos = 0;

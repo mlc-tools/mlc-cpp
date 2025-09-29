@@ -1,0 +1,41 @@
+{
+  "source": {
+    "configs": ["config", "config_additional"],
+    "data": ["data_xml", "data_json", "data_additional"]
+  },
+  "generation": [
+    {
+      "out": "generated_py/xml",
+      "data_out": "assets",
+      "auto_registration": false,
+      "generate_intrusive": true,
+      "generate_tests": true,
+      "language": "py",
+      "side": "server",
+      "serialize_protocol": "xml",
+      "filter_code": []
+    },
+    {
+      "out": "generated_py/json",
+      "data_out": "assets",
+      "auto_registration": false,
+      "generate_intrusive": true,
+      "generate_tests": true,
+      "language": "py",
+      "side": "client",
+      "serialize_protocol": "json",
+      "filter_code": []
+    }
+  ],
+  "features": {
+    "ecs": {
+      "model_base": "EcsModel",
+      "component_base": "EcsComponent"
+    },
+    "unit_tests": {},
+    "data_storage": {},
+    "visitor": {},
+    "ref_counter": {},
+    "operator_equals": {}
+  }
+}

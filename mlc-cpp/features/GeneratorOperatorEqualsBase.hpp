@@ -10,18 +10,20 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include "features/FeatureGenerator.hpp"
 
 class Model;
 class Class;
 class Object;
 
-class GeneratorOperatorEqualsBase {
+class GeneratorOperatorEqualsBase : public FeatureGenerator{
 public:
     GeneratorOperatorEqualsBase() = default;
     virtual ~GeneratorOperatorEqualsBase() = default;
 
     // Основной метод: генерирует операторы и конструкторы для всех классов модели
-    void generate(Model &model);
+    virtual void generate(Model &model) override;
+    virtual void modifySources(Model& model, const std::shared_ptr<Class>& cls, std::string& header, std::string& source) override{}
 
 protected:
     Model *_model{nullptr};

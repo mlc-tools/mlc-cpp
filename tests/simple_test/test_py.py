@@ -2,10 +2,10 @@ import os.path as fs
 import sys
 
 try:
-    from generated_py.AllTests import AllTests
-    from generated_py.DataStorage import DataStorage
-    from generated_py.RunAllTests import RunAllTests
-    from generated_py.Logger import Logger
+    from generated_py.xml.AllTests import AllTests
+    from generated_py.xml.DataStorage import DataStorage
+    from generated_py.xml.RunAllTests import RunAllTests
+    from generated_py.xml.Logger import Logger
 except ImportError:
     from generated_py.mg import *
 
@@ -35,6 +35,7 @@ def main(argv):
     tests = RunAllTests()
     tests.initialize(logger)
     result = result and tests.execute()
+    print('Nice' if result else 'Failed')
 
     sys.exit(0 if result else -1)
 

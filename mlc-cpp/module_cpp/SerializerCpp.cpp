@@ -46,12 +46,12 @@ Object SerializerCpp::getSerializationFunctionArg(SerializationType t, const std
         return obj;
     };
     if (format=="json") {
-        if (t==SERIALIZATION)
+        if (t==SerializationType::SERIALIZATION)
             return makeObj("SerializerJson", "serializer");
         else
             return makeObj("DeserializerJson", "deserializer");
     } else {
-        if (t==SERIALIZATION)
+        if (t==SerializationType::SERIALIZATION)
             return makeObj("SerializerXml", "serializer");
         else
             return makeObj("DeserializerXml", "deserializer");
@@ -69,7 +69,7 @@ std::string SerializerCpp::buildSerializeOperation(
     const std::string &format)
 {
     // Quick-path for primitives with default
-    if (t==SERIALIZATION
+    if (t==SerializationType::SERIALIZATION
         && model->is_simple_type(fieldType)
         && (!fieldValue.empty() || fieldType == Objects::STRING.type))
     {
@@ -77,10 +77,10 @@ std::string SerializerCpp::buildSerializeOperation(
             "serializer.serialize({0}, \"{0}\", {3}{1}({2}));\n",
             fieldName, fieldType, fieldValue, std::string(fieldType == Objects::STRING.type ? "std::" : ""));
     }
-    if (t==SERIALIZATION) {
+    if (t==SerializationType::SERIALIZATION) {
         return format_indexes("serializer.serialize({0}, \"{0}\");\n", fieldName);
     }
-    if (t==DESERIALIZATION
+    if (t==SerializationType::DESERIALIZATION
         && model->is_simple_type(fieldType)
         && (!fieldValue.empty() || fieldType == Objects::STRING.type))
     {
@@ -88,7 +88,7 @@ std::string SerializerCpp::buildSerializeOperation(
             "deserializer.deserialize({0}, \"{0}\", {3}{1}({2}));\n",
             fieldName, fieldType, fieldValue, std::string(fieldType == Objects::STRING.type ? "std::" : ""));
     }
-    if (t==DESERIALIZATION) {
+    if (t==SerializationType::DESERIALIZATION) {
         return format_indexes("deserializer.deserialize({0}, \"{0}\");\n", fieldName);
     }
     // Fallback to full protocol dispatch:
@@ -113,10 +113,10 @@ std::string SerializerCpp::buildMapSerialization(
     auto &key   = tplArgs[0];
     auto &value = tplArgs[1];
     // use protocol["map"][0]
-    const auto& pat = protocol[t]["map"][0];
+    const auto& pat = protocol[static_cast<int>(t)]["map"][0];
     // recursively serialize key/value
-    auto ks = buildSerializeOperation("key",   key.type,   "", SERIALIZATION, {}, key.is_pointer, key.is_link, format);
-    auto vs = buildSerializeOperation("value", value.type, "", SERIALIZATION, value.template_args, value.is_pointer, value.is_link, format);
+    auto ks = buildSerializeOperation("key",   key.type,   "", SerializationType::SERIALIZATION, {}, key.is_pointer, key.is_link, format);
+    auto vs = buildSerializeOperation("value", value.type, "", SerializationType::SERIALIZATION, value.template_args, value.is_pointer, value.is_link, format);
     return ::format(pat, {
         {"field",          fieldName},
         {"key_serialize",  ks},
@@ -132,13 +132,13 @@ std::string SerializerCpp::buildMapDeserialization(
     assert(tplArgs.size()==2);
     auto &key   = *tplArgs[0];
     auto &value = *tplArgs[1];
-    const auto& pat = protocol[DESERIALIZATION].at("map")[0];
+    const auto& pat = protocol[(int)SerializationType::DESERIALIZATION].at("map")[0];
     // declare key
     std::string keyDecl = key.is_pointer
         ? format_indexes("auto key = make_intrusive<{0}>();", key.type)
         : format_indexes("{0} key;", convertInitializeValue(key.type));
-    auto ks = buildSerializeOperation("key",   key.type,   "", DESERIALIZATION, {}, key.is_pointer, key.is_link, format);
-    auto vs = buildSerializeOperation("value", value.type, "", DESERIALIZATION, value.template_args, value.is_pointer, value.is_link, format);
+    auto ks = buildSerializeOperation("key",   key.type,   "", SerializationType::DESERIALIZATION, {}, key.is_pointer, key.is_link, format);
+    auto vs = buildSerializeOperation("value", value.type, "", SerializationType::DESERIALIZATION, value.template_args, value.is_pointer, value.is_link, format);
     std::string valInit = value.is_pointer
         ? format_indexes("intrusive_ptr<{0}>", value.type)
         : convert_type(value.type);

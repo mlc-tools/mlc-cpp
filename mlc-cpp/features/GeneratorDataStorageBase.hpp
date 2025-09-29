@@ -18,14 +18,16 @@
 #include <cctype>
 #include <sstream>
 #include "../models/Class.hpp"
+#include "features/FeatureGenerator.hpp"
 
 class Model;
 
-class GeneratorDataStorageBase
+class GeneratorDataStorageBase : public FeatureGenerator
 {
 public:
     GeneratorDataStorageBase();
-    void generate(Model &model);
+    virtual void generate(Model &model) override;
+    virtual void modifySources(Model& model, const std::shared_ptr<Class>& cls, std::string& header, std::string& source) override{}
 
 protected:
     // должны перегружаться в наследниках

@@ -541,6 +541,15 @@ class TestTranslates<ITestTranslates>
         int c = (a > b) ? a : b;
         this->assertEqual(c, 2);
     }
+
+    fn void test_while_simple()
+    {
+        int a = 0;
+        while(False)
+        {
+            a = 1;
+        }
+    }
 }
 
 class NullishOperator

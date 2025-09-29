@@ -62,11 +62,11 @@ void GeneratorOperatorEqualsBase::addEqualMethod(
 
     // Вызов суперкласса или инициализация результата
     if (cls->parent_class_name.empty()) {
-        op.body += ("bool result = true;");
+        op.body += ("bool result = true;\n");
     } else {
         auto sup = _model->get_class(cls->parent_class_name);
         if (!sup || sup->is_inline) {
-            op.body += ("\nbool result = true;");
+            op.body += ("\nbool result = true;\n");
         } else {
             std::string pattern = getCallSuperclassEqual();
             std::string line = formatPattern(

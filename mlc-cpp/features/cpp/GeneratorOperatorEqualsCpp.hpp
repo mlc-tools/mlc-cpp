@@ -10,16 +10,12 @@
 #include <memory>
 #include <string>
 
-#include "features/FeatureGenerator.hpp"
+
 #include "features/GeneratorOperatorEqualsBase.hpp"
 
-class GeneratorOperatorEqualsCpp : public FeatureGenerator, public GeneratorOperatorEqualsBase {
+class GeneratorOperatorEqualsCpp : public GeneratorOperatorEqualsBase {
 public:
     GeneratorOperatorEqualsCpp() = default;
-    
-    virtual void generate(Model &model) override { GeneratorOperatorEqualsBase::generate(model); }
-    virtual void modifySources(Model& model, const std::shared_ptr<Class>& cls, std::string& header, std::string& source) override{}
-
 protected:
     std::string getEqualMethodName() const override;
     std::string getNotEqualMethodName() const override;

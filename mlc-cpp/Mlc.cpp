@@ -19,12 +19,19 @@
 #include "SavePluginCpp.hpp"
 #include "SerializerCpp.hpp"
 #include "TranslatorCpp.hpp"
+#include "module_python/GeneratorPython.hpp"
+#include "module_python/WriterPython.hpp"
+#include "module_python/SavePluginPython.hpp"
+#include "module_python/SerializerPython.hpp"
+#include "module_python/TranslatorPython.hpp"
 #include "features/GeneratorEcsCpp.hpp"
 #include "features/GeneratorVisitor.hpp"
 #include "features/GeneratorUnitTestsInterface.hpp"
 #include "features/cpp/GeneratorDataStorageCpp.hpp"
 #include "features/cpp/GeneratorRefCounterCpp.hpp"
 #include "features/cpp/GeneratorOperatorEqualsCpp.hpp"
+#include "module_python/GeneratorOperatorEqualsPython.hpp"
+#include "module_python/GeneratorDataStoragePython.hpp"
 
 #include <unordered_map>
 #include <unordered_set>
@@ -86,7 +93,14 @@ void Mlc::generate() {
             gen->generate(_model);
 
         // 4. Генерация кода
-        GeneratorCpp().generate(_model);
+        if (_model.config.language == "py")
+        {
+            GeneratorPython().generate(_model);
+        }
+        else
+        {
+            GeneratorCpp().generate(_model);
+        }
         
         // 5. Линковка и валидация
         Linker().link(_model);
@@ -100,14 +114,24 @@ void Mlc::generate() {
         CircularReference(_model).find();
         
         // 9. Трансляция, сериализация и запись
-        TranslatorCpp().translate(_model);
-        
-        SerializerCpp().generateMethods(_model);
-        
-        WriterCpp().save(_model);
-        SavePluginCpp save(_model);
-        save.save_files(_model.config.join_to_one_file);
-        save.removeOldFiles();
+        if (_model.config.language == "py")
+        {
+            TranslatorPython().translate(_model);
+            SerializerPython().generateMethods(_model);
+            WriterPython().save(_model);
+            SavePluginPython save(_model);
+            save.save_files(false);
+            save.removeOldFiles();
+        }
+        else
+        {
+            TranslatorCpp().translate(_model);
+            SerializerCpp().generateMethods(_model);
+            WriterCpp().save(_model);
+            SavePluginCpp save(_model);
+            save.save_files(_model.config.join_to_one_file);
+            save.removeOldFiles();
+        }
     }
 }
 
@@ -138,7 +162,7 @@ void Mlc::runTest() {
 //        std::exit(1);
 //    }
 //    std::string cmd = std::string(
-//        (PY_VERSION_MAJOR >= 3 ? "python3" : "python")) +
+//        (PY_VERSION_MAJOR >= 3 ? "python3" : "py")) +
 //        " " + script + " " + _model.test_script_args;
 //    Log::message("Run test (" + cmd + "):");
 //    int rc = std::system(cmd.c_str());
@@ -152,7 +176,7 @@ void Mlc::buildFeatureGenerators()
     _model.feature_generators.clear();
     for (const auto &feature : _model.configuration.features)
     {
-        auto gen = std::visit([](auto&& arg) -> std::shared_ptr<FeatureGenerator> {
+        auto gen = std::visit([&](auto&& arg) -> std::shared_ptr<FeatureGenerator> {
             using T = std::decay_t<decltype(arg)>;
             if constexpr (std::is_same_v<T, FeatureEcs>)
                 return std::make_shared<GeneratorEcsCpp>(arg);
@@ -160,12 +184,18 @@ void Mlc::buildFeatureGenerators()
                 return std::make_shared<GeneratorVisitor>();
             else if constexpr (std::is_same_v<T, FeatureUnitTests>)
                 return std::make_shared<GeneratorUnitTestsInterface>();
-            else if constexpr (std::is_same_v<T, FeatureDataStorage>)
-                return std::make_shared<GeneratorDataStorageCpp>();
+            else if constexpr (std::is_same_v<T, FeatureDataStorage>){
+                if(_model.config.language == "cpp") return std::make_shared<GeneratorDataStorageCpp>();
+                if(_model.config.language == "py") std::make_shared<GeneratorDataStoragePython>();
+                return nullptr;
+            }
             else if constexpr (std::is_same_v<T, FeatureRefCounter>)
                 return std::make_shared<GeneratorRefCounterCpp>();
-            else if constexpr (std::is_same_v<T, FeatureOperatorEquals>)
-                return std::make_shared<GeneratorOperatorEqualsCpp>();
+            else if constexpr (std::is_same_v<T, FeatureOperatorEquals>){
+                if(_model.config.language == "cpp") return std::make_shared<GeneratorOperatorEqualsCpp>();
+                if(_model.config.language == "py") std::make_shared<GeneratorOperatorEqualsPython>();
+                return nullptr;
+            }
             else
                 return nullptr;
         }, feature);
@@ -317,7 +347,14 @@ void Mlc::generateIncremental(const std::vector<std::string>& changedFiles,
         
         _model.files.clear();
         _model.created_files.clear();
-        GeneratorCpp().generate(_model);
+        if (_model.config.language == "py")
+        {
+            GeneratorPython().generate(_model);
+        }
+        else
+        {
+            GeneratorCpp().generate(_model);
+        }
         
         for (auto &gen : _model.feature_generators)
             gen->generate(_model);
@@ -327,12 +364,28 @@ void Mlc::generateIncremental(const std::vector<std::string>& changedFiles,
         
         if(!_model.dirty_classes.empty())
         {
-            TranslatorCpp().translate(_model);
-            SerializerCpp().generateMethods(_model);
-            WriterCpp().save(_model);
+            if (_model.config.language == "py")
+            {
+                TranslatorPython().translate(_model);
+                SerializerPython().generateMethods(_model);
+                WriterPython().save(_model);
+            }
+            else
+            {
+                TranslatorCpp().translate(_model);
+                SerializerCpp().generateMethods(_model);
+                WriterCpp().save(_model);
+            }
         }
         
-        SavePluginCpp(_model).save_files(_model.config.join_to_one_file);
+        if (_model.config.language == "py")
+        {
+            SavePluginPython(_model).save_files(false);
+        }
+        else
+        {
+            SavePluginCpp(_model).save_files(_model.config.join_to_one_file);
+        }
         
         _model.dirty_classes.clear();
     }

@@ -167,26 +167,26 @@ class TestRequestAcceptor<ITestRequestAcceptor>
 
         this->request = new RequestFoo();
         this->request->accept(&acceptor);
-        this->assertTrue(acceptor.foo == 1);
-        this->assertTrue(acceptor.bar == 0);
-        this->assertTrue(acceptor.bar2 == 0);
-        this->assertTrue(acceptor.base == 0);
+        this->assertTrue(acceptor.foo == 1, "1");
+        this->assertTrue(acceptor.bar == 0, "2");
+        this->assertTrue(acceptor.bar2 == 0, "3");
+        this->assertTrue(acceptor.base == 0, "4");
         acceptor.foo = 0;
 
         this->request = new RequestBar();
         this->request->accept(&acceptor);
-        this->assertTrue(acceptor.foo == 0);
-        this->assertTrue(acceptor.bar == 1);
-        this->assertTrue(acceptor.bar2 == 0);
-        this->assertTrue(acceptor.base == 0);
+        this->assertTrue(acceptor.foo == 0, "5");
+        this->assertTrue(acceptor.bar == 1, "6");
+        this->assertTrue(acceptor.bar2 == 0, "7");
+        this->assertTrue(acceptor.base == 0, "8");
         acceptor.bar = 0;
 
         this->request = new RequestBar2();
         this->request->accept(&acceptor);
-        this->assertTrue(acceptor.foo == 0);
-        this->assertTrue(acceptor.bar == 0);
-        this->assertTrue(acceptor.bar2 == 1);
-        this->assertTrue(acceptor.base == 0);
+        this->assertTrue(acceptor.foo == 0, "9");
+        this->assertTrue(acceptor.bar == 0, "10");
+        this->assertTrue(acceptor.bar2 == 1, "11");
+        this->assertTrue(acceptor.base == 0, "12");
         acceptor.bar2 = 0;
     }
 }

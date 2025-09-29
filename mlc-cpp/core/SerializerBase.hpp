@@ -16,7 +16,7 @@ class Class;
 class Function;
 class Object;
 
-enum SerializationType {
+enum class SerializationType {
     SERIALIZATION   = 0,
     DESERIALIZATION = 1
 };
@@ -32,7 +32,7 @@ protected:
     Class* currentClass;
     using ProtocolMap = std::vector<std::unordered_map<std::string, std::vector<std::string>>>;
     ProtocolMap serialize_protocol;
-    void createSerializationFunction(Class &cls,
+    virtual void createSerializationFunction(Class &cls,
                                      SerializationType t,
                                      const std::string &format);
     virtual std::string getProtocolText(const std::string &format) = 0;

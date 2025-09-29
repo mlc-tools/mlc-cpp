@@ -41,6 +41,9 @@ void TranslatorBase::translate(Model &model) {
         for (auto &method : cls.functions) {
             translateFunction(cls, method, model);
         }
+        for (auto &method : cls.constructors) {
+            translateFunction(cls, method, model);
+        }
     }
 }
 
@@ -53,7 +56,27 @@ void TranslatorBase::translateFunction(Class &cls,
     }
 }
 
+std::string TranslatorBase::translateFunctionBody(Class &cls,
+                                          Function &method,
+                                          const std::string &body,
+                                          Model &model,
+                                          const std::vector<Object> &args)
+{
+    auto result = replaceByRegex(body, cls, method, model, args);
+    for(auto& inner : cls.inner_classes){
+        auto original_name = inner->name.substr(cls.name.size());
+        if(body.find(original_name) != std::string::npos){
+            RE2 regex("\\b" + original_name + "\\b");
+            RE2::GlobalReplace(&result, regex, inner->name);
+        }
+    }
+    return result;
+}
+
 std::vector<int> TranslatorBase::convertToEnum(Class &cls) {
+    cls.parent_class_name = "BaseEnum";
+    cls.parent = _model->get_class(cls.parent_class_name);
+
     int shift = 0;
     std::string castType = "string";
     std::vector<int> values;

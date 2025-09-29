@@ -59,6 +59,8 @@ protected:
     // Объекты
     virtual std::tuple<std::string,std::string,std::string>
     writeObject(const Object &obj);
+    
+    virtual std::string convertInitializeValue(const std::string& value) { return value; }
 
     // Подготовка текста файла: убираем блоки форматов xml/json
 public:

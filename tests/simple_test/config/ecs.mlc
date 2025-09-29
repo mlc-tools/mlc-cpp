@@ -27,7 +27,7 @@ class ecs/Movement2<Movement>
 {
 }
 
-class ecs/SystemMovement
+class ecs/SystemMovement:cpp
 {
 	fn void update(EcsModel* model)
 	{
@@ -39,7 +39,7 @@ class ecs/SystemMovement
 			});
 	}
 }
-class ecs/SystemMovement2
+class ecs/SystemMovement2:cpp
 {
 	fn void update(EcsModel* model, float dt)
 	{
@@ -51,7 +51,7 @@ class ecs/SystemMovement2
 			});
 	}
 }
-class ecs/SystemMovementIf
+class ecs/SystemMovementIf:cpp
 {
 	fn void update(EcsModel* model)
 	{
@@ -76,7 +76,7 @@ class ecs/TestEcsModel<ITestEcsModel>
 		return model;
 	}
 
-	fn void test_update_systems()
+	fn void test_update_systems():cpp
 	{
 		auto model = this->get_model();
 		model->add(new Transform(), 1);
@@ -88,7 +88,7 @@ class ecs/TestEcsModel<ITestEcsModel>
 		this->assertEqual(model->get<Transform>(1)->y, 2);
 	}
 
-	fn void test_each()
+	fn void test_each():cpp
 	{
 		auto model = this->get_model();
 		model->add(new Transform(), 1);

@@ -17,11 +17,12 @@
 
 GeneratorVisitor::GeneratorVisitor()
   : _model(nullptr), supportOverride_(false)
-{}
+{
+}
 
-void GeneratorVisitor::generate(Model &model, bool supportOverride) {
+void GeneratorVisitor::generate(Model &model) {
     _model = &model;
-    supportOverride_ = supportOverride;
+    supportOverride_ = _model->config.language == "cpp";
 
     // 1) Считаем для каждого класса, к какому базовому visitor-интерфейсу он относится
     for (auto &cls : model.classes) {
@@ -144,14 +145,14 @@ void GeneratorVisitor::generateAcceptorInterface(
         m.return_type = Objects::VOID;
         m.callable_args.emplace_back(Object(baseName, "ctx"));
         m.callable_args.back().is_pointer = true;
-        m.body += "\nif (!ctx) { return; }";
+        m.body += "\nif (!ctx) \n{\nreturn;\n }\n";
         for (auto &visitor : visitors) {
             std::string vn = visitor->name;
             vn[0] = (char)std::tolower(vn[0]);
             std::ostringstream os;
-            os << "else if (ctx->get_type() == " << visitor->name << "::TYPE) {\n"
+            os << "else if (ctx->get_type() == " << visitor->name << "::TYPE) \n{\n"
                << "    this->visit_" << vn << "(ctx);\n"
-               << "}";
+               << "}\n";
             m.body += os.str();
         }
         acceptor->functions.push_back(std::move(m));

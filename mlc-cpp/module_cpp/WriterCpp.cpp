@@ -31,9 +31,8 @@ WriterCpp::writeClass(const std::shared_ptr<Class> &cls) {
     methodsCache_.clear();
     methodsCacheWithTemplates_.clear();
 
-    if(currentClass_->name == "TestStaticMembers"){
+    if(cls->name == "UnitType")
         std::cout << "";
-    }
 
     // Cache members
     for (auto &m : cls->members) {

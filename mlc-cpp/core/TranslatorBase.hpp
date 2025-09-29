@@ -37,10 +37,7 @@ public:
                                               Function &method,
                                               const std::string &body,
                                               Model &model,
-                                              const std::vector<Object> &args)
-    {
-        return replaceByRegex(body, cls, method, model, args);
-    }
+                                              const std::vector<Object> &args);
 
     /// Реализуйте в наследнике все нужные regex-замены.
     virtual std::string replaceByRegex(const std::string &body,
