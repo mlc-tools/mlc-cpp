@@ -1,0 +1,98 @@
+class ecs/EcsModel
+{
+	fn void update_systems()
+	{
+		[SystemMovement]
+	}
+}
+
+class ecs/EcsComponent
+{
+	int id
+}
+
+class ecs/Transform<EcsComponent>
+{
+	int x = 0
+	int y = 0
+}
+
+class ecs/Movement<EcsComponent>
+{
+	int x = 0
+	int y = 0
+}
+
+class ecs/SystemMovement
+{
+	fn void update(EcsModel* model)
+	{
+		model->each<Transform, Movement>(
+			[](auto& tranform, auto& movement)
+			{
+				tranform->x += movement->x;
+				tranform->y += movement->y;
+			});
+	}
+}
+class ecs/SystemMovementIf
+{
+	fn void update(EcsModel* model)
+	{
+		model->each_if<Transform, Movement>(
+			[](auto& tranform, auto& movement)
+			{
+				return movement->x > 0;
+			},
+			[](auto& tranform, auto& movement)
+			{
+				tranform->x += movement->x;
+				tranform->y += movement->y;
+			});
+	}
+}
+
+class ecs/TestEcsModel<ITestEcsModel>
+{
+	fn EcsModel* get_model()
+	{
+		auto model = new EcsModel();
+		return model;
+	}
+
+	fn void test_update_systems()
+	{
+		auto model = this->get_model();
+		model->add(new Transform(), 1);
+		model->add(new Movement(), 1);
+
+		model->get<Movement>(1)->y = 2;
+		model->update_systems();
+		this->assertEqual(model->get<Transform>(1)->x, 0);
+		this->assertEqual(model->get<Transform>(1)->y, 2);
+	}
+
+	fn void test_each()
+	{
+		auto model = this->get_model();
+		model->add(new Transform(), 1);
+		model->add(new Transform(), 2);
+		model->add(new Movement(), 2);
+
+		model->get<Movement>(2)->x = 1;
+
+		SystemMovement().update(model);
+		this->assertEqual(model->get<Transform>(1)->x, 0);
+		this->assertEqual(model->get<Transform>(1)->y, 0);
+		this->assertEqual(model->get<Transform>(2)->x, 1);
+		this->assertEqual(model->get<Transform>(2)->y, 0);
+
+
+		model->add(new Movement(), 1);
+		SystemMovementIf().update(model);
+		this->assertEqual(model->get<Transform>(1)->x, 0);
+		this->assertEqual(model->get<Transform>(1)->y, 0);
+		this->assertEqual(model->get<Transform>(2)->x, 2);
+		this->assertEqual(model->get<Transform>(2)->y, 0);
+	}
+}

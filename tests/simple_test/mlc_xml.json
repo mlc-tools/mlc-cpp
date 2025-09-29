@@ -26,5 +26,11 @@
       "serialize_protocol": "json",
       "filter_code": []
     }
-  ]
+  ],
+  "features": {
+    "ecs": {
+      "model_base": "EcsModel",
+      "component_base": "EcsComponent"
+    }
+  }
 }

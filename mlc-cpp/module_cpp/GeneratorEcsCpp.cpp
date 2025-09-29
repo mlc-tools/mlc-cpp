@@ -11,6 +11,7 @@
 #include <cctype>
 #include <re2/re2.h>
 #include <sstream>
+#include <iostream>
 
 #include "../models/Model.hpp"
 #include "../models/Class.hpp"
@@ -219,15 +220,13 @@ static string to_snake(const string &s) {
 
 bool GeneratorEcsCpp::isBased(const shared_ptr<Class>& cls, const string &name) {
     if (!cls) return false;
-    if (cls->group == "ecs") {
-        if (cls->name == name) return true;
-        if (!cls->parent.expired()) {
-            auto p = cls->parent.lock();
-            if (isBased(p, name)) return true;
-        } else if (!cls->parent_class_name.empty()) {
-            // parent will be linked later, but we can compare by name if same group assumed
-            if (cls->parent_class_name == name) return true;
-        }
+    if (cls->name == name) return true;
+    if (!cls->parent.expired()) {
+        auto p = cls->parent.lock();
+        if (isBased(p, name)) return true;
+    } else if (!cls->parent_class_name.empty()) {
+        // parent will be linked later, but we can compare by name if same group assumed
+        if (cls->parent_class_name == name) return true;
     }
     return false;
 }
@@ -279,7 +278,6 @@ void GeneratorEcsCpp::generate(Model &model) {
         generateSystemsEndTurn(model, cls.lock());
     }
 
-    // base methods on ComponentBase hierarchy
     generateAddModelMethod(model);
     generateRemoveModelMethod(model);
     generateGetSelfFromModelMethod(model);
@@ -425,7 +423,10 @@ void GeneratorEcsCpp::modifySources(Model& model, const std::shared_ptr<Class>& 
 
 void GeneratorEcsCpp::generateContainersAndClear(Model &model, const shared_ptr<Class>& ecsBase) {
     for (auto &cls : model.classes) {
-        if (!isBased(cls, _ecs_component_base_name) || cls->name == _ecs_component_base_name) continue;
+        if(cls->name == "Transform")
+            std::cout << "";
+        if (!isBased(cls, _ecs_component_base_name) || cls->name == _ecs_component_base_name)
+            continue;
         auto field = componentsField(cls);
         // list<Cls*> components_field
         {
@@ -572,7 +573,7 @@ void GeneratorEcsCpp::generateGetSelfFromModelMethod(Model &model) {
     for (auto &cls : model.classes) {
         if (!isBased(cls, _ecs_component_base_name)) continue;
         if (cls->name == _ecs_component_base_name) continue;
-        auto fn = makeFnDecl("fn ComponentBase* get_self_from_model(" + _ecs_model_base_name + "* model_dungeon_class, int id)");
+        auto fn = makeFnDecl("fn " + _ecs_component_base_name + "* get_self_from_model(" + _ecs_model_base_name + "* model_dungeon_class, int id)");
         std::ostringstream body;
         body << "return model_dungeon_class->get<" << cls->name << ">(id);";
         fn.body = body.str();
