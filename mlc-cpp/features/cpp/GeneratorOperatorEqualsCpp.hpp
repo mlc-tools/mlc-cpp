@@ -10,8 +10,8 @@
 #include <memory>
 #include <string>
 
-#include "FeatureGenerator.hpp"
-#include "../core/GeneratorOperatorEqualsBase.hpp"
+#include "features/FeatureGenerator.hpp"
+#include "features/GeneratorOperatorEqualsBase.hpp"
 
 class GeneratorOperatorEqualsCpp : public FeatureGenerator, public GeneratorOperatorEqualsBase {
 public:

@@ -11,7 +11,7 @@
 #include <vector>
 #include <memory>
 
-#include "FeatureGenerator.hpp"
+#include "features/FeatureGenerator.hpp"
 
 class Model;
 class Class;

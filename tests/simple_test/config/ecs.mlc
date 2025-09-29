@@ -2,6 +2,7 @@ class ecs/EcsModel
 {
 	fn void update_systems()
 	{
+		[SystemMovement2]
 		[SystemMovement]
 	}
 }
@@ -40,7 +41,7 @@ class ecs/SystemMovement
 }
 class ecs/SystemMovement2
 {
-	fn void update(EcsModel* model)
+	fn void update(EcsModel* model, float dt)
 	{
 		model->each<Transform, Movement2>(
 			[](auto& tranform, auto& movement)

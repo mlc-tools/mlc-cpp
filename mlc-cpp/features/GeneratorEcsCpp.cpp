@@ -510,7 +510,7 @@ void GeneratorEcsCpp::generateSystemsEndTurn(Model &model, const std::shared_ptr
                 continue;
             for(auto& arg : update->callable_args){
                 if(!args.empty())
-                    args + ", ";
+                    args += ", ";
                 if(arg.type == _ecs_model_base_name)
                     args += "this";
                 else if(arg.type == "float" && arg.name == "dt")

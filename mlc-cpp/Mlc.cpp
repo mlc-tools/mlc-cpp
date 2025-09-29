@@ -10,7 +10,7 @@
 #include "CircularReference.hpp"
 #include "Registrar.hpp"
 //#include "Validator.hpp"
-#include "DataParser.hpp"
+#include "features/DataParser.hpp"
 //#include "Language.hpp"
 #include "Error.hpp"
 #include "FileUtils.hpp"
@@ -22,9 +22,9 @@
 #include "features/GeneratorEcsCpp.hpp"
 #include "features/GeneratorVisitor.hpp"
 #include "features/GeneratorUnitTestsInterface.hpp"
-#include "features/GeneratorDataStorageCpp.hpp"
-#include "features/GeneratorRefCounterCpp.hpp"
-#include "features/GeneratorOperatorEqualsCpp.hpp"
+#include "features/cpp/GeneratorDataStorageCpp.hpp"
+#include "features/cpp/GeneratorRefCounterCpp.hpp"
+#include "features/cpp/GeneratorOperatorEqualsCpp.hpp"
 
 #include <unordered_map>
 #include <unordered_set>

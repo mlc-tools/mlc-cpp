@@ -14,8 +14,8 @@
 #include <vector>
 #include <memory>
 
-#include "GeneratorDataStorageBase.hpp"
-#include "FeatureGenerator.hpp"
+#include "features/GeneratorDataStorageBase.hpp"
+#include "features/FeatureGenerator.hpp"
 
 
 class GeneratorDataStorageCpp : public FeatureGenerator, public GeneratorDataStorageBase {
