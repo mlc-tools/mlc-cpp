@@ -1,0 +1,8 @@
+class test/TestLangModifiers
+{
+	bool:cpp v = false
+	bool:py v = true
+
+	fn void f():cpp{}
+	fn void f():py{}
+}

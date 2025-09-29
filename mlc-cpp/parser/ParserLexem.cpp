@@ -10,6 +10,7 @@
 #include "ParserLexem.hpp"
 #include "Class.hpp"
 #include "Function.hpp"
+#include "Error.hpp"
 #include "../core/Parser.hpp"
 
 template <class T>
@@ -91,6 +92,8 @@ std::vector<std::shared_ptr<Class>> ParserLexem::parse_dict(bool one) {
 }
 
 void ParserLexem::parse(const std::shared_ptr<Class>& cls) {
+    if(cls->name == "TestLangModifiers")
+        std::cout << "";
     int depth = 0;
     // ищем class
     while (cur.type != TokenType::Eof) {
@@ -128,7 +131,9 @@ void ParserLexem::parse(const std::shared_ptr<Class>& cls) {
     }
 }
 
-void ParserLexem::advance() { cur = lexer.next(); }
+void ParserLexem::advance() {
+    cur = lexer.next();
+}
 
 std::vector<std::string> ParserLexem::read_body() {
     std::vector<std::string> block;
@@ -181,7 +186,9 @@ std::vector<Object> ParserLexem::read_templates()
                 else if (cur.value == ":") {
                     raw += cur.value;
                     advance();
-                    assert(cur.type == TokenType::Identifier);
+                    if(cur.type != TokenType::Identifier){
+                        Error::exit(Error::Code::ERROR_SYNTAX_ERROR, lexer.get_current_line());
+                    }
                     raw += cur.value;
                     advance();
                 } else {
@@ -327,11 +334,14 @@ Function ParserLexem::parse_method() {
         }
     }
     method.callable_args = read_callable_args();
-    //TODO: throw error
-    assert(cur.value != ";");
+    if(cur.value == ";"){
+        Error::exit(Error::Code::ERROR_SEMICOLON_IN_FUNCTION, method.name, lexer.get_current_line());
+    }
     read_modifier(method);
     if(!method.is_abstract){
-        assert(cur.value == "{" || cur.type == TokenType::Eof);
+        if(cur.value != "{" && cur.type != TokenType::Eof){
+            Error::exit(Error::Code::ERROR_METHOD_HAS_NOT_BODY, method.name, lexer.get_current_line());
+        }
         method.body = skip_body();
     } else {
         if(cur.type == TokenType::Symbol && cur.value == ";"){

@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 #include <functional>
+#include <map>
+#include <variant>
 
 #include "../models/Object.hpp"   // Side
 #include "../models/Serialize.hpp" // SerializeFormat
@@ -40,6 +42,16 @@ public:
     std::function<bool(const std::string&)> filter_data;
 };
 
+class FeatureVisitor{
+public:
+};
+
+class FeatureEcs{
+public:
+    std::string model_base;
+    std::string component_base;
+};
+
 class Config {
 public:
     operator bool() const { return _initialized; }
@@ -48,6 +60,7 @@ public:
     std::vector<std::string> configs_directories;
     std::vector<std::string> data_directories;
     std::vector<Job> jobs;
+    std::map<std::string, std::variant<FeatureVisitor, FeatureEcs>> features;
 
     // Загрузка конфигурации из JSON-файла. Возвращает набор задач.
     static Config loadFile(const std::string& path, std::string& err);

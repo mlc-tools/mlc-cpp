@@ -254,15 +254,30 @@ Object GeneratorEcsCpp::makeObj(const string &decl, bool withName) {
 
 // --- main entry ---
 void GeneratorEcsCpp::generate(Model &model) {
-    if (!model.hasClass("ModelEcsBase")) return;
-    auto ecsBase = getClass(model, "ModelEcsBase");
+    
+    if(model.configuration.features.count("ecs") > 0){
+        auto& feature = std::get<FeatureEcs>(model.configuration.features["ecs"]);
+        _ecs_model_base_name = feature.model_base;
+        _ecs_component_base_name = feature.component_base;
+    }
+    else {
+        _ecs_model_base_name = "ModelEcsBase";
+        _ecs_component_base_name = "ComponentBase";
+    }
+    
+    if (!model.hasClass(_ecs_model_base_name))
+        return;
+    auto ecsBase = getClass(model, _ecs_model_base_name);
     if (!ecsBase) return;
 
     // members + clear_* methods per component
     generateContainersAndClear(model, ecsBase);
 
     // systems end-turn (update_systems body expansion)
-    generateSystemsEndTurn(model);
+    generateSystemsEndTurn(model, ecsBase);
+    for(auto cls : ecsBase->subclasses){
+        generateSystemsEndTurn(model, cls.lock());
+    }
 
     // base methods on ComponentBase hierarchy
     generateAddModelMethod(model);
@@ -270,11 +285,9 @@ void GeneratorEcsCpp::generate(Model &model) {
     generateGetSelfFromModelMethod(model);
     generateHasInModel(model);
 
-    // ModelEcsBase helpers
     generateBuildMaps(model);
     generateRemoveEntity(model);
 
-    // API on ModelEcsBase
     generateModelAddComponent(model);
     generateModelRemoveComponent(model, /*useRawPointer*/true);
     generateModelRemoveComponent(model, /*useRawPointer*/false);
@@ -284,12 +297,127 @@ void GeneratorEcsCpp::generate(Model &model) {
     generateModelGetComponents(model, /*isConst*/true);
     generateModelGetComponents(model, /*isConst*/false);
 
+    generate_system_skills(model, "update");
+    generate_system_skills(model, "clean");
+    generate_model_method_save_skills(model);
+    
     // provide helper header file (optional utilities)
     addHelperFile(model);
 }
 
+std::vector<shared_ptr<Class>> GeneratorEcsCpp::get_skill_components(Model &model)
+{
+    std::vector<shared_ptr<Class>> classes;
+    for (auto &cls : model.classes)
+    {
+        if (isBased(cls, "ComponentSkillBase") && cls->name != "ComponentSkillBase")
+            classes.push_back(cls);
+    }
+    return classes;
+}
+
+void GeneratorEcsCpp::generate_system_skills(Model &model, const std::string& method_name)
+{
+    auto skills = get_skill_components(model);
+    auto system = getClass(model, "SystemSkillBase");
+    if (!system)
+        return;
+    Function* method = nullptr;
+    for (auto &f : system->functions)
+    {
+        if (f.name == method_name)
+        {
+            method = &f;
+            break;
+        }
+    }
+    if (!method)
+        return;
+    std::string operations = method->body;
+    method->body.clear();
+    for (auto &skill : skills)
+    {
+        if (!skill->subclasses.empty())
+            continue;
+        auto field = componentsField(skill);
+        std::string list_name = std::string("components_") + field;
+        std::string block = operations;
+        replace_all(block, "@(components)", list_name);
+        if (!method->body.empty())
+            method->body += "\n";
+        method->body += block;
+        system->user_includes.insert(skill->name);
+    }
+}
+
+void GeneratorEcsCpp::generate_model_method_save_skills(Model &model)
+{
+    auto controller = getClass(model, "ControllerDungeonBase");
+    if (!controller)
+        return;
+    Function* save_skills_current_hero = nullptr;
+    Function* restore_hero_skill_on_change = nullptr;
+    for (auto &f : controller->functions)
+    {
+        if (f.name == "save_skills_current_hero")
+            save_skills_current_hero = &f;
+        if (f.name == "restore_hero_skill_on_change")
+            restore_hero_skill_on_change = &f;
+        if (restore_hero_skill_on_change && save_skills_current_hero)
+            break;
+    }
+    if (!save_skills_current_hero)
+        return;
+    if (!restore_hero_skill_on_change)
+        return;
+
+    auto info = getClass(model, "ModelDungeonBaseChangeHeroesInfo");
+    if (!info)
+        return;
+
+    if (!save_skills_current_hero->body.empty())
+        save_skills_current_hero->body += "\n";
+    save_skills_current_hero->body += "auto id = this->model->player_id;\n";
+    save_skills_current_hero->body += "auto name = this->model->get<ComponentData>(id)->data->name;";
+
+    if (!restore_hero_skill_on_change->body.empty())
+        restore_hero_skill_on_change->body += "\n";
+    restore_hero_skill_on_change->body += "auto name = this->model->get<ComponentData>(this->model->player_id)->data->name;\n";
+
+    auto skills = get_skill_components(model);
+    for (auto &skill : skills)
+    {
+        auto field = componentsField(skill);
+        {
+            std::ostringstream line;
+            line << "this->model->change_heroes_info." << field << "[name] = this->model->get<" << skill->name << ">(id);";
+            if (!save_skills_current_hero->body.empty())
+                save_skills_current_hero->body += "\n";
+            save_skills_current_hero->body += line.str();
+        }
+        {
+            std::ostringstream a;
+            a << "if(in_map(name, this->model->change_heroes_info." << field << ") && this->model->change_heroes_info." << field << "[name])";
+            if (!restore_hero_skill_on_change->body.empty())
+                restore_hero_skill_on_change->body += "\n";
+            restore_hero_skill_on_change->body += a.str();
+            restore_hero_skill_on_change->body += "\n{";
+            std::ostringstream b;
+            b << "    this->model->add<" << skill->name << ">(this->model->change_heroes_info." << field << "[name]);";
+            restore_hero_skill_on_change->body += "\n";
+            restore_hero_skill_on_change->body += b.str();
+            restore_hero_skill_on_change->body += "\n}";
+        }
+        {
+            std::ostringstream member;
+            member << "map<string, " << skill->name << "*> " << field;
+            info->members.push_back(makeObj(member.str(), true));
+        }
+    }
+}
+
 void GeneratorEcsCpp::modifySources(Model& model, const std::shared_ptr<Class>& cls, std::string& header, std::string& source){
-    if(cls->name != "ModelEcsBase")
+    if(cls->name != _ecs_model_base_name)
         return;
     
     replace_all(header, "};", MODEL_ECS_TEMPLATES + "\n};");
@@ -297,7 +425,7 @@ void GeneratorEcsCpp::modifySources(Model& model, const std::shared_ptr<Class>& 
 
 void GeneratorEcsCpp::generateContainersAndClear(Model &model, const shared_ptr<Class>& ecsBase) {
     for (auto &cls : model.classes) {
-        if (!isBased(cls, "ComponentBase") || cls->name == "ComponentBase") continue;
+        if (!isBased(cls, _ecs_component_base_name) || cls->name == _ecs_component_base_name) continue;
         auto field = componentsField(cls);
         // list<Cls*> components_field
         {
@@ -326,19 +454,25 @@ void GeneratorEcsCpp::generateContainersAndClear(Model &model, const shared_ptr<
     // keep order: optional; C++ codegen doesn’t require sort here
 }
 
-void GeneratorEcsCpp::generateSystemsEndTurn(Model &model) {
-    auto ecs = getClass(model, "ModelEcsBase");
-    if (!ecs) return;
+void GeneratorEcsCpp::generateSystemsEndTurn(Model &model, const std::shared_ptr<Class>& ecs) {
+    if (!ecs)
+        return;
     Function *update = nullptr;
-    for (auto &f : ecs->functions) if (f.name == "update_systems") { update = &f; break; }
-    if (!update) return;
+    for (auto &f : ecs->functions)
+        if (f.name == "update_systems") {
+            update = &f;
+            break;
+        }
+    if (!update)
+        return;
 
     // parse body by lines and expand directives like [SystemX] and optional condition [!isFoo]
     std::vector<string> lines;
     {
         std::istringstream iss(update->body);
         string line;
-        while (std::getline(iss, line)) lines.push_back(line);
+        while (std::getline(iss, line))
+            lines.push_back(line);
     }
     std::vector<string> out;
     static re2::RE2 reCond(R"(\[([!]*is\w+)\])");
@@ -355,12 +489,32 @@ void GeneratorEcsCpp::generateSystemsEndTurn(Model &model) {
             bool hasClean = false;
             auto sysCls = getClass(model, sys);
             if (sysCls) {
-                for (auto &fn : sysCls->functions) if (fn.name == "clean") { hasClean = true; break; }
+                for (auto &fn : sysCls->functions){
+                    if (fn.name == "clean") {
+                        hasClean = true;
+                        break;
+                    }
+                }
+            }
+            std::string args; //this, dt
+            auto update = sysCls->get_method("update");
+            if(!update)
+                continue;
+            for(auto& arg : update->callable_args){
+                if(!args.empty())
+                    args + ", ";
+                if(arg.type == _ecs_model_base_name)
+                    args += "this";
+                else if(arg.type == "float" && arg.name == "dt")
+                    args += "dt";
+                else
+                    assert(0);
             }
             std::ostringstream code;
-            if (!cond.empty()) code << "if(" << cond << ")\n{\n";
+            if (!cond.empty())
+                code << "if(" << cond << ")\n{\n";
             code << sys << " s" << i << ";\n";
-            code << "s" << i << ".update(this, dt);";
+            code << "s" << i << ".update(" << args << ");";
             if (hasClean) code << "\n" << "s" << i << ".clean(this);";
             if (!cond.empty()) code << "\n}";
             out.push_back(code.str());
@@ -384,9 +538,9 @@ void GeneratorEcsCpp::generateSystemsEndTurn(Model &model) {
 
 void GeneratorEcsCpp::generateAddModelMethod(Model &model) {
     for (auto &cls : model.classes) {
-        if (!isBased(cls, "ComponentBase")) continue;
-        auto fn = makeFnDecl("fn void add_self_to_model(ModelEcsBase* model_dungeon_class)");
-        if (cls->name != "ComponentBase") {
+        if (!isBased(cls, _ecs_component_base_name)) continue;
+        auto fn = makeFnDecl("fn void add_self_to_model(" + _ecs_model_base_name + "* model_dungeon_class)");
+        if (cls->name != _ecs_component_base_name) {
             std::ostringstream body;
             body << "model_dungeon_class->add<" << cls->name << ">(this);";
             fn.body = body.str();
@@ -400,9 +554,9 @@ void GeneratorEcsCpp::generateAddModelMethod(Model &model) {
 
 void GeneratorEcsCpp::generateRemoveModelMethod(Model &model) {
     for (auto &cls : model.classes) {
-        if (!isBased(cls, "ComponentBase")) continue;
-        auto fn = makeFnDecl("fn void remove_self_from_model(ModelEcsBase* model_dungeon_class)");
-        if (cls->name != "ComponentBase") {
+        if (!isBased(cls, _ecs_component_base_name)) continue;
+        auto fn = makeFnDecl("fn void remove_self_from_model(" + _ecs_model_base_name + "* model_dungeon_class)");
+        if (cls->name != _ecs_component_base_name) {
             std::ostringstream body;
             body << "model_dungeon_class->remove<" << cls->name << ">(this);";
             fn.body = body.str();
@@ -416,9 +570,9 @@ void GeneratorEcsCpp::generateRemoveModelMethod(Model &model) {
 
 void GeneratorEcsCpp::generateGetSelfFromModelMethod(Model &model) {
     for (auto &cls : model.classes) {
-        if (!isBased(cls, "ComponentBase")) continue;
-        if (cls->name == "ComponentBase") continue;
-        auto fn = makeFnDecl("fn ComponentBase* get_self_from_model(ModelEcsBase* model_dungeon_class, int id)");
+        if (!isBased(cls, _ecs_component_base_name)) continue;
+        if (cls->name == _ecs_component_base_name) continue;
+        auto fn = makeFnDecl("fn ComponentBase* get_self_from_model(" + _ecs_model_base_name + "* model_dungeon_class, int id)");
         std::ostringstream body;
         body << "return model_dungeon_class->get<" << cls->name << ">(id);";
         fn.body = body.str();
@@ -431,7 +585,7 @@ void GeneratorEcsCpp::generateHasInModel(Model &model) {
     for (auto &cls : model.classes) {
         if (!isBased(cls, "ComponentSkillBase")) continue;
         if (cls->name == "ComponentSkillBase") continue;
-        auto fn = makeFnDecl("fn bool has_in_model(ModelEcsBase* model_dungeon_class, int id)");
+        auto fn = makeFnDecl("fn bool has_in_model(" + _ecs_model_base_name + "* model_dungeon_class, int id)");
         std::ostringstream body;
         body << "return model_dungeon_class->get<" << cls->name << ">(id) != nullptr;";
         fn.body = body.str();
@@ -441,12 +595,12 @@ void GeneratorEcsCpp::generateHasInModel(Model &model) {
 }
 
 void GeneratorEcsCpp::generateBuildMaps(Model &model) {
-    auto ecs = getClass(model, "ModelEcsBase");
+    auto ecs = getClass(model, _ecs_model_base_name);
     if (!ecs) return;
     auto fn = makeFnDecl("fn void build_maps()");
     std::ostringstream body;
     for (auto &cls : model.classes) {
-        if (!isBased(cls, "ComponentBase") || cls->name == "ComponentBase") continue;
+        if (!isBased(cls, _ecs_component_base_name) || cls->name == _ecs_component_base_name) continue;
         auto field = componentsField(cls);
         body << "for(auto& component : this->components_" << field << ")\n";
         body << "{\n";
@@ -458,7 +612,7 @@ void GeneratorEcsCpp::generateBuildMaps(Model &model) {
 }
 
 void GeneratorEcsCpp::generateRemoveEntity(Model &model) {
-    auto ecs = getClass(model, "ModelEcsBase");
+    auto ecs = getClass(model, _ecs_model_base_name);
     if (!ecs) return;
     Function *fn = nullptr;
     for (auto &f : ecs->functions) if (f.name == "remove_entity") { fn = &f; break; }
@@ -466,7 +620,7 @@ void GeneratorEcsCpp::generateRemoveEntity(Model &model) {
     std::ostringstream add;
     if (!fn->body.empty()) add << fn->body << "\n";
     for (auto &cls : model.classes) {
-        if (!isBased(cls, "ComponentBase") || cls->name == "ComponentBase") continue;
+        if (!isBased(cls, _ecs_component_base_name) || cls->name == _ecs_component_base_name) continue;
         auto field = componentsField(cls);
         add << "if(in_map(id, this->map_components_" << field << "))\n";
         add << "{\n";
@@ -478,7 +632,7 @@ void GeneratorEcsCpp::generateRemoveEntity(Model &model) {
 }
 
 void GeneratorEcsCpp::generateModelGetComponent(Model &model, bool isConst) {
-    auto ecs = getClass(model, "ModelEcsBase");
+    auto ecs = getClass(model, _ecs_model_base_name);
     if (!ecs) return;
     Function method;
     method.name = "get";
@@ -500,12 +654,12 @@ void GeneratorEcsCpp::generateModelGetComponent(Model &model, bool isConst) {
 
     // specializations
     for (auto &cls : model.classes) {
-        if (!isBased(cls, "ComponentBase") || cls->name=="ComponentBase") continue;
+        if (!isBased(cls, _ecs_component_base_name) || cls->name==_ecs_component_base_name) continue;
         auto field = componentsField(cls);
         std::ostringstream body;
         body << "template<> "
              << (isConst ? ("const "+cls->name+"*") : ("intrusive_ptr<"+cls->name+">"))
-             << " ModelEcsBase::get(int component_id)" << (isConst?" const":"") << "\n";
+             << " " << _ecs_model_base_name << "::get(int component_id)" << (isConst?" const":"") << "\n";
         body << "{\n";
         body << "    if(in_map(component_id, this->map_components_" << field << "))\n";
         body << "    {\n";
@@ -520,7 +674,7 @@ void GeneratorEcsCpp::generateModelGetComponent(Model &model, bool isConst) {
 std::vector<shared_ptr<Class>> GeneratorEcsCpp::getComponentClasses(Model &model) {
     std::vector<shared_ptr<Class>> out;
     for (auto &cls : model.classes) {
-        if (isBased(cls, "ComponentBase") && cls->name != "ComponentBase") {
+        if (isBased(cls, _ecs_component_base_name) && cls->name != _ecs_component_base_name) {
             if (cls->name == "ComponentSkillBase") out.insert(out.begin(), cls);
             else out.push_back(cls);
         }
@@ -529,7 +683,7 @@ std::vector<shared_ptr<Class>> GeneratorEcsCpp::getComponentClasses(Model &model
 }
 
 void GeneratorEcsCpp::generateModelAddComponent(Model &model) {
-    auto ecs = getClass(model, "ModelEcsBase");
+    auto ecs = getClass(model, _ecs_model_base_name);
     if (!ecs) return;
 
     // template <class T> void add(intrusive_ptr<T> component, int component_id=0)
@@ -547,10 +701,10 @@ void GeneratorEcsCpp::generateModelAddComponent(Model &model) {
         for (auto &cls : getComponentClasses(model)) {
             auto field = componentsField(cls);
             std::ostringstream body;
-            body << "template<> void ModelEcsBase::add(intrusive_ptr<" << cls->name << "> component, int component_id)\n";
+            body << "template<> void " << _ecs_model_base_name << "::add(intrusive_ptr<" << cls->name << "> component, int component_id)\n";
             body << "{\n";
             // add for parent (single-inheritance best effort)
-            if (!cls->parent_class_name.empty() && cls->parent_class_name != "ComponentBase") {
+            if (!cls->parent_class_name.empty() && cls->parent_class_name != _ecs_component_base_name) {
                 body << "    this->add<" << cls->parent_class_name << ">(intrusive_ptr<" << cls->parent_class_name << ">(component), component_id);\n";
             }
             body << "    assert(component->id == 0 || component->id == component_id || component_id == 0);\n";
@@ -578,10 +732,10 @@ void GeneratorEcsCpp::generateModelAddComponent(Model &model) {
         ecs->functions.push_back(m);
         auto &decl2 = ecs->functions.back();
         for (auto &cls : model.classes) {
-            if (!isBased(cls, "ComponentBase") || cls->name == "ComponentBase") continue;
+            if (!isBased(cls, _ecs_component_base_name) || cls->name == _ecs_component_base_name) continue;
             auto field = componentsField(cls); (void)field;
             std::ostringstream body;
-            body << "template<> void ModelEcsBase::add(" << cls->name << "* component, int component_id)\n";
+            body << "template<> void " << _ecs_model_base_name << "::add(" << cls->name << "* component, int component_id)\n";
             body << "{\nthis->add(intrusive_ptr<" << cls->name << ">(component), component_id);\n}\n";
             decl2.specific_implementations += body.str();
         }
@@ -589,7 +743,7 @@ void GeneratorEcsCpp::generateModelAddComponent(Model &model) {
 }
 
 void GeneratorEcsCpp::generateModelRemoveComponent(Model &model, bool useRawPointer) {
-    auto ecs = getClass(model, "ModelEcsBase");
+    auto ecs = getClass(model, _ecs_model_base_name);
     if (!ecs) return;
     Function m;
     m.name = "remove";
@@ -607,12 +761,12 @@ void GeneratorEcsCpp::generateModelRemoveComponent(Model &model, bool useRawPoin
         auto field = componentsField(cls);
         std::ostringstream body;
         if (useRawPointer) {
-            body << "template<> void ModelEcsBase::remove(" << cls->name << "* component)\n";
+            body << "template<> void " << _ecs_model_base_name << "::remove(" << cls->name << "* component)\n";
             body << "{\nthis->remove(intrusive_ptr<" << cls->name << ">(component));\n}\n";
         } else {
-            body << "template<> void ModelEcsBase::remove(intrusive_ptr<" << cls->name << "> component)\n";
+            body << "template<> void " << _ecs_model_base_name << "::remove(intrusive_ptr<" << cls->name << "> component)\n";
             body << "{\n";
-            if (!cls->parent_class_name.empty() && cls->parent_class_name != "ComponentBase") {
+            if (!cls->parent_class_name.empty() && cls->parent_class_name != _ecs_component_base_name) {
                 body << "    this->remove<" << cls->parent_class_name << ">(intrusive_ptr<" << cls->parent_class_name << ">(component));\n";
             }
             body << "    if(component)\n{\nlist_remove(this->components_" << field << ", component); map_remove(this->map_components_" << field << ", component->id);\n}\n";
@@ -623,12 +777,12 @@ void GeneratorEcsCpp::generateModelRemoveComponent(Model &model, bool useRawPoin
 }
 
 void GeneratorEcsCpp::generateModelCopyEntityFromModel(Model &model) {
-    auto ecs = getClass(model, "ModelEcsBase");
+    auto ecs = getClass(model, _ecs_model_base_name);
     if (!ecs) return;
-    auto m = makeFnDecl("fn void copy_entity_from_model(ModelEcsBase* model, int id, int new_id)");
+    auto m = makeFnDecl("fn void copy_entity_from_model(" + _ecs_model_base_name + "* model, int id, int new_id)");
     std::ostringstream body;
     for (auto &cls : model.classes) {
-        if (!isBased(cls, "ComponentBase") || cls->name == "ComponentBase") continue;
+        if (!isBased(cls, _ecs_component_base_name) || cls->name == _ecs_component_base_name) continue;
         auto field = componentsField(cls);
         body << "auto component_" << field << " = model->get<" << cls->name << ">(id);\n";
         body << "if(component_" << field << ")\n";
@@ -643,7 +797,7 @@ void GeneratorEcsCpp::generateModelCopyEntityFromModel(Model &model) {
 }
 
 void GeneratorEcsCpp::generateModelGetComponents(Model &model, bool isConst) {
-    auto ecs = getClass(model, "ModelEcsBase");
+    auto ecs = getClass(model, _ecs_model_base_name);
 
     Function m;
     m.name = "get_components";
@@ -665,7 +819,7 @@ void GeneratorEcsCpp::generateModelGetComponents(Model &model, bool isConst) {
     ecs->functions.insert(ecs->functions.begin(), m);
     auto &decl = ecs->functions.front();
     for (auto &cls : model.classes) {
-        if (!isBased(cls, "ComponentBase") || cls->name == "ComponentBase")
+        if (!isBased(cls, _ecs_component_base_name) || cls->name == _ecs_component_base_name)
             continue;
         auto field = componentsField(cls);
         std::ostringstream body;
@@ -675,7 +829,7 @@ void GeneratorEcsCpp::generateModelGetComponents(Model &model, bool isConst) {
         << (isConst ? "const " : "")
         << "std::vector<intrusive_ptr<"
         << cls->name
-        << ">>& ModelEcsBase::get_components() "
+        << ">>& " << _ecs_model_base_name << "::get_components() "
         << (isConst ? "const" : "")
         << "\n";
         

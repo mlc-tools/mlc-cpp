@@ -34,6 +34,7 @@ public:
     constexpr bool is_symbol(char c);
 
     std::string_view skip_block();
+    std::string_view get_current_line() const;
 private:
     const std::string &text;
     size_t pos;

@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <vector>
 #include <chrono>
+#include "Common.hpp"
 
 #define PROFILE_START(tabs, message) for(int i=0; i<tabs; ++i) std::clog << "  "; \
 const auto __start_profile_time__ = std::chrono::system_clock::now(); std::clog << "Start profiling [" << message << "]" << std::endl;
@@ -63,6 +64,9 @@ struct Error {
         ERROR_CONST_MODIFIER,
         WARNING_TEST_CLASS_NOT_IMPLEMENT_METHOD,
         ERROR_VIRTUAL_METHOD_HAS_DIFFERENT_DECLARATION,
+        ERROR_SEMICOLON_IN_FUNCTION,
+        ERROR_METHOD_HAS_NOT_BODY,
+        ERROR_SYNTAX_ERROR,
     };
 
     static void exit(Code code);
@@ -86,7 +90,7 @@ private:
         using U = std::decay_t<T>;
         if constexpr (std::is_same_v<U, std::string>) return v;
         else if constexpr (std::is_same_v<U, const char*>) return std::string(v);
-        else return std::to_string(v);
+        else return to_string(v);
     }
     template <typename... Args>
     static std::vector<std::string> toVector(Args&&... a) {

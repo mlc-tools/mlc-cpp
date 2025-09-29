@@ -36,7 +36,7 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "YES"
-      customWorkingDirectory = "/Users/vladimirtolmachev/work/archero/tools/mlc-cpp"
+      customWorkingDirectory = "/Users/vladimirtolmachev/work/dungeon2"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
@@ -103,7 +103,7 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--config tests/simple_test/mlc_xml.json"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
       </CommandLineArguments>
    </LaunchAction>

@@ -85,6 +85,8 @@ inline void replace_all(std::string &s, const std::string &what, const std::stri
 template <typename T>
 std::string to_string(const T& value);
 
+std::string to_string(std::string_view value);
+
 bool to_bool(const std::string& v, bool* ok = nullptr);
 
 template <typename T>

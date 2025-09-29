@@ -1,0 +1,5 @@
+class TestStaticMembers
+{
+	DataUnit:link:static:client data
+	DataUnit:link:static:server data
+}

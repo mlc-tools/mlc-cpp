@@ -201,6 +201,16 @@ Config Config::loadString(const std::string& content, std::string& err) {
 
         config.jobs.push_back(std::move(job));
     }
+
+    const auto &features = root["features"];
+    const auto &feature_ecs = features["ecs"];
+    if(feature_ecs.isObject()) {
+        FeatureEcs ecs;
+        ecs.model_base = feature_ecs["model_base"].asString();
+        ecs.component_base = feature_ecs["component_base"].asString();
+        config.features["ecs"] = std::move(ecs);
+    }
+
     config.initialize();
     return config;
 }

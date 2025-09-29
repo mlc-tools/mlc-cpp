@@ -30,15 +30,15 @@ WriterCpp::writeClass(const std::shared_ptr<Class> &cls) {
     methodsCache_.clear();
     methodsCacheWithTemplates_.clear();
 
-    if(currentClass_->name == "SideTestCommon"){
+    if(currentClass_->name == "TestStaticMembers"){
         std::cout << "";
     }
 
     // Cache members
     for (auto &m : cls->members) {
-        auto [decl, init, stat] = writeObject(m);
         if(_model->is_skip(m))
             continue;
+        auto [decl, init, stat] = writeObject(m);
         objectsCache_[m.name] = { decl, init, stat };
     }
 
@@ -72,6 +72,9 @@ WriterCpp::writeClass(const std::shared_ptr<Class> &cls) {
 auto WriterCpp::writeObject(const Object &obj)
     -> std::tuple<std::string,std::string,std::string>
 {
+    if(currentClass_->name == "TestStaticMembers"){
+        std::cout << "";
+    }
     if(obj.type == "DataUnit")
         std::cout << "";
     std::string decl, init, stat;
@@ -127,6 +130,8 @@ auto WriterCpp::writeHpp(const std::shared_ptr<Class> &cls)
     std::ostringstream membs;
     lastAcc = AccessSpecifier::m_public;
     for (auto &m : cls->members) {
+        if(_model->is_skip(m))
+            continue;
         if (m.access!=lastAcc) {
             membs << AccessSpecifierToString(m.access) << ":\n";
             lastAcc = m.access;
@@ -180,7 +185,7 @@ std::string WriterCpp::writeCpp(const std::shared_ptr<Class> &cls,
                              const std::set<std::string> &fwd,
                              const std::set<std::string> &fwdOut)
 {
-    if(cls->name == "VisualItem")
+    if(cls->name == "TestStaticMembers")
     {
         std::cout << "";
     }
@@ -188,13 +193,16 @@ std::string WriterCpp::writeCpp(const std::shared_ptr<Class> &cls,
     const std::string cn = cls->name;
     // Methods
     std::ostringstream funcs;
-    for (auto &fn:cls->functions){
+    for (auto &fn : cls->functions){
         if(fn.name=="constructor") continue;
         funcs<<methodsCache_[&fn].second;
     }
     // Inits
     std::ostringstream inits, statics;
-    for(auto &m:cls->members){
+    for(auto &m : cls->members){
+        if(_model->is_skip(m))
+            continue;
+
         auto &arr = objectsCache_[m.name];
         if(!arr[1].empty()) {
             if(!inits.str().empty())
@@ -203,7 +211,8 @@ std::string WriterCpp::writeCpp(const std::shared_ptr<Class> &cls,
                 inits << ": ";
             inits << arr[1] << "\n";
         }
-        if(!arr[2].empty()) statics<<arr[2]<<"\n";
+        if(!arr[2].empty())
+            statics<<arr[2]<<"\n";
     }
     // Destructor
     std::string dtor;
@@ -377,10 +386,10 @@ std::string WriterCpp::writeMemberStaticInit(
             p += val.size();
         }
     };
-    fill("const",    obj.is_const ? "const " : "");
+    fill("const",    (obj.is_const || obj.is_link) ? "const " : "");
     fill("type",     convertType(obj.type));
     fill("templates",tpl);
-    fill("pointer",  obj.is_pointer ? "*" : "");
+    fill("pointer",  (obj.is_pointer || obj.is_link) ? "*" : "");
     fill("owner",    cls.name);
     fill("name",     obj.name);
     fill("initial",  init);
@@ -620,7 +629,8 @@ WriterCpp::getIncludesForHeader(const std::shared_ptr<Class> &cls)
         "Default",
         "format",
         };
-    for (auto &fn : cls->functions) {
+    
+    auto add_from_method = [&](const Function& fn){
         for (auto &arg : fn.callable_args) {
             auto &t = arg.type;
             if (stdIns.count(t)) addObj(inc, arg);
@@ -643,6 +653,12 @@ WriterCpp::getIncludesForHeader(const std::shared_ptr<Class> &cls)
                 }
             }
         }
+    };
+    for (auto &fn : cls->functions) {
+        add_from_method(fn);
+    }
+    for (auto &fn : cls->constructors) {
+        add_from_method(fn);
     }
     // superclasses
     if(!cls->parent_class_name.empty())

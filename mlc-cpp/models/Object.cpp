@@ -66,6 +66,7 @@ bool Object::is_equal(const Object &other) const
     result = result && type == other.type;
     result = result && name == other.name;
     result = result && template_args.size() == other.template_args.size();
+    result = result && callable_args.size() == other.callable_args.size();
     if(result)
     {
         for(size_t i=0; i<template_args.size(); ++i)
@@ -102,10 +103,14 @@ void Object::set_modifier(const std::string_view& modifier)
         this->side = Side::server;
     else if(modifier == Modifier::m_test) this->is_test = true;
     
-    else if(modifier == Modifier::l_cpp) this->lang_specific.insert(Modifier::l_cpp);
-    else if(modifier == Modifier::l_py) this->lang_specific.insert(Modifier::l_py);
-    else if(modifier == Modifier::l_php) this->lang_specific.insert(Modifier::l_php);
-    else if(modifier == Modifier::l_js) this->lang_specific.insert(Modifier::l_js);
+    else if(modifier == Modifier::l_cpp)
+        this->lang_specific.insert(Modifier::l_cpp);
+    else if(modifier == Modifier::l_py)
+        this->lang_specific.insert(Modifier::l_py);
+    else if(modifier == Modifier::l_php)
+        this->lang_specific.insert(Modifier::l_php);
+    else if(modifier == Modifier::l_js)
+        this->lang_specific.insert(Modifier::l_js);
     
     else assert(0);
 }

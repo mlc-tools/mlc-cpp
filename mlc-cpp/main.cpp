@@ -83,13 +83,16 @@ bool try_load_config(Mlc& app, Cli::ArgParser& args){
         }
         
         if(fileExist){
+            auto root = FileUtils::directory_of_file(cfg_path);
+            if(!root.empty())
+                root += "/";
             for(auto& dir : config.configs_directories)
-                dir = FileUtils::normalizePath(FileUtils::directory_of_file(cfg_path) + "/" + dir);
+                dir = FileUtils::normalizePath(root + dir);
             for(auto& dir : config.data_directories)
-                dir = FileUtils::normalizePath(FileUtils::directory_of_file(cfg_path) + "/" + dir);
+                dir = FileUtils::normalizePath(root + dir);
             for(auto& job : config.jobs){
-                job.out_data_directory = FileUtils::normalizePath(FileUtils::directory_of_file(cfg_path) + "/" + job.out_data_directory) + "/";
-                job.out_directory = FileUtils::normalizePath(FileUtils::directory_of_file(cfg_path) + "/" + job.out_directory) + "/";
+                job.out_data_directory = FileUtils::normalizePath(root + job.out_data_directory) + "/";
+                job.out_directory = FileUtils::normalizePath(root + job.out_directory) + "/";
             }
         }
         
@@ -236,11 +239,16 @@ bool try_load_argc(Mlc& app, Cli::ArgParser& args){
 
 void try_update_subcommand(int argc, char** argv)
 {
+    bool update = false;
     if (argc >= 2){
         std::string sub = argv[1];
-        if (sub != "update")
+        if (sub != "update"){
+            update = true;
             return;
+        }
     }
+    if(!update)
+        return;
 
     std::string version;
     std::string extras;

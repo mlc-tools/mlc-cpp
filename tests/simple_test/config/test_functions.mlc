@@ -101,6 +101,10 @@ class TestFunctions
     {
         return "";
     }
+    function string get_id():const:server
+    {
+        return "";
+    }
 
     function void test_001()
     {

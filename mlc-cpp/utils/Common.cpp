@@ -14,6 +14,7 @@ template <> std::string to_string(const size_t& value) { return std::to_string(v
 template <> std::string to_string(const float& value) { return std::to_string(value); }
 template <> std::string to_string(const std::string& value) { return value; }
 template <> std::string to_string(const bool& value) { return value ? "yes" : "no"; }
+std::string to_string(std::string_view value) { return std::string(value); }
 
 bool to_bool(const std::string& v, bool* ok){
     std::string s; s.reserve(v.size());

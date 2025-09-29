@@ -54,6 +54,10 @@ static const std::unordered_map<Error::Code, std::string> kTexts = {
     { Error::ERROR_CONST_MODIFIER, "Const modifier should be declare as [Type:const]: {}" },
     { Error::WARNING_TEST_CLASS_NOT_IMPLEMENT_METHOD, "Test class [{}] has not implemented method [{}]" },
     { Error::ERROR_VIRTUAL_METHOD_HAS_DIFFERENT_DECLARATION, "Class [{}] has different declaration of method [{}]. See class [{}]" },
+    { Error::ERROR_SEMICOLON_IN_FUNCTION, "Syntax error: Found symbol \";\" in function declaration: [{}]\nIn line: \n{}" },
+    { Error::ERROR_METHOD_HAS_NOT_BODY, "Error: method [{}] has not body.\nIn line: \n{}" },
+    { Error::ERROR_SYNTAX_ERROR, "Error syntax: Line: \n{}" },
+    
 };
 
 void Error::exit(Code code) {

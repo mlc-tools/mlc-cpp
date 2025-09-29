@@ -226,6 +226,42 @@ class EcsGenerator:
 
             system.user_includes.add(skill.name)
 
+    def _generate_model_method_save_skills(self, mlc_model):
+        controller_dungeon_class = mlc_model.get_class('ControllerDungeonBase')
+        save_skills_current_hero = None
+        restore_hero_skill_on_change = None
+        for f in controller_dungeon_class.functions:
+            if f.name == 'save_skills_current_hero':
+                save_skills_current_hero = f
+            if f.name == 'restore_hero_skill_on_change':
+                restore_hero_skill_on_change = f
+            if restore_hero_skill_on_change and save_skills_current_hero:
+                break
+        if save_skills_current_hero is None:
+            print('ControllerDungeonBase::save_skills_current_hero not found')
+            return
+        if restore_hero_skill_on_change is None:
+            print('ControllerDungeonBase::restore_hero_skill_on_change not found')
+            return
+
+        ModelDungeonBaseChangeHeroesInfo = mlc_model.get_class('ModelDungeonBaseChangeHeroesInfo')
+
+        save_skills_current_hero.operations.append('auto id = this->model->player_id;')
+        save_skills_current_hero.operations.append('auto name = this->model->get<ComponentData>(id)->data->name;')
+        restore_hero_skill_on_change.operations.append('auto name = this->model->get<ComponentData>(this->model->player_id)->data->name;')
+        
+        skills = self._get_skill_components(mlc_model)
+        for skill in skills:
+            field = self.get_components_name(skill)
+            save_skills_current_hero.operations.append(f'this->model->change_heroes_info.{field}[name] = this->model->get<{skill.name}>(id);')
+            
+            restore_hero_skill_on_change.operations.append(f'if(in_map(name, this->model->change_heroes_info.{field}) && this->model->change_heroes_info.{field}[name])')
+            restore_hero_skill_on_change.operations.append('{')
+            restore_hero_skill_on_change.operations.append(f'    this->model->add<{skill.name}>(this->model->change_heroes_info.{field}[name]);')
+            restore_hero_skill_on_change.operations.append('}')
+
+            ModelDungeonBaseChangeHeroesInfo.members.append(mlc_model.parser.create_object(f'map<string, {skill.name}*> {field}'))
+
     def _generate_model_get_component(self, mlc_model, is_const):
         model_dungeon_class = mlc_model.get_class('ModelEcsBase')
 

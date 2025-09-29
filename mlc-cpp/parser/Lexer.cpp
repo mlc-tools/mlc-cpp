@@ -127,3 +127,18 @@ constexpr bool Lexer::is_symbol(char c) {
     false
     ;
 }
+
+std::string_view Lexer::get_current_line() const{
+    size_t start = this->pos;
+    size_t end = this->pos;
+    while (--start >= 0){
+        if(text[start] == '\n')
+            break;
+    }
+    while (end < text.size()){
+        if(text[end] == '\n')
+            break;
+        ++end;
+    }
+    return std::string_view(&text[start+1], end - start);
+}
