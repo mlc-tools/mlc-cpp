@@ -20,16 +20,10 @@ std::string convert_type(const std::string& type_)
 }
 
 SerializerCpp::SerializerCpp()
-: SerializerBase()
-, protocol() {
+: SerializerBase(){
 }
 SerializerCpp::~SerializerCpp(){
     
-}
-
-SerializerCpp::ProtocolMap SerializerCpp::getProtocolMap(const std::string &format) const {
-//    return (format == "xml" ? CPP_XML : CPP_JSON);
-    return {};
 }
 
 std::string SerializerCpp::getProtocolText(const std::string &format){
@@ -91,62 +85,5 @@ std::string SerializerCpp::buildSerializeOperation(
     if (t==SerializationType::DESERIALIZATION) {
         return format_indexes("deserializer.deserialize({0}, \"{0}\");\n", fieldName);
     }
-    // Fallback to full protocol dispatch:
-    protocol = getProtocolMap(format);
-    return dispatchSerializeOp(fieldName,
-                               fieldType,
-                               fieldValue,
-                               t,
-                               tplArgs,
-                               isPointer,
-                               isLink,
-                               format);
-}
-
-std::string SerializerCpp::buildMapSerialization(
-    const std::string &fieldName,
-    const std::vector<Object> &tplArgs,
-    SerializationType t,
-    const std::string &format)
-{
-    assert(tplArgs.size()==2);
-    auto &key   = tplArgs[0];
-    auto &value = tplArgs[1];
-    // use protocol["map"][0]
-    const auto& pat = protocol[static_cast<int>(t)]["map"][0];
-    // recursively serialize key/value
-    auto ks = buildSerializeOperation("key",   key.type,   "", SerializationType::SERIALIZATION, {}, key.is_pointer, key.is_link, format);
-    auto vs = buildSerializeOperation("value", value.type, "", SerializationType::SERIALIZATION, value.template_args, value.is_pointer, value.is_link, format);
-    return ::format(pat, {
-        {"field",          fieldName},
-        {"key_serialize",  ks},
-        {"value_serialize",vs}})
-         + "\n\n";
-}
-
-std::string SerializerCpp::buildMapDeserialization(
-    const std::string &fieldName,
-    const std::vector<std::shared_ptr<Object>> &tplArgs,
-    const std::string &format)
-{
-    assert(tplArgs.size()==2);
-    auto &key   = *tplArgs[0];
-    auto &value = *tplArgs[1];
-    const auto& pat = protocol[(int)SerializationType::DESERIALIZATION].at("map")[0];
-    // declare key
-    std::string keyDecl = key.is_pointer
-        ? format_indexes("auto key = make_intrusive<{0}>();", key.type)
-        : format_indexes("{0} key;", convertInitializeValue(key.type));
-    auto ks = buildSerializeOperation("key",   key.type,   "", SerializationType::DESERIALIZATION, {}, key.is_pointer, key.is_link, format);
-    auto vs = buildSerializeOperation("value", value.type, "", SerializationType::DESERIALIZATION, value.template_args, value.is_pointer, value.is_link, format);
-    std::string valInit = value.is_pointer
-        ? format_indexes("intrusive_ptr<{0}>", value.type)
-        : convert_type(value.type);
-    return ::format(pat, {
-        {"field",          fieldName},
-        {"key",            keyDecl},
-        {"key_serialize",  ks},
-        {"value_serialize",vs},
-        {"value_type",     valInit}})
-         + "\n\n";
+    assert(0);
 }

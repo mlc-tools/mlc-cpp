@@ -9,8 +9,6 @@
 #include "GeneratorFactoryPython.hpp"
 #include "GeneratorPackagePython.hpp"
 #include "GeneratorObserverPython.hpp"
-#include "GeneratorDataStoragePython.hpp"
-#include "GeneratorOperatorEqualsPython.hpp"
 #include "GeneratorPredefinedFilesPython.hpp"
 
 #include <filesystem>
@@ -37,9 +35,7 @@ void GeneratorPython::addPredefinedFiles(Model &model)
 
 void GeneratorPython::generateExtras(Model &model)
 {
-    GeneratorDataStoragePython().generate(model);
     GeneratorFactoryPython().generate(model);
     GeneratorPackagePython().generate(model);
     GeneratorObserverPython().generate(model);
-    GeneratorOperatorEqualsPython().generate(model);
 }

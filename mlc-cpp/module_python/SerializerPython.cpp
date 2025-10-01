@@ -91,43 +91,6 @@ std::string SerializerPython::buildSerializeOperation(const std::string &fieldNa
            "        self." + fieldName + " = serializer.deserialize(\"" + fieldName + "\", " + meta + defv + ")";
 }
 
-std::string SerializerPython::buildMapSerialization(const std::string &fieldName,
-                                                    const std::vector<Object> & obj,
-                                                    SerializationType t,
-                                                    const std::string & /*format*/)
-{
-    if (t == SerializationType::SERIALIZATION)
-    {
-        return std::string("\n        serializer.serialize(self.") + fieldName + ", \"" + fieldName + "\")";
-    }
-    // Build Meta(dict, key_meta, value_meta) and imports
-    std::string imports_text;
-    std::string meta_key;
-    std::string meta_val;
-    if (obj.size() >= 2)
-    {
-        auto [mk, ik] = create_meta_class(obj[0]);
-        auto [mv, iv] = create_meta_class(obj[1]);
-        meta_key = mk;
-        meta_val = mv;
-        for (auto &imp : ik)
-        {
-            if (imp == currentClass->name)
-                continue;
-            imports_text += "        from ." + imp + " import " + imp + "\n";
-        }
-        for (auto &imp : iv)
-        {
-            if (imp == currentClass->name)
-                continue;
-            imports_text += "        from ." + imp + " import " + imp + "\n";
-        }
-    }
-    std::string meta = "Meta(dict, " + meta_key + ", " + meta_val + ")";
-    return std::string("\n") + imports_text +
-           "        self." + fieldName + " = serializer.deserialize(\"" + fieldName + "\", " + meta + ")";
-}
-
 std::string SerializerPython::finalizeSerializeOperation(std::string s) const
 {
     // Apply PEP8-like tweaks

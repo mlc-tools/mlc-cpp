@@ -27,10 +27,6 @@ public:
                                         bool isPointer,
                                         bool isLink,
                                         const std::string &format) override;
-    std::string buildMapSerialization(const std::string &fieldName,
-                                      const std::vector<Object> &tplArgs,
-                                      SerializationType t,
-                                      const std::string &format) override;
     std::string finalizeSerializeOperation(std::string s) const override;
     std::string convertInitializeValue(const std::string &value) const override;
 

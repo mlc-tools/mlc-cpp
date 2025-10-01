@@ -103,11 +103,11 @@
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--config tests/simple_test/mlc_py.json"
-            isEnabled = "YES">
+            isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "--config tests/simple_test/mlc_xml.json"
-            isEnabled = "NO">
+            isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
             argument = "update 0.5.38 --user"

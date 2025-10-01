@@ -31,9 +31,6 @@ void SerializerBase::generateMethods(Model &m) {
         if ((m.config.serializeFormats & fmtCode) == 0)
             continue;
 
-        // Load protocol into model.serialize_protocol
-        loadDefaultserialize_protocol(name);
-
         // For each class
         for (auto &clsPtr : m.classes) {
             if (clsPtr->type == "enum" || clsPtr->name == "BaseEnum")
@@ -121,75 +118,3 @@ void SerializerBase::createSerializationFunction(Class &cls,
     cls.functions.push_back(std::move(fn));
 }
 
-std::string SerializerBase::dispatchSerializeOp(
-    const std::string &fieldName,
-    const std::string &fieldType,
-    const std::string &fieldValue,
-    SerializationType t,
-    const std::vector<Object> &templateArgs,
-    bool isPointer,
-    bool isLink,
-    const std::string &format)
-{
-    // Determine index: default vs with default value
-    int idx = fieldValue.empty() ? 1 : 0;
-
-    // Determine protocol key type
-    std::string keyType = fieldType;
-    auto clsPtr = model->hasClass(fieldType)
-                ? model->get_class(fieldType)
-                : nullptr;
-    if (clsPtr && clsPtr->type == "enum") {
-        keyType = "enum";
-    }
-    else if (!model->is_simple_type(fieldType) && keyType!="list" && keyType!="map")
-    {
-        if (isLink)
-            keyType = "link";
-        else if (isPointer)
-            keyType = "pointer";
-        else
-            keyType = "serialized";
-    }
-    else if (model->is_simple_type(fieldType)) {
-        keyType = fieldType;
-    }
-    else {
-        // list or map templates
-        if (keyType=="map") {
-            return buildMapSerialization(fieldName, templateArgs, t, format);
-        }
-        // list<T>
-        auto &arg = templateArgs.front();
-        if (arg.is_link)
-            keyType = "list<link>";
-        else if (model->is_simple_type(arg.type))
-            keyType = "list<{" + arg.type + "}>";
-        else if (arg.is_pointer)
-            keyType = "list<pointer>";
-        else if (model->hasClass(arg.type) && model->get_class(arg.type)->type=="enum") {
-            keyType = "list<string>";
-        }
-        else keyType = "list<serialized>";
-    }
-
-    // Convert default value
-    std::string defv = convertInitializeValue(fieldValue);
-
-    // Lookup in protocol
-    auto &vec = serialize_protocol[static_cast<int>(t)].at(keyType);
-    std::string pattern = vec.at(idx);
-
-    replace_all(pattern, "{field}",         fieldName);
-    replace_all(pattern, "{type}",          fieldType);
-    replace_all(pattern, "{default_value}", defv);
-    replace_all(pattern, "{owner}",         currentClass->name);
-    replace_all(pattern, "{arg_0}",         templateArgs.empty() ? "" : templateArgs[0].type);
-    replace_all(pattern, "{format}",        format);
-
-    return finalizeSerializeOperation(std::move(pattern));
-}
-
-void SerializerBase::loadDefaultserialize_protocol(const std::string& formatName){
-//    serialize_protocol = m.serialize_protocol;
-}
