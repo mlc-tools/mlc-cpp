@@ -30,8 +30,8 @@
 #include "features/cpp/GeneratorDataStorageCpp.hpp"
 #include "features/cpp/GeneratorRefCounterCpp.hpp"
 #include "features/cpp/GeneratorOperatorEqualsCpp.hpp"
-#include "module_python/GeneratorOperatorEqualsPython.hpp"
-#include "module_python/GeneratorDataStoragePython.hpp"
+#include "features/py/GeneratorOperatorEqualsPython.hpp"
+#include "features/py/GeneratorDataStoragePython.hpp"
 
 #include <unordered_map>
 #include <unordered_set>
@@ -185,15 +185,19 @@ void Mlc::buildFeatureGenerators()
             else if constexpr (std::is_same_v<T, FeatureUnitTests>)
                 return std::make_shared<GeneratorUnitTestsInterface>();
             else if constexpr (std::is_same_v<T, FeatureDataStorage>){
-                if(_model.config.language == "cpp") return std::make_shared<GeneratorDataStorageCpp>();
-                if(_model.config.language == "py") std::make_shared<GeneratorDataStoragePython>();
+                if(_model.config.language == "cpp")
+                    return std::make_shared<GeneratorDataStorageCpp>();
+                if(_model.config.language == "py")
+                    return std::make_shared<GeneratorDataStoragePython>();
                 return nullptr;
             }
             else if constexpr (std::is_same_v<T, FeatureRefCounter>)
                 return std::make_shared<GeneratorRefCounterCpp>();
             else if constexpr (std::is_same_v<T, FeatureOperatorEquals>){
-                if(_model.config.language == "cpp") return std::make_shared<GeneratorOperatorEqualsCpp>();
-                if(_model.config.language == "py") std::make_shared<GeneratorOperatorEqualsPython>();
+                if(_model.config.language == "cpp")
+                    return std::make_shared<GeneratorOperatorEqualsCpp>();
+                if(_model.config.language == "py")
+                    return std::make_shared<GeneratorOperatorEqualsPython>();
                 return nullptr;
             }
             else
