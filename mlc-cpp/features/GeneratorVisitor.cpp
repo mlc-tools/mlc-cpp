@@ -149,11 +149,14 @@ void GeneratorVisitor::generateAcceptorInterface(
         for (auto &visitor : visitors) {
             std::string vn = visitor->name;
             vn[0] = (char)std::tolower(vn[0]);
-            std::ostringstream os;
-            os << "else if (ctx->get_type() == " << visitor->name << "::TYPE) \n{\n"
-               << "    this->visit_" << vn << "(ctx);\n"
-               << "}\n";
-            m.body += os.str();
+            m.body += format_indexes(
+                R"(else if (ctx->get_type() == {0}::TYPE) 
+{
+    this->visit_{1}(ctx);
+}
+)",
+                visitor->name, vn
+            );
         }
         acceptor->functions.push_back(std::move(m));
     }

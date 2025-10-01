@@ -207,16 +207,16 @@ WriterPython::writeFunction(const Function &fn)
     }
     std::string args;
     for (size_t i=0;i<parts.size();++i) { if(i) args += ", "; args += parts[i]; }
-    std::ostringstream body;
+    std::string body;
     if (fn.body.empty())
-        body << "        pass\n";
+        body += "        pass\n";
     else
-        body << fn.body << (fn.body.back()=='\n' ? "" : "\n");
-    body << "\n        pass\n";
-    std::ostringstream method;
-    method << "    def " << fn.name << "(" << args << "):\n";
-    method << body.str() << "\n";
-    return { "", method.str() };
+        body += fn.body + (fn.body.back()=='\n' ? std::string("") : std::string("\n"));
+    body += "\n        pass\n";
+    std::string method;
+    method += ::format_indexes("    def {0}({1}):\n", fn.name, args);
+    method += body + "\n";
+    return { "", method };
 }
 
 std::string WriterPython::getMethodArgPattern(const Object &arg) const

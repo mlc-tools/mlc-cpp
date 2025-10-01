@@ -13,8 +13,6 @@
 #include "Error.hpp"
 #include "RegexPatternCpp.hpp"
 
-//#include <fmt/core.h>  // если доступно, можно заменить на std::ostringstream
-
 void TranslatorBase::translate(Model &model) {
     _model = &model;
     

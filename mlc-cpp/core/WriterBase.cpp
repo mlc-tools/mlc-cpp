@@ -184,19 +184,21 @@ std::string WriterBase::prepareFile(const std::string &text) const {
 std::string WriterBase::prepareFileCodeStylePhp(const std::string &text) const {
     auto out = prepareFile(text);
     int tabs = 0;
-    std::ostringstream oss;
+    std::string oss;
     std::istringstream iss(out);
     std::string line;
     while (std::getline(iss, line)) {
         RE2::GlobalReplace(&line, RE2("^\\s+|\\s+$"), "");
         if (!line.empty() && line[0]=='}') --tabs;
-        oss << std::string(tabs, '\t') << line << "\n";
+        oss += std::string(tabs, '\t');
+        oss += line;
+        oss.push_back('\n');
         if (!line.empty() && line[0]=='{') ++tabs;
     }
     // collapse multiple tabs before '{'
     for (int i=0; i<10; ++i) {
-        out = oss.str();
-        oss.str(""); oss.clear();
+        out = oss;
+        oss.clear();
         std::string pattern = "\n" + std::string(i, '\t') + "{";
         std::string replace = " {";
         size_t pos = 0;

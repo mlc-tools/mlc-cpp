@@ -27,12 +27,13 @@ void CircularReference::find() {
         circularReference_.push_back(circularReference_.front());
 
         // Формируем строку вида A->B->C->A
-        std::ostringstream oss;
+        std::string s;
         for (size_t i = 0; i < circularReference_.size(); ++i) {
-            if (i) oss << "->";
-            oss << circularReference_[i];
+            if (i)
+                s += "->";
+            s += circularReference_[i];
         }
-        Error::exit(Error::CIRCULAR_REFERENCE, oss.str());
+        Error::exit(Error::CIRCULAR_REFERENCE, s);
     }
 }
 

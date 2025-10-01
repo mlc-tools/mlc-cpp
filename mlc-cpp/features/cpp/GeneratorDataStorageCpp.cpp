@@ -45,13 +45,14 @@ void GeneratorDataStorageCpp::generateImplementations(
     const std::vector<std::shared_ptr<Class>>& /*classes*/,
     Function &getter)
 {
-    std::ostringstream impl;
+    std::string impl;
     for (auto &cls : getStorageClasses()) {
         std::string dataName = getDataName(cls->name);
         std::string mapName  = getDataListName(dataName);
 
-        impl << R"(
-template<>const )" << cls->name << R"(* DataStorage::get(const std::string& name) const 
+        impl += ::format(
+            R"(
+template<>const {cls}* DataStorage::get(const std::string& name) const 
 {
     if(name.empty()) 
     {
@@ -59,18 +60,23 @@ template<>const )" << cls->name << R"(* DataStorage::get(const std::string& name
     }
     if(_loaded) 
     {
-        auto iter = )" << mapName << R"(.find(name);
-        if(iter == )" << mapName << R"(.end()) 
+        auto iter = {map}.find(name);
+        if(iter == {map}.end()) 
         {
-            std::cout << "Cannot find data with name [" << name << "] in DataStorage::)" << mapName << R"(" << std::endl;
+            std::cout << "Cannot find data with name [" << name << "] in DataStorage::{map}" << std::endl;
         }
-        return iter != )" << mapName << R"(.end() ? &iter->second : nullptr;
+        return iter != {map}.end() ? &iter->second : nullptr;
     }
-    return &const_cast<DataStorage*>(this)->)" << mapName << R"([name];
+    return &const_cast<DataStorage*>(this)->{map}[name];
 }
-)";
+)",
+            {
+                {"cls", cls->name},
+                {"map", mapName}
+            }
+        );
     }
-    getter.specific_implementations = impl.str();
+    getter.specific_implementations = impl;
 }
 
 std::vector<std::shared_ptr<Class>> GeneratorDataStorageCpp::getStorageClasses() const {
@@ -84,8 +90,8 @@ std::vector<std::shared_ptr<Class>> GeneratorDataStorageCpp::getStorageClasses()
 }
 
 std::string GeneratorDataStorageCpp::getInitializeFunctionJsonBody() {
-    std::ostringstream body;
-    body << R"(
+    std::string body;
+    body += R"(
 Json::Value json;
 Json::Reader reader;
 reader.parse(content, json);
@@ -95,26 +101,33 @@ auto non_const_this = const_cast<DataStorage*>(this);
         std::string dataName = getDataName(cls->name);
         std::string mapName  = getDataListName(dataName);
 
-        body << R"(
-auto )" << dataName << R"( = json[")" << mapName << R"("];
-for (auto& node : )" << dataName << R"() 
+        body += ::format(
+            R"(
+auto {data} = json["{map}"];
+for (auto& node : {data}) 
 {
     auto name = node["key"].asString();
-    non_const_this->)" << mapName << R"(.emplace(name, )" << cls->name << R"(());
+    non_const_this->{map}.emplace(name, {cls}());
 }
-)";
+)",
+            {
+                {"data", dataName},
+                {"map", mapName},
+                {"cls", cls->name}
+            }
+        );
     }
-    body << R"(
+    body += R"(
 DeserializerJson deserializer(json);
 non_const_this->_loaded = true;
 non_const_this->deserialize_json(deserializer);
 )";
-    return body.str();
+    return body;
 }
 
 std::string GeneratorDataStorageCpp::getInitializeFunctionXmlBody() {
-    std::ostringstream body;
-    body << R"(pugi::xml_document doc;
+    std::string body;
+    body += R"(pugi::xml_document doc;
 doc.load_string(content.c_str());
 auto non_const_this = const_cast<DataStorage*>(this);
 if(doc.root() != nullptr) 
@@ -125,20 +138,25 @@ if(doc.root() != nullptr)
         std::string dataName = getDataName(cls->name);
         std::string mapName  = getDataListName(dataName);
 
-        body << R"(
-    for(auto& node : root.child(")" << mapName << R"(")) 
+        body += ::format(
+            R"(
+    for(auto& node : root.child("{map}")) 
     {
         auto name = node.attribute("key").as_string();
-        non_const_this->)" << mapName << R"(.emplace(name, )" << cls->name << R"(());
+        non_const_this->{map}.emplace(name, {cls}());
     }
-)";
+)",
+            {
+                {"map", mapName},
+                {"cls", cls->name}
+            }
+        );
     }
-    body << R"(
+    body += R"(
     DeserializerXml deserializer(root);
     non_const_this->_loaded = true;
     non_const_this->deserialize_xml(deserializer);
 }
 )";
-    return body.str();
+    return body;
 }
-

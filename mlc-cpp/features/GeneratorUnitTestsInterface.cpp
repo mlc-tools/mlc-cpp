@@ -16,7 +16,7 @@
 #include "Class.hpp"
 #include "Object.hpp"
 #include "Function.hpp"
-#include "Common.hpp"     // для smartSplit
+#include "Common.hpp"
 #include "Error.hpp"
 
 using namespace std;
@@ -319,14 +319,10 @@ void GeneratorUnitTestsInterface::generateMessagesIfEmpty(
                     string name = assertCall.substr(
                         strlen("this->"), // убрать "this->"
                         assertCall.size() - strlen("this->") - 1);
-                    ostringstream msg;
-                    msg << "\"" << name
-                        << " is false in " << cls->name
-                        << "::" << method.name << ":\\n     Args: "
-                        << join(parts, ',') << "\"";
+                    std::string msg = format_indexes(R"("{0} is false in {1}::{2}\\nArgs:{3}")", name, cls->name, method.name, join(parts, ','));
                     // вставляем перед );
                     line = line.substr(0, end)
-                         + ", " + msg.str() + ");";
+                         + ", " + msg + ");";
                 }
             }
 //        }

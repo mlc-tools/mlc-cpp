@@ -545,7 +545,7 @@ class TestTranslates<ITestTranslates>
     fn void test_while_simple()
     {
         int a = 0;
-        while(False)
+        while(false)
         {
             a = 1;
         }

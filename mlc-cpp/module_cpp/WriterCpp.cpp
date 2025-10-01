@@ -105,19 +105,19 @@ auto WriterCpp::writeHpp(const std::shared_ptr<Class> &cls)
     auto [incs,fwd,fwdOut] = getIncludesForHeader(cls);
 
     // Build functions section
-    std::ostringstream funcs;
+    std::string funcs;
     if (cls->type=="enum") {
-        funcs << cn << "(const BaseEnum& rhs):BaseEnum(rhs){}\n";
-        funcs << "const " << cn << "& operator =(const BaseEnum& rhs) { this->value = rhs.operator int(); return *this; }\n";
+        funcs += cn + "(const BaseEnum& rhs):BaseEnum(rhs){}\n";
+        funcs += "const " + cn + "& operator =(const BaseEnum& rhs) { this->value = rhs.operator int(); return *this; }\n";
     }
     AccessSpecifier lastAcc = AccessSpecifier::m_public;
     for (auto &fn : cls->functions) {
         if (fn.name=="constructor") continue;
         if (fn.access!=lastAcc) {
-            funcs << AccessSpecifierToString(fn.access) << ":\n";
+            funcs += AccessSpecifierToString(fn.access) + ":\n";
             lastAcc = fn.access;
         }
-        funcs << methodsCache_[&fn].first;
+        funcs += methodsCache_[&fn].first;
     }
     for (auto &templHpp : methodsCacheWithTemplates_) {
         auto more = getIncludesForMethod(cls, templHpp, incs);
@@ -125,16 +125,16 @@ auto WriterCpp::writeHpp(const std::shared_ptr<Class> &cls)
     }
 
     // Build members section
-    std::ostringstream membs;
+    std::string membs;
     lastAcc = AccessSpecifier::m_public;
     for (auto &m : cls->members) {
         if(_model->is_skip(m))
             continue;
         if (m.access!=lastAcc) {
-            membs << AccessSpecifierToString(m.access) << ":\n";
+            membs += AccessSpecifierToString(m.access) + ":\n";
             lastAcc = m.access;
         }
-        membs << objectsCache_[m.name][0] << "\n";
+        membs += objectsCache_[m.name][0] + "\n";
     }
 
     // Destructor
@@ -169,8 +169,8 @@ auto WriterCpp::writeHpp(const std::shared_ptr<Class> &cls)
     replace("includes", buildIncludes(cls,incs));
     replace("forward_declarations", buildForwardDeclarations(fwd));
     replace("forward_declarations_out", buildForwardDeclarations(fwdOut));
-    replace("functions", funcs.str());
-    replace("members", membs.str());
+    replace("functions", funcs);
+    replace("members", membs);
     replace("destructor", dtor);
     replace("superclass", super);
     replace("constructor_args", ctorArgs);
@@ -190,27 +190,27 @@ std::string WriterCpp::writeCpp(const std::shared_ptr<Class> &cls,
     const std::string ns = "mg";
     const std::string cn = cls->name;
     // Methods
-    std::ostringstream funcs;
+    std::string funcs;
     for (auto &fn : cls->functions){
         if(fn.name=="constructor") continue;
-        funcs<<methodsCache_[&fn].second;
+        funcs += methodsCache_[&fn].second;
     }
     // Inits
-    std::ostringstream inits, statics;
+    std::string inits, statics;
     for(auto &m : cls->members){
         if(_model->is_skip(m))
             continue;
 
         auto &arr = objectsCache_[m.name];
         if(!arr[1].empty()) {
-            if(!inits.str().empty())
-                inits<<", ";
+            if(!inits.empty())
+                inits += ", ";
             else
-                inits << ": ";
-            inits << arr[1] << "\n";
+                inits += ": ";
+            inits += arr[1] + "\n";
         }
         if(!arr[2].empty())
-            statics<<arr[2]<<"\n";
+            statics += arr[2] + "\n";
     }
     // Destructor
     std::string dtor;
@@ -232,7 +232,7 @@ std::string WriterCpp::writeCpp(const std::shared_ptr<Class> &cls,
         reg="REGISTRATION_OBJECT("+cn+");\n";
 
     // Includes
-    auto allInc = getIncludesForSource(cls, funcs.str(), incs, fwd, fwdOut);
+    auto allInc = getIncludesForSource(cls, funcs, incs, fwd, fwdOut);
 
     // Constructor
     std::string ctorArgs, ctorBody;
@@ -247,13 +247,13 @@ std::string WriterCpp::writeCpp(const std::shared_ptr<Class> &cls,
     replace_all(source, "{path_to_root}", getPathToRoot(cls));
     replace_all(source, "{class_name}", cn);
     replace_all(source, "{includes}", allInc);
-    replace_all(source, "{static_initializations}", statics.str());
+    replace_all(source, "{static_initializations}", statics);
     replace_all(source, "{registration}", reg);
-    replace_all(source, "{initializations}", inits.str());
+    replace_all(source, "{initializations}", inits);
     replace_all(source, "{constructor_args}", ctorArgs);
     replace_all(source, "{constructor_body}", ctorBody);
     replace_all(source, "{destructor}", dtor);
-    replace_all(source, "{functions}", funcs.str());
+    replace_all(source, "{functions}", funcs);
 
     return source;
 }
@@ -423,16 +423,16 @@ std::string WriterCpp::writeFunctionHpp(const Function &method) {
     std::string tmpl;
     
     if(!method.template_args.empty()){
-        std::stringstream ss;
-        ss << "template <";
+        std::string ss;
+        ss += "template <";
         for(size_t i=0; i<method.template_args.size(); ++i){
-            ss << "class " + method.template_args[i].type;
+            ss += "class " + method.template_args[i].type;
             if(i != method.template_args.size() - 1){
-                ss << ", ";
+                ss += ", ";
             }
         }
-        ss << ">\n";
-        tmpl = ss.str();
+        ss += ">\n";
+        tmpl = ss;
         
         if(method.specific_implementations.empty())
             pat += "\n{\n{body}\n}\n";

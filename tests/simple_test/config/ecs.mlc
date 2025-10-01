@@ -1,6 +1,6 @@
 class ecs/EcsModel
 {
-	fn void update_systems()
+	fn void update_systems(float dt)
 	{
 		[SystemMovement2]
 		[SystemMovement]
@@ -83,7 +83,7 @@ class ecs/TestEcsModel<ITestEcsModel>
 		model->add(new Movement(), 1);
 
 		model->get<Movement>(1)->y = 2;
-		model->update_systems();
+		model->update_systems(0);
 		this->assertEqual(model->get<Transform>(1)->x, 0);
 		this->assertEqual(model->get<Transform>(1)->y, 2);
 	}

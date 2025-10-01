@@ -15,6 +15,7 @@ template <> std::string to_string(const float& value) { return std::to_string(va
 template <> std::string to_string(const std::string& value) { return value; }
 template <> std::string to_string(const bool& value) { return value ? "yes" : "no"; }
 std::string to_string(std::string_view value) { return std::string(value); }
+std::string to_string(const char* value) { return std::string(value); }
 
 std::vector<std::string> split(const std::string& values, char delimiter)
 {
