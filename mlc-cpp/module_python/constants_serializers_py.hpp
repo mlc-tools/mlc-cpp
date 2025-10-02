@@ -121,6 +121,8 @@ class SerializerXml(object):
             self.serialize_list(obj, key)
         elif isinstance(obj, dict):
             self.serialize_dict(obj, key)
+        elif isinstance(obj, BaseEnum):
+            self.serialize_attr(obj.str(), key, default_value)
         else:
             self.serialize_attr(obj, key, default_value)
 
@@ -311,6 +313,8 @@ class SerializerJson(object):
             self.serialize_list(obj, key)
         elif isinstance(obj, dict):
             self.serialize_dict(obj, key)
+        elif isinstance(obj, BaseEnum):
+            self.serialize_attr(obj.str(), key, default_value)
         else:
             self.serialize_attr(obj, key, default_value)
 

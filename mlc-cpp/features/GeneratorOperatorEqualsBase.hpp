@@ -23,7 +23,9 @@ public:
 
     // Основной метод: генерирует операторы и конструкторы для всех классов
     // модели
+    
     virtual void generate(Model &model) override;
+    void generate(const std::shared_ptr<Class>& cls);
     virtual void modifySources(Model &model, const std::shared_ptr<Class> &cls,
                                std::string &header,
                                std::string &source) override {}

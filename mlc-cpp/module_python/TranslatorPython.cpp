@@ -49,18 +49,8 @@ void TranslatorPython::translateFunction(Class &cls, Function &method,
         std::string body = method.body;
         method.body = translateFunctionBody(cls, method, body, model,
                                             method.callable_args);
-    } else {
-        if (!method.body.empty()) {
-            return method.body;
-            //            // Ensure method.body lines are indented by 8 spaces
-            //            inside def std::string indented =
-            //            indent_lines(method.body, 8); if (!indented.empty() &&
-            //            indented.back() != '\n')
-            //                indented.push_back('\n');
-            //            method.body = indented;
-        } else {
+    } else if (method.body.empty()) {
             method.body = "        pass\n";
-        }
     }
 }
 

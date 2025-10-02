@@ -10,6 +10,7 @@
 #include "GeneratorObserverPython.hpp"
 #include "GeneratorPackagePython.hpp"
 #include "GeneratorPredefinedFilesPython.hpp"
+#include "../features/py/GeneratorOperatorEqualsPython.hpp"
 
 #include <filesystem>
 
@@ -23,6 +24,7 @@ void GeneratorPython::generateBaseEnumClass(Model &model) {
     auto base_enum = std::make_shared<Class>();
     base_enum->name = "BaseEnum";
     base_enum->type = "class";
+    GeneratorOperatorEqualsPython().generate(base_enum);
     model.add_class(base_enum);
 }
 

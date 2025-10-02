@@ -15,19 +15,23 @@
 void GeneratorOperatorEqualsBase::generate(Model &model) {
     _model = &model;
     for (auto &cls : model.classes) {
-        if (cls->type == "enum")
-            continue;
-        if (cls->is_inline)
-            continue;
-        if (cls->name == "DataStorage")
-            continue;
-
-        addEqualMethod(cls);
-        addNotEqualMethod(cls);
-        addCopyConstructor(cls);
-        addMoveConstructor(cls);
-        addCopyOperator(cls);
+        generate(cls);
     }
+}
+
+void GeneratorOperatorEqualsBase::generate(const std::shared_ptr<Class>& cls){
+    if (cls->type == "enum")
+        return;
+    if (cls->is_inline)
+        return;
+    if (cls->name == "DataStorage")
+        return;
+
+    addEqualMethod(cls);
+    addNotEqualMethod(cls);
+    addCopyConstructor(cls);
+    addMoveConstructor(cls);
+    addCopyOperator(cls);
 }
 
 Object
