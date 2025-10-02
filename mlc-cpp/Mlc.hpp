@@ -7,16 +7,16 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
-#include <functional>
-#include <memory>
 #include <cstdlib>
 #include <filesystem>
+#include <functional>
+#include <memory>
+#include <string>
+#include <vector>
 
+#include "Linker.hpp"
 #include "Model.hpp"
 #include "Parser.hpp"
-#include "Linker.hpp"
 
 class Mlc {
 public:
@@ -26,8 +26,8 @@ public:
     void generate();
     void generateData();
     void runTest();
-    
-    Model& get_model() { return _model; }
+
+    Model &get_model() { return _model; }
 
     // Непрерывный режим: следит за изменениями в конфигах и данных,
     // автоматически вызывает generate()/generateData(). Блокирует поток.
@@ -38,8 +38,8 @@ public:
 
     // Инкрементальная пересборка: перечитать изменённые .mlc,
     // удалить классы из удалённых .mlc и сгенерировать только затронутые классы
-    void generateIncremental(const std::vector<std::string>& changedFiles,
-                             const std::vector<std::string>& removedFiles);
+    void generateIncremental(const std::vector<std::string> &changedFiles,
+                             const std::vector<std::string> &removedFiles);
 
 private:
     Model _model;

@@ -10,4 +10,3 @@ class GeneratorPackagePython {
 public:
     void generate(Model &model);
 };
-

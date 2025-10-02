@@ -18,25 +18,20 @@ public:
 
 protected:
     /// Переопределяем обработку одного метода
-    virtual void translateFunction(Class &cls,
-                           Function &method,
-                           Model &model) override;
+    virtual void translateFunction(Class &cls, Function &method,
+                                   Model &model) override;
 
     /// Переопределяем только тело метода
-    virtual std::string translateFunctionBody(Class &cls,
-                                      Function &method,
-                                      const std::string &body,
-                                      Model &model,
-                                      const std::vector<Object> &args) override;
+    virtual std::string
+    translateFunctionBody(Class &cls, Function &method, const std::string &body,
+                          Model &model,
+                          const std::vector<Object> &args) override;
 
     /// Расставляем все regex-паттерны из RegexPatternCpp
-    virtual std::string replaceByRegex(const std::string &body,
-                               Class &cls,
-                               Function &method,
-                               Model &model,
-                               const std::vector<Object> &args) override;
+    virtual std::string
+    replaceByRegex(const std::string &body, Class &cls, Function &method,
+                   Model &model, const std::vector<Object> &args) override;
 
     /// Специальная логика генерации enum: добавляем конструкторы и операторы
     virtual std::vector<int> convertToEnum(Class &cls) override;
 };
-

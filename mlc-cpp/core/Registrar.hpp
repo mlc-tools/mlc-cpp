@@ -24,7 +24,7 @@ public:
     static std::shared_ptr<Class> get_mock();
 
 private:
-    static std::string get_include_path_to_class(const std::shared_ptr<Class>& from,
-                                                 const std::shared_ptr<Class>& to);
+    static std::string
+    get_include_path_to_class(const std::shared_ptr<Class> &from,
+                              const std::shared_ptr<Class> &to);
 };
-

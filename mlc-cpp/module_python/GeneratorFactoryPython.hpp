@@ -10,4 +10,3 @@ class GeneratorFactoryPython {
 public:
     void generate(Model &model);
 };
-

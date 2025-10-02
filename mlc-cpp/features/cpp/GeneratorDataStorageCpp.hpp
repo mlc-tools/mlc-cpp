@@ -10,20 +10,17 @@
 
 #pragma once
 
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
 
 #include "features/GeneratorDataStorageBase.hpp"
 
-
-
 class GeneratorDataStorageCpp : public GeneratorDataStorageBase {
-public:
+  public:
     GeneratorDataStorageCpp();
 
-
-protected:
+  protected:
     // Не создаём статический instance в C++
     virtual bool isNeedCreateStaticInstance() const override;
 
@@ -31,22 +28,23 @@ protected:
     virtual std::string getSharedMethodBody() override;
 
     // Вместо базового createGetters(), делаем свою версию, возвращающую
-    // созданный getter-метод, чтобы потом в него добавить specific implementations.
-    // Этот метод НЕ override — он скрывает базовый.
-    virtual void createGetters(const std::vector<std::shared_ptr<Class>>& classes) override;
+    // созданный getter-метод, чтобы потом в него добавить specific
+    // implementations. Этот метод НЕ override — он скрывает базовый.
+    virtual void
+    createGetters(const std::vector<std::shared_ptr<Class>> &classes) override;
     virtual std::string getPatternGetter() override { return ""; };
 
     // Реализует все специализации get< T > для каждого storage-класса
-    virtual void generateImplementations(const std::vector<std::shared_ptr<Class>>& classes,
-                                 Function &getter);
+    virtual void
+    generateImplementations(const std::vector<std::shared_ptr<Class>> &classes,
+                            Function &getter);
 
     // Возвращает все storage-классы, релевантные для данной модели
     virtual std::vector<std::shared_ptr<Class>> getStorageClasses() const;
 
     // Тела функций инициализации, специфичные для JSON и XML
     virtual std::string getInitializeFunctionJsonBody() override;
-    virtual std::string getInitializeFunctionXmlBody()  override;
+    virtual std::string getInitializeFunctionXmlBody() override;
 };
-
 
 #endif /* GeneratorDataStorageCpp_hpp */

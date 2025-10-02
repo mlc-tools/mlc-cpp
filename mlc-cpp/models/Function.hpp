@@ -11,7 +11,7 @@
 struct Function : public Object {
     Object return_type;
     std::string body;
-    
+
     bool is_external;
     bool is_abstract;
     bool is_template;
@@ -24,9 +24,9 @@ struct Function : public Object {
     Function();
     Function(const Function &other) = default;
     Function(Function &&other) noexcept = default;
-    Function& operator=(const Function &other)  = default;
-    Function& operator=(Function &&other) noexcept  = default;
+    Function &operator=(const Function &other) = default;
+    Function &operator=(Function &&other) noexcept = default;
     virtual bool is_equal_declaration(const Function &other) const;
-    
-    virtual void set_modifier(const std::string_view& modifier) override;
+
+    virtual void set_modifier(const std::string_view &modifier) override;
 };

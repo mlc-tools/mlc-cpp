@@ -10,8 +10,7 @@
 
 #include <stdio.h>
 
-namespace tests
-{
+namespace tests {
 void run();
 }
 

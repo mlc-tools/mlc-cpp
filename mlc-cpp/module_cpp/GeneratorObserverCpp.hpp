@@ -12,10 +12,11 @@
 class Model;
 class Class;
 
-class GeneratorObserverCpp{
+class GeneratorObserverCpp {
 public:
     GeneratorObserverCpp() = default;
-    void generate(Model& model);
+    void generate(Model &model);
+
 protected:
     std::shared_ptr<Class> generate_class();
 };

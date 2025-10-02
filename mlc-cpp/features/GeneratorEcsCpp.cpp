@@ -9,15 +9,15 @@
 
 #include <algorithm>
 #include <cctype>
+#include <iostream>
 #include <re2/re2.h>
 #include <sstream>
-#include <iostream>
 
-#include "../models/Model.hpp"
-#include "../models/Class.hpp"
-#include "../models/Object.hpp"
-#include "../models/Function.hpp"
 #include "../core/Parser.hpp"
+#include "../models/Class.hpp"
+#include "../models/Function.hpp"
+#include "../models/Model.hpp"
+#include "../models/Object.hpp"
 #include "../utils/Common.hpp"
 
 using std::shared_ptr;
@@ -206,44 +206,48 @@ private:
     }
 )__EACH__";
 
-
 static string to_snake(const string &s) {
     string out;
-    out.reserve(s.size()*2);
-    for (size_t i=0;i<s.size();++i) {
+    out.reserve(s.size() * 2);
+    for (size_t i = 0; i < s.size(); ++i) {
         char ch = s[i];
-        if (std::isupper(static_cast<unsigned char>(ch)) && i>0) out.push_back('_');
-        out.push_back(static_cast<char>(std::tolower(static_cast<unsigned char>(ch))));
+        if (std::isupper(static_cast<unsigned char>(ch)) && i > 0)
+            out.push_back('_');
+        out.push_back(
+            static_cast<char>(std::tolower(static_cast<unsigned char>(ch))));
     }
     return out;
 }
 
-bool GeneratorEcsCpp::isBased(const shared_ptr<Class>& cls, const string &name) {
+bool GeneratorEcsCpp::isBased(const shared_ptr<Class> &cls,
+                              const string &name) {
     if (!cls)
         return false;
     if (cls->name == "Movement2")
         std::cout << "";
     if (cls->name == name)
         return true;
-    if(cls->parent.expired())
+    if (cls->parent.expired())
         cls->parent = _model->get_class(cls->parent_class_name);
     if (!cls->parent.expired()) {
         auto p = cls->parent.lock();
         if (isBased(p, name))
             return true;
     } else if (!cls->parent_class_name.empty()) {
-        // parent will be linked later, but we can compare by name if same group assumed
+        // parent will be linked later, but we can compare by name if same group
+        // assumed
         if (cls->parent_class_name == name)
             return true;
     }
     return false;
 }
 
-string GeneratorEcsCpp::componentsField(const shared_ptr<Class>& cls) {
+string GeneratorEcsCpp::componentsField(const shared_ptr<Class> &cls) {
     // ComponentFoo -> foo, CamelCase to snake
     string n = cls->name;
     const string pref = "Component";
-    if (n.rfind(pref, 0) == 0) n = n.substr(pref.size());
+    if (n.rfind(pref, 0) == 0)
+        n = n.substr(pref.size());
     return to_snake(n);
 }
 
@@ -259,13 +263,12 @@ Object GeneratorEcsCpp::makeObj(const string &decl, bool withName) {
     return parse_object(decl, withName);
 }
 
-GeneratorEcsCpp::GeneratorEcsCpp(const FeatureEcs& feature)
-{
+GeneratorEcsCpp::GeneratorEcsCpp(const FeatureEcs &feature) {
     _ecs_model_base_name = feature.model_base;
     _ecs_component_base_name = feature.component_base;
-    if(_ecs_model_base_name.empty())
+    if (_ecs_model_base_name.empty())
         _ecs_model_base_name = "ModelEcsBase";
-    if(_ecs_component_base_name.empty())
+    if (_ecs_component_base_name.empty())
         _ecs_component_base_name = "ComponentBase";
 }
 // --- main entry ---
@@ -274,14 +277,15 @@ void GeneratorEcsCpp::generate(Model &model) {
     if (!model.hasClass(_ecs_model_base_name))
         return;
     auto ecsBase = getClass(model, _ecs_model_base_name);
-    if (!ecsBase) return;
+    if (!ecsBase)
+        return;
 
     // members + clear_* methods per component
     generateContainersAndClear(model, ecsBase);
 
     // systems end-turn (update_systems body expansion)
     generateSystemsEndTurn(model, ecsBase);
-    for(auto cls : ecsBase->subclasses){
+    for (auto cls : ecsBase->subclasses) {
         generateSystemsEndTurn(model, cls.lock());
     }
 
@@ -294,44 +298,42 @@ void GeneratorEcsCpp::generate(Model &model) {
     generateRemoveEntity(model);
 
     generateModelAddComponent(model);
-    generateModelRemoveComponent(model, /*useRawPointer*/true);
-    generateModelRemoveComponent(model, /*useRawPointer*/false);
-    generateModelGetComponent(model, /*isConst*/true);
-    generateModelGetComponent(model, /*isConst*/false);
+    generateModelRemoveComponent(model, /*useRawPointer*/ true);
+    generateModelRemoveComponent(model, /*useRawPointer*/ false);
+    generateModelGetComponent(model, /*isConst*/ true);
+    generateModelGetComponent(model, /*isConst*/ false);
     generateModelCopyEntityFromModel(model);
-    generateModelGetComponents(model, /*isConst*/true);
-    generateModelGetComponents(model, /*isConst*/false);
+    generateModelGetComponents(model, /*isConst*/ true);
+    generateModelGetComponents(model, /*isConst*/ false);
 
     generate_system_skills(model, "update");
     generate_system_skills(model, "clean");
     generate_model_method_save_skills(model);
-    
+
     // provide helper header file (optional utilities)
     addHelperFile(model);
 }
 
-std::vector<shared_ptr<Class>> GeneratorEcsCpp::get_skill_components(Model &model)
-{
+std::vector<shared_ptr<Class>>
+GeneratorEcsCpp::get_skill_components(Model &model) {
     std::vector<shared_ptr<Class>> classes;
-    for (auto &cls : model.classes)
-    {
-        if (isBased(cls, "ComponentSkillBase") && cls->name != "ComponentSkillBase")
+    for (auto &cls : model.classes) {
+        if (isBased(cls, "ComponentSkillBase") &&
+            cls->name != "ComponentSkillBase")
             classes.push_back(cls);
     }
     return classes;
 }
 
-void GeneratorEcsCpp::generate_system_skills(Model &model, const std::string& method_name)
-{
+void GeneratorEcsCpp::generate_system_skills(Model &model,
+                                             const std::string &method_name) {
     auto skills = get_skill_components(model);
     auto system = getClass(model, "SystemSkillBase");
     if (!system)
         return;
-    Function* method = nullptr;
-    for (auto &f : system->functions)
-    {
-        if (f.name == method_name)
-        {
+    Function *method = nullptr;
+    for (auto &f : system->functions) {
+        if (f.name == method_name) {
             method = &f;
             break;
         }
@@ -340,8 +342,7 @@ void GeneratorEcsCpp::generate_system_skills(Model &model, const std::string& me
         return;
     std::string operations = method->body;
     method->body.clear();
-    for (auto &skill : skills)
-    {
+    for (auto &skill : skills) {
         if (!skill->subclasses.empty())
             continue;
         auto field = componentsField(skill);
@@ -355,15 +356,13 @@ void GeneratorEcsCpp::generate_system_skills(Model &model, const std::string& me
     }
 }
 
-void GeneratorEcsCpp::generate_model_method_save_skills(Model &model)
-{
+void GeneratorEcsCpp::generate_model_method_save_skills(Model &model) {
     auto controller = getClass(model, "ControllerDungeonBase");
     if (!controller)
         return;
-    Function* save_skills_current_hero = nullptr;
-    Function* restore_hero_skill_on_change = nullptr;
-    for (auto &f : controller->functions)
-    {
+    Function *save_skills_current_hero = nullptr;
+    Function *restore_hero_skill_on_change = nullptr;
+    for (auto &f : controller->functions) {
         if (f.name == "save_skills_current_hero")
             save_skills_current_hero = &f;
         if (f.name == "restore_hero_skill_on_change")
@@ -383,21 +382,23 @@ void GeneratorEcsCpp::generate_model_method_save_skills(Model &model)
     if (!save_skills_current_hero->body.empty())
         save_skills_current_hero->body += "\n";
     save_skills_current_hero->body += "auto id = this->model->player_id;\n";
-    save_skills_current_hero->body += "auto name = this->model->get<ComponentData>(id)->data->name;";
+    save_skills_current_hero->body +=
+        "auto name = this->model->get<ComponentData>(id)->data->name;";
 
     if (!restore_hero_skill_on_change->body.empty())
         restore_hero_skill_on_change->body += "\n";
-    restore_hero_skill_on_change->body += "auto name = this->model->get<ComponentData>(this->model->player_id)->data->name;\n";
+    restore_hero_skill_on_change->body +=
+        "auto name = "
+        "this->model->get<ComponentData>(this->model->player_id)->data->name;"
+        "\n";
 
     auto skills = get_skill_components(model);
-    for (auto &skill : skills)
-    {
+    for (auto &skill : skills) {
         auto field = componentsField(skill);
         {
             std::string line = format_indexes(
                 R"(this->model->change_heroes_info.{0}[name] = this->model->get<{1}>(id);)",
-                field, skill->name
-            );
+                field, skill->name);
             if (!save_skills_current_hero->body.empty())
                 save_skills_current_hero->body += "\n";
             save_skills_current_hero->body += line;
@@ -405,71 +406,68 @@ void GeneratorEcsCpp::generate_model_method_save_skills(Model &model)
         {
             std::string a = format_indexes(
                 R"(if(in_map(name, this->model->change_heroes_info.{0}) && this->model->change_heroes_info.{0}[name]))",
-                field
-            );
+                field);
             if (!restore_hero_skill_on_change->body.empty())
                 restore_hero_skill_on_change->body += "\n";
             restore_hero_skill_on_change->body += a;
             restore_hero_skill_on_change->body += "\n{";
             std::string b = format_indexes(
                 R"(    this->model->add<{0}>(this->model->change_heroes_info.{1}[name]);)",
-                skill->name, field
-            );
+                skill->name, field);
             restore_hero_skill_on_change->body += "\n";
             restore_hero_skill_on_change->body += b;
             restore_hero_skill_on_change->body += "\n}";
         }
         {
-            std::string member = format_indexes(
-                R"(map<string, {0}*> {1})",
-                skill->name, field
-            );
+            std::string member =
+                format_indexes(R"(map<string, {0}*> {1})", skill->name, field);
             info->members.push_back(makeObj(member, true));
         }
     }
 }
 
-void GeneratorEcsCpp::modifySources(Model& model, const std::shared_ptr<Class>& cls, std::string& header, std::string& source){
-    if(cls->name != _ecs_model_base_name)
+void GeneratorEcsCpp::modifySources(Model &model,
+                                    const std::shared_ptr<Class> &cls,
+                                    std::string &header, std::string &source) {
+    if (cls->name != _ecs_model_base_name)
         return;
-    
+
     replace_all(header, "};", MODEL_ECS_TEMPLATES + "\n};");
 }
 
-void GeneratorEcsCpp::generateContainersAndClear(Model &model, const shared_ptr<Class>& ecsBase) {
+void GeneratorEcsCpp::generateContainersAndClear(
+    Model &model, const shared_ptr<Class> &ecsBase) {
     for (auto &cls : model.classes) {
-        if(cls->name == "Transform")
+        if (cls->name == "Transform")
             std::cout << "";
-        if (!isBased(cls, _ecs_component_base_name) || cls->name == _ecs_component_base_name)
+        if (!isBased(cls, _ecs_component_base_name) ||
+            cls->name == _ecs_component_base_name)
             continue;
         auto field = componentsField(cls);
         // list<Cls*> components_field
         {
-            std::string decl = format_indexes(
-                R"(list<{0}*> components_{1})",
-                cls->name, field
-            );
+            std::string decl = format_indexes(R"(list<{0}*> components_{1})",
+                                              cls->name, field);
             ecsBase->members.push_back(makeObj(decl, true));
         }
         // map<int, Cls*>:private:runtime map_components_field
         {
             std::string decl = format_indexes(
                 R"(map<int, {0}*>:private:runtime map_components_{1})",
-                cls->name, field
-            );
+                cls->name, field);
             ecsBase->members.push_back(makeObj(decl, true));
         }
         // fn void clear_components_field()
         {
-            std::string decl = format_indexes(
-                R"(fn void clear_components_{0}())",
-                field
-            );
+            std::string decl =
+                format_indexes(R"(fn void clear_components_{0}())", field);
             auto fn = makeFnDecl(decl);
             std::string body;
             body += format_indexes(R"(map_clear(this->map_components_{0});
-)", field);
-            body += format_indexes(R"(list_clear(this->components_{0});)", field);
+)",
+                                   field);
+            body +=
+                format_indexes(R"(list_clear(this->components_{0});)", field);
             fn.body = body;
             ecsBase->functions.push_back(std::move(fn));
         }
@@ -477,7 +475,8 @@ void GeneratorEcsCpp::generateContainersAndClear(Model &model, const shared_ptr<
     // keep order: optional; C++ codegen doesn’t require sort here
 }
 
-void GeneratorEcsCpp::generateSystemsEndTurn(Model &model, const std::shared_ptr<Class>& ecs) {
+void GeneratorEcsCpp::generateSystemsEndTurn(
+    Model &model, const std::shared_ptr<Class> &ecs) {
     if (!ecs)
         return;
     Function *update = nullptr;
@@ -489,7 +488,8 @@ void GeneratorEcsCpp::generateSystemsEndTurn(Model &model, const std::shared_ptr
     if (!update)
         return;
 
-    // parse body by lines and expand directives like [SystemX] and optional condition [!isFoo]
+    // parse body by lines and expand directives like [SystemX] and optional
+    // condition [!isFoo]
     std::vector<string> lines;
     {
         std::istringstream iss(update->body);
@@ -499,10 +499,11 @@ void GeneratorEcsCpp::generateSystemsEndTurn(Model &model, const std::shared_ptr
     }
     std::vector<string> out;
     static re2::RE2 reCond(R"(\[([!]*is\w+)\])");
-    static re2::RE2 reSys (R"(\[(System\w+)\])");
-    for (size_t i=0;i<lines.size();++i) {
+    static re2::RE2 reSys(R"(\[(System\w+)\])");
+    for (size_t i = 0; i < lines.size(); ++i) {
         const auto &op = lines[i];
-        if (op.empty()) continue;
+        if (op.empty())
+            continue;
         std::string sys;
         bool hasS = RE2::PartialMatch(op, reSys, &sys);
         if (hasS) {
@@ -512,23 +513,23 @@ void GeneratorEcsCpp::generateSystemsEndTurn(Model &model, const std::shared_ptr
             bool hasClean = false;
             auto sysCls = getClass(model, sys);
             if (sysCls) {
-                for (auto &fn : sysCls->functions){
+                for (auto &fn : sysCls->functions) {
                     if (fn.name == "clean") {
                         hasClean = true;
                         break;
                     }
                 }
             }
-            std::string args; //this, dt
+            std::string args; // this, dt
             auto update = sysCls->get_method("update");
-            if(!update)
+            if (!update)
                 continue;
-            for(auto& arg : update->callable_args){
-                if(!args.empty())
+            for (auto &arg : update->callable_args) {
+                if (!args.empty())
                     args += ", ";
-                if(arg.type == _ecs_model_base_name)
+                if (arg.type == _ecs_model_base_name)
                     args += "this";
-                else if(arg.type == "float" && arg.name == "dt")
+                else if (arg.type == "float" && arg.name == "dt")
                     args += "dt";
                 else
                     assert(0);
@@ -537,13 +538,17 @@ void GeneratorEcsCpp::generateSystemsEndTurn(Model &model, const std::shared_ptr
             if (!cond.empty())
                 code += format_indexes(R"(if({0})
 {
-)", cond);
+)",
+                                       cond);
             code += format_indexes(R"({0} s{1};
-)", sys, std::to_string(i));
-            code += format_indexes(R"(s{0}.update({1});)", std::to_string(i), args);
+)",
+                                   sys, std::to_string(i));
+            code +=
+                format_indexes(R"(s{0}.update({1});)", std::to_string(i), args);
             if (hasClean)
                 code += format_indexes(R"(
-s{0}.clean(this);)", std::to_string(i));
+s{0}.clean(this);)",
+                                       std::to_string(i));
             if (!cond.empty())
                 code += "\n}";
             out.push_back(code);
@@ -551,14 +556,16 @@ s{0}.clean(this);)", std::to_string(i));
             // keep as-is, ensure it ends with ';' if not brace
             string trimmed = op;
             auto p = trimmed.find_last_not_of(" \t\r\n");
-            if (p!=string::npos) trimmed.resize(p+1);
-            if (!trimmed.empty() && trimmed.back()!=';' && trimmed.back()!='{' && trimmed.back()!='}')
+            if (p != string::npos)
+                trimmed.resize(p + 1);
+            if (!trimmed.empty() && trimmed.back() != ';' &&
+                trimmed.back() != '{' && trimmed.back() != '}')
                 trimmed += ';';
             out.push_back(trimmed);
         }
     }
     std::string joined;
-    for (size_t i=0;i<out.size();++i) {
+    for (size_t i = 0; i < out.size(); ++i) {
         if (i)
             joined += "\n";
         joined += out[i];
@@ -568,13 +575,13 @@ s{0}.clean(this);)", std::to_string(i));
 
 void GeneratorEcsCpp::generateAddModelMethod(Model &model) {
     for (auto &cls : model.classes) {
-        if (!isBased(cls, _ecs_component_base_name)) continue;
-        auto fn = makeFnDecl("fn void add_self_to_model(" + _ecs_model_base_name + "* model_dungeon_class)");
+        if (!isBased(cls, _ecs_component_base_name))
+            continue;
+        auto fn = makeFnDecl("fn void add_self_to_model(" +
+                             _ecs_model_base_name + "* model_dungeon_class)");
         if (cls->name != _ecs_component_base_name) {
-            fn.body = format_indexes(
-                R"(model_dungeon_class->add<{0}>(this);)",
-                cls->name
-            );
+            fn.body = format_indexes(R"(model_dungeon_class->add<{0}>(this);)",
+                                     cls->name);
         } else {
             fn.is_abstract = true;
         }
@@ -585,13 +592,13 @@ void GeneratorEcsCpp::generateAddModelMethod(Model &model) {
 
 void GeneratorEcsCpp::generateRemoveModelMethod(Model &model) {
     for (auto &cls : model.classes) {
-        if (!isBased(cls, _ecs_component_base_name)) continue;
-        auto fn = makeFnDecl("fn void remove_self_from_model(" + _ecs_model_base_name + "* model_dungeon_class)");
+        if (!isBased(cls, _ecs_component_base_name))
+            continue;
+        auto fn = makeFnDecl("fn void remove_self_from_model(" +
+                             _ecs_model_base_name + "* model_dungeon_class)");
         if (cls->name != _ecs_component_base_name) {
             fn.body = format_indexes(
-                R"(model_dungeon_class->remove<{0}>(this);)",
-                cls->name
-            );
+                R"(model_dungeon_class->remove<{0}>(this);)", cls->name);
         } else {
             fn.is_abstract = true;
         }
@@ -602,13 +609,15 @@ void GeneratorEcsCpp::generateRemoveModelMethod(Model &model) {
 
 void GeneratorEcsCpp::generateGetSelfFromModelMethod(Model &model) {
     for (auto &cls : model.classes) {
-        if (!isBased(cls, _ecs_component_base_name)) continue;
-        if (cls->name == _ecs_component_base_name) continue;
-        auto fn = makeFnDecl("fn " + _ecs_component_base_name + "* get_self_from_model(" + _ecs_model_base_name + "* model_dungeon_class, int id)");
-        fn.body = format_indexes(
-            R"(return model_dungeon_class->get<{0}>(id);)",
-            cls->name
-        );
+        if (!isBased(cls, _ecs_component_base_name))
+            continue;
+        if (cls->name == _ecs_component_base_name)
+            continue;
+        auto fn = makeFnDecl("fn " + _ecs_component_base_name +
+                             "* get_self_from_model(" + _ecs_model_base_name +
+                             "* model_dungeon_class, int id)");
+        fn.body = format_indexes(R"(return model_dungeon_class->get<{0}>(id);)",
+                                 cls->name);
         fn.is_virtual = true;
         cls->functions.push_back(std::move(fn));
     }
@@ -616,13 +625,15 @@ void GeneratorEcsCpp::generateGetSelfFromModelMethod(Model &model) {
 
 void GeneratorEcsCpp::generateHasInModel(Model &model) {
     for (auto &cls : model.classes) {
-        if (!isBased(cls, "ComponentSkillBase")) continue;
-        if (cls->name == "ComponentSkillBase") continue;
-        auto fn = makeFnDecl("fn bool has_in_model(" + _ecs_model_base_name + "* model_dungeon_class, int id)");
+        if (!isBased(cls, "ComponentSkillBase"))
+            continue;
+        if (cls->name == "ComponentSkillBase")
+            continue;
+        auto fn = makeFnDecl("fn bool has_in_model(" + _ecs_model_base_name +
+                             "* model_dungeon_class, int id)");
         fn.body = format_indexes(
             R"(return model_dungeon_class->get<{0}>(id) != nullptr;)",
-            cls->name
-        );
+            cls->name);
         fn.is_virtual = true;
         cls->functions.push_back(std::move(fn));
     }
@@ -630,17 +641,21 @@ void GeneratorEcsCpp::generateHasInModel(Model &model) {
 
 void GeneratorEcsCpp::generateBuildMaps(Model &model) {
     auto ecs = getClass(model, _ecs_model_base_name);
-    if (!ecs) return;
+    if (!ecs)
+        return;
     auto fn = makeFnDecl("fn void build_maps()");
     std::string body;
     for (auto &cls : model.classes) {
-        if (!isBased(cls, _ecs_component_base_name) || cls->name == _ecs_component_base_name) continue;
+        if (!isBased(cls, _ecs_component_base_name) ||
+            cls->name == _ecs_component_base_name)
+            continue;
         auto field = componentsField(cls);
         body += format_indexes(R"(for(auto& component : this->components_{0})
 {
     this->map_components_{0}[component->id] = component;
 }
-)", field);
+)",
+                               field);
     }
     fn.body = body;
     ecs->functions.push_back(std::move(fn));
@@ -648,33 +663,45 @@ void GeneratorEcsCpp::generateBuildMaps(Model &model) {
 
 void GeneratorEcsCpp::generateRemoveEntity(Model &model) {
     auto ecs = getClass(model, _ecs_model_base_name);
-    if (!ecs) return;
+    if (!ecs)
+        return;
     Function *fn = nullptr;
-    for (auto &f : ecs->functions) if (f.name == "remove_entity") { fn = &f; break; }
-    if (!fn) return;
+    for (auto &f : ecs->functions)
+        if (f.name == "remove_entity") {
+            fn = &f;
+            break;
+        }
+    if (!fn)
+        return;
     std::string add;
     if (!fn->body.empty())
         add += fn->body + "\n";
     for (auto &cls : model.classes) {
-        if (!isBased(cls, _ecs_component_base_name) || cls->name == _ecs_component_base_name) continue;
+        if (!isBased(cls, _ecs_component_base_name) ||
+            cls->name == _ecs_component_base_name)
+            continue;
         auto field = componentsField(cls);
         add += format_indexes(R"(if(in_map(id, this->map_components_{0}))
 {
     auto component = this->map_components_{0}.at(id);
     this->remove<{1}>(component);
 }
-)", field, cls->name);
+)",
+                              field, cls->name);
     }
     fn->body = add;
 }
 
 void GeneratorEcsCpp::generateModelGetComponent(Model &model, bool isConst) {
     auto ecs = getClass(model, _ecs_model_base_name);
-    if (!ecs) return;
+    if (!ecs)
+        return;
     Function method;
     method.name = "get";
     // template <class T>
-    Object tpl; tpl.type = "T"; method.template_args.push_back(tpl);
+    Object tpl;
+    tpl.type = "T";
+    method.template_args.push_back(tpl);
     // return type
     if (isConst) {
         method.return_type.type = "T";
@@ -682,7 +709,9 @@ void GeneratorEcsCpp::generateModelGetComponent(Model &model, bool isConst) {
         method.return_type.is_const = true;
     } else {
         method.return_type.type = "intrusive_ptr";
-        Object inner; inner.type = "T"; method.return_type.template_args.push_back(inner);
+        Object inner;
+        inner.type = "T";
+        method.return_type.template_args.push_back(inner);
     }
     // args
     method.callable_args.push_back(makeObj("int component_id", true));
@@ -691,11 +720,12 @@ void GeneratorEcsCpp::generateModelGetComponent(Model &model, bool isConst) {
 
     // specializations
     for (auto &cls : model.classes) {
-        if (!isBased(cls, _ecs_component_base_name) || cls->name==_ecs_component_base_name) continue;
+        if (!isBased(cls, _ecs_component_base_name) ||
+            cls->name == _ecs_component_base_name)
+            continue;
         auto field = componentsField(cls);
-        std::string retType = isConst
-            ? ("const " + cls->name + "*")
-            : ("intrusive_ptr<" + cls->name + ">");
+        std::string retType = isConst ? ("const " + cls->name + "*")
+                                      : ("intrusive_ptr<" + cls->name + ">");
         std::string spec;
         spec += format_indexes(R"(template<> {0} {1}::get(int component_id){2}
 {
@@ -706,17 +736,23 @@ void GeneratorEcsCpp::generateModelGetComponent(Model &model, bool isConst) {
     return nullptr;
 }
 
-)", retType, _ecs_model_base_name, (isConst ? " const" : ""), field);
+)",
+                               retType, _ecs_model_base_name,
+                               (isConst ? " const" : ""), field);
         ecs->functions.front().specific_implementations += spec;
     }
 }
 
-std::vector<shared_ptr<Class>> GeneratorEcsCpp::getComponentClasses(Model &model) {
+std::vector<shared_ptr<Class>>
+GeneratorEcsCpp::getComponentClasses(Model &model) {
     std::vector<shared_ptr<Class>> out;
     for (auto &cls : model.classes) {
-        if (isBased(cls, _ecs_component_base_name) && cls->name != _ecs_component_base_name) {
-            if (cls->name == "ComponentSkillBase") out.insert(out.begin(), cls);
-            else out.push_back(cls);
+        if (isBased(cls, _ecs_component_base_name) &&
+            cls->name != _ecs_component_base_name) {
+            if (cls->name == "ComponentSkillBase")
+                out.insert(out.begin(), cls);
+            else
+                out.push_back(cls);
         }
     }
     return out;
@@ -724,17 +760,33 @@ std::vector<shared_ptr<Class>> GeneratorEcsCpp::getComponentClasses(Model &model
 
 void GeneratorEcsCpp::generateModelAddComponent(Model &model) {
     auto ecs = getClass(model, _ecs_model_base_name);
-    if (!ecs) return;
+    if (!ecs)
+        return;
 
-    // template <class T> void add(intrusive_ptr<T> component, int component_id=0)
+    // template <class T> void add(intrusive_ptr<T> component, int
+    // component_id=0)
     {
         Function m;
         m.name = "add";
-        Object tpl; tpl.type = "T"; m.template_args.push_back(tpl);
+        Object tpl;
+        tpl.type = "T";
+        m.template_args.push_back(tpl);
         m.return_type.type = "void";
         // args
-        Object arg0; arg0.type = "intrusive_ptr"; { Object inner; inner.type = "T"; arg0.template_args.push_back(inner); } arg0.name = "component"; m.callable_args.push_back(arg0);
-        Object arg1; arg1.type = "int"; arg1.name = "component_id"; arg1.value = "0"; m.callable_args.push_back(arg1);
+        Object arg0;
+        arg0.type = "intrusive_ptr";
+        {
+            Object inner;
+            inner.type = "T";
+            arg0.template_args.push_back(inner);
+        }
+        arg0.name = "component";
+        m.callable_args.push_back(arg0);
+        Object arg1;
+        arg1.type = "int";
+        arg1.name = "component_id";
+        arg1.value = "0";
+        m.callable_args.push_back(arg1);
         ecs->functions.push_back(m);
         auto &decl1 = ecs->functions.back();
 
@@ -744,13 +796,17 @@ void GeneratorEcsCpp::generateModelAddComponent(Model &model) {
             body += format_indexes(
                 R"(template<> void {0}::add(intrusive_ptr<{1}> component, int component_id)
 {
-)", _ecs_model_base_name, cls->name);
-            if (!cls->parent_class_name.empty() && cls->parent_class_name != _ecs_component_base_name) {
+)",
+                _ecs_model_base_name, cls->name);
+            if (!cls->parent_class_name.empty() &&
+                cls->parent_class_name != _ecs_component_base_name) {
                 body += format_indexes(
                     R"(    this->add<{0}>(intrusive_ptr<{0}>(component), component_id);
-)", cls->parent_class_name);
+)",
+                    cls->parent_class_name);
             }
-            body += R"(    assert(component->id == 0 || component->id == component_id || component_id == 0);
+            body +=
+                R"(    assert(component->id == 0 || component->id == component_id || component_id == 0);
     if(component_id != 0)
 {
 component->id = component_id;
@@ -762,7 +818,8 @@ component->id = component_id;
 {
 list_remove(this->components_{0}, this->map_components_{0}.at(component->id));
 }
-)", field);
+)",
+                field);
             body += format_indexes(
                 R"(    auto iter = std::lower_bound(this->components_{0}.begin(), this->components_{0}.end(), component, [](const auto& a, const auto& b)
 {
@@ -776,46 +833,78 @@ return l->id < r->id;
     this->map_components_{0}[component->id] = component;
 }
 
-)", field);
+)",
+                field);
             decl1.specific_implementations += body;
         }
     }
 
-    // template <class T> void add(T* component, int component_id=0) -> forward to intrusive_ptr
+    // template <class T> void add(T* component, int component_id=0) -> forward
+    // to intrusive_ptr
     {
         Function m;
         m.name = "add";
-        Object tpl; tpl.type = "T"; m.template_args.push_back(tpl);
+        Object tpl;
+        tpl.type = "T";
+        m.template_args.push_back(tpl);
         m.return_type.type = "void";
-        Object arg0; arg0.type = "T"; arg0.is_pointer = true; arg0.name = "component"; m.callable_args.push_back(arg0);
-        Object arg1; arg1.type = "int"; arg1.name = "component_id"; arg1.value = "0"; m.callable_args.push_back(arg1);
+        Object arg0;
+        arg0.type = "T";
+        arg0.is_pointer = true;
+        arg0.name = "component";
+        m.callable_args.push_back(arg0);
+        Object arg1;
+        arg1.type = "int";
+        arg1.name = "component_id";
+        arg1.value = "0";
+        m.callable_args.push_back(arg1);
         ecs->functions.push_back(m);
         auto &decl2 = ecs->functions.back();
         for (auto &cls : model.classes) {
-            if (!isBased(cls, _ecs_component_base_name) || cls->name == _ecs_component_base_name) continue;
-            auto field = componentsField(cls); (void)field;
+            if (!isBased(cls, _ecs_component_base_name) ||
+                cls->name == _ecs_component_base_name)
+                continue;
+            auto field = componentsField(cls);
+            (void)field;
             std::string body = format_indexes(
                 R"(template<> void {0}::add({1}* component, int component_id)
 {
 this->add(intrusive_ptr<{1}>(component), component_id);
 }
-)", _ecs_model_base_name, cls->name);
+)",
+                _ecs_model_base_name, cls->name);
             decl2.specific_implementations += body;
         }
     }
 }
 
-void GeneratorEcsCpp::generateModelRemoveComponent(Model &model, bool useRawPointer) {
+void GeneratorEcsCpp::generateModelRemoveComponent(Model &model,
+                                                   bool useRawPointer) {
     auto ecs = getClass(model, _ecs_model_base_name);
-    if (!ecs) return;
+    if (!ecs)
+        return;
     Function m;
     m.name = "remove";
-    Object tpl; tpl.type = "T"; m.template_args.push_back(tpl);
+    Object tpl;
+    tpl.type = "T";
+    m.template_args.push_back(tpl);
     m.return_type.type = "void";
     if (useRawPointer) {
-        Object arg; arg.type = "intrusive_ptr"; { Object inner; inner.type = "T"; arg.template_args.push_back(inner);} arg.name = "component"; m.callable_args.push_back(arg);
+        Object arg;
+        arg.type = "intrusive_ptr";
+        {
+            Object inner;
+            inner.type = "T";
+            arg.template_args.push_back(inner);
+        }
+        arg.name = "component";
+        m.callable_args.push_back(arg);
     } else {
-        Object arg; arg.type = "T"; arg.is_pointer = true; arg.name = "component"; m.callable_args.push_back(arg);
+        Object arg;
+        arg.type = "T";
+        arg.is_pointer = true;
+        arg.name = "component";
+        m.callable_args.push_back(arg);
     }
     ecs->functions.insert(ecs->functions.begin(), m);
     auto &decl = ecs->functions.front();
@@ -829,16 +918,20 @@ void GeneratorEcsCpp::generateModelRemoveComponent(Model &model, bool useRawPoin
 {
 this->remove(intrusive_ptr<{1}>(component));
 }
-)", _ecs_model_base_name, cls->name);
+)",
+                _ecs_model_base_name, cls->name);
         } else {
             body += format_indexes(
                 R"(template<> void {0}::remove(intrusive_ptr<{1}> component)
 {
-)", _ecs_model_base_name, cls->name);
-            if (!cls->parent_class_name.empty() && cls->parent_class_name != _ecs_component_base_name) {
+)",
+                _ecs_model_base_name, cls->name);
+            if (!cls->parent_class_name.empty() &&
+                cls->parent_class_name != _ecs_component_base_name) {
                 body += format_indexes(
                     R"(    this->remove<{0}>(intrusive_ptr<{0}>(component));
-)", cls->parent_class_name);
+)",
+                    cls->parent_class_name);
             }
             body += format_indexes(
                 R"(    if(component)
@@ -847,7 +940,8 @@ list_remove(this->components_{0}, component); map_remove(this->map_components_{0
 }
 }
 
-)", field);
+)",
+                field);
         }
         decl.specific_implementations += body;
     }
@@ -855,22 +949,31 @@ list_remove(this->components_{0}, component); map_remove(this->map_components_{0
 
 void GeneratorEcsCpp::generateModelCopyEntityFromModel(Model &model) {
     auto ecs = getClass(model, _ecs_model_base_name);
-    if (!ecs) return;
-    auto m = makeFnDecl("fn void copy_entity_from_model(" + _ecs_model_base_name + "* model, int id, int new_id)");
+    if (!ecs)
+        return;
+    auto m = makeFnDecl("fn void copy_entity_from_model(" +
+                        _ecs_model_base_name + "* model, int id, int new_id)");
     std::string body;
     for (auto &cls : model.classes) {
-        if (!isBased(cls, _ecs_component_base_name) || cls->name == _ecs_component_base_name) continue;
+        if (!isBased(cls, _ecs_component_base_name) ||
+            cls->name == _ecs_component_base_name)
+            continue;
         auto field = componentsField(cls);
         body += format_indexes(R"(auto component_{0} = model->get<{1}>(id);
-)", field, cls->name);
+)",
+                               field, cls->name);
         body += format_indexes(R"(if(component_{0})
 {
-)", field);
-        body += format_indexes(R"(    auto clone = clone_object<{0}>(component_{1});
-)", cls->name, field);
+)",
+                               field);
+        body +=
+            format_indexes(R"(    auto clone = clone_object<{0}>(component_{1});
+)",
+                           cls->name, field);
         body += "    clone->id = new_id;\n";
         body += format_indexes(R"(    this->add<{0}>(clone, new_id);
-)", cls->name);
+)",
+                               cls->name);
         body += "}\n";
     }
     m.body = body;
@@ -900,22 +1003,22 @@ void GeneratorEcsCpp::generateModelGetComponents(Model &model, bool isConst) {
     ecs->functions.insert(ecs->functions.begin(), m);
     auto &decl = ecs->functions.front();
     for (auto &cls : model.classes) {
-        if (!isBased(cls, _ecs_component_base_name) || cls->name == _ecs_component_base_name)
+        if (!isBased(cls, _ecs_component_base_name) ||
+            cls->name == _ecs_component_base_name)
             continue;
         auto field = componentsField(cls);
         std::string header = format_indexes(
             R"(template <> {0}std::vector<intrusive_ptr<{1}>>& {2}::get_components() {3}
 )",
-            (isConst ? std::string("const ") : std::string("")),
-            cls->name,
+            (isConst ? std::string("const ") : std::string("")), cls->name,
             _ecs_model_base_name,
-            (isConst ? std::string("const") : std::string(""))
-        );
+            (isConst ? std::string("const") : std::string("")));
         std::string body = format_indexes(
             R"({
 return this->components_{0}; 
 }
-)", field);
+)",
+            field);
         decl.specific_implementations += header + body;
     }
 }

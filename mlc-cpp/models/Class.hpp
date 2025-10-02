@@ -6,10 +6,10 @@
 //
 #pragma once
 
-#include "Object.hpp"
 #include "Function.hpp"
-#include <set>
+#include "Object.hpp"
 #include <memory>
+#include <set>
 
 class Model;
 
@@ -40,26 +40,26 @@ struct Class : public Object {
     bool auto_generated = true;
     bool _linked = false;
     bool prefer_use_forward_declarations = false;
-    
+
     std::string inner_body;
 
     Class() = default;
     Class(const Class &other) = default;
     Class(Class &&other) noexcept = default;
-    Class& operator=(const Class &other) = default;
-    Class& operator=(Class &&other) noexcept  = default;
-    
-    virtual void set_modifier(const std::string_view& modifier) override;
+    Class &operator=(const Class &other) = default;
+    Class &operator=(Class &&other) noexcept = default;
+
+    virtual void set_modifier(const std::string_view &modifier) override;
     bool generate_constructor();
-    
-    bool has_member(const std::string& name) const;
-    bool has_method(const std::string& name) const;
-    bool has_method(const Function& func) const;
-    Function* get_method(const std::string& name);
+
+    bool has_member(const std::string &name) const;
+    bool has_method(const std::string &name) const;
+    bool has_method(const Function &func) const;
+    Function *get_method(const std::string &name);
     bool has_virtual() const;
     bool has_abstract_method() const;
-    bool has_function_in_subclasses(const Function& func, bool depth=0);
-    bool has_function_in_parentclass(const Function& func, bool depth=0);
+    bool has_function_in_subclasses(const Function &func, bool depth = 0);
+    bool has_function_in_parentclass(const Function &func, bool depth = 0);
 
-    void onLinked(Model& model);
+    void onLinked(Model &model);
 };

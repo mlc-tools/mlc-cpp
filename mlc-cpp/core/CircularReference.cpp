@@ -6,13 +6,11 @@
 //
 
 #include "CircularReference.hpp"
-#include <sstream>
-#include "Model.hpp"
 #include "Error.hpp"
+#include "Model.hpp"
+#include <sstream>
 
-CircularReference::CircularReference(Model &model)
-    : _model(model)
-{}
+CircularReference::CircularReference(Model &model) : _model(model) {}
 
 void CircularReference::find() {
     // Для каждого класса в модели запускаем «волновой» обход
@@ -42,7 +40,8 @@ void CircularReference::wave(const std::shared_ptr<Class> &baseClass,
     const std::string &rootName = rootClass->name;
 
     // Уже посещали — выходим
-    if (viewed_.count(rootName)) return;
+    if (viewed_.count(rootName))
+        return;
     viewed_.insert(rootName);
 
     // Проходим по всем членам rootClass

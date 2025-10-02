@@ -1,23 +1,23 @@
-#include <iostream>
-#include <fstream>
-#include "models/Model.hpp"
-#include "core/Parser.hpp"
-#include "core/Linker.hpp"
-#include "utils/FileUtils.hpp"
-#include "utils/ArgsParser.hpp"
-#include "tests/tests.hpp"
 #include "Mlc.hpp"
-#include <re2/re2.h>
-#include "utils/Config.hpp"
+#include "core/Linker.hpp"
+#include "core/Parser.hpp"
+#include "models/Model.hpp"
+#include "tests/tests.hpp"
+#include "utils/ArgsParser.hpp"
 #include "utils/Common.hpp"
+#include "utils/Config.hpp"
+#include "utils/FileUtils.hpp"
 #include "version.hpp"
 #include <cstdlib>
+#include <fstream>
+#include <iostream>
+#include <re2/re2.h>
 
-
-void confugure_args(Cli::ArgParser& args, int argc, char** argv)
-{
-    args.addOption("configs_directories", 'c', "Каталог(и) с .mlc, можно повторять", true);
-    args.addOption("data_directories", 'd', "Каталог(и) с данными, можно повторять", true);
+void confugure_args(Cli::ArgParser &args, int argc, char **argv) {
+    args.addOption("configs_directories", 'c',
+                   "Каталог(и) с .mlc, можно повторять", true);
+    args.addOption("data_directories", 'd',
+                   "Каталог(и) с данными, можно повторять", true);
     args.addOption("out_directory", 0, "Каталог вывода кода");
     args.addOption("out_data_directory", 0, "Каталог вывода данных");
     args.addOption("language", 'l', "Целевой язык (например, cpp)");
@@ -25,20 +25,35 @@ void confugure_args(Cli::ArgParser& args, int argc, char** argv)
     args.addOption("namespace_name", 'n', "Пространство имён для генерации");
     args.addOption("side", 's', "Сторона: client|server|both");
     args.addOption("php_validate", 0, "Проверка PHP (true/false)");
-    args.addOption("allow_different_virtual", 0, "Разрешить разные virtual (true/false)");
+    args.addOption("allow_different_virtual", 0,
+                   "Разрешить разные virtual (true/false)");
     args.addOption("test_script", 0, "Путь к тест-скрипту");
     args.addOption("test_script_args", 0, "Аргументы для тест-скрипта");
-    args.addOption("generate_tests", 0, "Генерировать тестовые классы (true/false)");
-    args.addOption("generate_intrusive", 0, "Генерировать intrusive (true/false)");
+    args.addOption("generate_tests", 0,
+                   "Генерировать тестовые классы (true/false)");
+    args.addOption("generate_intrusive", 0,
+                   "Генерировать intrusive (true/false)");
     args.addOption("generate_factory", 0, "Генерировать фабрику (true/false)");
-    args.addOption("serialize_protocol", 0, "Сериализация: список через запятую xml,json (можно повторять)", true);
-    args.addOption("join_to_one_file", 0, "Объединять вывод в один файл (true/false)");
+    args.addOption(
+        "serialize_protocol", 0,
+        "Сериализация: список через запятую xml,json (можно повторять)", true);
+    args.addOption("join_to_one_file", 0,
+                   "Объединять вывод в один файл (true/false)");
     args.addOption("auto_registration", 0, "Авто-регистрация (true/false)");
-    args.addOption("generate_ref_counter", 0, "Генерировать рефкаунтер (true/false)");
-    args.addOption("user_includes", 0, "Разрешить пользовательские include (true/false)");
-    args.addOption("empty_methods", 0, "Генерировать пустые методы (true/false)");
-    args.addOption("filter_code", 0, "RE2-паттерн(ы) включения; поддерживается префикс '!' для исключения (--filter_code='!unit_tests/')", true);
-    args.addOption("filter_data", 0, "RE2-паттерн(ы) включения; поддерживается префикс '!' для исключения", true);
+    args.addOption("generate_ref_counter", 0,
+                   "Генерировать рефкаунтер (true/false)");
+    args.addOption("user_includes", 0,
+                   "Разрешить пользовательские include (true/false)");
+    args.addOption("empty_methods", 0,
+                   "Генерировать пустые методы (true/false)");
+    args.addOption("filter_code", 0,
+                   "RE2-паттерн(ы) включения; поддерживается префикс '!' для "
+                   "исключения (--filter_code='!unit_tests/')",
+                   true);
+    args.addOption(
+        "filter_data", 0,
+        "RE2-паттерн(ы) включения; поддерживается префикс '!' для исключения",
+        true);
     args.addOption("config", 'j', "Путь к JSON-конфигу (например, mlc.json)");
     args.addFlag("watch", 'w', "Включить режим наблюдения за изменениями");
     args.addFlag("help", 'h', "Вывод справки");
@@ -48,55 +63,60 @@ void confugure_args(Cli::ArgParser& args, int argc, char** argv)
         std::cerr << args.error() << "\n\n" << args.help("mlc") << std::endl;
         exit(1);
     }
-    
-    if(args.has("help")){
+
+    if (args.has("help")) {
         std::cout << args.help("mlc") << std::endl;
         exit(0);
     }
-    if(args.has("version")){
+    if (args.has("version")) {
         std::cout << APP_VERSION << std::endl;
         exit(0);
     }
 }
 
-bool try_load_config(Mlc& app, Cli::ArgParser& args){
+bool try_load_config(Mlc &app, Cli::ArgParser &args) {
     std::string cfg_path;
     if (args.has("config"))
         cfg_path = args.get("config");
     else if (FileUtils::exists("mlc.json"))
         cfg_path = "mlc.json";
     if (!cfg_path.empty()) {
-        std::vector<Config> jobs; std::string err;
-        
+        std::vector<Config> jobs;
+        std::string err;
+
         std::string config_data;
         bool fileExist = FileUtils::exists(cfg_path);
-        if(fileExist)
+        if (fileExist)
             config_data = FileUtils::read(cfg_path);
         else
             config_data = cfg_path;
-        
+
         auto config = Config::loadString(config_data, err);
         if (!config) {
-            //            std::cerr << "Failed to parse config '" << cfg_path << "': " << err << std::endl;
+            //            std::cerr << "Failed to parse config '" << cfg_path <<
+            //            "': " << err << std::endl;
             return false;
         }
-        
-        if(fileExist){
+
+        if (fileExist) {
             auto root = FileUtils::directory_of_file(cfg_path);
-            if(!root.empty())
+            if (!root.empty())
                 root += "/";
-            for(auto& dir : config.configs_directories)
+            for (auto &dir : config.configs_directories)
                 dir = FileUtils::normalizePath(root + dir);
-            for(auto& dir : config.data_directories)
+            for (auto &dir : config.data_directories)
                 dir = FileUtils::normalizePath(root + dir);
-            for(auto& job : config.jobs){
-                job.out_data_directory = FileUtils::normalizePath(root + job.out_data_directory) + "/";
-                job.out_directory = FileUtils::normalizePath(root + job.out_directory) + "/";
+            for (auto &job : config.jobs) {
+                job.out_data_directory =
+                    FileUtils::normalizePath(root + job.out_data_directory) +
+                    "/";
+                job.out_directory =
+                    FileUtils::normalizePath(root + job.out_directory) + "/";
             }
         }
-        
+
         app.get_model().configuration = config;
-        if(!config.jobs.empty())
+        if (!config.jobs.empty())
             app.get_model().config = config.jobs.at(0);
         else
             return false;
@@ -105,12 +125,15 @@ bool try_load_config(Mlc& app, Cli::ArgParser& args){
     return false;
 }
 
-bool try_load_argc(Mlc& app, Cli::ArgParser& args){
+bool try_load_argc(Mlc &app, Cli::ArgParser &args) {
     // Без конфига проверим обязательные ключи
-    const char* required_opts[] = {"configs_directories","data_directories","out_directory","out_data_directory","language"};
+    const char *required_opts[] = {"configs_directories", "data_directories",
+                                   "out_directory", "out_data_directory",
+                                   "language"};
     for (auto key : required_opts) {
         if (args.getAll(key).empty() && !args.has(key)) {
-            std::cerr << "Missing required option --" << key << "\n\n" << args.help("mlc") << std::endl;
+            std::cerr << "Missing required option --" << key << "\n\n"
+                      << args.help("mlc") << std::endl;
             return 1;
         }
     }
@@ -122,7 +145,8 @@ bool try_load_argc(Mlc& app, Cli::ArgParser& args){
     if (!args.getAll("configs_directories").empty()) {
         configuration.configs_directories.clear();
         for (auto &dir : args.getAll("configs_directories"))
-            configuration.configs_directories.push_back(FileUtils::normalizePath(dir));
+            configuration.configs_directories.push_back(
+                FileUtils::normalizePath(dir));
     }
     if (!args.getAll("data_directories").empty()) {
         configuration.data_directories.clear();
@@ -143,7 +167,7 @@ bool try_load_argc(Mlc& app, Cli::ArgParser& args){
         job.namespace_name = args.get("namespace_name");
     if (args.has("side")) {
         std::string s = args.get("side");
-        for(char& ch : s)
+        for (char &ch : s)
             ch = static_cast<char>(::tolower(static_cast<unsigned char>(ch)));
         if (s == "client")
             job.side = Side::client;
@@ -155,7 +179,8 @@ bool try_load_argc(Mlc& app, Cli::ArgParser& args){
     if (args.has("php_validate"))
         job.php_validate = to_bool(args.get("php_validate"));
     if (args.has("allow_different_virtual"))
-        job.allow_different_virtual = to_bool(args.get("allow_different_virtual"));
+        job.allow_different_virtual =
+            to_bool(args.get("allow_different_virtual"));
     if (args.has("test_script"))
         job.test_script = args.get("test_script");
     if (args.has("test_script_args"))
@@ -196,13 +221,13 @@ bool try_load_argc(Mlc& app, Cli::ArgParser& args){
         std::vector<SerializeFormat> protos;
         for (auto &t : tokens) {
             std::string s = t;
-            for(char& ch : s)
-                ch = static_cast<char>(::tolower(static_cast<unsigned char>(ch)));
+            for (char &ch : s)
+                ch = static_cast<char>(
+                    ::tolower(static_cast<unsigned char>(ch)));
             if (s == "xml") {
                 mask |= static_cast<int>(SerializeFormat::Xml);
                 protos.push_back(SerializeFormat::Xml);
-            }
-            else if (s == "json") {
+            } else if (s == "json") {
                 mask |= static_cast<int>(SerializeFormat::Json);
                 protos.push_back(SerializeFormat::Json);
             }
@@ -214,9 +239,13 @@ bool try_load_argc(Mlc& app, Cli::ArgParser& args){
     }
 
     // Фильтры
-    if (auto f = make_re2_filter_from_patterns(split_comma_allow_lists(args.getAll("filter_code"))); f)
+    if (auto f = make_re2_filter_from_patterns(
+            split_comma_allow_lists(args.getAll("filter_code")));
+        f)
         job.filter_code = std::move(f);
-    if (auto f = make_re2_filter_from_patterns(split_comma_allow_lists(args.getAll("filter_data"))); f)
+    if (auto f = make_re2_filter_from_patterns(
+            split_comma_allow_lists(args.getAll("filter_data")));
+        f)
         job.filter_data = std::move(f);
 
     // Заполняем модель
@@ -227,17 +256,16 @@ bool try_load_argc(Mlc& app, Cli::ArgParser& args){
     return true;
 }
 
-void try_update_subcommand(int argc, char** argv)
-{
+void try_update_subcommand(int argc, char **argv) {
     bool update = true;
-    if (argc >= 2){
+    if (argc >= 2) {
         std::string sub = argv[1];
-        if (sub != "update"){
+        if (sub != "update") {
             update = false;
             return;
         }
     }
-    if(!update)
+    if (!update)
         return;
 
     std::string version;
@@ -252,49 +280,48 @@ void try_update_subcommand(int argc, char** argv)
         extras += " ";
         extras += a;
     }
-    
+
     if (version.empty()) {
         std::cerr << "Usage: mlc update --version <x.y.z>" << std::endl;
         exit(2);
     }
 
-    if(version == APP_VERSION){
+    if (version == APP_VERSION) {
         std::cout << "Current version is equals " << version << std::endl;
         exit(0);
     }
 
     std::string cmd_path = "mlc-update --version " + version + extras;
     int rc = std::system(cmd_path.c_str());
-    if (rc == -1)
-    {
-        std::cerr << "Failed to spawn updater 'mlc-update'. Is it installed?" << std::endl;
+    if (rc == -1) {
+        std::cerr << "Failed to spawn updater 'mlc-update'. Is it installed?"
+                  << std::endl;
         exit(1);
-    }
-    else
-    {
+    } else {
         exit(WEXITSTATUS(rc));
     }
 }
 
-int main(int argc, char** argv) {
-//    tests::run();
+int main(int argc, char **argv) {
+    //    tests::run();
     try_update_subcommand(argc, argv);
-    
+
     auto start = std::chrono::steady_clock::now();
     {
         Mlc app;
-        // Значения по умолчанию для локального прогона (могут быть переопределены флагами)
+        // Значения по умолчанию для локального прогона (могут быть
+        // переопределены флагами)
         Cli::ArgParser args;
         confugure_args(args, argc, argv);
 
         // Попытка загрузки параметров из конфига
-        if(!try_load_config(app, args))
+        if (!try_load_config(app, args))
             try_load_argc(app, args);
 
         // Выполнение
         bool watch = args.has("watch");
         if (watch) {
-            app.watchAndServe(/*poll_ms*/300, /*debounce_ms*/200);
+            app.watchAndServe(/*poll_ms*/ 300, /*debounce_ms*/ 200);
         } else {
             if (app.get_model().config.only_data) {
                 app.generateData();
@@ -304,8 +331,9 @@ int main(int argc, char** argv) {
             }
         }
     }
-    
-    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start);
+
+    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(
+        std::chrono::steady_clock::now() - start);
     std::cout << "parsed on " << elapsed.count() << "ms" << std::endl;
 
     return 0;

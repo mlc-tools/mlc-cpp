@@ -6,13 +6,13 @@
 //
 #pragma once
 
-#include <string>
-#include <vector>
 #include <functional>
 #include <map>
+#include <string>
 #include <variant>
+#include <vector>
 
-#include "../models/Object.hpp"   // Side
+#include "../models/Object.hpp"    // Side
 #include "../models/Serialize.hpp" // SerializeFormat
 
 class Job {
@@ -36,31 +36,32 @@ public:
     bool generate_ref_counter = true;
     bool user_includes = false;
     bool empty_methods = false;
-    int serializeFormats = static_cast<int>(SerializeFormat::Xml) | static_cast<int>(SerializeFormat::Json);
+    int serializeFormats = static_cast<int>(SerializeFormat::Xml) |
+                           static_cast<int>(SerializeFormat::Json);
     std::vector<SerializeFormat> serialize_protocol;
-    std::function<bool(const std::string&)> filter_code;
-    std::function<bool(const std::string&)> filter_data;
+    std::function<bool(const std::string &)> filter_code;
+    std::function<bool(const std::string &)> filter_data;
 };
 
-class FeatureVisitor{
+class FeatureVisitor {
 public:
 };
-class FeatureUnitTests{
-public:
-};
-
-class FeatureDataStorage{
+class FeatureUnitTests {
 public:
 };
 
-class FeatureRefCounter{
+class FeatureDataStorage {
 public:
 };
 
-class FeatureOperatorEquals{
+class FeatureRefCounter {
 public:
 };
-class FeatureEcs{
+
+class FeatureOperatorEquals {
+public:
+};
+class FeatureEcs {
 public:
     std::string model_base;
     std::string component_base;
@@ -70,19 +71,25 @@ class Config {
 public:
     operator bool() const { return _initialized; }
     void initialize() { _initialized = true; }
-    // Источники (глобальные для конфиг-файла, но дублируются в каждую задачу при загрузке)
+    // Источники (глобальные для конфиг-файла, но дублируются в каждую задачу
+    // при загрузке)
     std::vector<std::string> configs_directories;
     std::vector<std::string> data_directories;
     std::vector<Job> jobs;
-    std::vector<std::variant<FeatureVisitor, FeatureEcs, FeatureUnitTests, FeatureDataStorage, FeatureRefCounter, FeatureOperatorEquals>> features;
+    std::vector<std::variant<FeatureVisitor, FeatureEcs, FeatureUnitTests,
+                             FeatureDataStorage, FeatureRefCounter,
+                             FeatureOperatorEquals>>
+        features;
 
     // Загрузка конфигурации из JSON-файла. Возвращает набор задач.
-    static Config loadFile(const std::string& path, std::string& err);
-    static Config loadString(const std::string& content, std::string& err);
+    static Config loadFile(const std::string &path, std::string &err);
+    static Config loadString(const std::string &content, std::string &err);
+
 private:
     bool _initialized = false;
 };
 
-
-std::function<bool(const std::string&)> make_re2_filter_from_patterns(const std::vector<std::string>& raws);
-std::vector<std::string> split_comma_allow_lists(const std::vector<std::string>& vals);
+std::function<bool(const std::string &)>
+make_re2_filter_from_patterns(const std::vector<std::string> &raws);
+std::vector<std::string>
+split_comma_allow_lists(const std::vector<std::string> &vals);

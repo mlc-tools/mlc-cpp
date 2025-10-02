@@ -7,16 +7,14 @@
 #include "Common.hpp"
 #include <sstream>
 
-void GeneratorFactoryPython::generate(Model &model)
-{
+void GeneratorFactoryPython::generate(Model &model) {
     std::string builders;
     const char *line = R"(
         if type == "{0}":
             from .{0} import {0}
             return make_intrusive({0})
 )";
-    for (auto &cls : model.classes)
-    {
+    for (auto &cls : model.classes) {
         builders += format_indexes(line, cls->name);
     }
     std::string content;

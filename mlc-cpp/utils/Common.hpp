@@ -8,36 +8,32 @@
 #ifndef Common_h
 #define Common_h
 
-#include <string>
-#include <vector>
-#include <cctype>
 #include <algorithm>
 #include <cctype>
 #include <map>
+#include <string>
 #include <unordered_map>
+#include <vector>
 
-inline std::vector<std::string> smartSplit(
-    const std::string& str,
-    char divider,
-    const std::pair<std::string, std::string>& symbols = { "<(", ">)" })
-{
+inline std::vector<std::string>
+smartSplit(const std::string &str, char divider,
+           const std::pair<std::string, std::string> &symbols = {"<(", ">)"}) {
     std::vector<std::string> parts;
-    if (str.empty()) return parts;
+    if (str.empty())
+        return parts;
 
-    const auto& leftChars  = symbols.first;
-    const auto& rightChars = symbols.second;
+    const auto &leftChars = symbols.first;
+    const auto &rightChars = symbols.second;
     int depth = 0;
     std::size_t start = 0;
 
     for (std::size_t i = 0; i < str.size(); ++i) {
         char c = str[i];
-        if (leftChars.find(c)  != std::string::npos) {
+        if (leftChars.find(c) != std::string::npos) {
             ++depth;
-        }
-        else if (rightChars.find(c) != std::string::npos) {
+        } else if (rightChars.find(c) != std::string::npos) {
             --depth;
-        }
-        else if (c == divider && depth == 0 && i > start) {
+        } else if (c == divider && depth == 0 && i > start) {
             parts.emplace_back(str.substr(start, i - start));
             start = i + 1;
         }
@@ -47,9 +43,10 @@ inline std::vector<std::string> smartSplit(
     return parts;
 }
 
-std::vector<std::string> split(const std::string& values, char delimiter = ',');
+std::vector<std::string> split(const std::string &values, char delimiter = ',');
 
-inline void replace_all(std::string &s, const std::string &what, const std::string &with) {
+inline void replace_all(std::string &s, const std::string &what,
+                        const std::string &with) {
     size_t pos = 0;
     while ((pos = s.find(what, pos)) != std::string::npos) {
         s.replace(pos, what.size(), with);
@@ -57,57 +54,53 @@ inline void replace_all(std::string &s, const std::string &what, const std::stri
     }
 }
 
-template <typename T>
-std::string to_string(const T& value);
+template <typename T> std::string to_string(const T &value);
 
 std::string to_string(std::string_view value);
-std::string to_string(const char* value);
+std::string to_string(const char *value);
 
-bool to_bool(const std::string& v, bool* ok = nullptr);
+bool to_bool(const std::string &v, bool *ok = nullptr);
 
 template <typename T>
-std::string join( const std::vector<T>& in, const char delimiter = ',')
-{
+std::string join(const std::vector<T> &in, const char delimiter = ',') {
     std::string result;
     int index = 0;
-    for( auto& t : in )
-    {
+    for (auto &t : in) {
         result += to_string(t);
-        if(index < (in.size()-1))
-            result.push_back( delimiter );
+        if (index < (in.size() - 1))
+            result.push_back(delimiter);
         ++index;
     }
     return result;
 }
 template <typename T>
-std::string join( const std::vector<T>& in, const std::string& delimiter)
-{
+std::string join(const std::vector<T> &in, const std::string &delimiter) {
     std::string result;
     int index = 0;
-    for( auto& t : in )
-    {
+    for (auto &t : in) {
         result += to_string(t);
-        if(index < (in.size()-1))
+        if (index < (in.size() - 1))
             result += delimiter;
         ++index;
     }
     return result;
 }
 
-inline std::string to_upper(std::string s)
-{
-    std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c){ return std::toupper(c); });
+inline std::string to_upper(std::string s) {
+    std::transform(s.begin(), s.end(), s.begin(),
+                   [](unsigned char c) { return std::toupper(c); });
     return s;
 }
 
-std::string format(const std::string& template_str, const std::unordered_map<std::string, std::string>& values);
+std::string format(const std::string &template_str,
+                   const std::unordered_map<std::string, std::string> &values);
 
 template <typename... Args>
-std::string format_indexes(const std::string& template_str, Args&&... args) {
+std::string format_indexes(const std::string &template_str, Args &&...args) {
     std::string query = template_str;
     std::tuple<Args...> values(std::forward<Args>(args)...);
 
-    auto replace = [&](int index, const std::string& value) {
+    auto replace = [&](int index, const std::string &value) {
         std::string token = "{" + std::to_string(index) + "}";
         size_t pos = 0;
         bool was_replace = false;
@@ -118,14 +111,16 @@ std::string format_indexes(const std::string& template_str, Args&&... args) {
         }
     };
 
-    std::apply([&](auto&&... unpacked) {
-        int i = 0;
-        ((replace(i++, to_string(unpacked))), ...);
-    }, values);
-    
+    std::apply(
+        [&](auto &&...unpacked) {
+            int i = 0;
+            ((replace(i++, to_string(unpacked))), ...);
+        },
+        values);
+
     return query;
 }
 
-std::string strip(const std::string& s);
+std::string strip(const std::string &s);
 
 #endif /* Common_h */

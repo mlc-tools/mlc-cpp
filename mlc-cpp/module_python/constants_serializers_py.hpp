@@ -2,14 +2,15 @@
 //  constants_serializers_py.hpp
 //  mlc-cpp
 //
-//  Embedded Python runtime helpers (ported from module_python/py/constants_serializers.py)
+//  Embedded Python runtime helpers (ported from
+//  module_python/py/constants_serializers.py)
 //
 
 #pragma once
 
 #include <string>
-#include <vector>
 #include <utility>
+#include <vector>
 
 namespace py_runtime {
 
@@ -466,4 +467,3 @@ static const std::vector<std::pair<std::string, std::string>> FILES_DICT = {
 };
 
 } // namespace py_runtime
-

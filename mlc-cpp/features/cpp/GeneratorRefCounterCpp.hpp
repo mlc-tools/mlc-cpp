@@ -7,9 +7,9 @@
 
 #pragma once
 
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
 
 #include "features/FeatureGenerator.hpp"
 
@@ -21,7 +21,9 @@ public:
     GeneratorRefCounterCpp();
 
     virtual void generate(Model &model) override;
-    virtual void modifySources(Model& model, const std::shared_ptr<Class>& cls, std::string& header, std::string& source) override{}
+    virtual void modifySources(Model &model, const std::shared_ptr<Class> &cls,
+                               std::string &header,
+                               std::string &source) override {}
 
 private:
     std::string preferType_;
@@ -30,4 +32,3 @@ private:
 
     void addToClass(const std::shared_ptr<Class> &cls);
 };
-

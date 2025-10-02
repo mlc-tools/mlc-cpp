@@ -8,10 +8,10 @@
 #include "GeneratorRefCounterCpp.hpp"
 #include <sstream>
 
-#include "../models/Model.hpp"
 #include "../models/Class.hpp"
-#include "../models/Object.hpp"
 #include "../models/Function.hpp"
+#include "../models/Model.hpp"
+#include "../models/Object.hpp"
 
 static const std::string RETAIN_INT = "++this->_reference_counter;";
 static const std::string RETAIN_ATOMIC =
@@ -36,10 +36,7 @@ if(ret == 1)
 return ret;
 )";
 
-GeneratorRefCounterCpp::GeneratorRefCounterCpp()
-  : preferType_("int")
-{
-}
+GeneratorRefCounterCpp::GeneratorRefCounterCpp() : preferType_("int") {}
 
 void GeneratorRefCounterCpp::generate(Model &model) {
     if (model.config.language != "cpp")
@@ -47,28 +44,24 @@ void GeneratorRefCounterCpp::generate(Model &model) {
     if (!model.config.generate_ref_counter)
         return;
 
-    if (model.config.side == Side::server)
-    {
+    if (model.config.side == Side::server) {
         preferType_ = "std::atomic<int>";
-        retainBody_  = RETAIN_ATOMIC;
+        retainBody_ = RETAIN_ATOMIC;
         releaseBody_ = RELEASE_ATOMIC;
-    }
-    else
-    {
-        retainBody_  = RETAIN_INT;
+    } else {
+        retainBody_ = RETAIN_INT;
         releaseBody_ = RELEASE_INT;
     }
 
-    for (auto &cls : model.classes)
-    {
-        if (cls->parent_class_name.empty() && cls->type != "enum" && !cls->is_abstract)
+    for (auto &cls : model.classes) {
+        if (cls->parent_class_name.empty() && cls->type != "enum" &&
+            !cls->is_abstract)
             addToClass(cls);
     }
 }
 
 void GeneratorRefCounterCpp::addToClass(const std::shared_ptr<Class> &cls) {
-    if (!cls->has_member("_reference_counter"))
-    {
+    if (!cls->has_member("_reference_counter")) {
         Object ref;
         ref.name = "_reference_counter";
         ref.type = preferType_;
@@ -78,8 +71,7 @@ void GeneratorRefCounterCpp::addToClass(const std::shared_ptr<Class> &cls) {
         cls->members.push_back(ref);
     }
 
-    if (!cls->has_method("retain"))
-    {
+    if (!cls->has_method("retain")) {
         Function fn;
         fn.name = "retain";
         fn.return_type = Objects::VOID;
@@ -87,8 +79,7 @@ void GeneratorRefCounterCpp::addToClass(const std::shared_ptr<Class> &cls) {
         cls->functions.push_back(std::move(fn));
     }
 
-    if (!cls->has_method("release"))
-    {
+    if (!cls->has_method("release")) {
         Function fn;
         fn.name = "release";
         fn.return_type = Objects::INT;
@@ -96,4 +87,3 @@ void GeneratorRefCounterCpp::addToClass(const std::shared_ptr<Class> &cls) {
         cls->functions.push_back(std::move(fn));
     }
 }
-

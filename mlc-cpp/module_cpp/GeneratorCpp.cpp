@@ -7,11 +7,10 @@
 
 #include "GeneratorCpp.hpp"
 #include "../models/Model.hpp"
-#include "GeneratorPredefinedFilesCpp.hpp"
 #include "GeneratorObserverCpp.hpp"
+#include "GeneratorPredefinedFilesCpp.hpp"
 
-void GeneratorCpp::generate(Model& model){
+void GeneratorCpp::generate(Model &model) {
     GeneratorPredefinedFiles().generate(model);
     GeneratorObserverCpp().generate(model);
-    
 }

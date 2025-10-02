@@ -8,32 +8,26 @@
 
 #include <algorithm>
 #include <cctype>
-#include <sstream>
 #include <iostream>
+#include <sstream>
 
-#include "Parser.hpp"
-#include "Model.hpp"
 #include "Class.hpp"
-#include "Object.hpp"
-#include "Function.hpp"
 #include "Common.hpp"
 #include "Error.hpp"
+#include "Function.hpp"
+#include "Model.hpp"
+#include "Object.hpp"
+#include "Parser.hpp"
 
 using namespace std;
 
-const map<string,int> GeneratorUnitTestsInterface::ASSERTS = {
-    {"this->assertTrue(",        1},
-    {"this->assertFalse(",       1},
-    {"this->assertEqual(",       2},
-    {"this->assertNotEqual(",    2},
-    {"this->assertNull(",        1},
-    {"this->assertNotNull(",     1},
-    {"this->assertInMap(",       2},
-    {"this->assertNotInMap(",    2},
-    {"this->assertInList(",      2},
-    {"this->assertNotInList(",   2},
-    {"this->assertInRange(",     3},
-    {"this->assertNotInRange(",  3},
+const map<string, int> GeneratorUnitTestsInterface::ASSERTS = {
+    {"this->assertTrue(", 1},    {"this->assertFalse(", 1},
+    {"this->assertEqual(", 2},   {"this->assertNotEqual(", 2},
+    {"this->assertNull(", 1},    {"this->assertNotNull(", 1},
+    {"this->assertInMap(", 2},   {"this->assertNotInMap(", 2},
+    {"this->assertInList(", 2},  {"this->assertNotInList(", 2},
+    {"this->assertInRange(", 3}, {"this->assertNotInRange(", 3},
 };
 
 const string GeneratorUnitTestsInterface::BASE_CLASSES = R"(
@@ -122,7 +116,7 @@ class tests/TestCase:test
 )";
 
 void GeneratorUnitTestsInterface::generate(Model &model) {
-    if(!model.config.generate_tests)
+    if (!model.config.generate_tests)
         return;
     _model = &model;
 
@@ -146,13 +140,13 @@ void GeneratorUnitTestsInterface::generateBaseClasses() {
     parser.parseText(BASE_CLASSES);
 }
 
-shared_ptr<Class>
-GeneratorUnitTestsInterface::generateTestInterface(const shared_ptr<Class>& cls) {
+shared_ptr<Class> GeneratorUnitTestsInterface::generateTestInterface(
+    const shared_ptr<Class> &cls) {
     // Пропускаем уже тестовые интерфейсы сами
     if (cls->name.find("ITest", 0) == 0)
         return nullptr;
-    
-    if(cls->name == "NullishOperator")
+
+    if (cls->name == "NullishOperator")
         std::cout << "";
 
     string test_interface_name = "ITest" + cls->name;
@@ -169,10 +163,10 @@ GeneratorUnitTestsInterface::generateTestInterface(const shared_ptr<Class>& cls)
 
     // Для каждого метода оригинального класса
     for (auto &f : cls->functions) {
-        if ((f.name != "visit" && f.name != "accept") && f.access == AccessSpecifier::m_public) {
+        if ((f.name != "visit" && f.name != "accept") &&
+            f.access == AccessSpecifier::m_public) {
             std::string name = f.name;
-            if(name.find("operator") == 0)
-            {
+            if (name.find("operator") == 0) {
                 replace_all(name, "+", "_add");
                 replace_all(name, "-", "_sub");
                 replace_all(name, "*", "_mul");
@@ -180,13 +174,12 @@ GeneratorUnitTestsInterface::generateTestInterface(const shared_ptr<Class>& cls)
                 replace_all(name, "=", "_equals");
             }
             name = "test_" + name;
-            if(!i_test_interface->has_method(name))
+            if (!i_test_interface->has_method(name))
                 addMethod(i_test_interface, name);
         }
     }
-    
-    if(cls->name == "CollisionChecker")
-    {
+
+    if (cls->name == "CollisionChecker") {
         std::cout << "\n";
     }
     // Если есть реальная реализация без I
@@ -196,16 +189,17 @@ GeneratorUnitTestsInterface::generateTestInterface(const shared_ptr<Class>& cls)
         for (auto &f : impl->functions) {
             if (f.name.find("test_", 0) == 0) {
                 // если нет в тестовом интерфейсе
-                auto it = find_if(i_test_interface->functions.begin(), i_test_interface->functions.end(), [&](auto &mf){
-                    return mf.name == f.name;
-                });
+                auto it = find_if(i_test_interface->functions.begin(),
+                                  i_test_interface->functions.end(),
+                                  [&](auto &mf) { return mf.name == f.name; });
                 if (it == i_test_interface->functions.end()) {
                     Function m;
                     m.name = f.name;
                     m.return_type = Objects::VOID;
-//                    m.is_abstract = true;
+                    //                    m.is_abstract = true;
                     i_test_interface->functions.push_back(m);
-                    generateMessagesIfEmpty(impl, i_test_interface->functions.back());
+                    generateMessagesIfEmpty(impl,
+                                            i_test_interface->functions.back());
                     f.is_virtual = true;
                 }
             }
@@ -227,10 +221,9 @@ GeneratorUnitTestsInterface::generateTestInterface(const shared_ptr<Class>& cls)
     return i_test_interface;
 }
 
-void GeneratorUnitTestsInterface::addMethod(
-    shared_ptr<Class>& class_, const string &name)
-{
-    if(class_->name == "ITestNullishOperator")
+void GeneratorUnitTestsInterface::addMethod(shared_ptr<Class> &class_,
+                                            const string &name) {
+    if (class_->name == "ITestNullishOperator")
         std::cout << "";
     bool hasImplementation = true;
     auto subs = _model->getSubclassesOfClass(class_->name);
@@ -238,17 +231,15 @@ void GeneratorUnitTestsInterface::addMethod(
         auto m = sub->get_method(name);
         if (!m || m->is_abstract) {
             hasImplementation = false;
-            Error::warning(
-              Error::WARNING_TEST_CLASS_NOT_IMPLEMENT_METHOD,
-              class_->name, name);
+            Error::warning(Error::WARNING_TEST_CLASS_NOT_IMPLEMENT_METHOD,
+                           class_->name, name);
             break;
-        }
-        else if(m && !m->is_virtual){
+        } else if (m && !m->is_virtual) {
             m->is_virtual = true;
         }
     }
     Function method;
-    method.name       = name;
+    method.name = name;
     method.return_type = Objects::VOID;
     method.is_abstract = hasImplementation;
     method.is_virtual = true;
@@ -257,13 +248,13 @@ void GeneratorUnitTestsInterface::addMethod(
 
 shared_ptr<Class> GeneratorUnitTestsInterface::generateAllTestsClass() {
     auto testAll = make_shared<Class>();
-    testAll->type  = "class";
-    testAll->name  = "RunAllTests";
+    testAll->type = "class";
+    testAll->name = "RunAllTests";
     testAll->group = "tests";
 
     // Члены для каждого ITestX в tests_
     for (auto &t : tests_) {
-        string bare = t->name.substr(1);  // убрать ведущий 'I'
+        string bare = t->name.substr(1); // убрать ведущий 'I'
         if (!_model->hasClass(bare))
             continue;
         Object m;
@@ -274,7 +265,7 @@ shared_ptr<Class> GeneratorUnitTestsInterface::generateAllTestsClass() {
 
     // initialize(Logger*)
     Function init;
-    init.name       = "initialize";
+    init.name = "initialize";
     init.return_type = Objects::VOID;
     init.callable_args.push_back(Object("Logger", "logger"));
     init.callable_args.back().is_pointer = true;
@@ -285,14 +276,14 @@ shared_ptr<Class> GeneratorUnitTestsInterface::generateAllTestsClass() {
 
     // execute():bool
     Function exec;
-    exec.name       = "execute";
+    exec.name = "execute";
     exec.return_type = Objects::BOOL;
     for (auto &m : testAll->members) {
-        exec.body +=  "this->" + m.name + ".execute();\n";
+        exec.body += "this->" + m.name + ".execute();\n";
     }
     exec.body += "bool result = true;\n";
     for (auto &m : testAll->members) {
-        exec.body +=  "result = result && this->" + m.name + ".result;\n";
+        exec.body += "result = result && this->" + m.name + ".result;\n";
     }
     exec.body += "return result;";
     testAll->functions.push_back(std::move(exec));
@@ -301,43 +292,38 @@ shared_ptr<Class> GeneratorUnitTestsInterface::generateAllTestsClass() {
 }
 
 void GeneratorUnitTestsInterface::generateMessagesIfEmpty(
-    const shared_ptr<Class>& cls, Function &method)
-{
+    const shared_ptr<Class> &cls, Function &method) {
     for (auto &entry : ASSERTS) {
         const auto &assertCall = entry.first;
         int needed = entry.second;
-//        for (size_t i = 0; i < method.operations.size(); ++i) {
-            auto &line = method.body;
-            if (line.rfind(assertCall, 0) == 0) {
-                // вырезаем аргументы между assertCall и последней ')'
-                size_t start = assertCall.size();
-                size_t end   = line.rfind(')');
-                string inside = line.substr(start, end - start);
-                auto parts = smartSplit(inside, ',', {"(",")"});
-                if ((int)parts.size() <= needed) {
-                    // формируем сообщение
-                    string name = assertCall.substr(
-                        strlen("this->"), // убрать "this->"
-                        assertCall.size() - strlen("this->") - 1);
-                    std::string msg = format_indexes(R"("{0} is false in {1}::{2}\\nArgs:{3}")", name, cls->name, method.name, join(parts, ','));
-                    // вставляем перед );
-                    line = line.substr(0, end)
-                         + ", " + msg + ");";
-                }
+        //        for (size_t i = 0; i < method.operations.size(); ++i) {
+        auto &line = method.body;
+        if (line.rfind(assertCall, 0) == 0) {
+            // вырезаем аргументы между assertCall и последней ')'
+            size_t start = assertCall.size();
+            size_t end = line.rfind(')');
+            string inside = line.substr(start, end - start);
+            auto parts = smartSplit(inside, ',', {"(", ")"});
+            if ((int)parts.size() <= needed) {
+                string name =
+                    assertCall.substr(strlen("this->"), // убрать "this->"
+                                      assertCall.size() - strlen("this->") - 1);
+                std::string msg = format_indexes(
+                    R"("{0} is false in {1}::{2}\\nArgs:{3}")", name, cls->name,
+                    method.name, join(parts, ','));
+                line = line.substr(0, end) + ", " + msg + ");";
             }
-//        }
+        }
     }
 }
 
-string GeneratorUnitTestsInterface::getMemberName(
-    const string &clsName)
-{
+string GeneratorUnitTestsInterface::getMemberName(const string &clsName) {
     string out;
     for (size_t i = 0; i < clsName.size(); ++i) {
         char c = clsName[i];
-        if (isupper(c) && i > 0) out.push_back('_');
+        if (isupper(c) && i > 0)
+            out.push_back('_');
         out.push_back((char)tolower(c));
     }
     return out;
 }
-

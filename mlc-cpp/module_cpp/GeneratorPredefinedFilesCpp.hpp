@@ -8,8 +8,8 @@
 #pragma once
 
 #include <string>
-#include <vector>
 #include <utility>
+#include <vector>
 
 class Model;
 
@@ -26,4 +26,3 @@ private:
     void generateBaseEnumClass(Model &model);
     void generateObserverClass(Model &model);
 };
-

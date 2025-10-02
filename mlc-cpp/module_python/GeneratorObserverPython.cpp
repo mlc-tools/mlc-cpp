@@ -3,8 +3,8 @@
 //
 
 #include "GeneratorObserverPython.hpp"
-#include "../models/Model.hpp"
 #include "../models/Class.hpp"
+#include "../models/Model.hpp"
 
 static const char *PREDEFINED = R"PY(
 class @{name}:
@@ -63,13 +63,11 @@ class @{name}:
         self._unlock()
 )PY";
 
-std::string GeneratorObserverPython::getObservableName()
-{
+std::string GeneratorObserverPython::getObservableName() {
     return std::string("Observable");
 }
 
-void GeneratorObserverPython::generate(Model &model)
-{
+void GeneratorObserverPython::generate(Model &model) {
     std::string text = PREDEFINED;
     const std::string name = getObservableName();
     // replace markers
@@ -86,4 +84,3 @@ void GeneratorObserverPython::generate(Model &model)
     cls->auto_generated = false;
     model.add_class(cls);
 }
-

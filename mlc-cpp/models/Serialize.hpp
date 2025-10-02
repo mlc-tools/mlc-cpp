@@ -7,9 +7,9 @@
 
 #pragma once
 
+#include <array>
 #include <string>
 #include <vector>
-#include <array>
 
 // Битовые флаги для форматов сериализации
 enum class SerializeFormat {
@@ -29,7 +29,7 @@ inline bool hasFlag(int flags, SerializeFormat f) {
 }
 
 // Возвращает все поддерживаемые форматы
-inline std::vector<std::pair<SerializeFormat, std::string>> getAllSerializeFormats() {
+inline std::vector<std::pair<SerializeFormat, std::string>>
+getAllSerializeFormats() {
     return {{SerializeFormat::Xml, "xml"}, {SerializeFormat::Json, "json"}};
 }
-

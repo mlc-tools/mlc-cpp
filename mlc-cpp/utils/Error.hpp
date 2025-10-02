@@ -7,36 +7,45 @@
 
 #pragma once
 
+#include "Common.hpp"
+#include <chrono>
 #include <string>
 #include <unordered_map>
 #include <vector>
-#include <chrono>
-#include "Common.hpp"
 
-#define PROFILE_START(tabs, message) for(int i=0; i<tabs; ++i) std::clog << "  "; \
-const auto __start_profile_time__ = std::chrono::system_clock::now(); std::clog << "Start profiling [" << message << "]" << std::endl;
+#define PROFILE_START(tabs, message)                                           \
+    for (int i = 0; i < tabs; ++i)                                             \
+        std::clog << "  ";                                                     \
+    const auto __start_profile_time__ = std::chrono::system_clock::now();      \
+    std::clog << "Start profiling [" << message << "]" << std::endl;
 
-#define PROFILE_STEP(tabs, message) for(int i=0; i<tabs; ++i) std::clog << "  "; \
-std::clog << "Stage profiling: " << std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - __start_profile_time__).count() << "ms [" << message << "]"  << std::endl;
-
+#define PROFILE_STEP(tabs, message)                                            \
+    for (int i = 0; i < tabs; ++i)                                             \
+        std::clog << "  ";                                                     \
+    std::clog << "Stage profiling: "                                           \
+              << std::chrono::duration_cast<std::chrono::milliseconds>(        \
+                     std::chrono::system_clock::now() -                        \
+                     __start_profile_time__)                                   \
+                     .count()                                                  \
+              << "ms [" << message << "]" << std::endl;
 
 // Simple ANSI color holder
 struct Color {
-    static constexpr const char* red        = "\033[31m";
-    static constexpr const char* green      = "\033[32m";
-    static constexpr const char* orange     = "\033[33m";
-    static constexpr const char* light_grey = "\033[37m";
-    static constexpr const char* end        = "\033[0m";
+    static constexpr const char *red = "\033[31m";
+    static constexpr const char *green = "\033[32m";
+    static constexpr const char *orange = "\033[33m";
+    static constexpr const char *light_grey = "\033[37m";
+    static constexpr const char *end = "\033[0m";
 };
 
 struct Log {
     static bool use_colors;
     static bool disable_logs;
 
-    static void debug(const std::string& msg);
-    static void error(const std::string& msg);
-    static void warning(const std::string& msg);
-    static void message(const std::string& msg);
+    static void debug(const std::string &msg);
+    static void error(const std::string &msg);
+    static void warning(const std::string &msg);
+    static void message(const std::string &msg);
 };
 
 // Error codes and messages
@@ -71,30 +80,31 @@ struct Error {
 
     static void exit(Code code);
 
-    template <typename... Args>
-    static void exit(Code code, Args&&... args) {
+    template <typename... Args> static void exit(Code code, Args &&...args) {
         printAndExit(true, code, toVector(std::forward<Args>(args)...));
     }
 
-    template <typename... Args>
-    static void warning(Code code, Args&&... args) {
+    template <typename... Args> static void warning(Code code, Args &&...args) {
         printAndExit(false, code, toVector(std::forward<Args>(args)...));
     }
 
 private:
-    static void printAndExit(bool fatal, Code code, const std::vector<std::string>& args);
-    static std::string format(const std::string& pattern, const std::vector<std::string>& args);
+    static void printAndExit(bool fatal, Code code,
+                             const std::vector<std::string> &args);
+    static std::string format(const std::string &pattern,
+                              const std::vector<std::string> &args);
 
-    template <typename T>
-    static std::string toStr(T&& v) {
+    template <typename T> static std::string toStr(T &&v) {
         using U = std::decay_t<T>;
-        if constexpr (std::is_same_v<U, std::string>) return v;
-        else if constexpr (std::is_same_v<U, const char*>) return std::string(v);
-        else return to_string(v);
+        if constexpr (std::is_same_v<U, std::string>)
+            return v;
+        else if constexpr (std::is_same_v<U, const char *>)
+            return std::string(v);
+        else
+            return to_string(v);
     }
     template <typename... Args>
-    static std::vector<std::string> toVector(Args&&... a) {
-        return { toStr(std::forward<Args>(a))... };
+    static std::vector<std::string> toVector(Args &&...a) {
+        return {toStr(std::forward<Args>(a))...};
     }
 };
-

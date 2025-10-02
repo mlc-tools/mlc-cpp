@@ -9,8 +9,7 @@
 
 class Model;
 
-class Generator
-{
+class Generator {
 public:
-    virtual void generate(Model& model) = 0;
+    virtual void generate(Model &model) = 0;
 };

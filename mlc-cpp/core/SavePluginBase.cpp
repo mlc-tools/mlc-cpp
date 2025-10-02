@@ -5,21 +5,16 @@
 //  Created by Vladimir Tolmachev on 30.07.2025.
 //
 #include "SavePluginBase.hpp"
-#include "Model.hpp"    // defines Model, model.files and model.created_files
-#include "Class.hpp"    // forward-declared in header
-#include <algorithm>
+#include "Class.hpp" // forward-declared in header
+#include "Error.hpp"
 #include "FileUtils.hpp"
-#include "Error.hpp"
-#include "Error.hpp"
+#include "Model.hpp" // defines Model, model.files and model.created_files
+#include <algorithm>
 
 SavePluginBase::SavePluginBase(Model &m)
-  : model(m),
-    files(m.files),
-    created(m.created_files)
-{}
+    : model(m), files(m.files), created(m.created_files) {}
 
-SavePluginBase::~SavePluginBase() {
-}
+SavePluginBase::~SavePluginBase() {}
 
 void SavePluginBase::save_files(bool combineToOne) {
     if (combineToOne) {
@@ -30,10 +25,9 @@ void SavePluginBase::save_files(bool combineToOne) {
     }
 }
 
-std::pair<std::string,std::string>
-SavePluginBase::createCombineFileHeader() {
+std::pair<std::string, std::string> SavePluginBase::createCombineFileHeader() {
     // Default: no header, no combined file
-    return { "", "" };
+    return {"", ""};
 }
 
 std::string SavePluginBase::finalizeCombineFile(const std::string &content) {
@@ -44,9 +38,7 @@ bool SavePluginBase::isNeedSaveFileOnCombine(const std::string &) {
     return false;
 }
 
-std::string SavePluginBase::removeIncludes(const std::string &c) {
-    return c;
-}
+std::string SavePluginBase::removeIncludes(const std::string &c) { return c; }
 
 void SavePluginBase::saveOne() {
     sortFiles();
@@ -54,7 +46,7 @@ void SavePluginBase::saveOne() {
     auto [combine, combinePath] = createCombineFileHeader();
     for (auto &entry : files) {
         const auto &localPath = std::get<1>(entry);
-        const auto &content   = std::get<2>(entry);
+        const auto &content = std::get<2>(entry);
 
         combine = addToCombineFile(combine, content);
         if (isNeedSaveFileOnCombine(localPath)) {
@@ -71,7 +63,7 @@ void SavePluginBase::saveAll() {
     if (!model.out_dict.empty()) {
         for (auto &entry : files) {
             const auto &localPath = std::get<1>(entry);
-            const auto &content   = std::get<2>(entry);
+            const auto &content = std::get<2>(entry);
             model.out_dict[localPath] = content;
         }
         return;
@@ -79,27 +71,29 @@ void SavePluginBase::saveAll() {
 
     for (auto &entry : files) {
         const auto &localPath = std::get<1>(entry);
-        const auto &content   = std::get<2>(entry);
+        const auto &content = std::get<2>(entry);
         saveFile(localPath, content);
     }
 }
 
 void SavePluginBase::saveFile(const std::string &localPath,
-                              const std::string &content)
-{
+                              const std::string &content) {
     created.push_back(localPath);
-    std::string fullPath = FileUtils::normalizePath(model.config.out_directory) + localPath;
+    std::string fullPath =
+        FileUtils::normalizePath(model.config.out_directory) + localPath;
     bool existed = FileUtils::exists(fullPath);
 
     if (FileUtils::write(fullPath, content)) {
-        Log::message(existed ? " Overwriting: " + localPath : " Create:      " + localPath);
+        Log::message(existed ? " Overwriting: " + localPath
+                             : " Create:      " + localPath);
     }
 }
 
 void SavePluginBase::sortFiles() {
-    auto weight = [](const FileEntry &e){
+    auto weight = [](const FileEntry &e) {
         auto cls = std::get<0>(e);
-        if (!cls) return std::string();
+        if (!cls)
+            return std::string();
         std::string w = cls->name;
         // prepend '~' for each superclass level
         if (!cls->parent_class_name.empty()) {
@@ -108,15 +102,11 @@ void SavePluginBase::sortFiles() {
         return w;
     };
     std::sort(files.begin(), files.end(),
-        [&](auto &a, auto &b){
-            return weight(a) < weight(b);
-        });
+              [&](auto &a, auto &b) { return weight(a) < weight(b); });
 }
 
-std::string SavePluginBase::addToCombineFile(
-    const std::string &combine,
-    const std::string &next)
-{
+std::string SavePluginBase::addToCombineFile(const std::string &combine,
+                                             const std::string &next) {
     return combine + removeIncludes(next);
 }
 
@@ -124,9 +114,11 @@ void SavePluginBase::removeOldFiles() {
     auto outDir = FileUtils::normalizePath(model.config.out_directory);
     auto files = FileUtils::listFilesRecursive(outDir);
     for (auto &p : files) {
-        std::string_view local_path(p.data() + outDir.size(), p.size() - outDir.size());
-        if (std::find(created.begin(), created.end(), local_path) == created.end() && !p.ends_with(".pyc"))
-        {
+        std::string_view local_path(p.data() + outDir.size(),
+                                    p.size() - outDir.size());
+        if (std::find(created.begin(), created.end(), local_path) ==
+                created.end() &&
+            !p.ends_with(".pyc")) {
             FileUtils::remove(p);
             Log::message(" Removed:     " + std::string(local_path));
         }

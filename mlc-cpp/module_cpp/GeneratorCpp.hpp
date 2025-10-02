@@ -9,9 +9,7 @@
 
 #include "../core/Generator.hpp"
 
-class GeneratorCpp : public Generator
-{
+class GeneratorCpp : public Generator {
 public:
-    virtual void generate(Model& model) override;
+    virtual void generate(Model &model) override;
 };
-

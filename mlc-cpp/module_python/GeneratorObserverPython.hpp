@@ -15,4 +15,3 @@ public:
     void generate(Model &model);
     static std::string getObservableName();
 };
-

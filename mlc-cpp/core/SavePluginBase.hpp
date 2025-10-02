@@ -7,11 +7,11 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
-#include <tuple>
-#include <memory>
 #include <fstream>
+#include <memory>
+#include <string>
+#include <tuple>
+#include <vector>
 
 class Model;
 class Class;
@@ -27,12 +27,11 @@ public:
 
 protected:
     Model &model;
-    std::vector<std::fstream*> streams;
+    std::vector<std::fstream *> streams;
 
     /// Override to provide a header for the combined file:
     ///   first = initial content, second = output path for combined file.
-    virtual std::pair<std::string, std::string>
-    createCombineFileHeader();
+    virtual std::pair<std::string, std::string> createCombineFileHeader();
 
     /// Override to post-process combined content before writing.
     virtual std::string finalizeCombineFile(const std::string &content);
@@ -44,18 +43,18 @@ protected:
     virtual std::string removeIncludes(const std::string &fileContent);
 
 private:
-    using FileEntry = std::tuple<
-        std::shared_ptr<Class>,  // may be null
-        std::string,             // local path
-        std::string              // content
-    >;
+    using FileEntry = std::tuple<std::shared_ptr<Class>, // may be null
+                                 std::string,            // local path
+                                 std::string             // content
+                                 >;
 
     void saveOne();
     void saveAll();
     void saveFile(const std::string &localPath, const std::string &content);
     void sortFiles();
-    std::string addToCombineFile(const std::string &current, const std::string &next);
+    std::string addToCombineFile(const std::string &current,
+                                 const std::string &next);
 
-    std::vector<FileEntry> &files;        // alias to model.files
-    std::vector<std::string> &created;    // alias to model.created_files
+    std::vector<FileEntry> &files;     // alias to model.files
+    std::vector<std::string> &created; // alias to model.created_files
 };

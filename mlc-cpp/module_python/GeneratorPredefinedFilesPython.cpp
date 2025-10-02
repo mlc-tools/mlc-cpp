@@ -4,35 +4,39 @@
 //
 
 #include "GeneratorPredefinedFilesPython.hpp"
-#include "../models/Model.hpp"
 #include "../core/WriterBase.hpp"
+#include "../models/Model.hpp"
 #include "constants_serializers_py.hpp"
 
-void GeneratorPredefinedFilesPython::generate(Model &model)
-{
+void GeneratorPredefinedFilesPython::generate(Model &model) {
     WriterBase writer;
     writer.set_model(model);
 
     // Build consolidated module constants_serializers.py
     std::string constants =
-        py_runtime::META + "\n\n" +
-        py_runtime::DATA_WRAPPER + "\n\n" +
-        py_runtime::INTRUSIVE + "\n\n" +
-        py_runtime::SERIALIZER_XML + "\n\n" +
-        py_runtime::DESERIALIZER_XML + "\n\n" +
-        py_runtime::SERIALIZER_JSON + "\n\n" +
-        py_runtime::DESERIALIZER_JSON + "\n";
+        py_runtime::META + "\n\n" + py_runtime::DATA_WRAPPER + "\n\n" +
+        py_runtime::INTRUSIVE + "\n\n" + py_runtime::SERIALIZER_XML + "\n\n" +
+        py_runtime::DESERIALIZER_XML + "\n\n" + py_runtime::SERIALIZER_JSON +
+        "\n\n" + py_runtime::DESERIALIZER_JSON + "\n";
     constants = writer.prepareFile(constants);
     model.addFile(nullptr, "constants_serializers.py", constants);
 
     // Provide import shims expected by WriterPython
-    model.addFile(nullptr, "IntrusivePtr.py",       "from .constants_serializers import IntrusivePtr, make_intrusive\n");
-    model.addFile(nullptr, "DataWrapper.py",        "from .constants_serializers import DataWrapper\n");
-    model.addFile(nullptr, "Meta.py",               "from .constants_serializers import Meta\n");
-    model.addFile(nullptr, "SerializerXml.py",      "from .constants_serializers import SerializerXml\n");
-    model.addFile(nullptr, "DeserializerXml.py",    "from .constants_serializers import DeserializerXml\n");
-    model.addFile(nullptr, "SerializerJson.py",     "from .constants_serializers import SerializerJson\n");
-    model.addFile(nullptr, "DeserializerJson.py",   "from .constants_serializers import DeserializerJson\n");
+    model.addFile(
+        nullptr, "IntrusivePtr.py",
+        "from .constants_serializers import IntrusivePtr, make_intrusive\n");
+    model.addFile(nullptr, "DataWrapper.py",
+                  "from .constants_serializers import DataWrapper\n");
+    model.addFile(nullptr, "Meta.py",
+                  "from .constants_serializers import Meta\n");
+    model.addFile(nullptr, "SerializerXml.py",
+                  "from .constants_serializers import SerializerXml\n");
+    model.addFile(nullptr, "DeserializerXml.py",
+                  "from .constants_serializers import DeserializerXml\n");
+    model.addFile(nullptr, "SerializerJson.py",
+                  "from .constants_serializers import SerializerJson\n");
+    model.addFile(nullptr, "DeserializerJson.py",
+                  "from .constants_serializers import DeserializerJson\n");
 
     // Minimal common and mg_extensions (as before)
     static const std::string COMMON_XML = R"__(
@@ -93,14 +97,14 @@ def clone_object(obj, _=None):
     return clone
 )__";
     std::string content;
-    if(model.config.serializeFormats & static_cast<int>(SerializeFormat::Xml))
+    if (model.config.serializeFormats & static_cast<int>(SerializeFormat::Xml))
         content += COMMON_XML;
-    if(model.config.serializeFormats & static_cast<int>(SerializeFormat::Json))
+    if (model.config.serializeFormats & static_cast<int>(SerializeFormat::Json))
         content += COMMON_JSON;
 
     model.addFile(nullptr, "common.py", content);
 
-    static const char* MG_EXT =
+    static const char *MG_EXT =
         "def strTo(value, class_):\n"
         "    if class_ == bool:\n"
         "        return value.lower() in ['yes', 'true', 'y']\n"

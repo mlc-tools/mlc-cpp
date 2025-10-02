@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "SerializerBase.hpp"
 #include "Object.hpp"
+#include "SerializerBase.hpp"
 
 class SerializerCpp : public SerializerBase {
 public:
@@ -20,22 +20,24 @@ protected:
         return "{0}::{1}({2});\n";
     }
     virtual std::string getProtocolText(const std::string &format) override;
-    Object getSerializationFunctionArg(SerializationType t, const std::string &format) const override;
+    Object
+    getSerializationFunctionArg(SerializationType t,
+                                const std::string &format) const override;
 
-    virtual std::string buildSerializeOperation(const std::string &fieldName,
-                                        const std::string &fieldType,
-                                        const std::string &fieldValue,
-                                        SerializationType t,
-                                        const std::vector<Object> &tplArgs,
-                                        bool isPointer,
-                                        bool isLink,
-                                        const std::string &format) override;
+    virtual std::string
+    buildSerializeOperation(const std::string &fieldName,
+                            const std::string &fieldType,
+                            const std::string &fieldValue, SerializationType t,
+                            const std::vector<Object> &tplArgs, bool isPointer,
+                            bool isLink, const std::string &format) override;
 
-    virtual std::string finalizeSerializeOperation(std::string s) const override {
+    virtual std::string
+    finalizeSerializeOperation(std::string s) const override {
         return s;
     }
 
-    virtual std::string convertInitializeValue(const std::string &value) const override {
+    virtual std::string
+    convertInitializeValue(const std::string &value) const override {
         return value;
     }
 

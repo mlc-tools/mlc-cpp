@@ -6,18 +6,17 @@
 //
 #pragma once
 
+#include <set>
 #include <string>
 #include <vector>
-#include <set>
 
-enum class AccessSpecifier
-{
+enum class AccessSpecifier {
     m_public,
     m_protected,
     m_private,
 };
 
-enum class Side : int{
+enum class Side : int {
     client = 1,
     server = 2,
     both = 3,
@@ -47,20 +46,20 @@ public:
 
     Object();
     virtual ~Object() = default;
-    Object(const std::string& type_, const std::string& name_, const std::string& value_="");
+    Object(const std::string &type_, const std::string &name_,
+           const std::string &value_ = "");
     Object(const Object &other) = default;
     Object(Object &&other) noexcept = default;
-    Object& operator=(const Object &other) = default;
-    Object& operator=(Object &&other) noexcept = default;
+    Object &operator=(const Object &other) = default;
+    Object &operator=(Object &&other) noexcept = default;
     virtual bool is_equal(const Object &other) const;
-    
-    virtual void set_modifier(const std::string_view& modifier);
+
+    virtual void set_modifier(const std::string_view &modifier);
     void set_default_initial_value();
-public:
+
 };
 
-namespace Objects
-{
+namespace Objects {
 extern Object VOID;
 extern Object INT;
 extern Object UINT;
@@ -71,4 +70,4 @@ extern Object FLOAT;
 extern Object DOUBLE;
 extern Object STRING;
 
-}
+} // namespace Objects

@@ -5,11 +5,11 @@
 //  Created by Vladimir Tolmachev on 31.07.2025.
 //
 #include "TranslatorCpp.hpp"
-#include "Model.hpp"
 #include "Class.hpp"
-#include "Function.hpp"
-#include "Object.hpp"
 #include "Common.hpp"
+#include "Function.hpp"
+#include "Model.hpp"
+#include "Object.hpp"
 #include "RegexPatternCpp.hpp"
 #include <iostream>
 
@@ -20,36 +20,31 @@ void TranslatorCpp::translate(Model &model) {
     TranslatorBase::translate(model);
 }
 
-void TranslatorCpp::translateFunction(Class &cls,
-                                   Function &method,
-                                   Model &model) {
+void TranslatorCpp::translateFunction(Class &cls, Function &method,
+                                      Model &model) {
     if (!method.translated) {
-        method.body = translateFunctionBody(cls, method, method.body, model, method.callable_args);
+        method.body = translateFunctionBody(cls, method, method.body, model,
+                                            method.callable_args);
     }
 }
 
-std::string TranslatorCpp::translateFunctionBody(Class &cls,
-                                              Function &method,
-                                              const std::string &body,
-                                              Model &model,
-                                              const std::vector<Object> &args)
-{
-    return TranslatorBase::translateFunctionBody(cls, method, body, model, args);
+std::string
+TranslatorCpp::translateFunctionBody(Class &cls, Function &method,
+                                     const std::string &body, Model &model,
+                                     const std::vector<Object> &args) {
+    return TranslatorBase::translateFunctionBody(cls, method, body, model,
+                                                 args);
 }
 
-std::string TranslatorCpp::replaceByRegex(const std::string &body,
-                                       Class &cls,
-                                       Function &method,
-                                       Model &model,
-                                       const std::vector<Object> &args)
-{
+std::string TranslatorCpp::replaceByRegex(const std::string &body, Class &cls,
+                                          Function &method, Model &model,
+                                          const std::vector<Object> &args) {
     // Сохраняем строковые литералы
     auto pair = saveStrings(body);
     auto tmp = pair.first;
     auto strings = pair.second;
-    
-    if(cls.name == "TestTranslates" && method.name == "test_list_do")
-    {
+
+    if (cls.name == "TestTranslates" && method.name == "test_list_do") {
         std::cout << "";
     }
 
@@ -72,10 +67,10 @@ std::string TranslatorCpp::replaceByRegex(const std::string &body,
 }
 
 std::vector<int> TranslatorCpp::convertToEnum(Class &cls) {
-    
+
     cls.parent_class_name = "BaseEnum";
     cls.parent = _model->get_class(cls.parent_class_name);
-    
+
     // Практически дословно из Python-реализации
     bool isNumeric = cls.is_numeric; // предполагается поле Class::isNumeric
     int shift = 0;
@@ -84,16 +79,16 @@ std::vector<int> TranslatorCpp::convertToEnum(Class &cls) {
 
     // 1) переименовываем члены, собираем значения
     for (auto &member : cls.members) {
-        if (!member.name.empty()) continue;
-        member.name     = member.type;
-        member.type     = cast;
+        if (!member.name.empty())
+            continue;
+        member.name = member.type;
+        member.type = cast;
         member.is_static = true;
-        member.is_const  = true;
+        member.is_const = true;
         if (member.value.empty()) {
             int v = isNumeric ? shift : (1 << shift);
-            member.value = isNumeric
-                ? std::to_string(shift)
-                : "(" + std::to_string(v) + ")";
+            member.value = isNumeric ? std::to_string(shift)
+                                     : "(" + std::to_string(v) + ")";
             values.push_back(v);
         } else {
             int v = std::stoi(member.value);
@@ -103,26 +98,24 @@ std::vector<int> TranslatorCpp::convertToEnum(Class &cls) {
     }
 
     // Вспомогалки для удобства добавления функций
-    auto addMethod = [&](const Object& ret,
-                         const std::string &name,
-                         bool isConst,
-                         bool isFriend = false)
-    {
+    auto addMethod = [&](const Object &ret, const std::string &name,
+                         bool isConst, bool isFriend = false) {
         cls.functions.emplace_back();
         Function &m = cls.functions.back();
         m.return_type = ret;
-        m.name       = name;
-        m.is_const    = isConst;
-        m.is_friend   = isFriend;
+        m.name = name;
+        m.is_const = isConst;
+        m.is_friend = isFriend;
         return &m;
     };
 
-    auto makeConstRef = [&](const std::string &t, const std::string& name=""){
+    auto makeConstRef = [&](const std::string &t,
+                            const std::string &name = "") {
         Object o;
-        o.type     = t;
+        o.type = t;
         o.name = name;
-        o.is_const  = true;
-        o.is_ref    = true;
+        o.is_const = true;
+        o.is_ref = true;
         return o;
     };
 
@@ -146,7 +139,9 @@ std::vector<int> TranslatorCpp::convertToEnum(Class &cls) {
         for (size_t i = 0; i < cls.members.size() && i < values.size(); ++i) {
             const auto &mb = cls.members[i];
             if (mb.name != "value") {
-                method->body += format_indexes("\nif(_value == \"{0}\") \n{ \nvalue = {0}; \nreturn; \n}", mb.name);
+                method->body += format_indexes(
+                    "\nif(_value == \"{0}\") \n{ \nvalue = {0}; \nreturn; \n}",
+                    mb.name);
             }
         }
         method->body += "\nvalue = 0;";
@@ -173,7 +168,10 @@ std::vector<int> TranslatorCpp::convertToEnum(Class &cls) {
         for (size_t i = 0; i < cls.members.size() && i < values.size(); ++i) {
             const auto &mb = cls.members[i];
             if (mb.name != "value") {
-                method->body += format_indexes("\nif(_value == \"{0}\") \n{\n value = {0}; \nreturn *this; \n}", mb.name);
+                method->body +=
+                    format_indexes("\nif(_value == \"{0}\") \n{\n value = {0}; "
+                                   "\nreturn *this; \n}",
+                                   mb.name);
             }
         }
         method->body += "\nreturn *this;";
@@ -187,7 +185,8 @@ std::vector<int> TranslatorCpp::convertToEnum(Class &cls) {
     //   operator==(BaseEnum)
     {
         auto method = addMethod(Objects::BOOL, "operator ==", true);
-        method->callable_args.push_back(makeConstRef(cls.parent_class_name, "rhs"));
+        method->callable_args.push_back(
+            makeConstRef(cls.parent_class_name, "rhs"));
         method->body += "return value == rhs.operator int();";
     }
     //   operator==(int)
@@ -204,7 +203,8 @@ std::vector<int> TranslatorCpp::convertToEnum(Class &cls) {
     }
     //   friend operator==(const std::string&, const Enum&)
     {
-        auto method = addMethod(Objects::BOOL, "operator ==", false, /*friend*/ true);
+        auto method =
+            addMethod(Objects::BOOL, "operator ==", false, /*friend*/ true);
         method->callable_args.push_back(Object("string", "lhs"));
         method->callable_args.push_back(makeConstRef(cls.name, "rhs"));
         method->body += format_indexes("return {0}(lhs) == rhs;", cls.name);
@@ -226,7 +226,8 @@ std::vector<int> TranslatorCpp::convertToEnum(Class &cls) {
         for (size_t i = 0; i < cls.members.size() && i < values.size(); ++i) {
             const auto &mb = cls.members[i];
             if (mb.name != "value") {
-                method->body += format_indexes("\nif(value == {0}) \n{\n return \"{0}\"; \n}", mb.name);
+                method->body += format_indexes(
+                    "\nif(value == {0}) \n{\n return \"{0}\"; \n}", mb.name);
             }
         }
         method->body += "\nreturn std::string();";
@@ -237,7 +238,8 @@ std::vector<int> TranslatorCpp::convertToEnum(Class &cls) {
         for (size_t i = 0; i < cls.members.size() && i < values.size(); ++i) {
             const auto &mb = cls.members[i];
             if (mb.name != "value") {
-                method->body += format_indexes("\nif(value == {0}) \n{\n return \"{0}\"; \n}", mb.name);
+                method->body += format_indexes(
+                    "\nif(value == {0}) \n{\n return \"{0}\"; \n}", mb.name);
             }
         }
         method->body += "\nreturn std::string();";

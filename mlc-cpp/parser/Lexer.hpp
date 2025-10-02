@@ -8,12 +8,11 @@
 
 #include <string>
 
-
 enum class TokenType {
     Identifier, // object name, method name, class name, etc
-    Symbol,  // {, ;, (, ), etc
-    Keyword, // class, constructor, etc
-    Include, // list of includes
+    Symbol,     // {, ;, (, ), etc
+    Keyword,    // class, constructor, etc
+    Include,    // list of includes
     Eof
 };
 
@@ -28,13 +27,14 @@ public:
     Token next();
 
     constexpr void skip_ws();
-    constexpr std::string_view read_word() ;
-    constexpr std::string_view read_string(char quote) ;
+    constexpr std::string_view read_word();
+    constexpr std::string_view read_string(char quote);
     constexpr bool is_special(char c);
     constexpr bool is_symbol(char c);
 
     std::string_view skip_block();
     std::string_view get_current_line() const;
+
 private:
     const std::string &text;
     size_t pos;

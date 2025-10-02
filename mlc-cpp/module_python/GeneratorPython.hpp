@@ -14,6 +14,7 @@ class GeneratorPython {
 public:
     GeneratorPython() = default;
     void generate(Model &model);
+
 private:
     void generateBaseEnumClass(Model &model);
     void addPredefinedFiles(Model &model);

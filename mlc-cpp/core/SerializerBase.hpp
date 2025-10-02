@@ -6,20 +6,17 @@
 //
 
 #pragma once
-#include <string>
-#include <vector>
-#include <unordered_map>
 #include <memory>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
 class Model;
 class Class;
 class Function;
 class Object;
 
-enum class SerializationType {
-    SERIALIZATION   = 0,
-    DESERIALIZATION = 1
-};
+enum class SerializationType { SERIALIZATION = 0, DESERIALIZATION = 1 };
 
 class SerializerBase {
 public:
@@ -28,23 +25,22 @@ public:
     void generateMethods(Model &model);
 
 protected:
-    Model* model;
-    Class* currentClass;
+    Model *model;
+    Class *currentClass;
 
-    virtual void createSerializationFunction(Class &cls,
-                                     SerializationType t,
-                                     const std::string &format);
+    virtual void createSerializationFunction(Class &cls, SerializationType t,
+                                             const std::string &format);
     virtual std::string getProtocolText(const std::string &format) = 0;
     virtual std::string getParentSerializeCall() const = 0;
-    virtual Object getSerializationFunctionArg(SerializationType t, const std::string &format) const = 0;
-    virtual std::string buildSerializeOperation(const std::string &fieldName,
-                                                const std::string &fieldType,
-                                                const std::string &fieldValue,
-                                                SerializationType t,
-                                                const std::vector<Object> &templateArgs,
-                                                bool isPointer,
-                                                bool isLink,
-                                                const std::string &format) = 0;
+    virtual Object
+    getSerializationFunctionArg(SerializationType t,
+                                const std::string &format) const = 0;
+    virtual std::string buildSerializeOperation(
+        const std::string &fieldName, const std::string &fieldType,
+        const std::string &fieldValue, SerializationType t,
+        const std::vector<Object> &templateArgs, bool isPointer, bool isLink,
+        const std::string &format) = 0;
     virtual std::string finalizeSerializeOperation(std::string s) const = 0;
-    virtual std::string convertInitializeValue(const std::string &value) const = 0;
+    virtual std::string
+    convertInitializeValue(const std::string &value) const = 0;
 };

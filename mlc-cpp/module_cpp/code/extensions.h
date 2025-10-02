@@ -11,7 +11,8 @@
 #include <vector>
 
 #pragma mark EXTENSIONS_HPP
-const std::string EXTENSIONS_HPP = R"__EXT__(#ifndef __@{namespace}_functions_h__
+const std::string EXTENSIONS_HPP =
+    R"__EXT__(#ifndef __@{namespace}_functions_h__
 #define __@{namespace}_functions_h__
 
 #include <map>
@@ -912,7 +913,8 @@ namespace @{namespace}
 )__EXT__";
 
 #pragma mark FACTORY_REGISTRATION
-const std::string FACTORY_REGISTRATION = R"__EXT__(#define REGISTRATION_OBJECT(TType)                                      \\
+const std::string FACTORY_REGISTRATION =
+    R"__EXT__(#define REGISTRATION_OBJECT(TType)                                      \\
 class registration__##TType                                             \\
 {                                                                       \\
 public:                                                                 \\
@@ -1883,7 +1885,8 @@ DeserializerXml DeserializerXml::operator*()
 )__EXT__";
 
 #pragma mark SERIALIZER_JSON_HPP
-const std::string SERIALIZER_JSON_HPP = R"__EXT__(#ifndef __mg_SERIALIZERJSON_H__
+const std::string SERIALIZER_JSON_HPP =
+    R"__EXT__(#ifndef __mg_SERIALIZERJSON_H__
 #define __mg_SERIALIZERJSON_H__
 
 #include <string>
@@ -2902,7 +2905,8 @@ DeserializerJson DeserializerJson::iterator::operator*()
 )__EXT__";
 
 #pragma mark SERIALIZER_COMMON
-const std::string SERIALIZER_COMMON = R"__EXT__(#ifndef __mg_SERIALIZERCOMMON_H__
+const std::string SERIALIZER_COMMON =
+    R"__EXT__(#ifndef __mg_SERIALIZERCOMMON_H__
 #define __mg_SERIALIZERCOMMON_H__
 
 #include <type_traits>

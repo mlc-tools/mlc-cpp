@@ -5,17 +5,17 @@
 //  Created by Vladimir Tolmachev on 31.07.2025.
 //
 #include "TranslatorBase.hpp"
-#include "Model.hpp"
 #include "Class.hpp"
-#include "Function.hpp"
-#include "Object.hpp"
 #include "Common.hpp"
 #include "Error.hpp"
+#include "Function.hpp"
+#include "Model.hpp"
+#include "Object.hpp"
 #include "RegexPatternCpp.hpp"
 
 void TranslatorBase::translate(Model &model) {
     _model = &model;
-    
+
     for (auto &clsPtr : model.classes) {
         Class &cls = *clsPtr;
         // пометить runtime-поля для Observable
@@ -45,25 +45,22 @@ void TranslatorBase::translate(Model &model) {
     }
 }
 
-void TranslatorBase::translateFunction(Class &cls,
-                                       Function &method,
-                                       Model &model)
-{
+void TranslatorBase::translateFunction(Class &cls, Function &method,
+                                       Model &model) {
     if (!method.translated) {
-        method.body = translateFunctionBody(cls, method, method.body, model, method.callable_args);
+        method.body = translateFunctionBody(cls, method, method.body, model,
+                                            method.callable_args);
     }
 }
 
-std::string TranslatorBase::translateFunctionBody(Class &cls,
-                                          Function &method,
-                                          const std::string &body,
-                                          Model &model,
-                                          const std::vector<Object> &args)
-{
+std::string
+TranslatorBase::translateFunctionBody(Class &cls, Function &method,
+                                      const std::string &body, Model &model,
+                                      const std::vector<Object> &args) {
     auto result = replaceByRegex(body, cls, method, model, args);
-    for(auto& inner : cls.inner_classes){
+    for (auto &inner : cls.inner_classes) {
         auto original_name = inner->name.substr(cls.name.size());
-        if(body.find(original_name) != std::string::npos){
+        if (body.find(original_name) != std::string::npos) {
             RE2 regex("\\b" + original_name + "\\b");
             RE2::GlobalReplace(&result, regex, inner->name);
         }
@@ -79,11 +76,12 @@ std::vector<int> TranslatorBase::convertToEnum(Class &cls) {
     std::string castType = "string";
     std::vector<int> values;
     for (auto &member : cls.members) {
-        if (!member.name.empty()) continue;
-        member.name     = member.type;
-        member.type     = castType;
+        if (!member.name.empty())
+            continue;
+        member.name = member.type;
+        member.type = castType;
         member.is_static = true;
-        member.is_const  = true;
+        member.is_const = true;
         if (member.value.empty()) {
             if (castType == "int") {
                 int v = 1 << shift;
@@ -101,10 +99,8 @@ std::vector<int> TranslatorBase::convertToEnum(Class &cls) {
     return values;
 }
 
-void TranslatorBase::replacePattern(
-    std::string &text,
-    const RegexPattern& pattern)
-{
+void TranslatorBase::replacePattern(std::string &text,
+                                    const RegexPattern &pattern) {
     bool skip = pattern.triggers.size() > 0;
     for (auto &f : pattern.triggers) {
         skip = skip && (text.find(f) == std::string::npos);
@@ -114,18 +110,21 @@ void TranslatorBase::replacePattern(
     }
 }
 
-std::pair<std::string,std::vector<std::string>>
+std::pair<std::string, std::vector<std::string>>
 TranslatorBase::saveStrings(std::string func) {
     std::vector<std::string> strings;
     while (true) {
         auto pos = func.find('"');
-        if (pos == std::string::npos) break;
-        size_t i = pos + 1; char prev = 0;
+        if (pos == std::string::npos)
+            break;
+        size_t i = pos + 1;
+        char prev = 0;
         for (; i < func.size(); ++i) {
-            if (func[i]=='"' && prev!='\\') {
-                std::string lit = func.substr(pos, i-pos+1);
-                std::string token = "@{{__string_" + to_string(strings.size()) + "__}}";
-                func = func.substr(0,pos) + token + func.substr(i+1);
+            if (func[i] == '"' && prev != '\\') {
+                std::string lit = func.substr(pos, i - pos + 1);
+                std::string token =
+                    "@{{__string_" + to_string(strings.size()) + "__}}";
+                func = func.substr(0, pos) + token + func.substr(i + 1);
                 strings.push_back(lit);
                 break;
             }
@@ -135,9 +134,9 @@ TranslatorBase::saveStrings(std::string func) {
     return {func, strings};
 }
 
-std::string TranslatorBase::restoreStrings(std::string func,
-                                           const std::vector<std::string> &strings)
-{
+std::string
+TranslatorBase::restoreStrings(std::string func,
+                               const std::vector<std::string> &strings) {
     for (size_t i = 0; i < strings.size(); ++i) {
         std::string token = "@{{__string_" + to_string(i) + "__}}";
         size_t pos = 0;

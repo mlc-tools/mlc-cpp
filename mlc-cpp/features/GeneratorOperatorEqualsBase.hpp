@@ -7,38 +7,43 @@
 
 #pragma once
 
+#include "features/FeatureGenerator.hpp"
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
-#include "features/FeatureGenerator.hpp"
 
 class Model;
 class Class;
 class Object;
 
-class GeneratorOperatorEqualsBase : public FeatureGenerator{
+class GeneratorOperatorEqualsBase : public FeatureGenerator {
 public:
     GeneratorOperatorEqualsBase() = default;
     virtual ~GeneratorOperatorEqualsBase() = default;
 
-    // Основной метод: генерирует операторы и конструкторы для всех классов модели
+    // Основной метод: генерирует операторы и конструкторы для всех классов
+    // модели
     virtual void generate(Model &model) override;
-    virtual void modifySources(Model& model, const std::shared_ptr<Class>& cls, std::string& header, std::string& source) override{}
+    virtual void modifySources(Model &model, const std::shared_ptr<Class> &cls,
+                               std::string &header,
+                               std::string &source) override {}
 
 protected:
     Model *_model{nullptr};
 
     // Возвращает Object, представляющий `const ClassName&`
-    static Object getConstRef(const std::shared_ptr<Class> &cls, const std::string& name);
+    static Object getConstRef(const std::shared_ptr<Class> &cls,
+                              const std::string &name);
 
     // Имя оператора ==, !=
-    virtual std::string getEqualMethodName()    const = 0;
+    virtual std::string getEqualMethodName() const = 0;
     virtual std::string getNotEqualMethodName() const = 0;
 
-    // Шаблон сравнения одного поля: по умолчанию "result = result && this->{0} == rhs.{0};"
-    virtual std::string getCompareMethodPattern(
-        const std::shared_ptr<Class> &cls,
-        const Object &member) const;
+    // Шаблон сравнения одного поля: по умолчанию "result = result && this->{0}
+    // == rhs.{0};"
+    virtual std::string
+    getCompareMethodPattern(const std::shared_ptr<Class> &cls,
+                            const Object &member) const;
 
     // Операция оператора != по умолчанию "return !(*this == rhs);"
     virtual std::string getNotEqualMethodOperation() const;
@@ -49,17 +54,14 @@ protected:
     // Методы для добавления копирующих/перемещающих конструкторов и оператора=
     virtual void addCopyConstructor(const std::shared_ptr<Class> &cls);
     virtual void addMoveConstructor(const std::shared_ptr<Class> &cls);
-    virtual void addCopyOperator   (const std::shared_ptr<Class> &cls);
+    virtual void addCopyOperator(const std::shared_ptr<Class> &cls);
 
 private:
     // Вспомогательная замена {0}, {1}, ... в шаблоне pattern на args[i]
-    static std::string formatPattern(
-        const std::string &pattern,
-        const std::vector<std::string> &args);
+    static std::string formatPattern(const std::string &pattern,
+                                     const std::vector<std::string> &args);
 
     // Генерация отдельных частей
-    void addEqualMethod    (const std::shared_ptr<Class> &cls);
-    void addNotEqualMethod (const std::shared_ptr<Class> &cls);
+    void addEqualMethod(const std::shared_ptr<Class> &cls);
+    void addNotEqualMethod(const std::shared_ptr<Class> &cls);
 };
-
-

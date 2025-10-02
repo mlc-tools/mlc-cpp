@@ -10,6 +10,7 @@ class GeneratorDataStoragePython : public GeneratorDataStorageBase {
 public:
     GeneratorDataStoragePython();
     virtual void generate(Model &model) override;
+
 protected:
     bool isNeedCreateStaticInstance() const override { return true; }
     std::string getSharedMethodBody() override;
@@ -25,4 +26,3 @@ private:
     void addDeserializeXml(Model &model);
     void addDeserializeMethod(const std::string &name);
 };
-

@@ -8,14 +8,13 @@
 #pragma once
 #include "Class.hpp"
 #include "Model.hpp"
-#include <vector>
 #include <memory>
-
+#include <vector>
 
 class Linker {
 public:
     Linker() = default;
-    
+
     void link(Model &model);
 
 private:
@@ -25,7 +24,7 @@ private:
     static void addGetTypeMethod(Model &model);
 
     static void processTemplates(Object &member, Model &model);
-    static std::shared_ptr<Object> getObjectType(Model &model, const std::string &typeName);
+    static std::shared_ptr<Object> getObjectType(Model &model,
+                                                 const std::string &typeName);
     static void generateInlineFor(Class &cls);
 };
-

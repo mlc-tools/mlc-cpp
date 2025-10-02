@@ -8,11 +8,13 @@
 #include "Config.hpp"
 #include "FileUtils.hpp"
 
-#include <re2/re2.h>
 #include "jsoncpp/json.h"
+#include <re2/re2.h>
 
-std::function<bool(const std::string&)> make_re2_filter_from_patterns(const std::vector<std::string>& raws) {
-    if (raws.empty()) return {};
+std::function<bool(const std::string &)>
+make_re2_filter_from_patterns(const std::vector<std::string> &raws) {
+    if (raws.empty())
+        return {};
     auto inc = std::make_shared<std::vector<std::unique_ptr<RE2>>>();
     auto exc = std::make_shared<std::vector<std::unique_ptr<RE2>>>();
     for (const auto &p : raws) {
@@ -21,7 +23,7 @@ std::function<bool(const std::string&)> make_re2_filter_from_patterns(const std:
         else
             inc->emplace_back(std::make_unique<RE2>(p));
     }
-    return [inc, exc](const std::string& path){
+    return [inc, exc](const std::string &path) {
         for (const auto &re : *exc)
             if (RE2::PartialMatch(path, *re))
                 return false;
@@ -34,38 +36,48 @@ std::function<bool(const std::string&)> make_re2_filter_from_patterns(const std:
     };
 }
 
-std::vector<std::string> split_comma_allow_lists(const std::vector<std::string>& vals){
-    std::vector<std::string> out; out.reserve(vals.size());
+std::vector<std::string>
+split_comma_allow_lists(const std::vector<std::string> &vals) {
+    std::vector<std::string> out;
+    out.reserve(vals.size());
     for (auto &v : vals) {
         size_t start = 0, pos = 0;
         while ((pos = v.find(',', start)) != std::string::npos) {
             auto tok = v.substr(start, pos - start);
-            if (!tok.empty()) out.push_back(tok);
+            if (!tok.empty())
+                out.push_back(tok);
             start = pos + 1;
         }
         auto last = v.substr(start);
-        if (!last.empty()) out.push_back(last);
+        if (!last.empty())
+            out.push_back(last);
     }
     return out;
 }
 
-std::vector<std::string> read_patterns(const Json::Value& v) {
+std::vector<std::string> read_patterns(const Json::Value &v) {
     std::vector<std::string> pats;
-    if (v.isString()) pats.push_back(v.asString());
-    else if (v.isArray()) { for (const auto &it : v) if (it.isString()) pats.push_back(it.asString()); }
+    if (v.isString())
+        pats.push_back(v.asString());
+    else if (v.isArray()) {
+        for (const auto &it : v)
+            if (it.isString())
+                pats.push_back(it.asString());
+    }
     return split_comma_allow_lists(pats);
 }
 
-void load_dirs(const Json::Value& v, std::vector<std::string>& out) {
+void load_dirs(const Json::Value &v, std::vector<std::string> &out) {
     if (v.isString())
         out.push_back(v.asString());
     else if (v.isArray()) {
-        for (const auto& it : v)
-            if (it.isString()) out.push_back(it.asString());
+        for (const auto &it : v)
+            if (it.isString())
+                out.push_back(it.asString());
     }
 }
 
-Config Config::loadFile(const std::string& path, std::string& err) {
+Config Config::loadFile(const std::string &path, std::string &err) {
     auto content = FileUtils::read(path);
     if (content.empty()) {
         err = "Config is empty or not found: " + path;
@@ -74,13 +86,14 @@ Config Config::loadFile(const std::string& path, std::string& err) {
     return loadString(content, err);
 }
 
-Config Config::loadString(const std::string& content, std::string& err) {
+Config Config::loadString(const std::string &content, std::string &err) {
     Config config;
     Json::CharReaderBuilder b;
     std::string errs;
     std::unique_ptr<Json::CharReader> rdr(b.newCharReader());
     Json::Value root;
-    if (!rdr->parse(content.data(), content.data() + content.size(), &root, &errs)) {
+    if (!rdr->parse(content.data(), content.data() + content.size(), &root,
+                    &errs)) {
         err = errs;
         return config;
     }
@@ -103,7 +116,7 @@ Config Config::loadString(const std::string& content, std::string& err) {
 
     for (const auto &g : gens) {
         config.configs_directories = src_cfgs;
-        config.data_directories    = src_data;
+        config.data_directories = src_data;
 
         Job job;
         if (g.isMember("out"))
@@ -127,8 +140,9 @@ Config Config::loadString(const std::string& content, std::string& err) {
 
         if (g.isMember("side") && g["side"].isString()) {
             std::string s = g["side"].asString();
-            for(char& ch : s)
-                ch = static_cast<char>(::tolower(static_cast<unsigned char>(ch)));
+            for (char &ch : s)
+                ch = static_cast<char>(
+                    ::tolower(static_cast<unsigned char>(ch)));
             if (s == "client")
                 job.side = Side::client;
             else if (s == "server")
@@ -170,13 +184,13 @@ Config Config::loadString(const std::string& content, std::string& err) {
                 std::vector<SerializeFormat> protos;
                 for (auto &t : tokens) {
                     std::string s = t;
-                    for(char& ch : s)
-                        ch = static_cast<char>(::tolower(static_cast<unsigned char>(ch)));
+                    for (char &ch : s)
+                        ch = static_cast<char>(
+                            ::tolower(static_cast<unsigned char>(ch)));
                     if (s == "xml") {
                         mask |= static_cast<int>(SerializeFormat::Xml);
                         protos.push_back(SerializeFormat::Xml);
-                    }
-                    else if (s == "json") {
+                    } else if (s == "json") {
                         mask |= static_cast<int>(SerializeFormat::Json);
                         protos.push_back(SerializeFormat::Json);
                     }
@@ -204,20 +218,17 @@ Config Config::loadString(const std::string& content, std::string& err) {
 
     const auto &features = root["features"];
     const auto &feature_unit_tests = features["unit_tests"];
-    if(feature_unit_tests.isObject())
-    {
+    if (feature_unit_tests.isObject()) {
         FeatureUnitTests feature;
         config.features.push_back(std::move(feature));
     }
     const auto &feature_visitor = features["visitor"];
-    if(feature_visitor.isObject())
-    {
+    if (feature_visitor.isObject()) {
         FeatureVisitor vis;
         config.features.push_back(std::move(vis));
     }
     const auto &feature_ecs = features["ecs"];
-    if(feature_ecs.isObject())
-    {
+    if (feature_ecs.isObject()) {
         FeatureEcs ecs;
         ecs.model_base = feature_ecs["model_base"].asString();
         ecs.component_base = feature_ecs["component_base"].asString();
@@ -225,22 +236,19 @@ Config Config::loadString(const std::string& content, std::string& err) {
     }
 
     const auto &feature_data_storage = features["data_storage"];
-    if(feature_data_storage.isObject())
-    {
+    if (feature_data_storage.isObject()) {
         FeatureDataStorage f;
         config.features.push_back(std::move(f));
     }
 
     const auto &feature_ref_counter = features["ref_counter"];
-    if(feature_ref_counter.isObject())
-    {
+    if (feature_ref_counter.isObject()) {
         FeatureRefCounter f;
         config.features.push_back(std::move(f));
     }
 
     const auto &feature_operator_equals = features["operator_equals"];
-    if(feature_operator_equals.isObject())
-    {
+    if (feature_operator_equals.isObject()) {
         FeatureOperatorEquals f;
         config.features.push_back(std::move(f));
     }

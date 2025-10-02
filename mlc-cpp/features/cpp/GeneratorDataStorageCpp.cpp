@@ -6,14 +6,13 @@
 //
 
 #include "GeneratorDataStorageCpp.hpp"
-#include "Error.hpp"
 #include "../core/Parser.hpp"
-#include "../models/Object.hpp"
 #include "../models/Function.hpp"
+#include "../models/Object.hpp"
+#include "Error.hpp"
 
 GeneratorDataStorageCpp::GeneratorDataStorageCpp()
-  : GeneratorDataStorageBase()
-{}
+    : GeneratorDataStorageBase() {}
 
 bool GeneratorDataStorageCpp::isNeedCreateStaticInstance() const {
     return false;
@@ -24,8 +23,8 @@ std::string GeneratorDataStorageCpp::getSharedMethodBody() {
     return instance;)";
 }
 
-void GeneratorDataStorageCpp::createGetters(const std::vector<std::shared_ptr<Class>>& classes)
-{
+void GeneratorDataStorageCpp::createGetters(
+    const std::vector<std::shared_ptr<Class>> &classes) {
     // Создаём шаблонный метод get<T>
     Function getter;
     getter.name = "get";
@@ -42,13 +41,11 @@ void GeneratorDataStorageCpp::createGetters(const std::vector<std::shared_ptr<Cl
 }
 
 void GeneratorDataStorageCpp::generateImplementations(
-    const std::vector<std::shared_ptr<Class>>& /*classes*/,
-    Function &getter)
-{
+    const std::vector<std::shared_ptr<Class>> & /*classes*/, Function &getter) {
     std::string impl;
     for (auto &cls : getStorageClasses()) {
         std::string dataName = getDataName(cls->name);
-        std::string mapName  = getDataListName(dataName);
+        std::string mapName = getDataListName(dataName);
 
         impl += ::format(
             R"(
@@ -70,19 +67,16 @@ template<>const {cls}* DataStorage::get(const std::string& name) const
     return &const_cast<DataStorage*>(this)->{map}[name];
 }
 )",
-            {
-                {"cls", cls->name},
-                {"map", mapName}
-            }
-        );
+            {{"cls", cls->name}, {"map", mapName}});
     }
     getter.specific_implementations = impl;
 }
 
-std::vector<std::shared_ptr<Class>> GeneratorDataStorageCpp::getStorageClasses() const {
+std::vector<std::shared_ptr<Class>>
+GeneratorDataStorageCpp::getStorageClasses() const {
     std::vector<std::shared_ptr<Class>> result;
     for (auto &cls : _model->classes) {
-        if(cls->is_storage && _model->is_side(cls->side)) {
+        if (cls->is_storage && _model->is_side(cls->side)) {
             result.push_back(cls);
         }
     }
@@ -99,7 +93,7 @@ auto non_const_this = const_cast<DataStorage*>(this);
 )";
     for (auto &cls : getStorageClasses()) {
         std::string dataName = getDataName(cls->name);
-        std::string mapName  = getDataListName(dataName);
+        std::string mapName = getDataListName(dataName);
 
         body += ::format(
             R"(
@@ -110,12 +104,7 @@ for (auto& node : {data})
     non_const_this->{map}.emplace(name, {cls}());
 }
 )",
-            {
-                {"data", dataName},
-                {"map", mapName},
-                {"cls", cls->name}
-            }
-        );
+            {{"data", dataName}, {"map", mapName}, {"cls", cls->name}});
     }
     body += R"(
 DeserializerJson deserializer(json);
@@ -136,7 +125,7 @@ if(doc.root() != nullptr)
 )";
     for (auto &cls : getStorageClasses()) {
         std::string dataName = getDataName(cls->name);
-        std::string mapName  = getDataListName(dataName);
+        std::string mapName = getDataListName(dataName);
 
         body += ::format(
             R"(
@@ -146,11 +135,7 @@ if(doc.root() != nullptr)
         non_const_this->{map}.emplace(name, {cls}());
     }
 )",
-            {
-                {"map", mapName},
-                {"cls", cls->name}
-            }
-        );
+            {{"map", mapName}, {"cls", cls->name}});
     }
     body += R"(
     DeserializerXml deserializer(root);

@@ -7,39 +7,43 @@
 
 #pragma once
 
-#include <string>
-#include <vector>
-#include <unordered_map>
-#include <set>
 #include <array>
 #include <memory>
+#include <set>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
-#include "WriterBase.hpp"
 #include "Class.hpp"
 #include "Function.hpp"
 #include "Object.hpp"
 #include "RegexPatternCpp.hpp"
+#include "WriterBase.hpp"
 
 class WriterCpp : public WriterBase {
 public:
     explicit WriterCpp();
 
-    std::vector<std::pair<std::string,std::string>>
+    std::vector<std::pair<std::string, std::string>>
     writeClass(const std::shared_ptr<Class> &cls) override;
 
 protected:
     // Cache for member declarations and inits: name → {decl, init, staticInit}
-    std::unordered_map<std::string, std::array<std::string,3>> objectsCache_;
+    std::unordered_map<std::string, std::array<std::string, 3>> objectsCache_;
     // Cache for methods: ptr(Function) → {hpp, cpp}
-    std::unordered_map<const Function*, std::pair<std::string,std::string>> methodsCache_;
+    std::unordered_map<const Function *, std::pair<std::string, std::string>>
+        methodsCache_;
     // Only HPP snippets for templated methods
     std::vector<std::string> methodsCacheWithTemplates_;
 
     // Step-by-step overrides
-    std::tuple<std::string,std::string,std::string> writeObject(const Object &obj) override;
-    std::pair<std::string,std::string> writeFunction(const Function &fn) override;
+    std::tuple<std::string, std::string, std::string>
+    writeObject(const Object &obj) override;
+    std::pair<std::string, std::string>
+    writeFunction(const Function &fn) override;
 
-    std::tuple<std::string,std::set<std::string>,std::set<std::string>,std::set<std::string>>
+    std::tuple<std::string, std::set<std::string>, std::set<std::string>,
+               std::set<std::string>>
     writeHpp(const std::shared_ptr<Class> &cls);
 
     std::string writeCpp(const std::shared_ptr<Class> &cls,
@@ -62,20 +66,20 @@ private:
     std::string writeMemberInitialization(const Object &obj);
 
     // Named-object helper
-    std::string writeNamedObject(const Object &obj,
-                                        const std::string &name,
-                                        bool tryConstRef,
-                                        bool useIntrusive);
+    std::string writeNamedObject(const Object &obj, const std::string &name,
+                                 bool tryConstRef, bool useIntrusive);
 
     std::string convertType(const std::string &t);
 
     // Include resolution
-    std::tuple<std::set<std::string>,std::set<std::string>,std::set<std::string>>
+    std::tuple<std::set<std::string>, std::set<std::string>,
+               std::set<std::string>>
     getIncludesForHeader(const std::shared_ptr<Class> &cls);
 
-    std::set<std::string> getIncludesForMethod(const std::shared_ptr<Class> &cls,
-                                               const std::string &functionsText,
-                                               const std::set<std::string> &hppIncludes);
+    std::set<std::string>
+    getIncludesForMethod(const std::shared_ptr<Class> &cls,
+                         const std::string &functionsText,
+                         const std::set<std::string> &hppIncludes);
 
     std::string getIncludesForSource(const std::shared_ptr<Class> &cls,
                                      const std::string &functionsText,
@@ -89,13 +93,15 @@ private:
     std::string buildForwardDeclarations(const std::set<std::string> &decls);
 
     // Filename helpers
-    std::string getFilename(const std::shared_ptr<Class> &cls, const std::string &ext);
+    std::string getFilename(const std::shared_ptr<Class> &cls,
+                            const std::string &ext);
     std::string getPathToRoot(const std::shared_ptr<Class> &cls);
-    
+
     std::string getTemplates(const Object &obj);
 
     // Source templates
-    static constexpr const char *HEADER = R"(#ifndef __{namespace}_{class_name}_h__
+    static constexpr const char *HEADER =
+        R"(#ifndef __{namespace}_{class_name}_h__
 #define __{namespace}_{class_name}_h__
 
 #include <cstdint>

@@ -6,8 +6,7 @@
 #include "../models/Model.hpp"
 #include "../models/Serialize.hpp"
 
-void GeneratorPackagePython::generate(Model &model)
-{
+void GeneratorPackagePython::generate(Model &model) {
     auto mask = model.config.serializeFormats;
     bool xml = (mask & static_cast<int>(SerializeFormat::Xml)) != 0;
     bool json = (mask & static_cast<int>(SerializeFormat::Json)) != 0;
@@ -27,4 +26,3 @@ void GeneratorPackagePython::generate(Model &model)
 
     model.addFile(nullptr, "__init__.py", content);
 }
-

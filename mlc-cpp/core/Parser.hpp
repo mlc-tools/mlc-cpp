@@ -6,32 +6,30 @@
 //
 
 #pragma once
-#include <string>
-#include <vector>
-#include <tuple>
+#include "Class.hpp"
+#include "Error.hpp"
+#include "Function.hpp"
 #include "Model.hpp"
 #include "Object.hpp"
-#include "Class.hpp"
-#include "Function.hpp"
-#include "Error.hpp"
-//#include "Common.hpp"  // parseObject, smartSplit
-
-
+#include <string>
+#include <tuple>
+#include <vector>
 
 class Parser {
 public:
     explicit Parser(Model &model);
     void parseFiles(const std::vector<std::string> &filePaths);
     void parseText(const std::string &text);
-    
+
     static std::string removeComments(const std::string &text);
-    static std::pair<bool, std::string> checkSkip(const std::string &line, Model &model);
-    void parse_class(const std::shared_ptr<Class>& cls);
-    
+    static std::pair<bool, std::string> checkSkip(const std::string &line,
+                                                  Model &model);
+    void parse_class(const std::shared_ptr<Class> &cls);
+
 private:
     Model &_model;
     std::string _current_source_path;
 };
 
-Object parse_object(const std::string& str, bool with_name=false);
-Function parse_function(const std::string& str);
+Object parse_object(const std::string &str, bool with_name = false);
+Function parse_function(const std::string &str);

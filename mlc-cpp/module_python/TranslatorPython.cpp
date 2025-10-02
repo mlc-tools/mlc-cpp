@@ -33,7 +33,6 @@ inline std::string indent_lines(const std::string &s, int spaces) {
     return out;
 }
 
-
 void TranslatorPython::translateFunction(Class &cls, Function &method,
                                          Model &model) {
     if (cls.name == "DataStorage" && method.name == "initialize_json")
