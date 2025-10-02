@@ -102,11 +102,7 @@
             isEnabled = "NO">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "--config tests/simple_test/mlc_py.json"
-            isEnabled = "NO">
-         </CommandLineArgument>
-         <CommandLineArgument
-            argument = "--config tests/simple_test/mlc_xml.json"
+            argument = "--config tests/simple_test/mlc.json"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument

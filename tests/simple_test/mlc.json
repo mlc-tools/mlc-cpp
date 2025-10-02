@@ -5,6 +5,28 @@
   },
   "generation": [
     {
+      "out": "generated_cpp/xml",
+      "data_out": "assets",
+      "auto_registration": false,
+      "generate_intrusive": true,
+      "generate_tests": true,
+      "language": "cpp",
+      "side": "server",
+      "serialize_protocol": "xml",
+      "filter_code": []
+    },
+    {
+      "out": "generated_cpp/json",
+      "data_out": "assets",
+      "auto_registration": false,
+      "generate_intrusive": true,
+      "generate_tests": true,
+      "language": "cpp",
+      "side": "client",
+      "serialize_protocol": "json",
+      "filter_code": []
+    },
+    {
       "out": "generated_py/xml",
       "data_out": "assets",
       "auto_registration": false,

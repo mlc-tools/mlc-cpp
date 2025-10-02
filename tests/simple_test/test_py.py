@@ -7,7 +7,10 @@ try:
     from generated_py.xml.RunAllTests import RunAllTests
     from generated_py.xml.Logger import Logger
 except ImportError:
-    from generated_py.mg import *
+    from generated_py.json.AllTests import AllTests
+    from generated_py.json.DataStorage import DataStorage
+    from generated_py.json.RunAllTests import RunAllTests
+    from generated_py.json.Logger import Logger
 
 
 class LoggerImpl(Logger):
