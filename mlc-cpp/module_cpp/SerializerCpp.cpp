@@ -10,15 +10,6 @@
 #include "Model.hpp"
 #include <cassert>
 
-std::string convert_type(const std::string &type_) {
-    if (type_ == "list")
-        return "std::vector";
-    if (type_ == "map")
-        return "std::map";
-    if (type_ == "string")
-        return "std::string";
-    return type_;
-}
 
 SerializerCpp::SerializerCpp() : SerializerBase() {}
 SerializerCpp::~SerializerCpp() {}
