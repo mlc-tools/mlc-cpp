@@ -6,3 +6,5 @@ build/
 build*/
 tests/*/generated*
 AGENTS.md
+*.sublime-project
+*.sublime-workspace
