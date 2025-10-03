@@ -5,4 +5,4 @@ test/gen/
 build/
 build*/
 tests/*/generated*
-
+AGENTS.md

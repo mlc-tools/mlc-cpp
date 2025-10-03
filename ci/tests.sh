@@ -1,6 +1,6 @@
 pushd .
 
-# ./build_and_install.sh
+./build_and_install.sh
 
 cd ../tests/simple_test
 mlc --config mlc.json

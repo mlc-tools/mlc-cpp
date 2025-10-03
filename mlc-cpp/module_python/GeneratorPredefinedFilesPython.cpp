@@ -12,31 +12,14 @@ void GeneratorPredefinedFilesPython::generate(Model &model) {
     WriterBase writer;
     writer.set_model(model);
 
-    // Build consolidated module constants_serializers.py
-    std::string constants =
-        py_runtime::META + "\n\n" + py_runtime::DATA_WRAPPER + "\n\n" +
-        py_runtime::INTRUSIVE + "\n\n" + py_runtime::SERIALIZER_XML + "\n\n" +
-        py_runtime::DESERIALIZER_XML + "\n\n" + py_runtime::SERIALIZER_JSON +
-        "\n\n" + py_runtime::DESERIALIZER_JSON + "\n";
-    constants = writer.prepareFile(constants);
-    model.addFile(nullptr, "constants_serializers.py", constants);
-
     // Provide import shims expected by WriterPython
-    model.addFile(
-        nullptr, "IntrusivePtr.py",
-        "from .constants_serializers import IntrusivePtr, make_intrusive\n");
-    model.addFile(nullptr, "DataWrapper.py",
-                  "from .constants_serializers import DataWrapper\n");
-    model.addFile(nullptr, "Meta.py",
-                  "from .constants_serializers import Meta\n");
-    model.addFile(nullptr, "SerializerXml.py",
-                  "from .constants_serializers import SerializerXml\n");
-    model.addFile(nullptr, "DeserializerXml.py",
-                  "from .constants_serializers import DeserializerXml\n");
-    model.addFile(nullptr, "SerializerJson.py",
-                  "from .constants_serializers import SerializerJson\n");
-    model.addFile(nullptr, "DeserializerJson.py",
-                  "from .constants_serializers import DeserializerJson\n");
+    model.addFile(nullptr, "IntrusivePtr.py", py_runtime::INTRUSIVE);
+    model.addFile(nullptr, "DataWrapper.py", py_runtime::DATA_WRAPPER);
+    model.addFile(nullptr, "Meta.py", py_runtime::META);
+    model.addFile(nullptr, "SerializerXml.py", py_runtime::SERIALIZER_XML);
+    model.addFile(nullptr, "DeserializerXml.py", py_runtime::DESERIALIZER_XML);
+    model.addFile(nullptr, "SerializerJson.py", py_runtime::SERIALIZER_JSON);
+    model.addFile(nullptr, "DeserializerJson.py", py_runtime::DESERIALIZER_JSON);
 
     // Minimal common and mg_extensions (as before)
     static const std::string COMMON_XML = R"__(

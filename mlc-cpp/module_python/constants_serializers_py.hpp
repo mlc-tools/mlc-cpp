@@ -2,8 +2,6 @@
 //  constants_serializers_py.hpp
 //  mlc-cpp
 //
-//  Embedded Python runtime helpers (ported from
-//  module_python/py/constants_serializers.py)
 //
 
 #pragma once
@@ -102,7 +100,7 @@ static const std::string SERIALIZER_XML = R"__PY__(# -*- coding: utf-8 -*-
 from .DataWrapper import DataWrapper
 from .IntrusivePtr import IntrusivePtr
 import xml.etree.ElementTree as ET
-
+from .BaseEnum import BaseEnum
 
 class SerializerXml(object):
     def __init__(self, node):
@@ -293,7 +291,7 @@ class DeserializerXml(object):
 static const std::string SERIALIZER_JSON = R"__PY__(# -*- coding: utf-8 -*-
 from .DataWrapper import DataWrapper
 from .IntrusivePtr import IntrusivePtr
-
+from .BaseEnum import BaseEnum
 
 class SerializerJson(object):
     def __init__(self, json):

@@ -13,15 +13,14 @@ void GeneratorPackagePython::generate(Model &model) {
 
     std::string content;
     content += "\nclass Config:";
-    content += "\n\n    def __init__(self):";
     if (xml)
-        content += "\n        SUPPORT_XML_PROTOCOL = True";
+        content += "\n    SUPPORT_XML_PROTOCOL = True";
     else
-        content += "\n        SUPPORT_XML_PROTOCOL = False";
+        content += "\n    SUPPORT_XML_PROTOCOL = False";
     if (json)
-        content += "\n        SUPPORT_JSON_PROTOCOL = True";
+        content += "\n    SUPPORT_JSON_PROTOCOL = True";
     else
-        content += "\n        SUPPORT_JSON_PROTOCOL = False";
+        content += "\n    SUPPORT_JSON_PROTOCOL = False";
     content += "\n";
 
     model.addFile(nullptr, "__init__.py", content);
