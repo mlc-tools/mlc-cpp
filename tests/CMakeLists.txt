@@ -4,7 +4,7 @@ option(BUILD_XML "Build the xml test" OFF)
 option(BUILD_JSON "Build the json test" OFF)
 
 SET(ROOT ${CMAKE_SOURCE_DIR})
-set(THIRD_PARTY_DIR ${ROOT}/../../third_party)
+set(THIRD_PARTY_DIR ${ROOT}/../third_party)
 
 if(BUILD_XML)
     set(TYPE xml)

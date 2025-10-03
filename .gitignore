@@ -4,7 +4,8 @@ test/build
 test/gen/
 build/
 build*/
-tests/*/generated*
+tests/generated*
 AGENTS.md
 *.sublime-project
 *.sublime-workspace
+.idea

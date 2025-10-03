@@ -1,8 +1,10 @@
+set -e
+
 pushd .
 
 ./build_and_install.sh
 
-cd ../tests/simple_test
+cd ../tests
 mlc --config mlc.json
 
 python3 test_cpp.py xml
