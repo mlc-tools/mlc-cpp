@@ -9,3 +9,4 @@ AGENTS.md
 *.sublime-project
 *.sublime-workspace
 .idea
+simple_dungeon_game/
