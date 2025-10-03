@@ -1,5 +1,0 @@
-class data/DataLocale:storage:client
-{
-	string name
-	string value
-}
