@@ -21,10 +21,9 @@ std::string GeneratorOperatorEqualsCpp::getNotEqualMethodName() const {
     return "operator !=";
 }
 
-std::string GeneratorOperatorEqualsCpp::getCompareMethodPattern(
-    const std::shared_ptr<Class> & /*cls*/, const Object &member) const {
-    const std::string base = "\nresult = result && this->{0} == rhs.{0};";
-    const std::string ptr =
+std::string GeneratorOperatorEqualsCpp::getCompareMethodPattern(const std::shared_ptr<Class> & /*cls*/, const Object &member) const {
+    static const std::string base = "\nresult = result && this->{0} == rhs.{0};";
+    static const std::string ptr =
         "\nresult = result && ((this->{0} == rhs.{0}) || (this->{0} != nullptr "
         "&& rhs.{0} != nullptr && *this->{0} == *rhs.{0}));";
 
@@ -46,7 +45,32 @@ void GeneratorOperatorEqualsCpp::addCopyConstructor(
 }
 
 void GeneratorOperatorEqualsCpp::addMoveConstructor(
-    const std::shared_ptr<Class> & /*cls*/) {}
+    const std::shared_ptr<Class> &cls) {
+    Function ctor;
+    ctor.name = cls->name;
+    ctor.return_type = Objects::VOID;
+
+    Object arg;
+    arg.type = cls->name + "&&";
+    arg.name = "rhs";
+    ctor.callable_args.push_back(std::move(arg));
+
+    if (!cls->parent_class_name.empty() &&
+        cls->parent_class_name != "SerializedObject")
+        ctor.body += "\nthis->" + cls->parent_class_name + "::operator=(rhs);";
+
+    for (auto &m : cls->members) {
+        if (m.is_static)
+            continue;
+        if (_model->is_skip(m))
+            continue;
+        if(m.name == "_reference_counter")
+            continue;
+        ctor.body += "\nthis->" + m.name + " = std::move(rhs." + m.name + ");";
+    }
+
+    cls->functions.push_back(std::move(ctor));
+}
 
 void GeneratorOperatorEqualsCpp::addCopyOperator(
     const std::shared_ptr<Class> &cls) {
