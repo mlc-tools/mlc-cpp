@@ -180,9 +180,9 @@ void Mlc::buildFeatureGenerators() {
                     return std::make_shared<GeneratorUnitTestsInterface>();
                 else if constexpr (std::is_same_v<T, FeatureDataStorage>) {
                     if (_model.config.language == "cpp")
-                        return std::make_shared<GeneratorDataStorageCpp>();
+                        return std::make_shared<GeneratorDataStorageCpp>(arg);
                     if (_model.config.language == "py")
-                        return std::make_shared<GeneratorDataStoragePython>();
+                        return std::make_shared<GeneratorDataStoragePython>(arg);
                     return nullptr;
                 } else if constexpr (std::is_same_v<T, FeatureRefCounter>)
                     return std::make_shared<GeneratorRefCounterCpp>();

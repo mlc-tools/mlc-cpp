@@ -11,8 +11,10 @@
 #include "../models/Object.hpp"
 #include "Error.hpp"
 
-GeneratorDataStorageCpp::GeneratorDataStorageCpp()
-    : GeneratorDataStorageBase() {}
+GeneratorDataStorageCpp::GeneratorDataStorageCpp(const FeatureDataStorage &config)
+: GeneratorDataStorageBase(config) {
+    
+}
 
 bool GeneratorDataStorageCpp::isNeedCreateStaticInstance() const {
     return false;

@@ -18,7 +18,7 @@
 
 class GeneratorDataStorageCpp : public GeneratorDataStorageBase {
   public:
-    GeneratorDataStorageCpp();
+    GeneratorDataStorageCpp(const FeatureDataStorage &config);
 
   protected:
     // Не создаём статический instance в C++
@@ -45,6 +45,8 @@ class GeneratorDataStorageCpp : public GeneratorDataStorageBase {
     // Тела функций инициализации, специфичные для JSON и XML
     virtual std::string getInitializeFunctionJsonBody() override;
     virtual std::string getInitializeFunctionXmlBody() override;
+    
+private:
 };
 
 #endif /* GeneratorDataStorageCpp_hpp */

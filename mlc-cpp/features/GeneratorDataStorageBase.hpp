@@ -12,6 +12,7 @@
 
 #include "../models/Class.hpp"
 #include "features/FeatureGenerator.hpp"
+#include "../utils/Config.hpp"
 #include <algorithm>
 #include <cctype>
 #include <memory>
@@ -24,7 +25,7 @@ class Model;
 
 class GeneratorDataStorageBase : public FeatureGenerator {
 public:
-    GeneratorDataStorageBase();
+    GeneratorDataStorageBase(const FeatureDataStorage &config);
     virtual void generate(Model &model) override;
     virtual void modifySources(Model &model, const std::shared_ptr<Class> &cls,
                                std::string &header,
@@ -52,6 +53,7 @@ protected:
     std::unordered_map<std::string, Object> dataMembers_;
     Model *_model;
     std::shared_ptr<Class> _class;
+    const FeatureDataStorage& _config;
 };
 
 std::string getDataName(const std::string &name);

@@ -120,7 +120,11 @@ std::string getDataListName(const std::string &name) {
 
 // Сам класс
 
-GeneratorDataStorageBase::GeneratorDataStorageBase() { _model = nullptr; }
+GeneratorDataStorageBase::GeneratorDataStorageBase(const FeatureDataStorage &config)
+: _config(config)
+{
+    _model = nullptr;
+}
 
 void GeneratorDataStorageBase::generate(Model &model) {
     _model = &model;
@@ -144,7 +148,7 @@ void GeneratorDataStorageBase::generate(Model &model) {
         obj.name = getDataListName(getDataName(cls->name));
         obj.template_args.push_back(Object("string", ""));
         obj.template_args.push_back(Object(cls->name, ""));
-        obj.access = AccessSpecifier::m_private;
+        obj.access = _config.private_members ? AccessSpecifier::m_private : AccessSpecifier::m_public;
         _class->members.push_back(obj);
         dataMembers_[cls->name] = obj;
 
