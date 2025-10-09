@@ -66,7 +66,7 @@ std::string TranslatorCpp::replaceByRegex(const std::string &body, Class &cls,
     return tmp;
 }
 
-std::vector<int> TranslatorCpp::convertToEnum(Class &cls) {
+void TranslatorCpp::convertToEnum(Class &cls) {
 
     cls.parent_class_name = "BaseEnum";
     cls.parent = _model->get_class(cls.parent_class_name);
@@ -74,7 +74,7 @@ std::vector<int> TranslatorCpp::convertToEnum(Class &cls) {
     // Практически дословно из Python-реализации
     bool isNumeric = cls.is_numeric; // предполагается поле Class::isNumeric
     int shift = 0;
-    std::vector<int> values;
+    std::vector<std::string> values;
     const std::string cast = "int";
 
     // 1) переименовываем члены, собираем значения
@@ -88,11 +88,10 @@ std::vector<int> TranslatorCpp::convertToEnum(Class &cls) {
         if (member.value.empty()) {
             int v = isNumeric ? shift : (1 << shift);
             member.value = isNumeric ? std::to_string(shift)
-                                     : "(" + std::to_string(v) + ")";
-            values.push_back(v);
+                                     : std::to_string(v);
+            values.push_back(std::to_string(v));
         } else {
-            int v = std::stoi(member.value);
-            values.push_back(v);
+            values.push_back(member.value);
         }
         ++shift;
     }
@@ -244,6 +243,4 @@ std::vector<int> TranslatorCpp::convertToEnum(Class &cls) {
         }
         method->body += "\nreturn std::string();";
     }
-
-    return values;
 }

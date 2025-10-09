@@ -240,7 +240,7 @@ std::string TranslatorPython::getTabs(int count) {
     return std::string(static_cast<size_t>(count) * 4, ' ');
 }
 
-std::vector<int> TranslatorPython::convertToEnum(Class &cls) {
+void TranslatorPython::convertToEnum(Class &cls) {
     TranslatorBase::convertToEnum(cls);
     // Ported from py/translator.py: create _value and helper methods
     std::vector<int> values;
@@ -320,6 +320,4 @@ else
     add_binary_method("__and__", "&");
     add_binary_method("__or__", "|");
     add_binary_method("__xor__", "^");
-
-    return values;
 }

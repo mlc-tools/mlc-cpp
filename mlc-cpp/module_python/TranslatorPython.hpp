@@ -21,7 +21,7 @@ public:
                                Function &method, Model &model,
                                const std::vector<Object> &args) override;
 
-    std::vector<int> convertToEnum(Class &cls) override;
+    virtual void convertToEnum(Class &cls) override;
 
 private:
     static std::string addImports(const Class &clsOwner,

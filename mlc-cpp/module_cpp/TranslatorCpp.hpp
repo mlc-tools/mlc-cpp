@@ -33,5 +33,5 @@ protected:
                    Model &model, const std::vector<Object> &args) override;
 
     /// Специальная логика генерации enum: добавляем конструкторы и операторы
-    virtual std::vector<int> convertToEnum(Class &cls) override;
+    virtual void convertToEnum(Class &cls) override;
 };

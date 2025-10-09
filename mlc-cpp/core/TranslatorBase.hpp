@@ -48,7 +48,7 @@ public:
 
     /// Конвертировать enum-класс: заполнить имя/тип/initial_value, вернуть
     /// список значений.
-    virtual std::vector<int> convertToEnum(Class &cls);
+    virtual void convertToEnum(Class &cls);
 
     virtual void replacePattern(std::string &text, const RegexPattern &pattern);
 

@@ -68,13 +68,13 @@ TranslatorBase::translateFunctionBody(Class &cls, Function &method,
     return result;
 }
 
-std::vector<int> TranslatorBase::convertToEnum(Class &cls) {
+void TranslatorBase::convertToEnum(Class &cls) {
     cls.parent_class_name = "BaseEnum";
     cls.parent = _model->get_class(cls.parent_class_name);
 
     int shift = 0;
     std::string castType = "string";
-    std::vector<int> values;
+    std::vector<std::string> values;
     for (auto &member : cls.members) {
         if (!member.name.empty())
             continue;
@@ -86,17 +86,16 @@ std::vector<int> TranslatorBase::convertToEnum(Class &cls) {
             if (castType == "int") {
                 int v = 1 << shift;
                 member.value = "(" + std::to_string(v) + ")";
-                values.push_back(v);
+                values.push_back(to_string(v));
             } else {
                 member.value = "\"" + member.name + "\"";
             }
         } else {
             castType = "int";
-            values.push_back(std::stoi(member.value));
+            values.push_back(member.value);
         }
         ++shift;
     }
-    return values;
 }
 
 void TranslatorBase::replacePattern(std::string &text,
