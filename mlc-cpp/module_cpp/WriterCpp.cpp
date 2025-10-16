@@ -462,8 +462,7 @@ std::string WriterCpp::writeFunctionHpp(const Function &method) {
 std::string WriterCpp::writeFunctionCpp(const Function &method) {
     if (!method.specific_implementations.empty())
         return method.specific_implementations;
-    if (method.is_external || method.is_abstract ||
-        !method.template_args.empty())
+    if (method.is_external || method.is_abstract || !method.template_args.empty())
         return "";
 
     // pattern:
@@ -594,6 +593,8 @@ WriterCpp::getIncludesForHeader(const std::shared_ptr<Class> &cls) {
 
     // members
     for (auto &m : cls->members) {
+        if(_model->is_skip(m))
+            continue;
         parseObj(inc, m);
         if (m.type.find("std::atomic") != std::string::npos)
             inc.insert("std::atomic");
@@ -660,9 +661,13 @@ WriterCpp::getIncludesForHeader(const std::shared_ptr<Class> &cls) {
         }
     };
     for (auto &fn : cls->functions) {
+        if(_model->is_skip(fn))
+            continue;
         add_from_method(fn);
     }
     for (auto &fn : cls->constructors) {
+        if(_model->is_skip(fn))
+            continue;
         add_from_method(fn);
     }
     // superclasses
@@ -714,7 +719,13 @@ std::string WriterCpp::getIncludesForSource(
     inc.insert(fwdOut.begin(), fwdOut.end());
     auto more = getIncludesForMethod(cls, funcText, hppInc);
     inc.insert(more.begin(), more.end());
-    inc.insert(cls->user_includes.begin(), cls->user_includes.end());
+    for(auto& name : cls->user_includes){
+        auto cls = _model->get_class(name);
+        if(!cls || _model->is_skip(*cls)){
+            continue;
+        }
+        inc.insert(name);
+    }
     return buildIncludes(cls, inc);
 }
 

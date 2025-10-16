@@ -52,6 +52,7 @@ public:
 
 class FeatureDataStorage {
 public:
+    bool private_members = true;
 };
 
 class FeatureRefCounter {

@@ -72,4 +72,5 @@ std::string SerializerCpp::buildSerializeOperation(
                               fieldName);
     }
     assert(0);
+    return "";
 }

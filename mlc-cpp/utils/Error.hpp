@@ -76,6 +76,7 @@ struct Error {
         ERROR_SEMICOLON_IN_FUNCTION,
         ERROR_METHOD_HAS_NOT_BODY,
         ERROR_SYNTAX_ERROR,
+        ERROR_UNKNOWN_MODIFIER,
     };
 
     static void exit(Code code);

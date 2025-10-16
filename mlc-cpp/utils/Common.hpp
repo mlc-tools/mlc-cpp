@@ -123,4 +123,6 @@ std::string format_indexes(const std::string &template_str, Args &&...args) {
 
 std::string strip(const std::string &s);
 
+bool is_number(const std::string& s);
+
 #endif /* Common_h */

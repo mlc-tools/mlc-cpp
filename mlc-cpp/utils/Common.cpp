@@ -81,3 +81,12 @@ std::string strip(const std::string &s) {
         --end;
     return s.substr(start, end - start);
 }
+
+bool is_number(const std::string& s)
+{
+    for(auto& ch : s){
+        if(!std::isdigit(ch))
+            return false;
+    }
+    return true;
+}

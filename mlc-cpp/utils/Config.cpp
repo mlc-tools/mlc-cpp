@@ -238,6 +238,8 @@ Config Config::loadString(const std::string &content, std::string &err) {
     const auto &feature_data_storage = features["data_storage"];
     if (feature_data_storage.isObject()) {
         FeatureDataStorage f;
+        if(feature_data_storage.isMember("private_members"))
+            f.private_members = feature_data_storage["private_members"].asBool();
         config.features.push_back(std::move(f));
     }
 

@@ -76,6 +76,8 @@ static const std::unordered_map<Error::Code, std::string> kTexts = {
     {Error::ERROR_METHOD_HAS_NOT_BODY,
      "Error: method [{}] has not body.\nIn line: \n{}"},
     {Error::ERROR_SYNTAX_ERROR, "Error syntax: Line: \n{}"},
+    {Error::ERROR_UNKNOWN_MODIFIER, "Error unknown modifier: :{}"},
+    
 
 };
 

@@ -125,6 +125,7 @@ void ParserLexem::parse(const std::shared_ptr<Class> &cls) {
             // log unused ;
             advance();
         } else {
+            std::cout << "Parsing class " << cls->name << std::endl;
             std::cout << "Skip: " << cur.value << std::endl;
             advance();
         }
