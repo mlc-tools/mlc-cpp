@@ -8,7 +8,7 @@
 
 class GeneratorDataStoragePython : public GeneratorDataStorageBase {
 public:
-    GeneratorDataStoragePython();
+    GeneratorDataStoragePython(const FeatureDataStorage &config);
     virtual void generate(Model &model) override;
 
 protected:

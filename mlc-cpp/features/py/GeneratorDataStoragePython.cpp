@@ -9,8 +9,8 @@
 #include "../models/Object.hpp"
 #include "../models/Serialize.hpp"
 
-GeneratorDataStoragePython::GeneratorDataStoragePython()
-    : GeneratorDataStorageBase() {}
+GeneratorDataStoragePython::GeneratorDataStoragePython(const FeatureDataStorage &config)
+    : GeneratorDataStorageBase(config) {}
 
 void GeneratorDataStoragePython::generate(Model &model) {
     GeneratorDataStorageBase::generate(model);
