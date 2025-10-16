@@ -60,7 +60,7 @@ void GeneratorOperatorEqualsCpp::addMoveConstructor(
         ctor.body += "\nthis->" + cls->parent_class_name + "::operator=(rhs);";
 
     for (auto &m : cls->members) {
-        if (m.is_static)
+        if (m.is_static || m.is_const)
             continue;
         if (_model->is_skip(m))
             continue;
@@ -84,14 +84,12 @@ void GeneratorOperatorEqualsCpp::addCopyOperator(
         op.body += "\nthis->" + cls->parent_class_name + "::operator=(rhs);";
 
     for (auto &m : cls->members) {
-        if (m.is_static)
+        if (m.is_static || m.is_const)
             continue;
         if (_model->is_skip(m))
             continue;
-        if (_model->config.side == Side::server &&
-            m.name == "_reference_counter")
-            op.body +=
-                "\nthis->" + m.name + ".store(rhs." + m.name + ".load());";
+        if (m.name == "_reference_counter")
+            continue;
         else
             op.body += "\nthis->" + m.name + " = rhs." + m.name + ";";
     }
