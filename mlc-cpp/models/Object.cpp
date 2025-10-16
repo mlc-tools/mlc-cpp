@@ -9,6 +9,7 @@
 #include "Modifier.h"
 #include <cassert>
 #include <iostream>
+#include "utils/Error.hpp"
 
 namespace Objects {
 Object VOID("void", "");
@@ -105,7 +106,7 @@ void Object::set_modifier(const std::string_view &modifier) {
         this->lang_specific.insert(Modifier::l_js);
 
     else
-        assert(0);
+        Error::exit(Error::Code::ERROR_UNKNOWN_MODIFIER, modifier);
 }
 void Object::set_default_initial_value() {
     if (type == "unsigned")
