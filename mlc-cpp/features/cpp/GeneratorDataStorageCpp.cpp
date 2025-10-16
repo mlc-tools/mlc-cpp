@@ -110,8 +110,8 @@ for (auto& node : {data})
     }
     body += R"(
 DeserializerJson deserializer(json);
-non_const_this->_loaded = true;
 non_const_this->deserialize_json(deserializer);
+non_const_this->_loaded = true;
 )";
     return body;
 }
@@ -141,8 +141,8 @@ if(doc.root() != nullptr)
     }
     body += R"(
     DeserializerXml deserializer(root);
-    non_const_this->_loaded = true;
     non_const_this->deserialize_xml(deserializer);
+    non_const_this->_loaded = true;
 }
 )";
     return body;
