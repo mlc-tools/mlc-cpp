@@ -120,6 +120,13 @@ class AllTypes
 class Request:visitor
 {
 }
+class RequestOnline<Request>
+{
+}
+class RequestOnline2<RequestOnline>
+{
+}
+
 class RequestFoo<Request>
 {
 }
@@ -129,16 +136,28 @@ class RequestBar<Request>
 class RequestBar2<RequestBar>
 {
 }
+class RequestBarServer<RequestBar>:server
+{
+}
 
 class RequestAcceptor<IVisitorRequest>
 {
     int base = 0
+    int online = 0
     int foo = 0
     int bar = 0
     int bar2 = 0
     function void visit(Request* ctx)
     {
         this->base += 1;
+    }
+    function void visit(RequestOnline* ctx)
+    {
+        this->online += 1;
+    }
+    function void visit(RequestOnline2* ctx)
+    {
+        this->online += 1;
     }
     function void visit(RequestAcceptor* ctx)
     {
@@ -153,6 +172,10 @@ class RequestAcceptor<IVisitorRequest>
         this->bar += 1;
     }
     function void visit(RequestBar2* ctx)
+    {
+        this->bar2 += 1;
+    }
+    function void visit(RequestBarServer* ctx):server
     {
         this->bar2 += 1;
     }
@@ -171,6 +194,7 @@ class TestRequestAcceptor<ITestRequestAcceptor>
         this->assertTrue(acceptor.bar == 0, "2");
         this->assertTrue(acceptor.bar2 == 0, "3");
         this->assertTrue(acceptor.base == 0, "4");
+        this->assertTrue(acceptor.online == 0, "12");
         acceptor.foo = 0;
 
         this->request = new RequestBar();
@@ -179,6 +203,7 @@ class TestRequestAcceptor<ITestRequestAcceptor>
         this->assertTrue(acceptor.bar == 1, "6");
         this->assertTrue(acceptor.bar2 == 0, "7");
         this->assertTrue(acceptor.base == 0, "8");
+        this->assertTrue(acceptor.online == 0, "12");
         acceptor.bar = 0;
 
         this->request = new RequestBar2();
@@ -187,6 +212,18 @@ class TestRequestAcceptor<ITestRequestAcceptor>
         this->assertTrue(acceptor.bar == 0, "10");
         this->assertTrue(acceptor.bar2 == 1, "11");
         this->assertTrue(acceptor.base == 0, "12");
+        this->assertTrue(acceptor.online == 0, "12");
+        acceptor.bar2 = 0;
+
+        this->request = new RequestOnline();
+        this->request->accept(&acceptor);
+        this->request = new RequestOnline2();
+        this->request->accept(&acceptor);
+        this->assertTrue(acceptor.foo == 0, "9");
+        this->assertTrue(acceptor.bar == 0, "10");
+        this->assertTrue(acceptor.bar2 == 0, "11");
+        this->assertTrue(acceptor.base == 0, "12");
+        this->assertTrue(acceptor.online == 2, "12");
         acceptor.bar2 = 0;
     }
 }

@@ -277,16 +277,20 @@ void GeneratorEcsCpp::generate(Model &model) {
     if (!model.hasClass(_ecs_model_base_name))
         return;
     auto ecsBase = getClass(model, _ecs_model_base_name);
-    if (!ecsBase)
+    if (!ecsBase){
+        std::cout << "Cannot find ECS model base class: " << _ecs_model_base_name << std::endl;
         return;
+    }
 
     // members + clear_* methods per component
     generateContainersAndClear(model, ecsBase);
 
     // systems end-turn (update_systems body expansion)
     generateSystemsEndTurn(model, ecsBase);
-    for (auto cls : ecsBase->subclasses) {
-        generateSystemsEndTurn(model, cls.lock());
+    for(auto cls : model.classes){
+        if(cls->parent_class_name == _ecs_model_base_name){
+            generateSystemsEndTurn(model, cls);
+        }
     }
 
     generateAddModelMethod(model);
@@ -475,8 +479,7 @@ void GeneratorEcsCpp::generateContainersAndClear(
     // keep order: optional; C++ codegen doesn’t require sort here
 }
 
-void GeneratorEcsCpp::generateSystemsEndTurn(
-    Model &model, const std::shared_ptr<Class> &ecs) {
+void GeneratorEcsCpp::generateSystemsEndTurn(Model &model, const std::shared_ptr<Class> &ecs) {
     if (!ecs)
         return;
     Function *update = nullptr;

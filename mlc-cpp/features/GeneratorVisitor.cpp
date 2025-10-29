@@ -25,6 +25,9 @@ void GeneratorVisitor::generate(Model &model) {
     // 1) Считаем для каждого класса, к какому базовому visitor-интерфейсу он
     // относится
     for (auto &cls : model.classes) {
+        if(_model->is_skip(*cls))
+            continue;
+        
         if (cls->name == "RewardAcceptor")
             std::cout << "\n";
         std::string baseName = getBaseVisitorName(cls);
@@ -99,9 +102,7 @@ GeneratorVisitor::getBaseVisitorName(const std::shared_ptr<Class> &cls) {
     return std::string();
 }
 
-void GeneratorVisitor::generateAcceptorInterface(
-    const std::string &baseName,
-    const std::vector<std::shared_ptr<Class>> &visitors) {
+void GeneratorVisitor::generateAcceptorInterface(const std::string &baseName, const std::vector<std::shared_ptr<Class>> &visitors) {
     assert(!visitors.empty());
     // создаём новый Class — интерфейс
     auto acceptor = std::make_shared<Class>();

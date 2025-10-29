@@ -686,22 +686,14 @@ WriterCpp::getIncludesForMethod(const std::shared_ptr<Class> &cls,
                                 const std::string &text,
                                 const std::set<std::string> &hppInc) {
     std::set<std::string> out;
-    for (auto &c : _model->classes) {
-        auto &n = c->name;
+    for (auto &cls : _model->classes) {
+        if(!cls || _model->is_skip(*cls)){
+            continue;
+        }
+        auto &n = cls->name;
         if (!hppInc.count(n) && text.find(n) != std::string::npos) {
-            // compile or reuse regex
-            //            auto it = RegexPatternCpp::regsClassNames.find(n);
-            //            if (it==RegexPatternCpp::regsClassNames.end()) {
-            //                RegexPatternCpp::regsClassNames[n] =
-            //                std::regex("\\b" + n + "\\b");
-            //            }
-            //            if (n==cls->name || std::regex_search(text,
-            //            RegexPatternCpp::regsClassNames[n]))
-            //            {
-            //                out.insert(n);
-            //            }
-            if (text.find(c->name) != std::string::npos) {
-                out.insert(c->name);
+            if (text.find(cls->name) != std::string::npos) {
+                out.insert(cls->name);
             }
         }
     }
@@ -709,10 +701,8 @@ WriterCpp::getIncludesForMethod(const std::shared_ptr<Class> &cls,
 }
 
 // Build includes for source
-std::string WriterCpp::getIncludesForSource(
-    const std::shared_ptr<Class> &cls, const std::string &funcText,
-    std::set<std::string> hppInc, const std::set<std::string> &fwd,
-    const std::set<std::string> &fwdOut) {
+std::string WriterCpp::getIncludesForSource(const std::shared_ptr<Class> &cls, const std::string &funcText, std::set<std::string> hppInc, const std::set<std::string> &fwd, const std::set<std::string> &fwdOut) {
+    
     std::set<std::string> inc = hppInc;
     inc.insert(cls->name);
     inc.insert(fwd.begin(), fwd.end());
