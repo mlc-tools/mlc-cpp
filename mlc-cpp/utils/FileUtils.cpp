@@ -77,7 +77,11 @@ std::vector<std::string> listFiles(const std::string &directory) {
 }
 
 bool exists(const std::string &fullPath) {
-    return std::filesystem::exists(fullPath);
+    try{
+        return std::filesystem::exists(fullPath);
+    } catch(const std::filesystem::filesystem_error& e){
+        return false;
+    }
 }
 
 void remove(const std::string &fullPath) { std::filesystem::remove(fullPath); }
