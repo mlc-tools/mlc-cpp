@@ -40,6 +40,10 @@ void GeneratorOperatorEqualsCpp::addCopyConstructor(
     ctor.name = cls->name;
     ctor.return_type = Objects::VOID;
     ctor.callable_args.push_back(getConstRef(cls, "rhs"));
+    
+    if(cls->has_member("_reference_counter")){
+        ctor.body += "\nthis->_reference_counter = 1;";;
+    }
     ctor.body += "\nthis->operator=(rhs);";
     cls->functions.push_back(std::move(ctor));
 }
