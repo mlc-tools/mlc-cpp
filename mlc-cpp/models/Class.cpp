@@ -48,7 +48,7 @@ void Class::set_modifier(const std::string_view &modifier) {
         Object::set_modifier(modifier);
 }
 
-bool Class::generate_constructor() {
+void Class::generate_constructor() {
     for (auto &constructor : this->constructors) {
         if (constructor.is_generate) {
             for (auto &member : this->members) {

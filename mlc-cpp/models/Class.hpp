@@ -50,7 +50,7 @@ struct Class : public Object {
     Class &operator=(Class &&other) noexcept = default;
 
     virtual void set_modifier(const std::string_view &modifier) override;
-    bool generate_constructor();
+    void generate_constructor();
 
     bool has_member(const std::string &name) const;
     bool has_method(const std::string &name) const;
