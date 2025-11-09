@@ -517,9 +517,11 @@ bool WriterCpp::isOverride(const Function &method,
                            const std::shared_ptr<Class> &cls) {
     if (!method.is_virtual)
         return false;
+    if(cls->name == "Foo2" && method.name == "virtual_method2")
+        std::cout << "";
     static const std::set<std::string> allowed = {"visit"};
     auto supName = cls->parent_class_name;
-    if (!supName.empty()) {
+    while (!supName.empty()) {
         auto sup = _model->get_class(supName);
         for (auto &fn : sup->functions) {
             if (fn.name != method.name)
@@ -561,6 +563,7 @@ bool WriterCpp::isOverride(const Function &method,
                 continue;
             return true;
         }
+        supName = sup->parent_class_name;
     }
     return false;
 }
