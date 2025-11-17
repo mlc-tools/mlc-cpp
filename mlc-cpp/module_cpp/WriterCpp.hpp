@@ -75,12 +75,13 @@ private:
     std::tuple<std::set<std::string>, std::set<std::string>,
                std::set<std::string>>
     getIncludesForHeader(const std::shared_ptr<Class> &cls);
-
-    std::set<std::string>
-    getIncludesForMethod(const std::shared_ptr<Class> &cls,
+public:
+    static std::set<std::string>
+    getIncludesForMethod(const Model& model,
+                         const std::shared_ptr<Class> &cls,
                          const std::string &functionsText,
                          const std::set<std::string> &hppIncludes);
-
+private:
     std::string getIncludesForSource(const std::shared_ptr<Class> &cls,
                                      const std::string &functionsText,
                                      std::set<std::string> hppIncludes,

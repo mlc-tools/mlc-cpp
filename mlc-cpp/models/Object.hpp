@@ -40,6 +40,7 @@ public:
     bool is_key = false;
     bool is_link = false;
     bool is_test = false;
+    bool is_binding = false;
     Side side;
     AccessSpecifier access;
     bool denied_intrusive = false;

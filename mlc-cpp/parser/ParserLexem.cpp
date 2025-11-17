@@ -12,6 +12,7 @@
 #include "Function.hpp"
 #include <cassert>
 #include <iostream>
+#include <utility>
 
 template <class T> bool in(const T &string, const std::set<T> &variants) {
     return variants.count(string) > 0;
@@ -110,10 +111,15 @@ void ParserLexem::parse(const std::shared_ptr<Class> &cls) {
                    cur.value == "constructor") {
             parse_constructor(*cls); // пока игнорируем тело конструктора
         } else if (cur.type == TokenType::Keyword && cur.value == "fn") {
-            cls->functions.push_back(parse_method());
+            auto method = parse_method();
+            if (method.is_binding)
+                cls->has_bindings = true;
+            cls->functions.push_back(std::move(method));
         } else if (cur.type == TokenType::Identifier) {
             cls->members.push_back(parse_member(true, cls->is_enum));
             cls->members.back().set_default_initial_value();
+            if (cls->members.back().is_binding)
+                cls->has_bindings = true;
         } else if (cur.type == TokenType::Symbol && cur.value == "{") {
             ++depth;
             advance();

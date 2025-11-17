@@ -231,8 +231,8 @@ void GeneratorUnitTestsInterface::addMethod(shared_ptr<Class> &class_,
         auto m = sub->get_method(name);
         if (!m || m->is_abstract) {
             hasImplementation = false;
-            Error::warning(Error::WARNING_TEST_CLASS_NOT_IMPLEMENT_METHOD,
-                           class_->name, name);
+//            Error::warning(Error::WARNING_TEST_CLASS_NOT_IMPLEMENT_METHOD,
+//                           class_->name, name);
             break;
         } else if (m && !m->is_virtual) {
             m->is_virtual = true;

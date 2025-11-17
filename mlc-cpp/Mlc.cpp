@@ -18,6 +18,7 @@
 #include "SerializerCpp.hpp"
 #include "TranslatorCpp.hpp"
 #include "WriterCpp.hpp"
+#include "features/GeneratorBindings.hpp"
 #include "features/GeneratorEcsCpp.hpp"
 #include "features/GeneratorUnitTestsInterface.hpp"
 #include "features/GeneratorVisitor.hpp"
@@ -191,10 +192,12 @@ void Mlc::buildFeatureGenerators() {
                         return std::make_shared<GeneratorOperatorEqualsCpp>();
                     if (_model.config.language == "py")
                         return std::make_shared<
-                            GeneratorOperatorEqualsPython>();
+                        GeneratorOperatorEqualsPython>();
                     return nullptr;
-                } else
-                    return nullptr;
+                }
+                else if constexpr (std::is_same_v<T, FeatureBindings>)
+                    return std::make_shared<GeneratorBindings>(arg);
+                return nullptr;
             },
             feature);
         if (gen)

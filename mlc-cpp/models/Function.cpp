@@ -27,6 +27,8 @@ void Function::set_modifier(const std::string_view &modifier) {
         this->is_virtual = true;
     else if (modifier == Modifier::m_generate)
         this->is_generate = true;
+    else if (modifier == Modifier::m_binding)
+        this->is_binding = true;
     else
         Object::set_modifier(modifier);
 }

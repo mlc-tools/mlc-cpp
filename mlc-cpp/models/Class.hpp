@@ -40,6 +40,7 @@ struct Class : public Object {
     bool auto_generated = true;
     bool _linked = false;
     bool prefer_use_forward_declarations = false;
+    bool has_bindings = false;
 
     std::string inner_body;
 

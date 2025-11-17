@@ -67,6 +67,19 @@ public:
     std::string model_base;
     std::string component_base;
 };
+class FeatureBindings {
+public:
+    class Getter{
+    public:
+        std::string starts_with;
+        std::string equals;
+        std::string value;
+        bool is_right(const std::string& class_name) const;
+    };
+    std::vector<Getter> getters;
+    
+    std::string get_getter(const std::string& class_name) const;
+};
 
 class Config {
 public:
@@ -79,7 +92,7 @@ public:
     std::vector<Job> jobs;
     std::vector<std::variant<FeatureVisitor, FeatureEcs, FeatureUnitTests,
                              FeatureDataStorage, FeatureRefCounter,
-                             FeatureOperatorEquals>>
+                             FeatureOperatorEquals, FeatureBindings>>
         features;
 
     // Загрузка конфигурации из JSON-файла. Возвращает набор задач.

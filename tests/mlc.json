@@ -58,6 +58,12 @@
     "data_storage": {},
     "visitor": {},
     "ref_counter": {},
-    "operator_equals": {}
+    "operator_equals": {},
+    "bindings": {
+      "getters": [
+        {"starts_with": "System", "value": "dynamic_pointer_cast_intrusive<{class_name}>(ModelUser::get_instance()->system<{class_name}>())"},
+        {"equals": "ModelUser", "value": "ModelUser::get_instance()"}
+      ]
+    }
   }
 }

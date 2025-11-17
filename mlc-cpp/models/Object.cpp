@@ -36,14 +36,15 @@ std::string AccessSpecifierToString(AccessSpecifier value) {
 
 Object::Object()
     : is_pointer(false), is_ref(false), is_runtime(false), is_static(false),
-      is_const(false), is_key(false), is_link(false), side(Side::both),
-      access(AccessSpecifier::m_public) {}
+      is_const(false), is_key(false), is_link(false), is_binding(false),
+      side(Side::both), access(AccessSpecifier::m_public) {}
 
 Object::Object(const std::string &type_, const std::string &name_,
                const std::string &value_)
     : type(type_), name(name_), value(value_), is_pointer(false), is_ref(false),
       is_runtime(false), is_static(false), is_const(false), is_key(false),
-      is_link(false), side(Side::both), access(AccessSpecifier::m_public) {}
+      is_link(false), is_binding(false), side(Side::both),
+      access(AccessSpecifier::m_public) {}
 
 bool Object::is_equal(const Object &other) const {
     bool result = true;
@@ -89,6 +90,8 @@ void Object::set_modifier(const std::string_view &modifier) {
         this->is_key = true;
     else if (modifier == Modifier::m_link)
         this->is_link = true;
+    else if (modifier == Modifier::m_binding)
+        this->is_binding = true;
     else if (modifier == Modifier::m_client)
         this->side = Side::client;
     else if (modifier == Modifier::m_server)

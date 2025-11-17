@@ -59,7 +59,7 @@ class Model {
 
     bool is_simple_type(const std::string &type) const;
 
-    bool is_skip(const Object &obj);
+    bool is_skip(const Object &obj) const;
 
     // Удалить все классы, пришедшие из файла source_path. Заполняет removed
     // именами классов.

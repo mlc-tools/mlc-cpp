@@ -1,0 +1,79 @@
+class DataTestBindings:storage:virtual
+{
+    string name
+
+    fn string get_name():binding:const
+    {
+        return this->name;
+    }
+    fn string get_name2(string name):binding:const
+    {
+        return name;
+    }
+    fn int get_int():binding:const
+    {
+        return 1;
+    }
+    fn float get_float():binding:const
+    {
+        return 2.f;
+    }
+    fn bool get_bool():binding:const
+    {
+        return true;
+    }
+    fn int64_t get_int64_t():binding:const
+    {
+        return 3;
+    }
+    fn int add_string_and_int(string a, int b=5):const
+    {
+        return strTo<int>(a) + b;
+    }
+}
+
+class models/System
+{
+}
+
+class models/ModelUser
+{
+    map<string, System*> systems
+    ModelUser:pointer:static:private instance
+
+    Observable<void()>:binding event_foo_changed
+
+    fn void initialize()
+    {
+        ModelUser::instance = this;
+        this->systems[SystemFoo::TYPE] = new SystemFoo();
+    }
+    fn void uninitialize()
+    {
+        ModelUser::instance = nullptr;
+    }
+    fn ModelUser* get_instance():static
+    {
+        assert(ModelUser::instance != nullptr);
+        return ModelUser::instance;
+    }
+    fn<T> System* system()
+    {
+        for(auto&& [type, system] : this->systems)
+        {
+            if(type == T::TYPE)
+            {
+                return system;
+            }
+        }
+        return nullptr;
+    }
+}
+
+class models/SystemFoo<System>
+{
+    fn int get_foo():binding
+    {
+        return 123;
+    }
+}

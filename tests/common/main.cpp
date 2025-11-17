@@ -25,6 +25,7 @@
 #include "SerializerCommon.h"
 #include "Observable.h"
 
+extern bool tests_bindigs();
 
 class ListenerAuto
 {
@@ -139,6 +140,7 @@ int main(int argc, char ** args)
     mg::RunAllTests test;
     test.initialize(&logger);
     result = result && test.execute();
+    result = result && tests_bindigs();
 
 	std::cout << "Execute results = " << (result ? "Ok" : "Fail") << std::endl;
 

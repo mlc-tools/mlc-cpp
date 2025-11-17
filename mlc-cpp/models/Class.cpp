@@ -44,6 +44,8 @@ void Class::set_modifier(const std::string_view &modifier) {
         this->is_virtual = true;
     else if (modifier == Modifier::m_prefer_use_forward_declarations)
         this->prefer_use_forward_declarations = true;
+    else if (modifier == Modifier::m_binding)
+        this->has_bindings = true;
     else
         Object::set_modifier(modifier);
 }

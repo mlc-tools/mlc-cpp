@@ -43,6 +43,11 @@ class data/DataUnit:storage
 
 	int convert_float_to_int = 0
 
+    function string get_name():virtual:const
+    {
+        return this->name;
+    }
+
 	function bool tests(Logger* logger):static
 	{
 	    auto data = DataStorage::shared().get<DataUnit>("unitname1");

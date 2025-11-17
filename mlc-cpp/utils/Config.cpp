@@ -248,13 +248,39 @@ Config Config::loadString(const std::string &content, std::string &err) {
         FeatureRefCounter f;
         config.features.push_back(std::move(f));
     }
-
+    
     const auto &feature_operator_equals = features["operator_equals"];
     if (feature_operator_equals.isObject()) {
         FeatureOperatorEquals f;
         config.features.push_back(std::move(f));
     }
+    
+    const auto &feature_bindings = features["bindings"];
+    if (feature_bindings.isObject()) {
+        FeatureBindings f;
+        for(auto getter : feature_bindings["getters"]){
+            FeatureBindings::Getter g;
+            g.starts_with = getter["starts_with"].asString();
+            g.equals = getter["equals"].asString();
+            g.value = getter["value"].asString();
+            f.getters.push_back(std::move(g));
+        }
+        config.features.push_back(std::move(f));
+    }
 
     config.initialize();
     return config;
+}
+
+bool FeatureBindings::Getter::is_right(const std::string& class_name) const{
+    if(!starts_with.empty() && class_name.find(starts_with) == 0)
+        return true;
+    return equals == class_name;
+}
+std::string FeatureBindings::get_getter(const std::string& class_name) const{
+    for(auto& getter : getters){
+        if(getter.is_right(class_name))
+            return getter.value;
+    }
+    return "";
 }

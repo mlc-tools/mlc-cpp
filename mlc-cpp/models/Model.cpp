@@ -170,7 +170,7 @@ bool Model::is_simple_type(const std::string &type) const {
     return simpleTypes.count(type) > 0;
 }
 
-bool Model::is_skip(const Object &obj) {
+bool Model::is_skip(const Object &obj) const{
     if (!obj.lang_specific.empty() &&
         obj.lang_specific.count(config.language) == 0)
         return true;

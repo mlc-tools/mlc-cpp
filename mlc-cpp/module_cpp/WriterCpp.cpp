@@ -117,7 +117,7 @@ auto WriterCpp::writeHpp(const std::shared_ptr<Class> &cls)
         funcs += methodsCache_[&fn].first;
     }
     for (auto &templHpp : methodsCacheWithTemplates_) {
-        auto more = getIncludesForMethod(cls, templHpp, incs);
+        auto more = getIncludesForMethod(*_model, cls, templHpp, incs);
         incs.insert(more.begin(), more.end());
     }
 
@@ -685,12 +685,13 @@ WriterCpp::getIncludesForHeader(const std::shared_ptr<Class> &cls) {
 
 // Include resolution based on method bodies
 std::set<std::string>
-WriterCpp::getIncludesForMethod(const std::shared_ptr<Class> &cls,
+WriterCpp::getIncludesForMethod(const Model& model,
+                                const std::shared_ptr<Class> &cls,
                                 const std::string &text,
                                 const std::set<std::string> &hppInc) {
     std::set<std::string> out;
-    for (auto &cls : _model->classes) {
-        if(!cls || _model->is_skip(*cls)){
+    for (auto &cls : model.classes) {
+        if(!cls || model.is_skip(*cls)){
             continue;
         }
         auto &n = cls->name;
@@ -710,7 +711,7 @@ std::string WriterCpp::getIncludesForSource(const std::shared_ptr<Class> &cls, c
     inc.insert(cls->name);
     inc.insert(fwd.begin(), fwd.end());
     inc.insert(fwdOut.begin(), fwdOut.end());
-    auto more = getIncludesForMethod(cls, funcText, hppInc);
+    auto more = getIncludesForMethod(*_model, cls, funcText, hppInc);
     inc.insert(more.begin(), more.end());
     for(auto& name : cls->user_includes){
         auto cls = _model->get_class(name);
