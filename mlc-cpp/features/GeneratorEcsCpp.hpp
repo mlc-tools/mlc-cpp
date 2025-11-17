@@ -38,10 +38,11 @@ private:
     static Object makeObj(const std::string &decl, bool withName = false);
 
     // generation steps
-    void generateContainersAndClear(Model &model,
-                                    const std::shared_ptr<Class> &ecsBase);
-    void generateSystemsEndTurn(Model &model,
-                                const std::shared_ptr<Class> &cls);
+    void createPimplClass(Model &model, const std::shared_ptr<Class> &ecsBase);
+    void createPimplMember(Model &model, const std::shared_ptr<Class> &ecsBase);
+    void generateContainers(Model &model, const std::shared_ptr<Class> &ecsBase);
+    void generateClearComponents(Model &model, const std::shared_ptr<Class> &ecsBase);
+    void generateSystemsEndTurn(Model &model, const std::shared_ptr<Class> &cls);
     void generateRemoveEntity(Model &model);
     void generateAddModelMethod(Model &model);
     void generateRemoveModelMethod(Model &model);
@@ -53,6 +54,8 @@ private:
     void generateModelGetComponent(Model &model, bool isConst);
     void generateModelCopyEntityFromModel(Model &model);
     void generateModelGetComponents(Model &model, bool isConst);
+    void generateModelGetMapComponents(Model &model, bool isConst);
+    
     std::vector<std::shared_ptr<Class>> get_skill_components(Model &model);
     void generate_system_skills(Model &model, const std::string &method_name);
     void generate_model_method_save_skills(Model &model);

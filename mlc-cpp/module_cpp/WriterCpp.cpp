@@ -433,7 +433,7 @@ std::string WriterCpp::writeFunctionHpp(const Function &method) {
                 ss += ", ";
             }
         }
-        ss += ">\n";
+        ss += ">";
         tmpl = ss;
 
         if (method.specific_implementations.empty())

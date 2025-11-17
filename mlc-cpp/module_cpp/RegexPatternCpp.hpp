@@ -51,7 +51,7 @@ class RegexPatternCpp {
         std::vector<RegexPattern> v;
         v.push_back(
             {std::make_unique<RE2>(
-                 R"(map_remove_if\(([\w\d\-\>\.\[\]]+),\s*\((\w+),\s*(\w+)\s*:>\s*(.+)\)\))"),
+                 R"(map_remove_if\(([\w\d\-\>\.\[\]\(\)<>]+),\s*\((\w+),\s*(\w+)\s*:>\s*(.+)\)\))"),
              R"(for(auto __iter__ = \1.begin(); __iter__ != \1.end();)
 {
     auto& \2 = __iter__->first; auto& \3 = __iter__->second; (void)\2;(void)\3;
@@ -61,7 +61,7 @@ class RegexPatternCpp {
              {"map_remove_if"}});
         v.push_back(
             {std::make_unique<RE2>(
-                 R"(list_remove_if\(([\w\d\-\>\[\]]+),\s*\((\w+)\s*:>\s*(.+)\)\))"),
+                 R"(list_remove_if\(([\w\d\-\>\.\[\]\(\)<>]+),\s*\((\w+)\s*:>\s*(.+)\)\))"),
              R"(auto iter = std::remove_if(\1.begin(), \1.end(), [&](const auto& \2)
 {
     return \3;
@@ -70,7 +70,7 @@ class RegexPatternCpp {
              {"list_remove_if"}});
         v.push_back(
             {std::make_unique<RE2>(
-                 R"(map_do_if\(([\w\d\-\>\.\[\]]+),\s*\((\w+),\s*(\w+?)\s*:>\s*(.+?):>\s*(.+)\)\);)"),
+                 R"(map_do_if\(([\w\d\-\>\.\[\]\(\)<>]+),\s*\((\w+),\s*(\w+?)\s*:>\s*(.+?):>\s*(.+)\)\);)"),
              R"(for(auto __iter__ = \1.begin(); __iter__ != \1.end();)
 {
     auto& \2 = __iter__->first; auto& \3 = __iter__->second; (void)\2;(void)\3;
@@ -80,7 +80,7 @@ class RegexPatternCpp {
              {"map_do_if"}});
         v.push_back(
             {std::make_unique<RE2>(
-                 R"(list_do_if\(([\w\d\-\>\[\]]+),\s*\((\w+)\s*:>\s*(.+?):>\s*(.+)\)\);)"),
+                 R"(list_do_if\(([\w\d\-\>\.\[\]\(\)<>]+),\s*\((\w+)\s*:>\s*(.+?):>\s*(.+)\)\);)"),
              R"(for(int __index__ = 0; __index__ < \1.size(); ++__index__)
 {
     auto& \2 = \1.at(__index__);
@@ -94,7 +94,7 @@ class RegexPatternCpp {
              {"list_do_if"}});
         v.push_back(
             {std::make_unique<RE2>(
-                 R"(list_do\(([\w\d\-\>\.\[\]]+),\s*\((\w+)\s*:>\s*(.+)\)\))"),
+                 R"(list_do\(([\w\d\-\>\.\[\]\(\)<>]+),\s*\((\w+)\s*:>\s*(.+)\)\))"),
              R"(for(int __index__ = 0; __index__ < \1.size(); ++__index__)
 {
     auto& \2 = \1.at(__index__);

@@ -26,6 +26,9 @@ class ecs/Movement<EcsComponent>
 class ecs/Movement2<Movement>
 {
 }
+class ecs/Movement3<Movement>
+{
+}
 
 class ecs/SystemMovement:cpp
 {
@@ -86,6 +89,39 @@ class ecs/TestEcsModel<ITestEcsModel>
 		model->update_systems(0);
 		this->assertEqual(model->get<Transform>(1)->x, 0);
 		this->assertEqual(model->get<Transform>(1)->y, 2);
+	}
+
+	fn void test_clear():cpp
+	{
+		auto model = this->get_model();
+		model->add(new Transform(), 1);
+		model->add(new Movement(), 1);
+
+
+		this->assertNotNull(model->get<Movement>(1));
+		this->assertNotNull(model->get<Transform>(1));
+
+		model->clear<Movement>();
+		this->assertEqual(model->get_components<Movement>().size(), 0);
+		this->assertNull(model->get<Movement>(1));
+
+		model->clear<Transform>();
+		this->assertEqual(model->get_components<Transform>().size(), 0);
+		this->assertNull(model->get<Transform>(1));
+	}
+
+	fn void test_remove_if():cpp
+	{
+		auto model = this->get_model();
+		model->add(new Transform(), 1);
+		model->add(new Transform(), 2);
+		model->add(new Transform(), 3);
+
+		model->remove_if<Transform>([&](auto& tranform){return tranform->id == 2;});
+		assertNull(model->get<Transform>(2), "tranform with id 2 is null");
+		assertNotNull(model->get<Transform>(1), "tranform with id 1 is not null");
+		assertNotNull(model->get<Transform>(3), "tranform with id 2 is not null");
+		assertEqual(model->get_components<Transform>().size(), 2);
 	}
 
 	fn void test_each():cpp
