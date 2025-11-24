@@ -412,9 +412,7 @@ std::string WriterCpp::writeFunctionHpp(const Function &method) {
     // args
     std::string args = createFunctionHppArgs(method);
     // qualifiers
-    std::string virt = (method.is_virtual || method.is_abstract ||
-                        currentClass_->is_virtual) &&
-                               method.name != currentClass_->name
+    std::string virt = (method.is_virtual || method.is_abstract || currentClass_->is_virtual) && method.name != currentClass_->name && !method.is_static
                            ? "virtual "
                            : "";
     std::string stat = method.is_static ? " static " : "";

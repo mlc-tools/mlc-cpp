@@ -22,6 +22,14 @@ class Foo2<Foo>
     }
 }
 
+class VirtualClass:virtual
+{
+    fn string static_method():static
+    {
+        return "VirtualClass";
+    }
+}
+
 class TestFoo2<ITestFoo2>
 {
     function void test_virtual_method()
