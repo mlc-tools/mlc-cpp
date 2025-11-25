@@ -71,6 +71,9 @@ void Registrar::generate(Model &model) {
     // Mirror Python: skip when auto-registration is enabled
     if (model.config.auto_registration)
         return;
+    if(model.config.language != "cpp"){
+        return;
+    }
 
     auto mock = Registrar::get_mock();
     model.add_class(mock);

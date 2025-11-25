@@ -157,8 +157,6 @@ Config Config::loadString(const std::string &content, std::string &err) {
             job.generate_intrusive = g["generate_intrusive"].asBool();
         if (g.isMember("generate_factory"))
             job.generate_factory = g["generate_factory"].asBool();
-        if (g.isMember("join_to_one_file"))
-            job.join_to_one_file = g["join_to_one_file"].asBool();
         if (g.isMember("auto_registration"))
             job.auto_registration = g["auto_registration"].asBool();
         if (g.isMember("generate_ref_counter"))
@@ -265,6 +263,13 @@ Config Config::loadString(const std::string &content, std::string &err) {
             g.value = getter["value"].asString();
             f.getters.push_back(std::move(g));
         }
+        config.features.push_back(std::move(f));
+    }
+    const auto &feature_unity = features["unity_file"];
+    if (feature_unity.isObject()) {
+        FeatureUnityFile f;
+        f.all_to_one = feature_unity["all_to_one"].asBool();
+        f.group_to_one = feature_unity["group_to_one"].asBool();
         config.features.push_back(std::move(f));
     }
 

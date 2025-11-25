@@ -294,6 +294,9 @@ GeneratorEcsCpp::GeneratorEcsCpp(const FeatureEcs &feature) {
 // --- main entry ---
 void GeneratorEcsCpp::generate(Model &model) {
     _model = &model;
+    if(model.config.language != "cpp"){
+        return;
+    }
     if (!model.hasClass(_ecs_model_base_name))
         return;
     auto ecsBase = getClass(model, _ecs_model_base_name);

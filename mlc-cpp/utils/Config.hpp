@@ -31,7 +31,6 @@ public:
     bool generate_tests = false;
     bool generate_intrusive = true;
     bool generate_factory = true;
-    bool join_to_one_file = false;
     bool auto_registration = true;
     bool generate_ref_counter = true;
     bool user_includes = false;
@@ -80,6 +79,12 @@ public:
     
     std::string get_getter(const std::string& class_name) const;
 };
+class FeatureUnityFile {
+public:
+    bool all_to_one = false;
+    bool group_to_one = false;
+};
+
 
 class Config {
 public:
@@ -92,12 +97,23 @@ public:
     std::vector<Job> jobs;
     std::vector<std::variant<FeatureVisitor, FeatureEcs, FeatureUnitTests,
                              FeatureDataStorage, FeatureRefCounter,
-                             FeatureOperatorEquals, FeatureBindings>>
+                             FeatureOperatorEquals, FeatureBindings,
+                             FeatureUnityFile>>
         features;
 
     // Загрузка конфигурации из JSON-файла. Возвращает набор задач.
     static Config loadFile(const std::string &path, std::string &err);
     static Config loadString(const std::string &content, std::string &err);
+    
+    template <class Feature>
+    const Feature& get_feature(){
+        for(auto& feature : features){
+            if (std::holds_alternative<Feature>(feature))
+                return std::get<Feature>(feature);
+        }
+        static Feature feature;
+        return feature;
+    }
 
 private:
     bool _initialized = false;

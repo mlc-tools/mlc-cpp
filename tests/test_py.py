@@ -1,16 +1,25 @@
 import os.path as fs
 import sys
 
-try:
-    from generated_py.xml.AllTests import AllTests
-    from generated_py.xml.DataStorage import DataStorage
-    from generated_py.xml.RunAllTests import RunAllTests
-    from generated_py.xml.Logger import Logger
-except ImportError:
-    from generated_py.json.AllTests import AllTests
-    from generated_py.json.DataStorage import DataStorage
-    from generated_py.json.RunAllTests import RunAllTests
-    from generated_py.json.Logger import Logger
+
+FORMAT = sys.argv[1] if len(sys.argv) > 1 else 'xml'
+
+if FORMAT == 'xml':
+    try:
+        from generated_py.xml.AllTests import AllTests
+        from generated_py.xml.DataStorage import DataStorage
+        from generated_py.xml.RunAllTests import RunAllTests
+        from generated_py.xml.Logger import Logger
+    except:
+        from generated_py.xml.mg import *
+else:
+    try:
+        from generated_py.json.AllTests import AllTests
+        from generated_py.json.DataStorage import DataStorage
+        from generated_py.json.RunAllTests import RunAllTests
+        from generated_py.json.Logger import Logger
+    except:
+        from generated_py.json.mg import *
 
 
 class LoggerImpl(Logger):
@@ -29,8 +38,8 @@ def initialize_data_storage(protocol):
         DataStorage.shared().initialize_xml(content)
 
 
-def main(argv):
-    initialize_data_storage(argv[1] if len(argv) > 1 else 'xml')
+def main():
+    initialize_data_storage(FORMAT)
 
     logger = LoggerImpl()
     result = AllTests.run(logger)
@@ -44,4 +53,5 @@ def main(argv):
 
 
 if __name__ == '__main__':
-    main(sys.argv)
+    main()
+

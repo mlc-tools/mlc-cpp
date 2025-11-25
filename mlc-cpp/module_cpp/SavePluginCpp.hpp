@@ -9,9 +9,8 @@
 #include "SavePluginBase.hpp"
 
 class Model;
-
 class SavePluginCpp : public SavePluginBase {
-  public:
-    SavePluginCpp(Model &model);
+public:
+    SavePluginCpp(Model &model, const FeatureUnityFile& feature_unity_file);
     void save_files(bool combine_to_one = false);
 };

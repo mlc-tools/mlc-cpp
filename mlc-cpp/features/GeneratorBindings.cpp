@@ -140,6 +140,10 @@ GeneratorBindings::GeneratorBindings(const FeatureBindings &config)
     : _config(config) {}
 
 void GeneratorBindings::generate(Model &model) {
+    if(model.config.language != "cpp"){
+        return;
+    }
+    
     auto methodEntries = collectBindings(model);
     auto observableEntries = collectObservableBindings(model);
     if (methodEntries.empty() && observableEntries.empty())

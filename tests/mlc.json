@@ -64,6 +64,9 @@
         {"starts_with": "System", "value": "dynamic_pointer_cast_intrusive<{class_name}>(ModelUser::get_instance()->system<{class_name}>())"},
         {"equals": "ModelUser", "value": "ModelUser::get_instance()"}
       ]
+    },
+    "unity_file":{
+      "all_to_one": true
     }
   }
 }

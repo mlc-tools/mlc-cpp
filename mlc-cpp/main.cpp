@@ -37,8 +37,6 @@ void confugure_args(Cli::ArgParser &args, int argc, char **argv) {
     args.addOption(
         "serialize_protocol", 0,
         "Сериализация: список через запятую xml,json (можно повторять)", true);
-    args.addOption("join_to_one_file", 0,
-                   "Объединять вывод в один файл (true/false)");
     args.addOption("auto_registration", 0, "Авто-регистрация (true/false)");
     args.addOption("generate_ref_counter", 0,
                    "Генерировать рефкаунтер (true/false)");
@@ -193,8 +191,6 @@ bool try_load_argc(Mlc &app, Cli::ArgParser &args) {
         job.generate_intrusive = to_bool(args.get("generate_intrusive"));
     if (args.has("generate_factory"))
         job.generate_factory = to_bool(args.get("generate_factory"));
-    if (args.has("join_to_one_file"))
-        job.join_to_one_file = to_bool(args.get("join_to_one_file"));
     if (args.has("auto_registration"))
         job.auto_registration = to_bool(args.get("auto_registration"));
     if (args.has("generate_ref_counter"))

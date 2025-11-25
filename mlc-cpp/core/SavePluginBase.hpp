@@ -15,9 +15,11 @@
 
 class Model;
 class Class;
+class FeatureUnityFile;
+
 class SavePluginBase {
 public:
-    explicit SavePluginBase(Model &model);
+    explicit SavePluginBase(Model &model, const FeatureUnityFile& feature_unity_file);
     virtual ~SavePluginBase();
 
     /// Save all files collected in model.files.
@@ -28,28 +30,21 @@ public:
 protected:
     Model &model;
     std::vector<std::fstream *> streams;
-
-    /// Override to provide a header for the combined file:
-    ///   first = initial content, second = output path for combined file.
     virtual std::pair<std::string, std::string> createCombineFileHeader();
-
-    /// Override to post-process combined content before writing.
     virtual std::string finalizeCombineFile(const std::string &content);
-
-    /// Override to decide which files still need saving during combine pass.
     virtual bool isNeedSaveFileOnCombine(const std::string &localPath);
-
-    /// Override to strip `#include`s or other headers when merging.
     virtual std::string removeIncludes(const std::string &fileContent);
 
-private:
+protected:
     using FileEntry = std::tuple<std::shared_ptr<Class>, // may be null
                                  std::string,            // local path
                                  std::string             // content
                                  >;
 
+    
     void saveOne();
     void saveAll();
+    void saveByGroup();
     void saveFile(const std::string &localPath, const std::string &content);
     void sortFiles();
     std::string addToCombineFile(const std::string &current,
@@ -57,4 +52,5 @@ private:
 
     std::vector<FileEntry> &files;     // alias to model.files
     std::vector<std::string> &created; // alias to model.created_files
+    const FeatureUnityFile& _feature_unity_file;
 };

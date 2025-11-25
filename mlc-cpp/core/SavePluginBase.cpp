@@ -11,15 +11,21 @@
 #include "Model.hpp" // defines Model, model.files and model.created_files
 #include <algorithm>
 
-SavePluginBase::SavePluginBase(Model &m)
-    : model(m), files(m.files), created(m.created_files) {}
+SavePluginBase::SavePluginBase(Model &m, const FeatureUnityFile& feature_unity_file)
+: model(m)
+, files(m.files)
+, created(m.created_files)
+, _feature_unity_file(feature_unity_file) {
+    
+}
 
 SavePluginBase::~SavePluginBase() {}
 
 void SavePluginBase::save_files(bool combineToOne) {
-    if (combineToOne) {
-        sortFiles();
+    if(_feature_unity_file.all_to_one || combineToOne){
         saveOne();
+    } else if (_feature_unity_file.group_to_one) {
+        saveByGroup();
     } else {
         saveAll();
     }
@@ -41,7 +47,18 @@ bool SavePluginBase::isNeedSaveFileOnCombine(const std::string &) {
 std::string SavePluginBase::removeIncludes(const std::string &c) { return c; }
 
 void SavePluginBase::saveOne() {
-    sortFiles();
+    auto weight = [](const FileEntry &e) {
+        auto cls = std::get<0>(e);
+        if (!cls)
+            return std::string();
+        std::string w = cls->name;
+        // prepend '~' for each superclass level
+        if (!cls->parent_class_name.empty()) {
+            w = "~" + w;
+        }
+        return w;
+    };
+    std::sort(files.begin(), files.end(), [&](auto &a, auto &b) { return weight(a) < weight(b); });
 
     auto [combine, combinePath] = createCombineFileHeader();
     for (auto &entry : files) {
@@ -76,6 +93,9 @@ void SavePluginBase::saveAll() {
     }
 }
 
+void SavePluginBase::saveByGroup(){
+}
+
 void SavePluginBase::saveFile(const std::string &localPath,
                               const std::string &content) {
     created.push_back(localPath);
@@ -87,22 +107,6 @@ void SavePluginBase::saveFile(const std::string &localPath,
         Log::message(existed ? " Overwriting: " + localPath
                              : " Create:      " + localPath);
     }
-}
-
-void SavePluginBase::sortFiles() {
-    auto weight = [](const FileEntry &e) {
-        auto cls = std::get<0>(e);
-        if (!cls)
-            return std::string();
-        std::string w = cls->name;
-        // prepend '~' for each superclass level
-        if (!cls->parent_class_name.empty()) {
-            w = "~" + w;
-        }
-        return w;
-    };
-    std::sort(files.begin(), files.end(),
-              [&](auto &a, auto &b) { return weight(a) < weight(b); });
 }
 
 std::string SavePluginBase::addToCombineFile(const std::string &combine,
