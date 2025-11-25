@@ -14,6 +14,28 @@
 
 void hoist_includes(std::string& code);
 
+std::string weight_source(const SavePluginBase::FileEntry &e) {
+    static std::unordered_map<std::string, std::string> prefixes = {
+        {"intrusive_ptr.cpp", "0"},
+        {"DataStorage.cpp", "1"},
+        {"Bindings.cpp", "~"},
+    };
+    
+    auto cls = std::get<0>(e);
+
+    std::string w;
+    auto iter = prefixes.find(std::get<1>(e));
+    if(iter != prefixes.end()){
+        w = iter->second;
+    }
+    else if (cls && !cls->parent_class_name.empty()) {
+        w = "|";
+    }
+    if (cls)
+        w += cls->name;
+    return w;
+};
+
 SavePluginCpp::SavePluginCpp(Model &model, const FeatureUnityFile& feature_unity_file)
 : SavePluginBase(model, feature_unity_file){
     
@@ -24,48 +46,40 @@ void SavePluginCpp::save_files(bool combine_to_one) {
 }
 
 void SavePluginCpp::saveOne(){
-    std::vector<FileEntry> headers;
-    std::vector<FileEntry> sources;
-    headers.reserve(model.files.size());
-    sources.reserve(model.files.size());
+    saveWithUnityHeaders();
+    saveWithUnitySourceToOne();
+}
+void SavePluginCpp::saveByGroup(){
+    saveWithUnityHeaders();
+    saveWithUnitySourceToOneByGroups();
+}
+void SavePluginCpp::saveAll(){
+    SavePluginBase::saveAll();
+}
+void SavePluginCpp::saveWithUnityHeaders(){
     for(auto& entry : model.files){
         if(ends_with(std::get<1>(entry), ".h"))
-            headers.push_back(entry);
-        else if(ends_with(std::get<1>(entry), ".cpp"))
-            sources.push_back(entry);
-        else
-            assert(0);
+            saveFile(std::get<1>(entry), std::get<2>(entry));
     }
+}
+std::vector<SavePluginCpp::FileEntry*> SavePluginCpp::get_source_files_with_order(){
     
-    std::unordered_map<std::string, std::string> prefixes = {
-        {"intrusive_ptr.cpp", "0"},
-        {"DataStorage.cpp", "1"},
-        {"Bindings.cpp", "~"},
-    };
-    
-    auto weight = [&](const FileEntry &e) {
-        auto cls = std::get<0>(e);
+    std::vector<FileEntry*> sources;
+    sources.reserve(model.files.size());
+    for(auto& entry : model.files){
+        if(ends_with(std::get<1>(entry), ".cpp"))
+            sources.push_back(&entry);
+    }
+    std::sort(sources.begin(), sources.end(), [&](auto &a, auto &b) { return weight_source(*a) < weight_source(*b); });
+    return sources;
+}
 
-        std::string w;
-        auto iter = prefixes.find(std::get<1>(e));
-        if(iter != prefixes.end()){
-            w = iter->second;
-        }
-        else if (cls && !cls->parent_class_name.empty()) {
-            w = "|";
-        }
-        if (cls)
-            w += cls->name;
-        return w;
-    };
-    std::sort(sources.begin(), sources.end(), [&](auto &a, auto &b) { return weight(a) < weight(b); });
+void SavePluginCpp::saveWithUnitySourceToOne(){
+    auto sources = get_source_files_with_order();
     
     std::string source;
-    for(auto& entry : headers){
-        saveFile(std::get<1>(entry), std::get<2>(entry));
-    }
     for(auto& entry : sources){
-        source += "\n// " + std::get<1>(entry) + "\n" + std::get<2>(entry);
+        source += "\n// " + std::get<1>(*entry) + "\n" + std::get<2>(*entry);
     }
     hoist_includes(source);
     
@@ -75,10 +89,32 @@ void SavePluginCpp::saveOne(){
     }
     saveFile("mg.cpp", source);
 }
-void SavePluginCpp::saveAll(){
-    SavePluginBase::saveAll();
-}
-void SavePluginCpp::saveByGroup(){
+
+void SavePluginCpp::saveWithUnitySourceToOneByGroups(){
+    auto sources = get_source_files_with_order();
+    
+    std::unordered_map<std::string, std::string> groups;
+    for(auto& entry : sources){
+        std::string group_name;
+        auto cls = std::get<0>(*entry);
+        if(cls)
+            group_name = cls->group;
+        auto& source = groups[group_name];
+        source += "\n// " + std::get<1>(*entry) + "\n" + std::get<2>(*entry);
+    }
+    
+    auto root_source = std::move(groups[""]);
+    groups.erase("");
+    hoist_includes(root_source);
+    if(root_source.find("#include \"Bindings_.h\"") != std::string::npos){
+        replace_all(root_source, "#include \"Bindings_.h\"\n", "");
+        replace_all(root_source, "// DataTestBindings.cpp", "// DataTestBindings.cpp\n#include \"Bindings_.h\"");
+    }
+    saveFile("mg.cpp", root_source);
+    for(auto&& [group_name, source] : groups){
+        hoist_includes(source);
+        saveFile(group_name + ".cpp", source);
+    }
     
 }
 

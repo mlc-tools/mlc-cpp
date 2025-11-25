@@ -35,13 +35,13 @@ protected:
     virtual bool isNeedSaveFileOnCombine(const std::string &localPath);
     virtual std::string removeIncludes(const std::string &fileContent);
 
-protected:
+public:
     using FileEntry = std::tuple<std::shared_ptr<Class>, // may be null
                                  std::string,            // local path
                                  std::string             // content
                                  >;
 
-    
+protected:
     virtual void saveOne();
     virtual void saveAll();
     virtual void saveByGroup();

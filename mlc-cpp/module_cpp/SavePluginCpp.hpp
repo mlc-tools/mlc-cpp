@@ -17,4 +17,9 @@ public:
     virtual void saveOne() override;
     virtual void saveAll() override;
     virtual void saveByGroup() override;
+    virtual void saveWithUnityHeaders();
+    virtual void saveWithUnitySourceToOne();
+    virtual void saveWithUnitySourceToOneByGroups();
+private:
+    std::vector<FileEntry*> get_source_files_with_order();
 };

@@ -239,7 +239,7 @@ std::string WriterCpp::writeCpp(const std::shared_ptr<Class> &cls,
     }
     
     auto feature_unity = _model->configuration.get_feature<FeatureUnityFile>();
-    bool use_path_to_root = !feature_unity.all_to_one;
+    bool use_path_to_root = !feature_unity.all_to_one && !feature_unity.group_to_one;
 
     // Format source
     std::string source = SOURCE;
@@ -725,7 +725,7 @@ std::string WriterCpp::getIncludesForSource(const std::shared_ptr<Class> &cls, c
 std::string WriterCpp::buildIncludes(const std::shared_ptr<Class> &cls, const std::set<std::string> &incs, bool to_header) {
     
     auto feature_unity = _model->configuration.get_feature<FeatureUnityFile>();
-    bool use_path_to_root = to_header ? true : !feature_unity.all_to_one;
+    bool use_path_to_root = to_header ? true : !feature_unity.all_to_one && !feature_unity.group_to_one;
     
     const std::unordered_map<std::string, std::string> mapTpl = {
         {"std::vector", "<vector>"},
@@ -773,10 +773,8 @@ std::string WriterCpp::buildIncludes(const std::shared_ptr<Class> &cls, const st
                 path = get_path_relative();
             } else if(!feature_unity.all_to_one && !feature_unity.group_to_one){
                 path = get_path_relative();
-            } else if(feature_unity.all_to_one){
-                path = get_path_absolute();
             } else {
-                assert(0 && "todo");
+                path = get_path_absolute();
             }
             
             lines.push_back("#include \"" + path + includeClass->name + ".h\"");
