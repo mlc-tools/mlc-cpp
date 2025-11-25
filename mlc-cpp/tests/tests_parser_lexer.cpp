@@ -15,10 +15,21 @@
 #include <iostream>
 #include <map>
 
+
+template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+void serialize(const Map& values){
+    
+}
+
 namespace tests {
 extern void run_regex_tests();
 
 void test_lexer_basic_tokens() {
+    std::map<int, int> m;
+    std::unordered_map<int, int> m2;
+    serialize(m);
+    serialize(m2);
+    
     std::string code = "@include class MyClass:public { }";
     Lexer lexer(code);
 
@@ -150,14 +161,13 @@ void test_parse_members() {
     check_object(parse_object("list<float>", false), "list", "");
     check_object(parse_object("list<float> l", true), "list", "l");
     check_object(parse_object("map<int, int>", false), "map", "");
-    check_templates(
-        check_object(parse_object("map<int, float> m", true), "map", "m"),
-        {"int", "float"});
-    ;
-    check_templates(
-        check_object(parse_object("map<int, list<float>> m", true), "map", "m"),
-        {"int", "list"});
-    ;
+    check_object(parse_object("set<int>", false), "set", "");
+    check_object(parse_object("hash_set<int>", false), "hash_set", "");
+    check_object(parse_object("hash_map<int>", false), "hash_map", "");
+    check_templates(check_object(parse_object("map<int, float> m", true), "map", "m"), {"int", "float"});
+
+    check_templates( check_object(parse_object("map<int, list<float>> m", true), "map", "m"), {"int", "list"});
+
     check_object(parse_object("float t=0", true), "float", "t", "0");
     check_object(parse_object("float t=0.1f", true), "float", "t", "0.1f");
     check_object(parse_object("float t=-0.1f", true), "float", "t", "-0.1f");

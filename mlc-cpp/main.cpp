@@ -299,7 +299,9 @@ void try_update_subcommand(int argc, char **argv) {
 }
 
 int main(int argc, char **argv) {
-    //    tests::run();
+#ifndef NDEBUG
+    tests::run();
+#endif
     try_update_subcommand(argc, argv);
 
     auto start = std::chrono::steady_clock::now();

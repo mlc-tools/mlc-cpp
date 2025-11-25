@@ -14,6 +14,39 @@
       "side": "server",
       "serialize_protocol": "xml",
       "filter_code": []
+    },
+    {
+      "out": "generated_cpp/json",
+      "data_out": "assets",
+      "auto_registration": false,
+      "generate_intrusive": true,
+      "generate_tests": true,
+      "language": "cpp",
+      "side": "client",
+      "serialize_protocol": "json",
+      "filter_code": []
+    },
+    {
+      "out": "generated_py/xml",
+      "data_out": "assets",
+      "auto_registration": false,
+      "generate_intrusive": true,
+      "generate_tests": true,
+      "language": "py",
+      "side": "server",
+      "serialize_protocol": "xml",
+      "filter_code": []
+    },
+    {
+      "out": "generated_py/json",
+      "data_out": "assets",
+      "auto_registration": false,
+      "generate_intrusive": true,
+      "generate_tests": true,
+      "language": "py",
+      "side": "client",
+      "serialize_protocol": "json",
+      "filter_code": []
     }
   ],
   "features": {
@@ -33,7 +66,7 @@
       ]
     },
     "unity_file":{
-      "all_to_one": true
+      "group_to_one": true
     }
   }
 }

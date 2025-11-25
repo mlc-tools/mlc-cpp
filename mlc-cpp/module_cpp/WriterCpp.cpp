@@ -263,6 +263,9 @@ std::string WriterCpp::convertType(const std::string &t) {
     static const std::unordered_map<std::string, std::string> m = {
         {"list", "std::vector"},
         {"map", "std::map"},
+        {"hash_map", "std::unordered_map"},
+        {"set", "std::set"},
+        {"hash_set", "std::unordered_set"},
         {"string", "std::string"},
         {"Observer", "Observer<std::function<void()>>"}};
     auto it = m.find(t);
@@ -296,7 +299,7 @@ std::string WriterCpp::writeNamedObject(const Object &obj,
                                         const std::string &name,
                                         bool tryConstRef, bool useIntrusive) {
     auto canUseConstRef = [&](const Object &o) {
-        return o.type == "string" || o.type == "list" || o.type == "map";
+        return o.type == "string" || o.type == "list" || o.type == "map" || o.type == "hash_map" || o.type == "set" || o.type == "hash_set";
     };
     bool isRef = obj.is_ref;
     bool is_const = obj.is_const;
@@ -601,7 +604,7 @@ WriterCpp::getIncludesForHeader(const std::shared_ptr<Class> &cls) {
             inc.insert("std::atomic");
     }
     // functions
-    static const std::set<std::string> stdIns = {"map", "list", "string"};
+    static const std::set<std::string> stdIns = {"map", "list", "string", "set", "hash_map", "unordered_set"};
     static std::vector<std::string> mg_extensions = {
         "in_map",
         "in_list",
@@ -731,6 +734,8 @@ std::string WriterCpp::buildIncludes(const std::shared_ptr<Class> &cls, const st
         {"std::vector", "<vector>"},
         {"std::map", "<map>"},
         {"std::set", "<set>"},
+        {"std::unordered_map", "<unordered_map>"},
+        {"std::unordered_set", "<unordered_set>"},
         {"std::string", "<string>"},
         {"std::tuple", "<tuple>"},
         {"std::atomic", "<atomic>"},
@@ -788,7 +793,7 @@ std::string WriterCpp::buildIncludes(const std::shared_ptr<Class> &cls, const st
 std::string
 WriterCpp::buildForwardDeclarations(const std::set<std::string> &decls) {
     static const std::set<std::string> ignore = {
-        "std::vector", "std::map", "std::set", "std::string", "int",
+        "std::vector", "std::map", "std::set", "std::unordered_map", "std::unordered_set", "std::string", "int",
         "bool",        "float",    "void",     "Observable"};
     static const std::unordered_map<std::string, std::string> predefined = {
         {"Json::Value", "namespace Json { class Value; }"},

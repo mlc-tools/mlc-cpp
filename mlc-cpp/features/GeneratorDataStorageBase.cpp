@@ -144,7 +144,7 @@ void GeneratorDataStorageBase::generate(Model &model) {
             continue;
 
         Object obj;
-        obj.type = "map";
+        obj.type = "hash_map";
         obj.name = getDataListName(getDataName(cls->name));
         obj.template_args.push_back(Object("string", ""));
         obj.template_args.push_back(Object(cls->name, ""));
@@ -282,8 +282,7 @@ void GeneratorDataStorageBase::createGettersMaps(
         Function m;
         m.name = "get_" + mapName;
         m.is_const = true;
-        m.return_type =
-            parse_object("map<string, " + cls->name + ">:const:ref");
+        m.return_type = parse_object("hash_map<string, " + cls->name + ">:const:ref");
         m.body += "\nreturn this->" + mapName + ";\n";
         _class->functions.push_back(std::move(m));
     }

@@ -933,6 +933,7 @@ const std::string SERIALIZER_XML_HPP = R"__EXT__(#ifndef __mg_SERIALIZERXML_H__
 #include <string>
 #include <map>
 #include <vector>
+#include <set>
 #include "intrusive_ptr.h"
 #include "Pimpl.h"
 #include "SerializerCommon.h"
@@ -992,7 +993,7 @@ public:
     }
 
     template <class T>
-    typename std::enable_if<!is_attribute<T>::value && !is_enum<T>::value, void>::type
+    typename std::enable_if<!is_attribute<T>::value && !is_enum<T>::value && !is_map<T>::value, void>::type
     serialize(const intrusive_ptr<T>& value, const std::string& key)
     {
         if (value)
@@ -1084,10 +1085,101 @@ public:
         }
     }
 /* Vectors serialization finish */
+/* Set serialization start */
+    template <template<class...> class Set, class T, class... Args>
+    typename std::enable_if<
+        is_set_container<Set<T, Args...>>::value &&
+        is_attribute<T>::value &&
+        !std::is_same<T, bool>::value,
+        void>::type
+    serialize(const Set<T, Args...>& values, const std::string& key)
+    {
+        if (values.empty())
+            return;
+        SerializerXml child = key.empty() ? *this : add_child(key);
+        for (const T& value : values)
+        {
+            SerializerXml item = child.add_child("item");
+            item.serialize(value, "value", default_value::value<T>());
+        }
+    }
+
+    template <template<class...> class Set, class... Args>
+    typename std::enable_if<
+        is_set_container<Set<bool, Args...>>::value,
+        void>::type
+    serialize(const Set<bool, Args...>& values, const std::string& key)
+    {
+        if (values.empty())
+            return;
+        SerializerXml child = key.empty() ? *this : add_child(key);
+        for (bool value : values)
+        {
+            SerializerXml item = child.add_child("item");
+            item.serialize(value, "value", default_value::value<bool>());
+        }
+    }
+
+    template <template<class...> class Set, class T, class... Args>
+    typename std::enable_if<
+        is_set_container<Set<intrusive_ptr<T>, Args...>>::value &&
+        !is_attribute<T>::value,
+        void>::type
+    serialize(const Set<intrusive_ptr<T>, Args...>& values, const std::string& key)
+    {
+        if (values.empty())
+            return;
+        SerializerXml child = key.empty() ? *this : add_child(key);
+        for (const intrusive_ptr<T>& value : values)
+        {
+            SerializerXml item = child.add_child(value ? value->get_type() : "");
+            if(value)
+            {
+                value->serialize_xml(item);
+            }
+        }
+    }
+
+    template <template<class...> class Set, class T, class... Args>
+    typename std::enable_if<
+        is_set_container<Set<T, Args...>>::value &&
+        !is_attribute<T>::value &&
+        !is_intrusive<T>::value &&
+        !std::is_pointer<T>::value,
+        void>::type
+    serialize(const Set<T, Args...>& values, const std::string& key)
+    {
+        if (values.empty())
+            return;
+        SerializerXml child = key.empty() ? *this : add_child(key);
+        for (const T& value : values)
+        {
+            SerializerXml item = child.add_child("item");
+            item.serialize(value, "");
+        }
+    }
+
+    template <template<class...> class Set, class T, class... Args>
+    typename std::enable_if<
+        is_set_container<Set<const T*, Args...>>::value &&
+        !is_attribute<T>::value,
+        void>::type
+    serialize(const Set<const T*, Args...>& values, const std::string& key)
+    {
+        if (values.empty())
+            return;
+        SerializerXml child = key.empty() ? *this : add_child(key);
+        for (const T* value : values)
+        {
+            SerializerXml item = child.add_child("item");
+            item.serialize(value, "value");
+        }
+    }
+/* Set serialization finish */
 /* Maps serialization start */
-    template <class Key, class Value>
-    typename std::enable_if<is_attribute<Key>::value && is_attribute<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -1095,14 +1187,14 @@ public:
         for (auto& pair : values)
         {
             SerializerXml item = child.add_child("pair");
-            item.add_attribute("key", pair.first, default_value::value<Key>());
-            item.add_attribute("value", pair.second, default_value::value<Value>());
+            item.add_attribute("key", pair.first, default_value::value<typename Map::key_type>());
+            item.add_attribute("value", pair.second, default_value::value<typename Map::mapped_type>());
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_attribute<Key>::value && is_enum<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -1110,14 +1202,14 @@ public:
         for (auto& pair : values)
         {
             SerializerXml item = child.add_child("pair");
-            item.add_attribute("key", pair.first, default_value::value<Key>());
+            item.add_attribute("key", pair.first, default_value::value<typename Map::key_type>());
             item.add_attribute("value", pair.second.str(), default_value::value<std::string>());
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_attribute<Key>::value && is_data<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -1125,14 +1217,14 @@ public:
         for (auto& pair : values)
         {
             SerializerXml item = child.add_child("pair");
-            item.add_attribute("key", pair.first, default_value::value<Key>());
+            item.add_attribute("key", pair.first, default_value::value<typename Map::key_type>());
             item.add_attribute("value", pair.second ? pair.second->name : "", default_value::value<std::string>());
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_attribute<Key>::value && is_not_serialize_to_attribute<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -1140,14 +1232,14 @@ public:
         for (auto& pair : values)
         {
             SerializerXml item = child.add_child("pair");
-            item.add_attribute("key", pair.first, default_value::value<Key>());
+            item.add_attribute("key", pair.first, default_value::value<typename Map::key_type>());
             item.serialize(pair.second, "value");
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_enum<Key>::value && is_attribute<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -1156,13 +1248,13 @@ public:
         {
             SerializerXml item = child.add_child("pair");
             item.add_attribute("key", pair.first.str(), default_value::value<std::string>());
-            item.add_attribute("value", pair.second, default_value::value<Value>());
+            item.add_attribute("value", pair.second, default_value::value<typename Map::mapped_type>());
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_enum<Key>::value && is_enum<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -1175,9 +1267,9 @@ public:
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_enum<Key>::value && is_data<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -1190,9 +1282,9 @@ public:
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_enum<Key>::value && is_not_serialize_to_attribute<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -1205,9 +1297,9 @@ public:
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_data<Key>::value && is_attribute<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -1216,13 +1308,13 @@ public:
         {
             SerializerXml item = child.add_child("pair");
             item.add_attribute("key", pair.first ? pair.first->name : "", default_value::value<std::string>());
-            item.add_attribute("value", pair.second, default_value::value<Value>());
+            item.add_attribute("value", pair.second, default_value::value<typename Map::mapped_type>());
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_data<Key>::value && is_enum<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -1235,9 +1327,9 @@ public:
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_data<Key>::value && is_data<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -1250,9 +1342,9 @@ public:
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_data<Key>::value && is_not_serialize_to_attribute<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -1265,9 +1357,9 @@ public:
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_not_serialize_to_attribute<Key>::value && is_attribute<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -1276,13 +1368,13 @@ public:
         {
             SerializerXml item = child.add_child("pair");
             item.serialize(pair.first, "key");
-            item.add_attribute("value", pair.second, default_value::value<Value>());
+            item.add_attribute("value", pair.second, default_value::value<typename Map::mapped_type>());
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_not_serialize_to_attribute<Key>::value && is_enum<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -1295,9 +1387,9 @@ public:
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_not_serialize_to_attribute<Key>::value && is_data<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -1310,9 +1402,9 @@ public:
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_not_serialize_to_attribute<Key>::value && is_not_serialize_to_attribute<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -1398,7 +1490,7 @@ public:
     }
 
     template <class T>
-    typename std::enable_if<!is_attribute<T>::value && !is_enum<T>::value, void>::type
+    typename std::enable_if<!is_attribute<T>::value && !is_enum<T>::value && !is_map<T>::value, void>::type
     deserialize(T& value, const std::string& key)
     {
         DeserializerXml child = key.empty() ? *this : get_child(key);
@@ -1461,211 +1553,281 @@ public:
         }
     }
 /* Vectors deserialization finish */
+/* Set deserialization start */
+    template <template<class...> class Set, class T, class... Args>
+    typename std::enable_if<
+        is_set_container<Set<T, Args...>>::value &&
+        is_attribute<T>::value,
+        void>::type
+    deserialize(Set<T, Args...>& values, const std::string& key)
+    {
+        DeserializerXml child = key.empty() ? *this : get_child(key);
+        for (auto item : child)
+        {
+            T value;
+            item.deserialize(value, "value", default_value::value<T>());
+            values.insert(value);
+        }
+    }
+
+    template <template<class...> class Set, class T, class... Args>
+    typename std::enable_if<
+        is_set_container<Set<intrusive_ptr<T>, Args...>>::value &&
+        !is_attribute<T>::value,
+        void>::type
+    deserialize(Set<intrusive_ptr<T>, Args...>& values, const std::string& key)
+    {
+        DeserializerXml child = key.empty() ? *this : get_child(key);
+        for (auto item : child)
+        {
+            std::string type = item.get_name();
+            intrusive_ptr<T> object = Factory::shared().build<T>(type);
+            if(object)
+            {
+                object->deserialize_xml(item);
+            }
+            values.insert(object);
+        }
+    }
+
+    template <template<class...> class Set, class T, class... Args>
+    typename std::enable_if<
+        is_set_container<Set<const T*, Args...>>::value &&
+        !is_attribute<T>::value,
+        void>::type
+    deserialize(Set<const T*, Args...>& values, const std::string& key)
+    {
+        DeserializerXml child = key.empty() ? *this : get_child(key);
+        for (auto item : child)
+        {
+            const T* value = DataStorage::shared().get<T>(item.get_attribute("value", default_value::value<std::string>()));
+            values.insert(value);
+        }
+    }
+
+    template <template<class...> class Set, class T, class... Args>
+    typename std::enable_if<
+        is_set_container<Set<T, Args...>>::value &&
+        !is_attribute<T>::value &&
+        !is_intrusive<T>::value &&
+        !std::is_pointer<T>::value,
+        void>::type
+    deserialize(Set<T, Args...>& values, const std::string& key)
+    {
+        DeserializerXml child = key.empty() ? *this : get_child(key);
+        for (auto item : child)
+        {
+            T value;
+            item.deserialize(value, default_value::value<std::string>());
+            values.insert(value);
+        }
+    }
+/* Set deserialization finish */
 /* Maps deserialization start */
-    template <class Key, class Value>
-    typename std::enable_if<is_attribute<Key>::value && is_attribute<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerXml child = key.empty() ? *this : get_child(key);
         for (DeserializerXml item : child)
         {
-            Key key_ = item.get_attribute("key", default_value::value<Key>());
-            Value value_ = item.get_attribute("value", default_value::value<Value>());
+            typename Map::key_type key_ = item.get_attribute("key", default_value::value<typename Map::key_type>());
+            typename Map::mapped_type value_ = item.get_attribute("value", default_value::value<typename Map::mapped_type>());
             map[key_] = value_;
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_attribute<Key>::value && is_enum<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerXml child = key.empty() ? *this : get_child(key);
         for (DeserializerXml item : child)
         {
-            Key key_ = item.get_attribute("key", default_value::value<Key>());
-            Value value_; item.deserialize(value_, "value");
+            typename Map::key_type key_ = item.get_attribute("key", default_value::value<typename Map::key_type>());
+            typename Map::mapped_type value_; item.deserialize(value_, "value");
             map[key_] = value_;
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_attribute<Key>::value && is_data<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerXml child = key.empty() ? *this : get_child(key);
         for (DeserializerXml item : child)
         {
-            Key key_ = item.get_attribute("key", default_value::value<Key>());
-            Value value_ = DataStorage::shared().get<typename data_type<Value>::type>(item.get_attribute("value", default_value::value<std::string>()));
+            typename Map::key_type key_ = item.get_attribute("key", default_value::value<typename Map::key_type>());
+            typename Map::mapped_type value_ = DataStorage::shared().get<typename data_type<typename Map::mapped_type>::type>(item.get_attribute("value", default_value::value<std::string>()));
             map[key_] = value_;
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_attribute<Key>::value && is_not_serialize_to_attribute<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerXml child = key.empty() ? *this : get_child(key);
         for (DeserializerXml item : child)
         {
-            Key key_ = item.get_attribute("key", default_value::value<Key>());
-            Value value_; item.deserialize(value_, "value");
+            typename Map::key_type key_ = item.get_attribute("key", default_value::value<typename Map::key_type>());
+            typename Map::mapped_type value_; item.deserialize(value_, "value");
             map[key_] = value_;
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_enum<Key>::value && is_attribute<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerXml child = key.empty() ? *this : get_child(key);
         for (DeserializerXml item : child)
         {
-            Key key_; item.deserialize(key_, "key");
-            Value value_ = item.get_attribute("value", default_value::value<Value>());
+            typename Map::key_type key_; item.deserialize(key_, "key");
+            typename Map::mapped_type value_ = item.get_attribute("value", default_value::value<typename Map::mapped_type>());
             map[key_] = value_;
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_enum<Key>::value && is_enum<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerXml child = key.empty() ? *this : get_child(key);
         for (DeserializerXml item : child)
         {
-            Key key_; item.deserialize(key_, "key");
-            Value value_; item.deserialize(value_, "value");
+            typename Map::key_type key_; item.deserialize(key_, "key");
+            typename Map::mapped_type value_; item.deserialize(value_, "value");
             map[key_] = value_;
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_enum<Key>::value && is_data<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerXml child = key.empty() ? *this : get_child(key);
         for (DeserializerXml item : child)
         {
-            Key key_; item.deserialize(key_, "key");
-            Value value_ = DataStorage::shared().get<typename data_type<Value>::type>(item.get_attribute("value", default_value::value<std::string>()));
+            typename Map::key_type key_; item.deserialize(key_, "key");
+            typename Map::mapped_type value_ = DataStorage::shared().get<typename data_type<typename Map::mapped_type>::type>(item.get_attribute("value", default_value::value<std::string>()));
             map[key_] = value_;
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_enum<Key>::value && is_not_serialize_to_attribute<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerXml child = key.empty() ? *this : get_child(key);
         for (DeserializerXml item : child)
         {
-            Key key_; item.deserialize(key_, "key");
-            Value value_; item.deserialize(value_, "value");
+            typename Map::key_type key_; item.deserialize(key_, "key");
+            typename Map::mapped_type value_; item.deserialize(value_, "value");
             map[key_] = value_;
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_data<Key>::value && is_attribute<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerXml child = key.empty() ? *this : get_child(key);
         for (DeserializerXml item : child)
         {
-            Key key_ = DataStorage::shared().get<typename data_type<Key>::type>(item.get_attribute("key", default_value::value<std::string>()));
-            Value value_ = item.get_attribute("value", default_value::value<Value>());
+            typename Map::key_type key_ = DataStorage::shared().get<typename data_type<typename Map::key_type>::type>(item.get_attribute("key", default_value::value<std::string>()));
+            typename Map::mapped_type value_ = item.get_attribute("value", default_value::value<typename Map::mapped_type>());
             map[key_] = value_;
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_data<Key>::value && is_enum<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerXml child = key.empty() ? *this : get_child(key);
         for (DeserializerXml item : child)
         {
-            Key key_ = DataStorage::shared().get<typename data_type<Key>::type>(item.get_attribute("key", default_value::value<std::string>()));
-            Value value_; item.deserialize(value_, "value");
+            typename Map::key_type key_ = DataStorage::shared().get<typename data_type<typename Map::key_type>::type>(item.get_attribute("key", default_value::value<std::string>()));
+            typename Map::mapped_type value_; item.deserialize(value_, "value");
             map[key_] = value_;
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_data<Key>::value && is_data<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerXml child = key.empty() ? *this : get_child(key);
         for (DeserializerXml item : child)
         {
-            Key key_ = DataStorage::shared().get<typename data_type<Key>::type>(item.get_attribute("key", default_value::value<std::string>()));
-            Value value_ = DataStorage::shared().get<typename data_type<Value>::type>(item.get_attribute("value", default_value::value<std::string>()));
+            typename Map::key_type key_ = DataStorage::shared().get<typename data_type<typename Map::key_type>::type>(item.get_attribute("key", default_value::value<std::string>()));
+            typename Map::mapped_type value_ = DataStorage::shared().get<typename data_type<typename Map::mapped_type>::type>(item.get_attribute("value", default_value::value<std::string>()));
             map[key_] = value_;
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_data<Key>::value && is_not_serialize_to_attribute<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerXml child = key.empty() ? *this : get_child(key);
         for (DeserializerXml item : child)
         {
-            Key key_ = DataStorage::shared().get<typename data_type<Key>::type>(item.get_attribute("key", default_value::value<std::string>()));
-            Value value_; item.deserialize(value_, "value");
+            typename Map::key_type key_ = DataStorage::shared().get<typename data_type<typename Map::key_type>::type>(item.get_attribute("key", default_value::value<std::string>()));
+            typename Map::mapped_type value_; item.deserialize(value_, "value");
             map[key_] = value_;
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_not_serialize_to_attribute<Key>::value && is_attribute<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerXml child = key.empty() ? *this : get_child(key);
         for (DeserializerXml item : child)
         {
-            Key key_; item.deserialize(key_, "key");
-            Value value_ = item.get_attribute("value", default_value::value<Value>());
+            typename Map::key_type key_; item.deserialize(key_, "key");
+            typename Map::mapped_type value_ = item.get_attribute("value", default_value::value<typename Map::mapped_type>());
             map[key_] = value_;
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_not_serialize_to_attribute<Key>::value && is_enum<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerXml child = key.empty() ? *this : get_child(key);
         for (DeserializerXml item : child)
         {
-            Key key_; item.deserialize(key_, "key");
-            Value value_; item.deserialize(value_, "value");
+            typename Map::key_type key_; item.deserialize(key_, "key");
+            typename Map::mapped_type value_; item.deserialize(value_, "value");
             map[key_] = value_;
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_not_serialize_to_attribute<Key>::value && is_data<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerXml child = key.empty() ? *this : get_child(key);
         for (DeserializerXml item : child)
         {
-            Key key_; item.deserialize(key_, "key");
-            Value value_ = DataStorage::shared().get<typename data_type<Value>::type>(item.get_attribute("value", default_value::value<std::string>()));
+            typename Map::key_type key_; item.deserialize(key_, "key");
+            typename Map::mapped_type value_ = DataStorage::shared().get<typename data_type<typename Map::mapped_type>::type>(item.get_attribute("value", default_value::value<std::string>()));
             map[key_] = value_;
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_not_serialize_to_attribute<Key>::value && is_not_serialize_to_attribute<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerXml child = key.empty() ? *this : get_child(key);
         for (DeserializerXml item : child)
         {
-            Key key_; item.deserialize(key_, "key");
-            Value value_; item.deserialize(value_, "value");
+            typename Map::key_type key_; item.deserialize(key_, "key");
+            typename Map::mapped_type value_; item.deserialize(value_, "value");
             map[key_] = value_;
         }
     }
@@ -1982,7 +2144,7 @@ public:
     }
 
     template<class T>
-    typename std::enable_if<!is_attribute<T>::value && !is_enum<T>::value, void>::type
+    typename std::enable_if<!is_attribute<T>::value && !is_enum<T>::value && !is_map<T>::value, void>::type
     serialize(const T &value, const std::string &key)
     {
         SerializerJson child = key.empty() ? *this : add_child(key);
@@ -2040,10 +2202,73 @@ public:
         }
     }
 /* Vectors serialization finish */
+/* Set serialization start */
+    template<template<class...> class Set, class T, class... Args>
+    typename std::enable_if<
+        is_set_container<Set<T, Args...>>::value &&
+        ((is_attribute<T>::value && !std::is_same<T, bool>::value) || is_enum<T>::value),
+        void>::type
+    serialize(const Set<T, Args...> &values, const std::string &key)
+    {
+        if (values.empty())
+            return;
+        SerializerJson child = key.empty() ? *this : add_array(key);
+        for (const T& value : values)
+        {
+            child.add_array_item(value);
+        }
+    }
+    template<template<class...> class Set, class... Args>
+    typename std::enable_if<
+        is_set_container<Set<bool, Args...>>::value,
+        void>::type
+    serialize(const Set<bool, Args...> &values, const std::string &key)
+    {
+        if (values.empty())
+            return;
+        SerializerJson child = key.empty() ? *this : add_array(key);
+        for (bool value : values)
+        {
+            child.add_array_item(value);
+        }
+    }
+    template<template<class...> class Set, class T, class... Args>
+    typename std::enable_if<
+        is_set_container<Set<T, Args...>>::value &&
+        is_data<T>::value,
+        void>::type
+    serialize(const Set<T, Args...> &values, const std::string &key)
+    {
+        if (values.empty())
+            return;
+        SerializerJson child = key.empty() ? *this : add_array(key);
+        for (const T &value : values)
+        {
+            child.add_array_item(value ? value->name : "");
+        }
+    }
+
+    template<template<class...> class Set, class T, class... Args>
+    typename std::enable_if<
+        is_set_container<Set<T, Args...>>::value &&
+        is_not_serialize_to_attribute<T>::value,
+        void>::type
+    serialize(const Set<T, Args...> &values, const std::string &key)
+    {
+        if (values.empty())
+            return;
+        SerializerJson child = key.empty() ? *this : add_array(key);
+        for (const T &value : values)
+        {
+            SerializerJson item = child.add_array_item();
+            item.serialize(value, "");
+        }
+    }
+/* Set serialization finish */
 /* Maps serialization start */
-    template <class Key, class Value>
-    typename std::enable_if<is_attribute<Key>::value && is_attribute<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -2051,14 +2276,14 @@ public:
         for (auto& pair : values)
         {
             SerializerJson item = child.add_array_item();
-            item.add_attribute("key", pair.first, default_value::value<Key>());
-            item.add_attribute("value", pair.second, default_value::value<Value>());
+            item.add_attribute("key", pair.first, default_value::value<typename Map::key_type>());
+            item.add_attribute("value", pair.second, default_value::value<typename Map::mapped_type>());
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_attribute<Key>::value && is_enum<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -2066,14 +2291,14 @@ public:
         for (auto& pair : values)
         {
             SerializerJson item = child.add_array_item();
-            item.add_attribute("key", pair.first, default_value::value<Key>());
+            item.add_attribute("key", pair.first, default_value::value<typename Map::key_type>());
             item.add_attribute("value", pair.second.str(), default_value::value<std::string>());
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_attribute<Key>::value && is_data<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -2081,14 +2306,14 @@ public:
         for (auto& pair : values)
         {
             SerializerJson item = child.add_array_item();
-            item.add_attribute("key", pair.first, default_value::value<Key>());
+            item.add_attribute("key", pair.first, default_value::value<typename Map::key_type>());
             item.add_attribute("value", pair.second ? pair.second->name : "", default_value::value<std::string>());
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_attribute<Key>::value && is_not_serialize_to_attribute<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -2096,14 +2321,14 @@ public:
         for (auto& pair : values)
         {
             SerializerJson item = child.add_array_item();
-            item.add_attribute("key", pair.first, default_value::value<Key>());
+            item.add_attribute("key", pair.first, default_value::value<typename Map::key_type>());
             item.serialize(pair.second, "value");
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_enum<Key>::value && is_attribute<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -2112,13 +2337,13 @@ public:
         {
             SerializerJson item = child.add_array_item();
             item.add_attribute("key", pair.first.str(), default_value::value<std::string>());
-            item.add_attribute("value", pair.second, default_value::value<Value>());
+            item.add_attribute("value", pair.second, default_value::value<typename Map::mapped_type>());
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_enum<Key>::value && is_enum<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -2131,9 +2356,9 @@ public:
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_enum<Key>::value && is_data<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -2146,9 +2371,9 @@ public:
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_enum<Key>::value && is_not_serialize_to_attribute<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -2161,9 +2386,9 @@ public:
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_data<Key>::value && is_attribute<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -2172,13 +2397,13 @@ public:
         {
             SerializerJson item = child.add_array_item();
             item.add_attribute("key", pair.first ? pair.first->name : "", default_value::value<std::string>());
-            item.add_attribute("value", pair.second, default_value::value<Value>());
+            item.add_attribute("value", pair.second, default_value::value<typename Map::mapped_type>());
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_data<Key>::value && is_enum<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -2191,9 +2416,9 @@ public:
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_data<Key>::value && is_data<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -2206,9 +2431,9 @@ public:
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_data<Key>::value && is_not_serialize_to_attribute<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -2221,9 +2446,9 @@ public:
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_not_serialize_to_attribute<Key>::value && is_attribute<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -2232,13 +2457,13 @@ public:
         {
             SerializerJson item = child.add_array_item();
             item.serialize(pair.first, "key");
-            item.add_attribute("value", pair.second, default_value::value<Value>());
+            item.add_attribute("value", pair.second, default_value::value<typename Map::mapped_type>());
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_not_serialize_to_attribute<Key>::value && is_enum<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -2251,9 +2476,9 @@ public:
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_not_serialize_to_attribute<Key>::value && is_data<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -2266,9 +2491,9 @@ public:
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_not_serialize_to_attribute<Key>::value && is_not_serialize_to_attribute<Value>::value, void>::type
-    serialize(const std::map<Key, Value>& values, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(const Map& values, const std::string& key)
     {
         if (values.empty())
             return;
@@ -2363,7 +2588,7 @@ public:
     }
 
     template<class T>
-    typename std::enable_if<!is_attribute<T>::value && !is_enum<T>::value, void>::type
+    typename std::enable_if<!is_attribute<T>::value && !is_enum<T>::value && !is_map<T>::value, void>::type
     deserialize(T &value, const std::string &key)
     {
         DeserializerJson child = key.empty() ? *this : get_child(key);
@@ -2425,211 +2650,278 @@ public:
         }
     }
 /* Vectors deserialization finish */
+/* Set deserialization start */
+    template<template<class...> class Set, class T, class... Args>
+    typename std::enable_if<
+        is_set_container<Set<T, Args...>>::value &&
+        is_attribute<T>::value,
+        void>::type
+    deserialize(Set<T, Args...> &values, const std::string &key)
+    {
+        DeserializerJson child = key.empty() ? *this : get_child(key);
+        for (DeserializerJson item : child)
+        {
+            T value;
+            item.get_array_item(value);
+            values.insert(value);
+        }
+    }
+
+    template<template<class...> class Set, class T, class... Args>
+    typename std::enable_if<
+        is_set_container<Set<T, Args...>>::value &&
+        is_enum<T>::value,
+        void>::type
+    deserialize(Set<T, Args...> &values, const std::string &key)
+    {
+        DeserializerJson child = key.empty() ? *this : get_child(key);
+        for (DeserializerJson item : child)
+        {
+            std::string value_string;
+            item.get_array_item(value_string);
+            T value(value_string);
+            values.insert(value);
+        }
+    }
+
+    template<template<class...> class Set, class T, class... Args>
+    typename std::enable_if<
+        is_set_container<Set<T, Args...>>::value &&
+        is_data<T>::value,
+        void>::type
+    deserialize(Set<T, Args...> &values, const std::string &key)
+    {
+        DeserializerJson child = key.empty() ? *this : get_child(key);
+        for (DeserializerJson item : child)
+        {
+            std::string value_string;
+            item.get_array_item(value_string);
+            T value = DataStorage::shared().get<typename data_type<T>::type>(value_string);
+            values.insert(value);
+        }
+    }
+
+    template<template<class...> class Set, class T, class... Args>
+    typename std::enable_if<
+        is_set_container<Set<T, Args...>>::value &&
+        is_not_serialize_to_attribute<T>::value,
+        void>::type
+    deserialize(Set<T, Args...> &values, const std::string &key)
+    {
+        DeserializerJson child = key.empty() ? *this : get_child(key);
+        for (DeserializerJson item : child)
+        {
+            T value;
+            item.deserialize(value, "");
+            values.insert(value);
+        }
+    }
+/* Set deserialization finish */
 /* Maps deserialization start */
-    template <class Key, class Value>
-    typename std::enable_if<is_attribute<Key>::value && is_attribute<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerJson child = key.empty() ? *this : get_child(key);
         for (DeserializerJson item : child)
         {
-            Key key_ = item.get_attribute("key", default_value::value<Key>());
-            Value value_ = item.get_attribute("value", default_value::value<Value>());
+            typename Map::key_type key_ = item.get_attribute("key", default_value::value<typename Map::key_type>());
+            typename Map::mapped_type value_ = item.get_attribute("value", default_value::value<typename Map::mapped_type>());
             map[key_] = value_;
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_attribute<Key>::value && is_enum<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerJson child = key.empty() ? *this : get_child(key);
         for (DeserializerJson item : child)
         {
-            Key key_ = item.get_attribute("key", default_value::value<Key>());
-            Value value_; item.deserialize(value_, "value");
+            typename Map::key_type key_ = item.get_attribute("key", default_value::value<typename Map::key_type>());
+            typename Map::mapped_type value_; item.deserialize(value_, "value");
             map[key_] = value_;
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_attribute<Key>::value && is_data<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerJson child = key.empty() ? *this : get_child(key);
         for (DeserializerJson item : child)
         {
-            Key key_ = item.get_attribute("key", default_value::value<Key>());
-            Value value_ = DataStorage::shared().get<typename data_type<Value>::type>(item.get_attribute("value", default_value::value<std::string>()));
+            typename Map::key_type key_ = item.get_attribute("key", default_value::value<typename Map::key_type>());
+            typename Map::mapped_type value_ = DataStorage::shared().get<typename data_type<typename Map::mapped_type>::type>(item.get_attribute("value", default_value::value<std::string>()));
             map[key_] = value_;
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_attribute<Key>::value && is_not_serialize_to_attribute<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerJson child = key.empty() ? *this : get_child(key);
         for (DeserializerJson item : child)
         {
-            Key key_ = item.get_attribute("key", default_value::value<Key>());
-            Value value_; item.deserialize(value_, "value");
+            typename Map::key_type key_ = item.get_attribute("key", default_value::value<typename Map::key_type>());
+            typename Map::mapped_type value_; item.deserialize(value_, "value");
             map[key_] = value_;
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_enum<Key>::value && is_attribute<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerJson child = key.empty() ? *this : get_child(key);
         for (DeserializerJson item : child)
         {
-            Key key_; item.deserialize(key_, "key");
-            Value value_ = item.get_attribute("value", default_value::value<Value>());
+            typename Map::key_type key_; item.deserialize(key_, "key");
+            typename Map::mapped_type value_ = item.get_attribute("value", default_value::value<typename Map::mapped_type>());
             map[key_] = value_;
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_enum<Key>::value && is_enum<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerJson child = key.empty() ? *this : get_child(key);
         for (DeserializerJson item : child)
         {
-            Key key_; item.deserialize(key_, "key");
-            Value value_; item.deserialize(value_, "value");
+            typename Map::key_type key_; item.deserialize(key_, "key");
+            typename Map::mapped_type value_; item.deserialize(value_, "value");
             map[key_] = value_;
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_enum<Key>::value && is_data<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerJson child = key.empty() ? *this : get_child(key);
         for (DeserializerJson item : child)
         {
-            Key key_; item.deserialize(key_, "key");
-            Value value_ = DataStorage::shared().get<typename data_type<Value>::type>(item.get_attribute("value", default_value::value<std::string>()));
+            typename Map::key_type key_; item.deserialize(key_, "key");
+            typename Map::mapped_type value_ = DataStorage::shared().get<typename data_type<typename Map::mapped_type>::type>(item.get_attribute("value", default_value::value<std::string>()));
             map[key_] = value_;
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_enum<Key>::value && is_not_serialize_to_attribute<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerJson child = key.empty() ? *this : get_child(key);
         for (DeserializerJson item : child)
         {
-            Key key_; item.deserialize(key_, "key");
-            Value value_; item.deserialize(value_, "value");
+            typename Map::key_type key_; item.deserialize(key_, "key");
+            typename Map::mapped_type value_; item.deserialize(value_, "value");
             map[key_] = value_;
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_data<Key>::value && is_attribute<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerJson child = key.empty() ? *this : get_child(key);
         for (DeserializerJson item : child)
         {
-            Key key_ = DataStorage::shared().get<typename data_type<Key>::type>(item.get_attribute("key", default_value::value<std::string>()));
-            Value value_ = item.get_attribute("value", default_value::value<Value>());
+            typename Map::key_type key_ = DataStorage::shared().get<typename data_type<typename Map::key_type>::type>(item.get_attribute("key", default_value::value<std::string>()));
+            typename Map::mapped_type value_ = item.get_attribute("value", default_value::value<typename Map::mapped_type>());
             map[key_] = value_;
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_data<Key>::value && is_enum<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerJson child = key.empty() ? *this : get_child(key);
         for (DeserializerJson item : child)
         {
-            Key key_ = DataStorage::shared().get<typename data_type<Key>::type>(item.get_attribute("key", default_value::value<std::string>()));
-            Value value_; item.deserialize(value_, "value");
+            typename Map::key_type key_ = DataStorage::shared().get<typename data_type<typename Map::key_type>::type>(item.get_attribute("key", default_value::value<std::string>()));
+            typename Map::mapped_type value_; item.deserialize(value_, "value");
             map[key_] = value_;
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_data<Key>::value && is_data<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerJson child = key.empty() ? *this : get_child(key);
         for (DeserializerJson item : child)
         {
-            Key key_ = DataStorage::shared().get<typename data_type<Key>::type>(item.get_attribute("key", default_value::value<std::string>()));
-            Value value_ = DataStorage::shared().get<typename data_type<Value>::type>(item.get_attribute("value", default_value::value<std::string>()));
+            typename Map::key_type key_ = DataStorage::shared().get<typename data_type<typename Map::key_type>::type>(item.get_attribute("key", default_value::value<std::string>()));
+            typename Map::mapped_type value_ = DataStorage::shared().get<typename data_type<typename Map::mapped_type>::type>(item.get_attribute("value", default_value::value<std::string>()));
             map[key_] = value_;
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_data<Key>::value && is_not_serialize_to_attribute<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerJson child = key.empty() ? *this : get_child(key);
         for (DeserializerJson item : child)
         {
-            Key key_ = DataStorage::shared().get<typename data_type<Key>::type>(item.get_attribute("key", default_value::value<std::string>()));
-            Value value_; item.deserialize(value_, "value");
+            typename Map::key_type key_ = DataStorage::shared().get<typename data_type<typename Map::key_type>::type>(item.get_attribute("key", default_value::value<std::string>()));
+            typename Map::mapped_type value_; item.deserialize(value_, "value");
             map[key_] = value_;
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_not_serialize_to_attribute<Key>::value && is_attribute<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerJson child = key.empty() ? *this : get_child(key);
         for (DeserializerJson item : child)
         {
-            Key key_; item.deserialize(key_, "key");
-            Value value_ = item.get_attribute("value", default_value::value<Value>());
+            typename Map::key_type key_; item.deserialize(key_, "key");
+            typename Map::mapped_type value_ = item.get_attribute("value", default_value::value<typename Map::mapped_type>());
             map[key_] = value_;
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_not_serialize_to_attribute<Key>::value && is_enum<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerJson child = key.empty() ? *this : get_child(key);
         for (DeserializerJson item : child)
         {
-            Key key_; item.deserialize(key_, "key");
-            Value value_; item.deserialize(value_, "value");
+            typename Map::key_type key_; item.deserialize(key_, "key");
+            typename Map::mapped_type value_; item.deserialize(value_, "value");
             map[key_] = value_;
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_not_serialize_to_attribute<Key>::value && is_data<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerJson child = key.empty() ? *this : get_child(key);
         for (DeserializerJson item : child)
         {
-            Key key_; item.deserialize(key_, "key");
-            Value value_ = DataStorage::shared().get<typename data_type<Value>::type>(item.get_attribute("value", default_value::value<std::string>()));
+            typename Map::key_type key_; item.deserialize(key_, "key");
+            typename Map::mapped_type value_ = DataStorage::shared().get<typename data_type<typename Map::mapped_type>::type>(item.get_attribute("value", default_value::value<std::string>()));
             map[key_] = value_;
         }
     }
 
-    template <class Key, class Value>
-    typename std::enable_if<is_not_serialize_to_attribute<Key>::value && is_not_serialize_to_attribute<Value>::value, void>::type
-    deserialize(std::map<Key, Value>& map, const std::string& key)
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(Map& map, const std::string& key)
     {
         DeserializerJson child = key.empty() ? *this : get_child(key);
         for (DeserializerJson item : child)
         {
-            Key key_; item.deserialize(key_, "key");
-            Value value_; item.deserialize(value_, "value");
+            typename Map::key_type key_; item.deserialize(key_, "key");
+            typename Map::mapped_type value_; item.deserialize(value_, "value");
             map[key_] = value_;
         }
     }
@@ -2910,6 +3202,8 @@ const std::string SERIALIZER_COMMON =
 #define __mg_SERIALIZERCOMMON_H__
 
 #include <type_traits>
+#include <set>
+#include <unordered_set>
 #include "BaseEnum.h"
 #include "intrusive_ptr.h"
 
@@ -2994,6 +3288,35 @@ template<class T> struct is_intrusive : std::false_type {};
 template<class T> struct is_intrusive<intrusive_ptr<T>> {
     constexpr static bool value = is_serializable<T>::value;
 };
+
+template<class T, class Enable = void>
+struct is_map
+{
+    constexpr static bool value = false;
+
+    constexpr bool operator()() {
+        return value;
+    }
+};
+
+template<class T>
+struct is_map<T, std::void_t<typename T::key_type, typename T::mapped_type>>
+{
+    constexpr static bool value = true;
+
+    constexpr bool operator()() {
+        return value;
+    }
+};
+
+template<class T>
+struct is_set_container : std::false_type {};
+
+template<class... Args>
+struct is_set_container<std::set<Args...>> : std::true_type {};
+
+template<class... Args>
+struct is_set_container<std::unordered_set<Args...>> : std::true_type {};
 
 template<class T> struct is_not_serialize_to_attribute {
     constexpr static bool value =

@@ -154,8 +154,10 @@ WriterPython::writeObject(const Object &obj) {
             value = "False";
         if (type_ == "list")
             value = "[]";
-        if (type_ == "map")
+        if (type_ == "map" || type_ == "hash_map")
             value = "{}";
+        if (type_ == "set" || type_ == "unordered_set")
+            value = "()";
         if (value.empty()) {
             if (_model->hasClass(o.type) && currentClass_->name != o.type)
                 value = o.type + "()";

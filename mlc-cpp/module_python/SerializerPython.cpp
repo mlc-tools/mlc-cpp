@@ -122,9 +122,18 @@ SerializerPython::convertInitializeValue(const std::string &value) const {
 std::pair<std::string, std::vector<std::string>>
 SerializerPython::create_meta_class(const Object &obj) const {
     static const std::unordered_map<std::string, std::string> types = {
-        {"string", "str"},   {"map", "dict"},     {"int", "int"},
-        {"uint", "int"},     {"unsigned", "int"}, {"int64_t", "int"},
-        {"uint64_t", "int"}, {"float", "float"},  {"double", "float"},
+        {"string", "str"},
+        {"map", "dict"},
+        {"hash_map", "dict"},
+        {"set", "set"},
+        {"hash_set", "set"},
+        {"int", "int"},
+        {"uint", "int"},
+        {"unsigned", "int"},
+        {"int64_t", "int"},
+        {"uint64_t", "int"},
+        {"float", "float"},
+        {"double", "float"},
         {"bool", "bool"},
     };
     if (obj.is_link) {

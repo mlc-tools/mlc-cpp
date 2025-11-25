@@ -47,6 +47,16 @@ class AllTypes
 	map<string, float> string_float_map
 	map<string, bool> string_bool_map
 
+    set<int> set_int
+    hash_set<int> unordered_set_int
+    hash_map<string, string> hash_map_str_str
+
+    set<list<int>> set_list_int
+    list<set<int>> list_set_int
+    set<set<int>> set_set_int
+    map<int, set<int>> map_set_int
+    map<int, hash_set<int>> map_hash_set_int
+
 	AllTypesChildren object
 	AllTypesChildren* object_ptr = 0
 	list<AllTypesChildren> object_list
