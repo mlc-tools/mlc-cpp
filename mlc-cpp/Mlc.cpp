@@ -117,7 +117,7 @@ void Mlc::generate() {
             SerializerPython().generateMethods(_model);
             WriterPython().save(_model);
             SavePluginPython save(_model, _model.configuration.get_feature<FeatureUnityFile>());
-            save.save_files(false);
+            save.save_files();
             save.removeOldFiles();
         } else {
             TranslatorCpp().translate(_model);
@@ -389,7 +389,7 @@ void Mlc::generateIncremental(const std::vector<std::string> &changedFiles,
         
         auto& feature = _model.configuration.get_feature<FeatureUnityFile>();
         if (_model.config.language == "py") {
-            SavePluginPython(_model, feature).save_files(false);
+            SavePluginPython(_model, feature).save_files();
         } else {
             SavePluginCpp(_model, feature).save_files();
         }

@@ -12,7 +12,7 @@ class Model;
 class SavePluginCpp : public SavePluginBase {
 public:
     SavePluginCpp(Model &model, const FeatureUnityFile& feature_unity_file);
-    void save_files(bool combine_to_one = false);
+    void save_files();
     
     virtual void saveOne() override;
     virtual void saveAll() override;

@@ -33,7 +33,7 @@
       ]
     },
     "unity_file":{
-      "group_to_one": true
+      "all_to_one": true
     }
   }
 }

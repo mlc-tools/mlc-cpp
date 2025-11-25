@@ -22,9 +22,7 @@ public:
     explicit SavePluginBase(Model &model, const FeatureUnityFile& feature_unity_file);
     virtual ~SavePluginBase();
 
-    /// Save all files collected in model.files.
-    /// If combineToOne==true, may merge them into a single file.
-    void save_files(bool combineToOne = true);
+    void save_files();
     void removeOldFiles();
 
 protected:

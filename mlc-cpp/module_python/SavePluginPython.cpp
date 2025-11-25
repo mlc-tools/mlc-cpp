@@ -8,8 +8,8 @@
 
 SavePluginPython::SavePluginPython(Model &model, const FeatureUnityFile& feature_unity_file) : SavePluginBase(model, feature_unity_file) {}
 
-void SavePluginPython::save_files(bool combine_to_one) {
-    SavePluginBase::save_files(false);
+void SavePluginPython::save_files() {
+    SavePluginBase::save_files();
 }
 
 std::pair<std::string, std::string> SavePluginPython::createCombineFileHeader(){

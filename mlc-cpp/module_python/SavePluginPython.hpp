@@ -9,7 +9,7 @@
 class SavePluginPython : public SavePluginBase {
 public:
     explicit SavePluginPython(Model &model, const FeatureUnityFile& feature_unity_file);
-    void save_files(bool combine_to_one = false);
+    void save_files();
 
     virtual std::pair<std::string, std::string> createCombineFileHeader() override;
     virtual std::string finalizeCombineFile(const std::string &content) override;

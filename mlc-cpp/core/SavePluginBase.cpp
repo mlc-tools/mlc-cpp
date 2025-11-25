@@ -21,8 +21,8 @@ SavePluginBase::SavePluginBase(Model &m, const FeatureUnityFile& feature_unity_f
 
 SavePluginBase::~SavePluginBase() {}
 
-void SavePluginBase::save_files(bool combineToOne) {
-    if(_feature_unity_file.all_to_one || combineToOne){
+void SavePluginBase::save_files() {
+    if(_feature_unity_file.all_to_one){
         saveOne();
     } else if (_feature_unity_file.group_to_one) {
         saveByGroup();

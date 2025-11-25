@@ -41,8 +41,8 @@ SavePluginCpp::SavePluginCpp(Model &model, const FeatureUnityFile& feature_unity
     
 }
 
-void SavePluginCpp::save_files(bool combine_to_one) {
-    SavePluginBase::save_files(false);
+void SavePluginCpp::save_files() {
+    SavePluginBase::save_files();
 }
 
 void SavePluginCpp::saveOne(){
