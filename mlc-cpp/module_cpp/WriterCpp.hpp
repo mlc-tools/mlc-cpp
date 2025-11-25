@@ -89,7 +89,7 @@ private:
                                      const std::set<std::string> &fwdDeclOut);
 
     std::string buildIncludes(const std::shared_ptr<Class> &cls,
-                              const std::set<std::string> &includes);
+                              const std::set<std::string> &includes, bool to_header);
 
     std::string buildForwardDeclarations(const std::set<std::string> &decls);
 

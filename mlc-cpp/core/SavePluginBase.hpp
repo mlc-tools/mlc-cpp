@@ -42,9 +42,9 @@ protected:
                                  >;
 
     
-    void saveOne();
-    void saveAll();
-    void saveByGroup();
+    virtual void saveOne();
+    virtual void saveAll();
+    virtual void saveByGroup();
     void saveFile(const std::string &localPath, const std::string &content);
     void sortFiles();
     std::string addToCombineFile(const std::string &current,

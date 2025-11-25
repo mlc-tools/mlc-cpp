@@ -69,4 +69,7 @@
 			<pair key="gems" value="20"/>
 		</resources>
 	</dict>
+
+	<test_bindings name="test_bindings">
+	</test_bindings>
 </data>

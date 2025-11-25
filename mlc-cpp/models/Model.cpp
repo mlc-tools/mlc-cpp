@@ -114,13 +114,12 @@ void Model::addFile(const std::shared_ptr<Class> &cls,
         std::cout << "";
     }
 
-    auto iter = std::find_if(
-        files.begin(), files.end(), [cls, &localPath](auto &entry) {
-            return std::get<0>(entry) ? std::get<0>(entry)->name == cls->name &&
-                                            std::get<1>(entry) == localPath
-                                      : false;
+    if(cls){
+        auto iter = std::find_if(files.begin(), files.end(), [cls, &localPath](auto &entry) {
+            return std::get<0>(entry) ? std::get<0>(entry)->name == cls->name && std::get<1>(entry) == localPath : false;
         });
-    assert(iter == files.end());
+        assert(iter == files.end());
+    }
 
     files.emplace_back(cls, localPath, content);
 }

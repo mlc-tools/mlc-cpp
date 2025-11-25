@@ -125,4 +125,7 @@ std::string strip(const std::string &s);
 
 bool is_number(const std::string& s);
 
+bool starts_with(const std::string& view, const std::string_view& value);
+bool ends_with(const std::string& view, const std::string_view& value);
+
 #endif /* Common_h */

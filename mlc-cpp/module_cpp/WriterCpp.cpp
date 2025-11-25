@@ -163,7 +163,7 @@ auto WriterCpp::writeHpp(const std::shared_ptr<Class> &cls)
     };
     replace("namespace", ns);
     replace("class_name", cn);
-    replace("includes", buildIncludes(cls, incs));
+    replace("includes", buildIncludes(cls, incs, true));
     replace("forward_declarations", buildForwardDeclarations(fwd));
     replace("forward_declarations_out", buildForwardDeclarations(fwdOut));
     replace("functions", funcs);
@@ -179,7 +179,7 @@ std::string WriterCpp::writeCpp(const std::shared_ptr<Class> &cls,
                                 const std::set<std::string> &incs,
                                 const std::set<std::string> &fwd,
                                 const std::set<std::string> &fwdOut) {
-    if (cls->name == "TestStaticMembers") {
+    if (cls->name == "TestCase") {
         std::cout << "";
     }
     const std::string ns = "mg";
@@ -237,11 +237,14 @@ std::string WriterCpp::writeCpp(const std::shared_ptr<Class> &cls,
         ctorArgs = createFunctionCppArgs(cls->constructors.at(0));
         ctorBody = strip(cls->constructors.at(0).body);
     }
+    
+    auto feature_unity = _model->configuration.get_feature<FeatureUnityFile>();
+    bool use_path_to_root = !feature_unity.all_to_one;
 
     // Format source
     std::string source = SOURCE;
     replace_all(source, "{namespace}", ns);
-    replace_all(source, "{path_to_root}", getPathToRoot(cls));
+    replace_all(source, "{path_to_root}", use_path_to_root ? getPathToRoot(cls) : "");
     replace_all(source, "{class_name}", cn);
     replace_all(source, "{includes}", allInc);
     replace_all(source, "{static_initializations}", statics);
@@ -398,9 +401,6 @@ std::string WriterCpp::writeMemberInitialization(const Object &obj) {
 
 // Function HPP signature
 std::string WriterCpp::writeFunctionHpp(const Function &method) {
-    if (currentClass_->name == "TestCase" && method.name == "assertEqual") {
-        std::cout << "";
-    }
     // pattern: "{virtual}{static}{friend}{type}
     // {name}({args}){const}{override}{abstract}"
     std::string pat = "{virtual}{friend}{templates}{static}{type} "
@@ -718,12 +718,15 @@ std::string WriterCpp::getIncludesForSource(const std::shared_ptr<Class> &cls, c
         }
         inc.insert(name);
     }
-    return buildIncludes(cls, inc);
+    return buildIncludes(cls, inc, false);
 }
 
 // Build "#include <...>" or "#include \"...\"" lines
-std::string WriterCpp::buildIncludes(const std::shared_ptr<Class> &cls,
-                                     const std::set<std::string> &incs) {
+std::string WriterCpp::buildIncludes(const std::shared_ptr<Class> &cls, const std::set<std::string> &incs, bool to_header) {
+    
+    auto feature_unity = _model->configuration.get_feature<FeatureUnityFile>();
+    bool use_path_to_root = to_header ? true : !feature_unity.all_to_one;
+    
     const std::unordered_map<std::string, std::string> mapTpl = {
         {"std::vector", "<vector>"},
         {"std::map", "<map>"},
@@ -735,23 +738,48 @@ std::string WriterCpp::buildIncludes(const std::shared_ptr<Class> &cls,
         {"pugi::xml_node", "\"pugixml/pugixml.hpp\""},
         {"Observer", "\"Observer.h\""},
         {"intrusive_ptr", "\"intrusive_ptr.h\""},
-        {"ecs_helper", "\"" + getPathToRoot(cls) + "ecs_helper.h\""},
-        {"mg_extensions", "\"" + getPathToRoot(cls) + "mg_extensions.h\""},
+        {"ecs_helper", "\"" + (use_path_to_root ? getPathToRoot(cls) : "") + "ecs_helper.h\""},
+        {"mg_extensions", "\"" + (use_path_to_root ? getPathToRoot(cls) : "") + "mg_extensions.h\""},
     };
+
     std::vector<std::string> lines;
     for (auto &t : incs) {
         auto it = mapTpl.find(t);
         if (it != mapTpl.end()) {
             lines.push_back("#include " + it->second);
         } else if (_model->hasClass(t)) {
-            auto other = _model->get_class(t);
-            std::string path = "\"";
-            if (!cls->group.empty() && cls->group != other->group)
-                path += "../";
-            if (!other->group.empty() && cls->group != other->group)
-                path += other->group + "/";
-            path += other->name + ".h\"";
-            lines.push_back("#include " + path);
+            
+            std::string group;
+            std::string filename;
+            auto includeClass = _model->get_class(t);
+            
+            auto get_path_relative = [&](){
+                std::string path;
+                if (!cls->group.empty() && cls->group != includeClass->group)
+                    path = "../";
+                if (!includeClass->group.empty() && cls->group != includeClass->group)
+                    path += includeClass->group + "/";
+                return path;
+            };
+            auto get_path_absolute = [&](){
+                std::string path;
+                if (!includeClass->group.empty())
+                    path += includeClass->group + "/";
+                return path;
+            };
+            
+            std::string path;
+            if(to_header){
+                path = get_path_relative();
+            } else if(!feature_unity.all_to_one && !feature_unity.group_to_one){
+                path = get_path_relative();
+            } else if(feature_unity.all_to_one){
+                path = get_path_absolute();
+            } else {
+                assert(0 && "todo");
+            }
+            
+            lines.push_back("#include \"" + path + includeClass->name + ".h\"");
         }
     }
     std::sort(lines.begin(), lines.end());

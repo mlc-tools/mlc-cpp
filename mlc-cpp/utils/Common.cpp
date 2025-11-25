@@ -90,3 +90,9 @@ bool is_number(const std::string& s)
     }
     return true;
 }
+bool starts_with(const std::string& view, const std::string_view& value){
+    return view.size() >= value.size() && view.find(value) == 0;
+}
+bool ends_with(const std::string& view, const std::string_view& value){
+    return view.size() >= value.size() && view.find(value) == view.size() - value.size();
+}

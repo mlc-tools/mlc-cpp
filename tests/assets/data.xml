@@ -10,11 +10,6 @@
       </value>
     </pair>
   </dicts>
-  <adds>
-    <pair key="add_data">
-      <value name="add_data" />
-    </pair>
-  </adds>
   <list_list_bools>
     <pair key="test">
       <value name="test">
@@ -31,6 +26,16 @@
       </value>
     </pair>
   </list_list_bools>
+  <test_bindingses>
+    <pair key="test_bindings">
+      <value name="test_bindings" />
+    </pair>
+  </test_bindingses>
+  <adds>
+    <pair key="add_data">
+      <value name="add_data" />
+    </pair>
+  </adds>
   <complex_maps>
     <pair key="test">
       <value name="test">
