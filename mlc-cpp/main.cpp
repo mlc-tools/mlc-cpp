@@ -105,11 +105,9 @@ bool try_load_config(Mlc &app, Cli::ArgParser &args) {
             for (auto &dir : config.data_directories)
                 dir = FileUtils::normalizePath(root + dir);
             for (auto &job : config.jobs) {
-                job.out_data_directory =
-                    FileUtils::normalizePath(root + job.out_data_directory) +
-                    "/";
-                job.out_directory =
-                    FileUtils::normalizePath(root + job.out_directory) + "/";
+                job.out_directory = FileUtils::normalizePath(root + job.out_directory) + "/";
+                if(!job.out_data_directory.empty())
+                    job.out_data_directory = FileUtils::normalizePath(root + job.out_data_directory) + "/";
             }
         }
 

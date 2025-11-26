@@ -10,6 +10,7 @@
 
 #include "jsoncpp/json.h"
 #include <re2/re2.h>
+#include <iostream>
 
 void loadFeatures(std::vector<FeatureVariant>& features, const Json::Value& root);
 
@@ -116,6 +117,11 @@ Config Config::loadString(const std::string &content, std::string &err) {
         return config;
     }
     
+    if(root.isMember("features")){
+        std::cerr << "features in root not supported more" << std::endl;
+        exit(1);
+    }
+    
     for (const auto &g : gens) {
         config.configs_directories = src_cfgs;
         config.data_directories = src_data;
@@ -212,23 +218,23 @@ Config Config::loadString(const std::string &content, std::string &err) {
                 job.filter_data = make_re2_filter_from_patterns(pats);
         }
         
-        loadFeatures(job.features, g);
+        loadFeatures(job.features, g["features"]);
         config.jobs.push_back(std::move(job));
     }
     
-    std::vector<FeatureVariant> common_features;
-    loadFeatures(common_features, root);
-    for(auto& job : config.jobs){
-        if(job.features.empty())
-            job.features = common_features;
+    if(root.isMember("common_features")){
+        std::vector<FeatureVariant> common_features;
+        loadFeatures(common_features, root["common_features"]);
+        for(auto& job : config.jobs){
+            job.features.insert(job.features.end(), common_features.begin(), common_features.end());
+        }
     }
     
     config.initialize();
     return config;
 }
     
-void loadFeatures(std::vector<FeatureVariant>& vfeatures, const Json::Value& root){
-    const auto &features = root["features"];
+void loadFeatures(std::vector<FeatureVariant>& vfeatures, const Json::Value& features){
     const auto &feature_unit_tests = features["unit_tests"];
     if (feature_unit_tests.isObject()) {
         FeatureUnitTests feature;
