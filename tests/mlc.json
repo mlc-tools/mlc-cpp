@@ -13,7 +13,27 @@
       "language": "cpp",
       "side": "server",
       "serialize_protocol": "xml",
-      "filter_code": []
+      "filter_code": [],
+      "features": {
+        "ecs": {
+          "model_base": "EcsModel",
+          "component_base": "EcsComponent"
+        },
+        "unit_tests": {},
+        "data_storage": {},
+        "visitor": {},
+        "ref_counter": {},
+        "operator_equals": {},
+        "bindings": {
+          "getters": [
+            {"starts_with": "System", "value": "dynamic_pointer_cast_intrusive<{class_name}>(ModelUser::get_instance()->system<{class_name}>())"},
+            {"equals": "ModelUser", "value": "ModelUser::get_instance()"}
+          ]
+        },
+        "unity_file":{
+          "group_to_one": true
+        }
+      }
     },
     {
       "out": "generated_cpp/json",
@@ -24,7 +44,27 @@
       "language": "cpp",
       "side": "client",
       "serialize_protocol": "json",
-      "filter_code": []
+      "filter_code": [],
+      "features": {
+        "ecs": {
+          "model_base": "EcsModel",
+          "component_base": "EcsComponent"
+        },
+        "unit_tests": {},
+        "data_storage": {},
+        "visitor": {},
+        "ref_counter": {},
+        "operator_equals": {},
+        "bindings": {
+          "getters": [
+            {"starts_with": "System", "value": "dynamic_pointer_cast_intrusive<{class_name}>(ModelUser::get_instance()->system<{class_name}>())"},
+            {"equals": "ModelUser", "value": "ModelUser::get_instance()"}
+          ]
+        },
+        "unity_file":{
+          "group_to_one": true
+        }
+      }
     },
     {
       "out": "generated_py/xml",
@@ -35,7 +75,27 @@
       "language": "py",
       "side": "server",
       "serialize_protocol": "xml",
-      "filter_code": []
+      "filter_code": [],
+      "features": {
+        "ecs": {
+          "model_base": "EcsModel",
+          "component_base": "EcsComponent"
+        },
+        "unit_tests": {},
+        "data_storage": {},
+        "visitor": {},
+        "ref_counter": {},
+        "operator_equals": {},
+        "bindings": {
+          "getters": [
+            {"starts_with": "System", "value": "dynamic_pointer_cast_intrusive<{class_name}>(ModelUser::get_instance()->system<{class_name}>())"},
+            {"equals": "ModelUser", "value": "ModelUser::get_instance()"}
+          ]
+        },
+        "unity_file":{
+          "all_to_one": false
+        }
+      }
     },
     {
       "out": "generated_py/json",
@@ -46,27 +106,27 @@
       "language": "py",
       "side": "client",
       "serialize_protocol": "json",
-      "filter_code": []
+      "filter_code": [],
+      "features": {
+        "ecs": {
+          "model_base": "EcsModel",
+          "component_base": "EcsComponent"
+        },
+        "unit_tests": {},
+        "data_storage": {},
+        "visitor": {},
+        "ref_counter": {},
+        "operator_equals": {},
+        "bindings": {
+          "getters": [
+            {"starts_with": "System", "value": "dynamic_pointer_cast_intrusive<{class_name}>(ModelUser::get_instance()->system<{class_name}>())"},
+            {"equals": "ModelUser", "value": "ModelUser::get_instance()"}
+          ]
+        },
+        "unity_file":{
+          "all_to_one": false
+        }
+      }
     }
-  ],
-  "features": {
-    "ecs": {
-      "model_base": "EcsModel",
-      "component_base": "EcsComponent"
-    },
-    "unit_tests": {},
-    "data_storage": {},
-    "visitor": {},
-    "ref_counter": {},
-    "operator_equals": {},
-    "bindings": {
-      "getters": [
-        {"starts_with": "System", "value": "dynamic_pointer_cast_intrusive<{class_name}>(ModelUser::get_instance()->system<{class_name}>())"},
-        {"equals": "ModelUser", "value": "ModelUser::get_instance()"}
-      ]
-    },
-    "unity_file":{
-      "group_to_one": true
-    }
-  }
+  ]
 }

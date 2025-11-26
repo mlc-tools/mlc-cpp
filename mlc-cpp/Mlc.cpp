@@ -116,14 +116,14 @@ void Mlc::generate() {
             TranslatorPython().translate(_model);
             SerializerPython().generateMethods(_model);
             WriterPython().save(_model);
-            SavePluginPython save(_model, _model.configuration.get_feature<FeatureUnityFile>());
+            SavePluginPython save(_model, _model.config.get_feature<FeatureUnityFile>());
             save.save_files();
             save.removeOldFiles();
         } else {
             TranslatorCpp().translate(_model);
             SerializerCpp().generateMethods(_model);
             WriterCpp().save(_model);
-            SavePluginCpp save(_model, _model.configuration.get_feature<FeatureUnityFile>());
+            SavePluginCpp save(_model, _model.config.get_feature<FeatureUnityFile>());
             save.save_files();
             save.removeOldFiles();
         }
@@ -170,7 +170,7 @@ void Mlc::runTest() {
 
 void Mlc::buildFeatureGenerators() {
     _model.feature_generators.clear();
-    for (const auto &feature : _model.configuration.features) {
+    for (const auto &feature : _model.config.features) {
         auto gen = std::visit(
             [&](auto &&arg) -> std::shared_ptr<FeatureGenerator> {
                 using T = std::decay_t<decltype(arg)>;
@@ -387,7 +387,7 @@ void Mlc::generateIncremental(const std::vector<std::string> &changedFiles,
             }
         }
         
-        auto& feature = _model.configuration.get_feature<FeatureUnityFile>();
+        auto& feature = _model.config.get_feature<FeatureUnityFile>();
         if (_model.config.language == "py") {
             SavePluginPython(_model, feature).save_files();
         } else {

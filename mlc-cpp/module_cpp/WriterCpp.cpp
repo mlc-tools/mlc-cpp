@@ -238,7 +238,7 @@ std::string WriterCpp::writeCpp(const std::shared_ptr<Class> &cls,
         ctorBody = strip(cls->constructors.at(0).body);
     }
     
-    auto feature_unity = _model->configuration.get_feature<FeatureUnityFile>();
+    auto feature_unity = _model->config.get_feature<FeatureUnityFile>();
     bool use_path_to_root = !feature_unity.all_to_one && !feature_unity.group_to_one;
 
     // Format source
@@ -727,7 +727,7 @@ std::string WriterCpp::getIncludesForSource(const std::shared_ptr<Class> &cls, c
 // Build "#include <...>" or "#include \"...\"" lines
 std::string WriterCpp::buildIncludes(const std::shared_ptr<Class> &cls, const std::set<std::string> &incs, bool to_header) {
     
-    auto feature_unity = _model->configuration.get_feature<FeatureUnityFile>();
+    auto feature_unity = _model->config.get_feature<FeatureUnityFile>();
     bool use_path_to_root = to_header ? true : !feature_unity.all_to_one && !feature_unity.group_to_one;
     
     const std::unordered_map<std::string, std::string> mapTpl = {

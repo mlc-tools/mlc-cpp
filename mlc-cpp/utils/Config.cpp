@@ -11,6 +11,8 @@
 #include "jsoncpp/json.h"
 #include <re2/re2.h>
 
+void loadFeatures(std::vector<FeatureVariant>& features, const Json::Value& root);
+
 std::function<bool(const std::string &)>
 make_re2_filter_from_patterns(const std::vector<std::string> &raws) {
     if (raws.empty())
@@ -97,7 +99,7 @@ Config Config::loadString(const std::string &content, std::string &err) {
         err = errs;
         return config;
     }
-
+    
     // Gather global sources
     std::vector<std::string> src_cfgs, src_data;
     if (root.isMember("source")) {
@@ -107,17 +109,17 @@ Config Config::loadString(const std::string &content, std::string &err) {
         if (src.isMember("data"))
             load_dirs(src["data"], src_data);
     }
-
+    
     const auto &gens = root["generation"];
     if (!gens.isArray() || gens.empty()) {
         err = "Config: 'generation' array is missing or empty";
         return config;
     }
-
+    
     for (const auto &g : gens) {
         config.configs_directories = src_cfgs;
         config.data_directories = src_data;
-
+        
         Job job;
         if (g.isMember("out"))
             job.out_directory = g["out"].asString();
@@ -137,12 +139,11 @@ Config Config::loadString(const std::string &content, std::string &err) {
             job.test_script = g["test_script"].asString();
         if (g.isMember("test_script_args"))
             job.test_script_args = g["test_script_args"].asString();
-
+        
         if (g.isMember("side") && g["side"].isString()) {
             std::string s = g["side"].asString();
             for (char &ch : s)
-                ch = static_cast<char>(
-                    ::tolower(static_cast<unsigned char>(ch)));
+                ch = static_cast<char>(::tolower(static_cast<unsigned char>(ch)));
             if (s == "client")
                 job.side = Side::client;
             else if (s == "server")
@@ -150,7 +151,7 @@ Config Config::loadString(const std::string &content, std::string &err) {
             else
                 job.side = Side::both;
         }
-
+        
         if (g.isMember("generate_tests"))
             job.generate_tests = g["generate_tests"].asBool();
         if (g.isMember("generate_intrusive"))
@@ -165,7 +166,7 @@ Config Config::loadString(const std::string &content, std::string &err) {
             job.user_includes = g["user_includes"].asBool();
         if (g.isMember("empty_methods"))
             job.empty_methods = g["empty_methods"].asBool();
-
+        
         if (g.isMember("serialize_protocol")) {
             std::vector<std::string> tokens;
             const auto &sp = g["serialize_protocol"];
@@ -184,7 +185,7 @@ Config Config::loadString(const std::string &content, std::string &err) {
                     std::string s = t;
                     for (char &ch : s)
                         ch = static_cast<char>(
-                            ::tolower(static_cast<unsigned char>(ch)));
+                                               ::tolower(static_cast<unsigned char>(ch)));
                     if (s == "xml") {
                         mask |= static_cast<int>(SerializeFormat::Xml);
                         protos.push_back(SerializeFormat::Xml);
@@ -199,7 +200,7 @@ Config Config::loadString(const std::string &content, std::string &err) {
                 }
             }
         }
-
+        
         if (g.isMember("filter_code")) {
             auto pats = read_patterns(g["filter_code"]);
             if (!pats.empty())
@@ -210,27 +211,40 @@ Config Config::loadString(const std::string &content, std::string &err) {
             if (!pats.empty())
                 job.filter_data = make_re2_filter_from_patterns(pats);
         }
-
+        
+        loadFeatures(job.features, g);
         config.jobs.push_back(std::move(job));
     }
-
+    
+    std::vector<FeatureVariant> common_features;
+    loadFeatures(common_features, root);
+    for(auto& job : config.jobs){
+        if(job.features.empty())
+            job.features = common_features;
+    }
+    
+    config.initialize();
+    return config;
+}
+    
+void loadFeatures(std::vector<FeatureVariant>& vfeatures, const Json::Value& root){
     const auto &features = root["features"];
     const auto &feature_unit_tests = features["unit_tests"];
     if (feature_unit_tests.isObject()) {
         FeatureUnitTests feature;
-        config.features.push_back(std::move(feature));
+        vfeatures.push_back(std::move(feature));
     }
     const auto &feature_visitor = features["visitor"];
     if (feature_visitor.isObject()) {
         FeatureVisitor vis;
-        config.features.push_back(std::move(vis));
+        vfeatures.push_back(std::move(vis));
     }
     const auto &feature_ecs = features["ecs"];
     if (feature_ecs.isObject()) {
         FeatureEcs ecs;
         ecs.model_base = feature_ecs["model_base"].asString();
         ecs.component_base = feature_ecs["component_base"].asString();
-        config.features.push_back(std::move(ecs));
+        vfeatures.push_back(std::move(ecs));
     }
 
     const auto &feature_data_storage = features["data_storage"];
@@ -238,19 +252,19 @@ Config Config::loadString(const std::string &content, std::string &err) {
         FeatureDataStorage f;
         if(feature_data_storage.isMember("private_members"))
             f.private_members = feature_data_storage["private_members"].asBool();
-        config.features.push_back(std::move(f));
+        vfeatures.push_back(std::move(f));
     }
 
     const auto &feature_ref_counter = features["ref_counter"];
     if (feature_ref_counter.isObject()) {
         FeatureRefCounter f;
-        config.features.push_back(std::move(f));
+        vfeatures.push_back(std::move(f));
     }
     
     const auto &feature_operator_equals = features["operator_equals"];
     if (feature_operator_equals.isObject()) {
         FeatureOperatorEquals f;
-        config.features.push_back(std::move(f));
+        vfeatures.push_back(std::move(f));
     }
     
     const auto &feature_bindings = features["bindings"];
@@ -263,18 +277,15 @@ Config Config::loadString(const std::string &content, std::string &err) {
             g.value = getter["value"].asString();
             f.getters.push_back(std::move(g));
         }
-        config.features.push_back(std::move(f));
+        vfeatures.push_back(std::move(f));
     }
     const auto &feature_unity = features["unity_file"];
     if (feature_unity.isObject()) {
         FeatureUnityFile f;
         f.all_to_one = feature_unity["all_to_one"].asBool();
         f.group_to_one = feature_unity["group_to_one"].asBool();
-        config.features.push_back(std::move(f));
+        vfeatures.push_back(std::move(f));
     }
-
-    config.initialize();
-    return config;
 }
 
 bool FeatureBindings::Getter::is_right(const std::string& class_name) const{
