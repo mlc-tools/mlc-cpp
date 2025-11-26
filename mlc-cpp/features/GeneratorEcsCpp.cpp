@@ -453,7 +453,7 @@ void GeneratorEcsCpp::generate_model_method_save_skills(Model &model) {
         }
         {
             std::string member =
-                format_indexes(R"(map<string, {0}*> {1})", skill->name, field);
+                format_indexes(R"(hash_map<string, {0}*> {1})", skill->name, field);
             info->members.push_back(makeObj(member, true));
         }
     }
@@ -514,7 +514,7 @@ void GeneratorEcsCpp::generateContainers(
         // map<int, Cls*>:private:runtime map_components_field
         {
             std::string decl = format_indexes(
-                R"(map<int, {0}*>:runtime map_components_{1})",
+                R"(hash_map<int, {0}*>:runtime map_components_{1})",
                 cls->name, field);
             ecsBase->members.push_back(makeObj(decl, true));
         }
@@ -1099,7 +1099,7 @@ return static_cast<{0}EcsPimplImpl*>(this->_pimpl.ptr())->components_{1};
 }
 
 const std::string GET_MAP_COMPONENETS = R"(
-    template <>{3} std::map<int, intrusive_ptr<{1}>>& {0}::get_map_components(){3}
+    template <>{3} std::unordered_map<int, intrusive_ptr<{1}>>& {0}::get_map_components(){3}
     {
         return static_cast<{3} EcsPimplImpl*>(this->_pimpl.ptr())->map_components_{2};
     }
@@ -1108,7 +1108,7 @@ const std::string GET_MAP_COMPONENETS = R"(
 void GeneratorEcsCpp::generateModelGetMapComponents(Model &model, bool isConst) {
     auto ecs = getClass(model, _ecs_model_base_name);
 
-    auto m = parse_function(format_indexes("fn<T> map<int, T*>:ref{0} get_map_components():protected{0}", isConst ? ":const" : ""));
+    auto m = parse_function(format_indexes("fn<T> hash_map<int, T*>:ref{0} get_map_components():protected{0}", isConst ? ":const" : ""));
     ecs->functions.insert(ecs->functions.begin(), std::move(m));
     auto method = ecs->get_method("get_map_components");
     assert(method);

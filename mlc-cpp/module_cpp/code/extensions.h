@@ -33,8 +33,8 @@ const std::string EXTENSIONS_HPP =
 namespace @{namespace}
 {
 
-    template <class K, class T, class P>
-    bool in_map(const K& element, const std::map<T, P>& map)
+    template <class TElem, class TMap>
+    bool in_map(const TElem& element, const TMap& map)
     {
         return map.count(element) > 0;
     }
@@ -107,18 +107,18 @@ namespace @{namespace}
         vector.resize(size);
     }
 
-    template <class T, class P>
-    int map_size(const std::map<T, P>& map)
+    template <class TMap>
+    int map_size(const TMap& map)
     {
         return static_cast<int>(map.size());
     }
-    template <class T, class P>
-    void map_clear(std::map<T, P>& map)
+    template <class TMap>
+    void map_clear(TMap& map)
     {
         map.clear();
     }
-    template <class T, class P>
-    void map_remove(std::map<T, P>& map, const T& key)
+    template <class TElem, class TMap>
+    void map_remove(TMap& map, const TElem& key)
     {
         auto iter = map.find(key);
         if(iter != map.end())
