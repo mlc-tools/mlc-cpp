@@ -85,7 +85,7 @@ void SavePluginCpp::saveWithUnitySourceToOne(){
     
     if(source.find("#include \"Bindings_.h\"") != std::string::npos){
         replace_all(source, "#include \"Bindings_.h\"\n", "");
-        replace_all(source, "// DataTestBindings.cpp", "// DataTestBindings.cpp\n#include \"Bindings_.h\"");
+        replace_all(source, "// Bindings.cpp", "// Bindings.cpp\n#include \"Bindings_.h\"");
     }
     saveFile("mg.cpp", source);
 }
@@ -108,7 +108,7 @@ void SavePluginCpp::saveWithUnitySourceToOneByGroups(){
     hoist_includes(root_source);
     if(root_source.find("#include \"Bindings_.h\"") != std::string::npos){
         replace_all(root_source, "#include \"Bindings_.h\"\n", "");
-        replace_all(root_source, "// DataTestBindings.cpp", "// DataTestBindings.cpp\n#include \"Bindings_.h\"");
+        replace_all(root_source, "// Bindings.cpp", "// Bindings.cpp\n#include \"Bindings_.h\"");
     }
     saveFile("mg.cpp", root_source);
     for(auto&& [group_name, source] : groups){
