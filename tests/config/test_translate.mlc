@@ -176,7 +176,7 @@ class TestTranslates<ITestTranslates>
         this->assertTrue(list_index(l, 4) == 3);
         this->assertTrue(list_index(l, 3) == 4);
         this->assertTrue(list_index(l, 0) == -1);
-        this->assertInList(1, l, "1 in list");
+        this->assertInList(1, l, "1 result list");
     }
 
     function void test_map()
@@ -549,6 +549,130 @@ class TestTranslates<ITestTranslates>
         {
             a = 1;
         }
+    }
+    fn void test_safe_at_vector():cpp
+    {
+        list<int> values;
+
+        auto& result1, value1 = values.at(0);
+
+        this->assertFalse(result1);
+        this->assertEqual(value1, 0);
+
+        list_push(values, 1);
+        list_push(values, 2);
+
+        auto result2, value2 = values.at(0);
+        this->assertTrue(result2, "1");
+        this->assertEqual(value2, 1, "2");
+        value2 = 5;
+        this->assertEqual(value2, 5, "3");
+        this->assertEqual(values.at(0), 1, "4");
+
+        auto& result3, value3 = values.at(1);
+        this->assertTrue(result3, "5");
+        this->assertEqual(value3, 2, "6");
+        value3 = 5;
+        this->assertEqual(value3, 5, "7");
+        this->assertEqual(values.at(1), 5, "8");
+
+        auto result4, value4 = values.at(2);
+        this->assertFalse(result4, "9");
+        this->assertEqual(value4, 0, "10");
+        
+    }
+    fn void test_safe_at_map():cpp
+    {
+        map<int, std::string> values;
+        {
+            auto& result, value = values.at(0);
+
+            this->assertFalse(result);
+            this->assertEqual(value, "");
+        }
+
+        values[1] = "1";
+        values[2] = "2";
+
+        {
+            auto result, value = values.at(1);
+            this->assertTrue(result);
+            this->assertEqual(value, "1");
+            value = "5";
+            this->assertEqual(value, "5");
+            this->assertEqual(values.at(1), "1");
+        }
+        {
+            auto& result, value = values.at(2);
+            this->assertTrue(result);
+            this->assertEqual(value, "2");
+            value = "5";
+            this->assertEqual(value, "5");
+            this->assertEqual(values.at(2), "5");
+        }
+        {
+            auto result, value = values.at(3);
+            this->assertFalse(result);
+            this->assertEqual(value, "");
+        }
+    }
+    fn void test_model():cpp
+    {
+        auto model = new ModelUnits();
+        model->initialize("1", "11");
+        model->initialize("2", "22");
+        this->assertEqual(map_size(model->models), 2);
+        this->assertEqual(model->models.at("1")->value, "11");
+        this->assertEqual(model->models.at("2")->value, "22");
+
+        model->initialize("1", "12");
+        model->initialize("2", "23");
+        this->assertEqual(map_size(model->models), 2);
+        this->assertEqual(model->models.at("1")->value, "12");
+        this->assertEqual(model->models.at("2")->value, "23");
+    }
+    fn void test_model2():cpp
+    {
+        auto model = new ModelUnits();
+        model->initialize2("1", "11");
+        model->initialize2("2", "22");
+        this->assertEqual(map_size(model->models), 2);
+        this->assertEqual(model->models.at("1")->value, "11");
+        this->assertEqual(model->models.at("2")->value, "22");
+
+        model->initialize2("1", "12");
+        model->initialize2("2", "23");
+        this->assertEqual(map_size(model->models), 2);
+        this->assertEqual(model->models.at("1")->value, "12");
+        this->assertEqual(model->models.at("2")->value, "23");
+    }
+}
+class model/ModelUnits
+{
+    class ModelIn
+    {
+        string value
+    }
+    map<string, ModelIn*> models
+
+    fn void initialize(string key, string value)
+    {
+        if(!in_map(key, this->models))
+        {
+            this->models[key] = new ModelIn();
+            this->models[key]->value = key;
+        }
+        auto model = this->models.at(key);
+        model->value = value;
+    }
+    fn void initialize2(string key, string value)
+    {
+        auto& result, model = this->models.at(key);
+        if(!result)
+        {
+            this->models[key] = model = new ModelIn();
+        }
+        model->value = value;
     }
 }
 

@@ -16,7 +16,7 @@
       "filter_code": [],
       "features": {
         "unity_file":{
-          "group_to_one": true
+          "group_to_one": false
         }
       }
     },

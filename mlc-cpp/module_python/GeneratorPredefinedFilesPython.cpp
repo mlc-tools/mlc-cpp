@@ -13,13 +13,9 @@ void GeneratorPredefinedFilesPython::generate(Model &model) {
     writer.set_model(model);
 
     // Provide import shims expected by WriterPython
-    model.addFile(nullptr, "IntrusivePtr.py", py_runtime::INTRUSIVE);
-    model.addFile(nullptr, "DataWrapper.py", py_runtime::DATA_WRAPPER);
-    model.addFile(nullptr, "Meta.py", py_runtime::META);
-    model.addFile(nullptr, "SerializerXml.py", py_runtime::SERIALIZER_XML);
-    model.addFile(nullptr, "DeserializerXml.py", py_runtime::DESERIALIZER_XML);
-    model.addFile(nullptr, "SerializerJson.py", py_runtime::SERIALIZER_JSON);
-    model.addFile(nullptr, "DeserializerJson.py", py_runtime::DESERIALIZER_JSON);
+    for(auto&& [path, content] : py_runtime::FILES_DICT){
+        model.addFile(nullptr, path, content);
+    }
 
     // Minimal common and mg_extensions (as before)
     static const std::string COMMON_XML = R"__(
@@ -86,50 +82,4 @@ def clone_object(obj, _=None):
         content += COMMON_JSON;
 
     model.addFile(nullptr, "common.py", content);
-
-    static const char *MG_EXT =
-        "def strTo(value, class_):\n"
-        "    if class_ == bool:\n"
-        "        return value.lower() in ['yes', 'true', 'y']\n"
-        "    return class_(value)\n\n"
-        "def in_list(key, container):\n"
-        "    return key in container\n\n"
-        "def list_push(container, value):\n"
-        "    container.append(value)\n\n"
-        "def list_insert(container, value, index):\n"
-        "    container.insert(value, index)\n\n"
-        "def list_remove(container, value):\n"
-        "    container.remove(value)\n\n"
-        "def list_erase(container, index):\n"
-        "    container.remove(container[index])\n\n"
-        "def list_truncate(container, size):\n"
-        "    while len(container) > size:\n"
-        "        container.pop()\n\n"
-        "def list_clear(container):\n"
-        "    container.clear()\n\n"
-        "def list_size(container):\n"
-        "    return len(container)\n\n"
-        "def list_index(container, item):\n"
-        "    return container.index(item) if item in container else -1\n\n"
-        "def list_resize(container, size):\n"
-        "    list_truncate(container, size)\n"
-        "    while len(container) < size:\n"
-        "        container.append(None)\n\n"
-        "def in_map(key, container):\n"
-        "    return key in container\n\n"
-        "def map_size(container):\n"
-        "    return len(container)\n\n"
-        "def map_remove(container, value):\n"
-        "    container.pop(value, None)\n\n"
-        "def map_clear(container):\n"
-        "    container.clear()\n\n"
-        "def string_empty(container):\n"
-        "    return len(container) == 0\n\n"
-        "def string_size(container):\n"
-        "    return len(container)\n\n"
-        "def split(string, delimiter):\n"
-        "    return string.split(delimiter)\n\n"
-        "def join(values, delimiter):\n"
-        "    return delimiter.join(values)\n";
-    model.addFile(nullptr, "mg_extensions.py", MG_EXT);
 }

@@ -32,6 +32,11 @@ const std::string EXTENSIONS_HPP =
 
 namespace @{namespace}
 {
+    
+    template<typename T> struct Default { static constexpr T value = 0; };
+    template<> struct Default<std::string> {static const std::string value;};
+    template<class M> struct Default<intrusive_ptr<M>> {static const intrusive_ptr<M> value;};
+    template<class M> const intrusive_ptr<M> Default<intrusive_ptr<M>>::value;
 
     template <class TElem, class TMap>
     bool in_map(const TElem& element, const TMap& map)
@@ -129,6 +134,50 @@ namespace @{namespace}
 
     bool string_empty(const std::string& string);
     int string_size(const std::string& string);
+
+    /* safe_at functions */
+    template <class T>
+    std::pair<bool, T> safe_at_value(const std::vector<T>& cont, size_t v)
+    {
+        if(v < cont.size())
+        {
+            return {true, cont.at(v)};
+        }
+        return {false, Default<T>::value};
+    }
+    template <class T>
+    std::pair<bool, T&> safe_at_ref(std::vector<T>& cont, size_t v)
+    {
+        if(v < cont.size())
+        {
+            return {true, std::ref<T>(cont.at(v))};
+        }
+        static T default_value = Default<T>::value; 
+        return {false, default_value};
+    }
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    std::pair<bool, typename Map::mapped_type> safe_at_value(const Map& cont, const typename Map::key_type& v)
+    {
+        auto iter = cont.find(v);
+        if(iter != cont.end())
+        {
+            return {true, iter->second};
+        }
+        return {false, Default<typename Map::mapped_type>::value};
+    }
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    std::pair<bool, typename Map::mapped_type&> safe_at_ref(Map& cont, const typename Map::key_type& v)
+    {
+        auto iter = cont.find(v);
+        if(iter != cont.end())
+        {
+            return {true, std::ref<typename Map::mapped_type>(iter->second)};
+        }
+        static typename Map::mapped_type default_value = Default<typename Map::mapped_type>::value;
+        return {false, default_value};
+    }
+    /* end of safe_at functions */
 
     float random_float();
     int random_int(int min, int max);
@@ -359,8 +408,6 @@ namespace @{namespace}
     
     std::string fs_get_string(const std::string& path);
     
-    template<typename T> struct Default { static constexpr T value = 0; };
-    template<> struct Default<std::string> {static const std::string value;};
 }
 
 #endif

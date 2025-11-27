@@ -457,6 +457,84 @@ class DeserializerJson(object):
         return self.deserialize('value', meta)
 )__PY__";
 
+static const std::string MG_EXTENSIONS = R"__(
+
+
+def strTo(value, class_):
+    if class_ == bool:
+        return value.lower() in ['yes', 'true', 'y']
+    return class_(value)
+
+def in_list(key, container):
+    return key in container
+
+def list_push(container, value):
+    container.append(value)
+
+def list_insert(container, value, index):
+    container.insert(value, index)
+
+def list_remove(container, value):
+    container.remove(value)
+
+def list_erase(container, index):
+    container.remove(container[index])
+
+def list_truncate(container, size):
+    while len(container) > size:
+        container.pop()
+
+def list_clear(container):
+    container.clear()
+
+def list_size(container):
+    return len(container)
+
+def list_index(container, item):
+    return container.index(item) if item in container else -1
+
+def list_resize(container, size):
+    list_truncate(container, size)
+    while len(container) < size:
+        container.append(None)
+
+def in_map(key, container):
+    return key in container
+
+def map_size(container):
+    return len(container)
+
+def map_remove(container, value):
+    container.pop(value, None)
+
+def map_clear(container):
+    container.clear()
+
+def string_empty(container):
+    return len(container) == 0
+
+def string_size(container):
+    return len(container)
+
+def split(string, delimiter):
+    return string.split(delimiter)
+
+def join(values, delimiter):
+    return delimiter.join(values)
+
+def safe_at_value(container, key):
+    if isinstance(container, list):
+        if key < len(container):
+            return (True, container[key])
+        return (False, 0)
+    else:
+        raise RuntimeError("unknown container");
+
+def safe_at_ref(container, key):
+    raise RuntimeError("safe_at_ref not supported by Python");
+
+)__";
+
 // Files map like in Python GeneratorPredefinedFiles: filename -> content
 static const std::vector<std::pair<std::string, std::string>> FILES_DICT = {
     {"Meta.py", META},
@@ -466,6 +544,7 @@ static const std::vector<std::pair<std::string, std::string>> FILES_DICT = {
     {"DeserializerXml.py", DESERIALIZER_XML},
     {"SerializerJson.py", SERIALIZER_JSON},
     {"DeserializerJson.py", DESERIALIZER_JSON},
+    {"mg_extensions.py", MG_EXTENSIONS},
 };
 
 } // namespace py_runtime

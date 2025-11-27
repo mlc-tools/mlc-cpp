@@ -28,6 +28,16 @@ class RegexPatternPython {
     static inline std::vector<RegexPattern> functionPatterns = [] {
         std::vector<RegexPattern> v;
         // compound assignment with conditional call
+        
+        v.push_back({
+            std::make_unique<RE2>(R"_(auto\s(\w+)\s*,\s*(\w+)\s*=\s*([\w.\->_]+)\.at\(([\w]+)\))_"),
+            R"_(\1, \2 = safe_at_value(\3, \4);)_",
+            {"at"}});
+        v.push_back({
+            std::make_unique<RE2>(R"_(auto\s*&\s*(\w+)\s*,\s*(\w+)\s*=\s*([\w.\->_]+)\.at\(([\w]+)\))_"),
+            R"_(\1, \2 = safe_at_ref(\3, \4);)_",
+            {"at"}});
+        
         v.push_back(
             {std::make_unique<RE2>(
                  R"((?m)^(\s*)(?:[^+\-*/=\n;]*?\b)?(\w+)\s*(\+=|\-=|\*=|/=)\s*(.*?)([\w:\.\-\>\(\)<> ,\*]+)\s*\?->\s*([^;\n]+);)"),

@@ -181,6 +181,16 @@ catch(const std::exception& \4)
                 \1->\2;
             })__",
                      {"?->"}});
+        
+        v.push_back({
+            std::make_unique<RE2>(R"_(auto\s(\w+)\s*,\s*(\w+)\s*=\s*([\w.\->_]+)\.at\(([\w]+)\))_"),
+            R"_(auto [\1, \2] = safe_at_value(\3, \4);)_",
+            {"at"}});
+        v.push_back({
+            std::make_unique<RE2>(R"_(auto\s*&\s*(\w+)\s*,\s*(\w+)\s*=\s*([\w.\->_]+)\.at\(([\w]+)\))_"),
+            R"_(auto&& [\1, \2] = safe_at_ref(\3, \4);)_",
+            {"at"}});
+
         return v;
     }();
 
