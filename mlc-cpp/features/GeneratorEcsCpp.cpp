@@ -549,7 +549,8 @@ template<> void {0}::clear<{1}>()
 void GeneratorEcsCpp::generateSystemsEndTurn(Model &model, const std::shared_ptr<Class> &ecs) {
     if (!ecs)
         return;
-    
+    if(!ecs->has_method("update_systems"))
+        return;
     // move method to end (all templates in begin class declaration)
     {
         auto update = *ecs->get_method("update_systems");
