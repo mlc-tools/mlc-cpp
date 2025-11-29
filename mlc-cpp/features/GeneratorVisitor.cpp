@@ -28,8 +28,6 @@ void GeneratorVisitor::generate(Model &model) {
         if(_model->is_skip(*cls))
             continue;
         
-        if (cls->name == "RewardAcceptor")
-            std::cout << "\n";
         std::string baseName = getBaseVisitorName(cls);
         if (baseName == "IVisitorDataReward")
             std::cout << "\n";

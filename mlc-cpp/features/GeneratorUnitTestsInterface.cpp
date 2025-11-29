@@ -116,8 +116,6 @@ class tests/TestCase:test
 )";
 
 void GeneratorUnitTestsInterface::generate(Model &model) {
-    if (!model.config.generate_tests)
-        return;
     _model = &model;
 
     vector<shared_ptr<Class>> test_classes;

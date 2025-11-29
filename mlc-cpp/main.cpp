@@ -29,8 +29,6 @@ void confugure_args(Cli::ArgParser &args, int argc, char **argv) {
                    "Разрешить разные virtual (true/false)");
     args.addOption("test_script", 0, "Путь к тест-скрипту");
     args.addOption("test_script_args", 0, "Аргументы для тест-скрипта");
-    args.addOption("generate_tests", 0,
-                   "Генерировать тестовые классы (true/false)");
     args.addOption("generate_intrusive", 0,
                    "Генерировать intrusive (true/false)");
     args.addOption("generate_factory", 0, "Генерировать фабрику (true/false)");
@@ -183,8 +181,6 @@ bool try_load_argc(Mlc &app, Cli::ArgParser &args) {
         job.test_script_args = args.get("test_script_args");
 
     // Генерация: булевы
-    if (args.has("generate_tests"))
-        job.generate_tests = to_bool(args.get("generate_tests"));
     if (args.has("generate_intrusive"))
         job.generate_intrusive = to_bool(args.get("generate_intrusive"));
     if (args.has("generate_factory"))

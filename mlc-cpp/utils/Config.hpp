@@ -78,7 +78,6 @@ public:
     bool allow_different_virtual = true;
     std::string test_script;
     std::string test_script_args;
-    bool generate_tests = false;
     bool generate_intrusive = true;
     bool generate_factory = true;
     bool auto_registration = true;

@@ -158,8 +158,6 @@ Config Config::loadString(const std::string &content, std::string &err) {
                 job.side = Side::both;
         }
         
-        if (g.isMember("generate_tests"))
-            job.generate_tests = g["generate_tests"].asBool();
         if (g.isMember("generate_intrusive"))
             job.generate_intrusive = g["generate_intrusive"].asBool();
         if (g.isMember("generate_factory"))
