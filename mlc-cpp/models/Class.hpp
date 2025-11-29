@@ -58,6 +58,7 @@ struct Class : public Object {
     bool has_method(const Function &func) const;
     Function *get_method(const std::string &name);
     bool has_virtual() const;
+    bool has_virtual_method() const;
     bool has_abstract_method() const;
     bool has_function_in_subclasses(const Function &func, bool depth = 0);
     bool has_function_in_parentclass(const Function &func, bool depth = 0);

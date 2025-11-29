@@ -134,6 +134,7 @@ bool Class::has_virtual() const {
     result = result || !this->parent.expired();
     result = result || !this->subclasses.empty();
     result = result || this->has_abstract_method();
+    result = result || this->has_virtual_method();
     if (!result) {
         for (auto cls : this->subclasses) {
             result = result || cls.lock()->has_virtual();
@@ -142,6 +143,13 @@ bool Class::has_virtual() const {
         }
     }
     return result;
+}
+
+bool Class::has_virtual_method() const{
+    for (auto &f : functions)
+        if (f.is_virtual)
+            return true;
+    return false;
 }
 
 bool Class::has_abstract_method() const {

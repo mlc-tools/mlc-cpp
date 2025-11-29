@@ -23,6 +23,7 @@ void serialize(const Map& values){
 
 namespace tests {
 extern void run_regex_tests();
+extern void run_models_tests();
 
 void test_lexer_basic_tokens() {
     std::map<int, int> m;
@@ -297,6 +298,7 @@ void run() {
     test_parse_members();
     test_parse_functions();
     run_regex_tests();
+    run_models_tests();
 
     std::cout << "All tests passed!\n";
 }
