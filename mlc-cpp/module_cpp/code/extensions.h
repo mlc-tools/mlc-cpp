@@ -57,6 +57,12 @@ namespace @{namespace}
     }
 
     template <class T, class I>
+    void list_append(std::vector<T>& list, const std::vector<I>& other_list)
+    {
+        list.insert(list.end(), other_list.begin(), other_list.end());
+    }
+
+    template <class T, class I>
     void list_insert(std::vector<T>& list, size_t index, const I& t)
     {
         assert(index <= list.size());
@@ -112,6 +118,13 @@ namespace @{namespace}
         vector.resize(size);
     }
 
+    template <class T, class Comp>
+    void list_sort_if(std::vector<T>& vector, Comp comp)
+    {
+        std::sort(vector.begin(), vector.end(), comp);
+    }
+
+    
     template <class TMap>
     int map_size(const TMap& map)
     {
