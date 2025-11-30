@@ -85,10 +85,25 @@ bool Class::has_method(const std::string &name) const {
 }
 
 bool Class::has_method(const Function &func) const {
-    auto iter = std::find_if(
-        functions.begin(), functions.end(),
-        [func](const Function &f) { return func.is_equal_declaration(f); });
+    auto iter = std::find_if( functions.begin(), functions.end(), [func](const Function &f) {
+        return func.is_equal_declaration(f);
+    });
     return iter != functions.end();
+}
+
+const Function *Class::get_copy_constructor() const{
+    for(auto& ctor : constructors){
+        if(ctor.callable_args.size() == 1 &&
+           ctor.callable_args.at(0).type == name &&
+           ctor.callable_args.at(0).is_ref &&
+           ctor.callable_args.at(0).is_const &&
+           ctor.callable_args.at(0).template_args.empty() &&
+           ctor.is_static == false
+           ){
+            return &ctor;
+        }
+    }
+    return nullptr;
 }
 
 Function *Class::get_method(const std::string &name) {

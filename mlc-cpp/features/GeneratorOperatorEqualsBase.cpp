@@ -26,10 +26,11 @@ void GeneratorOperatorEqualsBase::generate(const std::shared_ptr<Class>& cls){
         return;
     if (cls->name == "DataStorage")
         return;
-
+    
     addEqualMethod(cls);
     addNotEqualMethod(cls);
-    addCopyConstructor(cls);
+    if(!cls->get_copy_constructor())
+        addCopyConstructor(cls);
     addMoveConstructor(cls);
     addCopyOperator(cls);
 }

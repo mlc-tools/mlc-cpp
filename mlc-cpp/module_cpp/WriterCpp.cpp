@@ -19,6 +19,7 @@
 #include <cctype>
 #include <iostream>
 #include <sstream>
+#include <format>
 #include <unordered_set>
 
 WriterCpp::WriterCpp() {}
@@ -88,10 +89,8 @@ WriterCpp::writeFunction(const Function &fn) {
     return {writeFunctionHpp(fn), writeFunctionCpp(fn)};
 }
 
-auto WriterCpp::writeHpp(const std::shared_ptr<Class> &cls)
-    -> std::tuple<std::string, std::set<std::string>, std::set<std::string>,
-                  std::set<std::string>> {
-    if (cls->name == "BulletType") {
+auto WriterCpp::writeHpp(const std::shared_ptr<Class> &cls) -> std::tuple<std::string, std::set<std::string>, std::set<std::string>, std::set<std::string>> {
+    if (cls->name == "FightModel") {
         std::cout << "";
     }
     const std::string ns = "mg";
@@ -137,8 +136,7 @@ auto WriterCpp::writeHpp(const std::shared_ptr<Class> &cls)
     // Destructor
     std::string dtor;
     if (cls->type != "enum") {
-        dtor = (cls->has_virtual() ? "virtual " : "") + std::string("~") + cn +
-               "();";
+        dtor = (cls->has_virtual() ? "virtual " : "") + std::string("~") + cn + "();";
     }
 
     // Superclass
@@ -146,10 +144,15 @@ auto WriterCpp::writeHpp(const std::shared_ptr<Class> &cls)
     if (!cls->parent_class_name.empty())
         super = " : public " + cls->parent_class_name;
 
-    // Constructor args
-    std::string ctorArgs;
-    if (!cls->constructors.empty())
-        ctorArgs = createFunctionHppArgs(cls->constructors.at(0));
+    // Constructors args
+    std::string constructors;
+    for(auto& ctor : cls->constructors){
+        auto ctorArgs = createFunctionHppArgs(ctor);
+        constructors += std::format("{}({});\n", cls->name, std::move(ctorArgs));
+    }
+    if(constructors.empty()){
+        constructors = std::format("{}();\n", cls->name);
+    }
 
     // Format header
     std::string header = HEADER;
@@ -170,7 +173,7 @@ auto WriterCpp::writeHpp(const std::shared_ptr<Class> &cls)
     replace("members", membs);
     replace("destructor", dtor);
     replace("superclass", super);
-    replace("constructor_args", ctorArgs);
+    replace("constructors", constructors);
 
     return {header, incs, fwd, fwdOut};
 }
@@ -179,9 +182,6 @@ std::string WriterCpp::writeCpp(const std::shared_ptr<Class> &cls,
                                 const std::set<std::string> &incs,
                                 const std::set<std::string> &fwd,
                                 const std::set<std::string> &fwdOut) {
-    if (cls->name == "TestCase") {
-        std::cout << "";
-    }
     const std::string ns = "mg";
     const std::string cn = cls->name;
     // Methods
@@ -232,11 +232,23 @@ std::string WriterCpp::writeCpp(const std::shared_ptr<Class> &cls,
     auto allInc = getIncludesForSource(cls, funcs, incs, fwd, fwdOut);
 
     // Constructor
-    std::string ctorArgs, ctorBody;
-    if (!cls->constructors.empty()) {
-        ctorArgs = createFunctionCppArgs(cls->constructors.at(0));
-        ctorBody = strip(cls->constructors.at(0).body);
+    if (cls->name == "ConstructableClass") {
+        std::cout << "";
     }
+
+    std::string constructors;
+    for(auto& ctor : cls->constructors){
+        auto ctorArgs = createFunctionCppArgs(ctor);
+        constructors += std::format("{0}::{0}({1})\n{2}\n{{\n{3}\n}}\n", cls->name, std::move(ctorArgs), inits, strip(ctor.body));
+    }
+    if(constructors.empty()){
+        constructors = std::format("{0}::{0}()\n{1}\n{{\n}}\n", cls->name, inits);
+    }
+//    std::string ctorArgs, ctorBody;
+//    if (!cls->constructors.empty()) {
+//        ctorArgs = createFunctionCppArgs(cls->constructors.at(0));
+//        ctorBody = strip(cls->constructors.at(0).body);
+//    }
     
     auto feature_unity = _model->config.get_feature<FeatureUnityFile>();
     bool use_path_to_root = !feature_unity.all_to_one && !feature_unity.group_to_one;
@@ -249,12 +261,10 @@ std::string WriterCpp::writeCpp(const std::shared_ptr<Class> &cls,
     replace_all(source, "{includes}", allInc);
     replace_all(source, "{static_initializations}", statics);
     replace_all(source, "{registration}", reg);
-    replace_all(source, "{initializations}", inits);
-    replace_all(source, "{constructor_args}", ctorArgs);
-    replace_all(source, "{constructor_body}", ctorBody);
+    replace_all(source, "{constructors}", constructors);
     replace_all(source, "{destructor}", dtor);
     replace_all(source, "{functions}", funcs);
-
+    
     return source;
 }
 

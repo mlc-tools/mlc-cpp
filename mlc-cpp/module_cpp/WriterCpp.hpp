@@ -121,7 +121,7 @@ namespace {namespace}
     class {class_name}{superclass}
     {
     public:
-        {class_name}({constructor_args});
+        {constructors}
         {destructor}
 {functions}
 {members}
@@ -139,10 +139,7 @@ namespace {namespace}
 namespace {namespace}
 {
     {static_initializations}
-    {registration}{class_name}::{class_name}({constructor_args})
-    {initializations}{
-    {constructor_body}
-    }
+    {registration}{constructors}
 
     {destructor}
 {functions}} //namespace {namespace})";

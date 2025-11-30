@@ -56,7 +56,8 @@ struct Class : public Object {
     bool has_member(const std::string &name) const;
     bool has_method(const std::string &name) const;
     bool has_method(const Function &func) const;
-    Function *get_method(const std::string &name);
+    const Function* get_copy_constructor() const;
+    Function* get_method(const std::string &name);
     bool has_virtual() const;
     bool has_virtual_method() const;
     bool has_abstract_method() const;

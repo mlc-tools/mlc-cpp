@@ -34,8 +34,7 @@ std::string GeneratorOperatorEqualsCpp::getNotEqualMethodOperation() const {
     return "\nreturn !(*this == rhs);";
 }
 
-void GeneratorOperatorEqualsCpp::addCopyConstructor(
-    const std::shared_ptr<Class> &cls) {
+void GeneratorOperatorEqualsCpp::addCopyConstructor(const std::shared_ptr<Class> &cls) {
     Function ctor;
     ctor.name = cls->name;
     ctor.return_type = Objects::VOID;
@@ -76,13 +75,12 @@ void GeneratorOperatorEqualsCpp::addMoveConstructor(
     cls->functions.push_back(std::move(ctor));
 }
 
-void GeneratorOperatorEqualsCpp::addCopyOperator(
-    const std::shared_ptr<Class> &cls) {
+void GeneratorOperatorEqualsCpp::addCopyOperator(const std::shared_ptr<Class> &cls) {
     Function op;
     op.name = "operator =";
     op.return_type = getConstRef(cls, "");
     op.callable_args.emplace_back(getConstRef(cls, "rhs"));
-
+    
     if (!cls->parent_class_name.empty() &&
         cls->parent_class_name != "SerializedObject")
         op.body += "\nthis->" + cls->parent_class_name + "::operator=(rhs);";
