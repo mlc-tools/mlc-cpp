@@ -22,12 +22,12 @@
 using namespace std;
 
 const map<string, int> GeneratorUnitTestsInterface::ASSERTS = {
-    {"this->assertTrue(", 1},    {"this->assertFalse(", 1},
-    {"this->assertEqual(", 2},   {"this->assertNotEqual(", 2},
-    {"this->assertNull(", 1},    {"this->assertNotNull(", 1},
-    {"this->assertInMap(", 2},   {"this->assertNotInMap(", 2},
-    {"this->assertInList(", 2},  {"this->assertNotInList(", 2},
-    {"this->assertInRange(", 3}, {"this->assertNotInRange(", 3},
+    {"assertTrue(", 1},    {"assertFalse(", 1},
+    {"assertEqual(", 2},   {"assertNotEqual(", 2},
+    {"assertNull(", 1},    {"assertNotNull(", 1},
+    {"assertInMap(", 2},   {"assertNotInMap(", 2},
+    {"assertInList(", 2},  {"assertNotInList(", 2},
+    {"assertInRange(", 3}, {"assertNotInRange(", 3},
 };
 
 const string GeneratorUnitTestsInterface::BASE_CLASSES = R"(
@@ -194,10 +194,9 @@ shared_ptr<Class> GeneratorUnitTestsInterface::generateTestInterface(
                     Function m;
                     m.name = f.name;
                     m.return_type = Objects::VOID;
-                    //                    m.is_abstract = true;
+                    // m.is_abstract = true;
                     i_test_interface->functions.push_back(m);
-                    generateMessagesIfEmpty(impl,
-                                            i_test_interface->functions.back());
+                    generateMessagesIfEmpty(impl, f);
                     f.is_virtual = true;
                 }
             }
@@ -295,23 +294,29 @@ void GeneratorUnitTestsInterface::generateMessagesIfEmpty(
         const auto &assertCall = entry.first;
         int needed = entry.second;
         //        for (size_t i = 0; i < method.operations.size(); ++i) {
-        auto &line = method.body;
-        if (line.rfind(assertCall, 0) == 0) {
-            // вырезаем аргументы между assertCall и последней ')'
-            size_t start = assertCall.size();
-            size_t end = line.rfind(')');
-            string inside = line.substr(start, end - start);
-            auto parts = smartSplit(inside, ',', {"(", ")"});
-            if ((int)parts.size() <= needed) {
-                string name =
-                    assertCall.substr(strlen("this->"), // убрать "this->"
-                                      assertCall.size() - strlen("this->") - 1);
-                std::string msg = format_indexes(
-                    R"("{0} is false in {1}::{2}\\nArgs:{3}")", name, cls->name,
-                    method.name, join(parts, ','));
-                line = line.substr(0, end) + ", " + msg + ");";
+        auto lines = split(method.body, '\n');
+        bool was_replace = false;
+        for(auto& line : lines){
+            if (auto k = line.find(assertCall); k != std::string::npos) {
+                // вырезаем аргументы между assertCall и последней ')'
+                size_t start = assertCall.size() + k;
+                size_t end = line.rfind(')');
+                string inside = line.substr(start, end - start);
+                auto parts = smartSplit(inside, ',', {"(", ")"});
+                if ((int)parts.size() <= needed) {
+                    string name = assertCall.substr(strlen("this->"), assertCall.size() - strlen("this->") - 1);
+                    std::string args = join(parts, ',');
+                    replace_all(args, "\"", "\\\"");
+                    std::string msg = format_indexes(R"("{0} is false in {1}::{2}\nArgs:{3}")", name, cls->name,
+                                                     method.name, args);
+                    line = line.substr(0, end) + ", " + msg + ");";
+                    was_replace = true;
+                }
             }
         }
+        if(was_replace)
+            method.body = join(lines, '\n');
+        
     }
 }
 
