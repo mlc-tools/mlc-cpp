@@ -82,6 +82,7 @@ std::vector<std::shared_ptr<Class>> ParserLexem::parse_dict(bool one) {
                 break;
         } else {
             std::cout << "Skip on parse dict: " << cur.value << std::endl;
+            std::cout << "Current line: " << lexer.get_current_line() << std::endl;
             advance();
         }
     }

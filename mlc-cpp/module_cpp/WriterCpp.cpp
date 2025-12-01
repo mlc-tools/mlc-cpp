@@ -309,6 +309,8 @@ std::string WriterCpp::writeNamedObject(const Object &obj,
                                         const std::string &name,
                                         bool tryConstRef, bool useIntrusive) {
     auto canUseConstRef = [&](const Object &o) {
+        if(o.is_discard_const_ref)
+            return false;
         return o.type == "string" || o.type == "list" || o.type == "map" || o.type == "hash_map" || o.type == "set" || o.type == "hash_set";
     };
     bool isRef = obj.is_ref;

@@ -41,6 +41,7 @@ public:
     bool is_link = false;
     bool is_test = false;
     bool is_binding = false;
+    bool is_discard_const_ref = false;
     Side side;
     AccessSpecifier access;
     bool denied_intrusive = false;

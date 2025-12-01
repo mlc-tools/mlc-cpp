@@ -98,6 +98,8 @@ void Object::set_modifier(const std::string_view &modifier) {
         this->side = Side::server;
     else if (modifier == Modifier::m_test)
         this->is_test = true;
+    else if (modifier == Modifier::m_discard_const_ref)
+        this->is_discard_const_ref = true;
 
     else if (modifier == Modifier::l_cpp)
         this->lang_specific.insert(Modifier::l_cpp);
