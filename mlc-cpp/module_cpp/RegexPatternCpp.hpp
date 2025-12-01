@@ -104,11 +104,11 @@ class RegexPatternCpp {
         v.push_back({std::make_unique<RE2>(R"(throw new Exception\((.*?)\))"),
                      R"(throw std::exception(\1);)",
                      {"throw "}});
-        v.push_back({std::make_unique<RE2>(R"(\bnew\s*(\w+)\s*\((.*)\))"),
+        v.push_back({std::make_unique<RE2>(R"(\bnew\b\s*(\w+)\s*\((.*)\))"),
                      R"(make_intrusive<\1>(\2))",
                      {"new"}});
         v.push_back({std::make_unique<RE2>(
-                         R"((\w+)\*\s+(\w+)\s*=\s*new\s*(\w+)\s*\(\s*\))"),
+                         R"((\w+)\*\s+(\w+)\s*=\s*new\b\s*(\w+)\s*\(\s*\))"),
                      R"(auto \2 = make_intrusive<\3>();)",
                      {"new"}});
         v.push_back(
