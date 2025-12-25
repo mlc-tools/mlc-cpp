@@ -374,12 +374,15 @@ std::string WriterCpp::writeMemberEnumDeclaration(const Object &obj) {
     return "static constexpr BaseEnum " + obj.name + " = " + obj.value + ";";
 }
 
+
 // Static member initialization in the CPP
 std::string WriterCpp::writeMemberStaticInit(const Class &cls,
                                              const Object &obj) {
     bool useIntr = true;
     std::string tpl = getTemplates(obj);
-    std::string init = obj.value.empty() ? "" : "(" + obj.value + ")";
+    std::string init = convert_initial_value(obj);
+    if(!init.empty())
+        init = "(" + init + ")";
     std::string patPtr =
         "{const}intrusive_ptr<{type}{templates}> {owner}::{name}{initial}"
         ";";
@@ -410,8 +413,25 @@ std::string WriterCpp::writeMemberStaticInit(const Class &cls,
 
 // Member initialization in ctor initializer list
 std::string WriterCpp::writeMemberInitialization(const Object &obj) {
-    auto val = obj.value.empty() ? "" : obj.value;
-    return obj.name + "(" + val + ")";
+    if(obj.name == "visibled")
+        std::cout << "";
+    auto val = convert_initial_value(obj);
+    val = "(" + val + ")";
+    return obj.name + val;
+}
+
+std::string WriterCpp::convert_initial_value(const Object &obj){
+    auto value = obj.value;
+    if(obj.is_pointer && (value == "0" || value.empty()))
+        value = "nullptr";
+    else if(value.empty()){
+        auto type_class = _model->get_class(obj.type);
+        if(type_class && type_class->type == "enum"){
+            value = type_class->name + "::" + type_class->members[0].name;
+        }
+    }
+
+    return value;
 }
 
 // Function HPP signature

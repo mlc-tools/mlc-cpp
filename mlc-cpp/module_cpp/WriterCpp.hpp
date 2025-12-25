@@ -64,6 +64,7 @@ private:
     std::string writeMemberEnumDeclaration(const Object &obj);
     std::string writeMemberStaticInit(const Class &cls, const Object &obj);
     std::string writeMemberInitialization(const Object &obj);
+    std::string convert_initial_value(const Object &obj);
 
     // Named-object helper
     std::string writeNamedObject(const Object &obj, const std::string &name,
