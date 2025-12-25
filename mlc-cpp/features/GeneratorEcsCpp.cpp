@@ -381,6 +381,7 @@ void GeneratorEcsCpp::generate_system_skills(Model &model,
         auto field = componentsField(skill);
         std::string list_name = std::string("components_") + field;
         std::string block = operations;
+        replace_all(block, "@(get_components)", "get_components<" + skill->name + ">()");
         replace_all(block, "@(components)", list_name);
         if (!method->body.empty())
             method->body += "\n";
