@@ -14,12 +14,20 @@
 
 void hoist_includes(std::string& code);
 
-std::string weight_source(const SavePluginBase::FileEntry &e) {
+std::string weight_source(Model &model, const SavePluginBase::FileEntry &e) {
     static std::unordered_map<std::string, std::string> prefixes = {
         {"intrusive_ptr.cpp", "0"},
         {"DataStorage.cpp", "1"},
         {"Bindings.cpp", "~"},
     };
+    
+    auto& ecs = model.config.get_feature<FeatureEcs>();
+    if(!ecs.model_base.empty() && prefixes.count(ecs.model_base + ".cpp") == 0){
+        auto cls = model.get_class(ecs.model_base);
+        if(cls){
+            prefixes[cls->group + "/" + ecs.model_base + ".cpp"] = "2";
+        }
+    }
     
     auto cls = std::get<0>(e);
 
@@ -70,7 +78,7 @@ std::vector<SavePluginCpp::FileEntry*> SavePluginCpp::get_source_files_with_orde
         if(ends_with(std::get<1>(entry), ".cpp"))
             sources.push_back(&entry);
     }
-    std::sort(sources.begin(), sources.end(), [&](auto &a, auto &b) { return weight_source(*a) < weight_source(*b); });
+    std::sort(sources.begin(), sources.end(), [&](auto &a, auto &b) { return weight_source(model, *a) < weight_source(model, *b); });
     return sources;
 }
 
