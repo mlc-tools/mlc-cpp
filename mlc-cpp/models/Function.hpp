@@ -19,7 +19,9 @@ struct Function : public Object {
     bool is_friend;
     bool is_generate;
     bool translated;
+    bool is_noexcept = false;
     std::string specific_implementations;
+    std::string ctor_initializations;
 
     Function();
     Function(const Function &other) = default;

@@ -47,6 +47,7 @@ void GeneratorOperatorEqualsCpp::addCopyConstructor(const std::shared_ptr<Class>
     cls->functions.push_back(std::move(ctor));
 }
 
+
 void GeneratorOperatorEqualsCpp::addMoveConstructor(
     const std::shared_ptr<Class> &cls) {
     Function ctor;
@@ -57,10 +58,42 @@ void GeneratorOperatorEqualsCpp::addMoveConstructor(
     arg.type = cls->name + "&&";
     arg.name = "rhs";
     ctor.callable_args.push_back(std::move(arg));
+    ctor.is_noexcept = true;
+
+    if (!cls->parent_class_name.empty() && cls->parent_class_name != "SerializedObject"){
+        ctor.ctor_initializations += "\n: " + cls->parent_class_name + "(std::move(rhs))";
+    }
+
+    std::string delimiter = ctor.ctor_initializations.empty() ? ": " : ", ";
+    for (auto &m : cls->members) {
+        if (m.is_static || m.is_const)
+            continue;
+        if (_model->is_skip(m))
+            continue;
+        if(m.name == "_reference_counter")
+            continue;
+        ctor.ctor_initializations += "\n" + delimiter + m.name + "(std::move(rhs." + m.name + "))";
+        delimiter = ", ";
+    }
+
+    cls->functions.push_back(std::move(ctor));
+}
+
+void GeneratorOperatorEqualsCpp::addMoveOperator(
+    const std::shared_ptr<Class> &cls) {
+    Function op;
+    op.name = "operator=";
+    op.return_type = getRef(cls, "");
+    op.is_noexcept = true;
+
+    Object arg;
+    arg.type = cls->name + "&&";
+    arg.name = "rhs";
+    op.callable_args.push_back(std::move(arg));
 
     if (!cls->parent_class_name.empty() &&
         cls->parent_class_name != "SerializedObject")
-        ctor.body += "\nthis->" + cls->parent_class_name + "::operator=(rhs);";
+        op.body += "\nthis->" + cls->parent_class_name + "::operator=(std::move(rhs));";
 
     for (auto &m : cls->members) {
         if (m.is_static || m.is_const)
@@ -69,16 +102,17 @@ void GeneratorOperatorEqualsCpp::addMoveConstructor(
             continue;
         if(m.name == "_reference_counter")
             continue;
-        ctor.body += "\nthis->" + m.name + " = std::move(rhs." + m.name + ");";
+        op.body += "\nthis->" + m.name + " = std::move(rhs." + m.name + ");";
     }
+    op.body += "\nreturn *this;";
 
-    cls->functions.push_back(std::move(ctor));
+    cls->functions.push_back(std::move(op));
 }
 
 void GeneratorOperatorEqualsCpp::addCopyOperator(const std::shared_ptr<Class> &cls) {
     Function op;
     op.name = "operator =";
-    op.return_type = getConstRef(cls, "");
+    op.return_type = getRef(cls, "");
     op.callable_args.emplace_back(getConstRef(cls, "rhs"));
     
     if (!cls->parent_class_name.empty() &&

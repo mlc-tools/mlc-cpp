@@ -439,7 +439,7 @@ std::string WriterCpp::writeFunctionHpp(const Function &method) {
     // pattern: "{virtual}{static}{friend}{type}
     // {name}({args}){const}{override}{abstract}"
     std::string pat = "{virtual}{friend}{templates}{static}{type} "
-                      "{name}({args}){const}{override}{abstract}";
+                      "{name}({args}){const}{override}{abstract}{noexcept}";
     // return type
     std::string ret = "";
     if (method.name != currentClass_->name)
@@ -455,6 +455,7 @@ std::string WriterCpp::writeFunctionHpp(const Function &method) {
     std::string cst = method.is_const ? " const" : "";
     std::string ovrd = isOverride(method, currentClass_) ? " override" : "";
     std::string absr = method.is_abstract ? " = 0" : "";
+    std::string noexcpt = method.is_noexcept ? " noexcept" : "";
     std::string tmpl;
 
     if (!method.template_args.empty()) {
@@ -487,6 +488,7 @@ std::string WriterCpp::writeFunctionHpp(const Function &method) {
     replace_all(pat, "{override}", ovrd);
     replace_all(pat, "{abstract}", absr);
     replace_all(pat, "{templates}", tmpl);
+    replace_all(pat, "{noexcept}", noexcpt);
     replace_all(pat, "{body}", method.body);
     return pat;
 }
@@ -499,8 +501,10 @@ std::string WriterCpp::writeFunctionCpp(const Function &method) {
         return "";
 
     // pattern:
-    std::string pat = "{type} {scope}{name}({args}){const}\n{\n{body}\n}\n\n";
+    std::string pat = "{type} {scope}{name}({args}){const}{noexcept}{ctor_initialization}\n{\n{body}\n}\n\n";
     std::string ret = "", scope = "", args = "";
+    std::string noexcpt = method.is_noexcept ? " noexcept" : "";
+    
     if (method.name != currentClass_->name)
         ret = writeNamedObject(method.return_type, "", false, true);
     if (!method.is_friend)
@@ -520,6 +524,8 @@ std::string WriterCpp::writeFunctionCpp(const Function &method) {
     fill("name", method.name);
     fill("args", args);
     fill("const", cst);
+    fill("noexcept", noexcpt);
+    fill("ctor_initialization", method.ctor_initializations);
     fill("body", strip(method.body));
     return pat;
 }

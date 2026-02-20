@@ -25,6 +25,16 @@ class ConstructableClassAuto
     constructor():generate
 }
 
+class MoveCtor
+{
+    string s1
+}
+
+class MoveCtor2<MoveCtor>
+{
+    string s2
+}
+
 class TestConstructableClass<ITestConstructableClass>:test
 {
     function void test_constructor()
@@ -49,5 +59,78 @@ class TestConstructableClass<ITestConstructableClass>:test
         auto cls = new ConstructableClassAuto(1, 2);
         this->assertTrue(cls->a == 1);
         this->assertTrue(cls->b == 2);
+    }
+
+    function void test_copy_ctor()
+    {
+        MoveCtor2 obj1;
+        obj1.s1 = "s1";
+        obj1.s2 = "s2";
+
+        MoveCtor2 obj2(obj1);
+        this->assertEqual(obj1.s1, "s1");
+        this->assertEqual(obj1.s2, "s2");
+        this->assertEqual(obj2.s1, "s1");
+        this->assertEqual(obj2.s2, "s2");
+    }
+
+    function void test_copy_operator()
+    {
+        MoveCtor2 obj1;
+        obj1.s1 = "s1";
+        obj1.s2 = "s2";
+
+        MoveCtor2 obj2;
+        obj2 = obj1;
+        this->assertEqual(obj1.s1, "s1");
+        this->assertEqual(obj1.s2, "s2");
+        this->assertEqual(obj2.s1, "s1");
+        this->assertEqual(obj2.s2, "s2");
+    }
+
+    function void test_move_ctor()
+    {
+        MoveCtor2 obj1;
+        obj1.s1 = "s1";
+        obj1.s2 = "s2";
+
+        MoveCtor2 obj2 = std::move(obj1);
+        this->assertEqual(obj2.s1, "s1");
+        this->assertEqual(obj2.s2, "s2");
+        this->assertTrue(obj1.s1.empty());
+        this->assertTrue(obj1.s2.empty());
+    }
+
+    function void test_move_operator()
+    {
+        MoveCtor2 obj1;
+        obj1.s1 = "s1";
+        obj1.s2 = "s2";
+
+        MoveCtor2 obj2;
+        obj2 = std::move(obj1);
+        this->assertEqual(obj2.s1, "s1");
+        this->assertEqual(obj2.s2, "s2");
+        this->assertTrue(obj1.s1.empty());
+        this->assertTrue(obj1.s2.empty());
+    }
+
+    function void test_use_move_ctor_in_vector()
+    {
+        std::vector<MoveCtor2> v1;
+        v1.emplace_back();
+        v1.emplace_back();
+        v1.emplace_back();
+        v1[0].s1 = v1[0].s2 = "0";
+        v1[1].s1 = v1[1].s2 = "1";
+        v1[2].s1 = v1[2].s2 = "2";
+
+        std::vector<MoveCtor2> v2(std::move(v1));
+        this->assertEqual(v2[0].s1, "0"); this->assertEqual(v2[0].s2, "0");
+        this->assertEqual(v2[1].s1, "1"); this->assertEqual(v2[1].s2, "1");
+        this->assertEqual(v2[2].s1, "2"); this->assertEqual(v2[2].s2, "2");
+
+        this->assertTrue(v1.empty());
+        this->assertTrue(v2.size() == 3);
     }
 }

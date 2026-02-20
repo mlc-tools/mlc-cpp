@@ -25,5 +25,6 @@ protected:
 
     void addCopyConstructor(const std::shared_ptr<Class> &cls) override;
     void addMoveConstructor(const std::shared_ptr<Class> &cls) override;
+    void addMoveOperator(const std::shared_ptr<Class> &cls) override;
     void addCopyOperator(const std::shared_ptr<Class> &cls) override;
 };

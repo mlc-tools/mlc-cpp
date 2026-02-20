@@ -32,17 +32,24 @@ void GeneratorOperatorEqualsBase::generate(const std::shared_ptr<Class>& cls){
     if(!cls->get_copy_constructor())
         addCopyConstructor(cls);
     addMoveConstructor(cls);
+    addMoveOperator(cls);
     addCopyOperator(cls);
 }
 
 Object
-GeneratorOperatorEqualsBase::getConstRef(const std::shared_ptr<Class> &cls,
-                                         const std::string &name) {
+GeneratorOperatorEqualsBase::getRef(const std::shared_ptr<Class> &cls, const std::string &name) {
     Object ref;
     ref.type = cls->name;
     ref.name = name;
-    ref.is_const = true;
+    ref.is_const = false;
     ref.is_ref = true;
+    return ref;
+}
+
+Object
+GeneratorOperatorEqualsBase::getConstRef(const std::shared_ptr<Class> &cls, const std::string &name) {
+    Object ref = getRef(cls, name);
+    ref.is_const = true;
     return ref;
 }
 
@@ -126,6 +133,10 @@ void GeneratorOperatorEqualsBase::addCopyConstructor(
 }
 
 void GeneratorOperatorEqualsBase::addMoveConstructor(
+    const std::shared_ptr<Class> & /*cls*/) {
+    // no-op by default
+}
+void GeneratorOperatorEqualsBase::addMoveOperator(
     const std::shared_ptr<Class> & /*cls*/) {
     // no-op by default
 }

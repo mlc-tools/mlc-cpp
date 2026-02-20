@@ -33,9 +33,8 @@ public:
 protected:
     Model *_model{nullptr};
 
-    // Возвращает Object, представляющий `const ClassName&`
-    static Object getConstRef(const std::shared_ptr<Class> &cls,
-                              const std::string &name);
+    static Object getRef(const std::shared_ptr<Class> &cls, const std::string &name);
+    static Object getConstRef(const std::shared_ptr<Class> &cls, const std::string &name);
 
     // Имя оператора ==, !=
     virtual std::string getEqualMethodName() const = 0;
@@ -56,6 +55,7 @@ protected:
     // Методы для добавления копирующих/перемещающих конструкторов и оператора=
     virtual void addCopyConstructor(const std::shared_ptr<Class> &cls);
     virtual void addMoveConstructor(const std::shared_ptr<Class> &cls);
+    virtual void addMoveOperator(const std::shared_ptr<Class> &cls);
     virtual void addCopyOperator(const std::shared_ptr<Class> &cls);
 
 private:
