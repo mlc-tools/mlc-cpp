@@ -147,4 +147,38 @@ class ecs/TestEcsModel<ITestEcsModel>
 		this->assertEqual(model->get<Transform>(2)->x, 2);
 		this->assertEqual(model->get<Transform>(2)->y, 0);
 	}
+
+	fn void test_perfomance()
+	{
+		auto start = std::chrono::high_resolution_clock::now();
+		
+
+		auto model = this->get_model();
+		int count = 10000;
+		for(int i=0; i<count; ++i)
+		{
+			model->add(Transform(), i+1);
+			model->add(Movement3(), i+1);
+		}
+		SystemMovementIf().update(model);
+
+		auto end = std::chrono::high_resolution_clock::now();
+
+	    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+
+    	std::cout << "Time: " << duration.count() << " microseconds\n";
+	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
