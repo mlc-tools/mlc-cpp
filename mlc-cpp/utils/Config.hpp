@@ -38,6 +38,7 @@ class FeatureEcs {
 public:
     std::string model_base;
     std::string component_base;
+    bool discard_inheritance = false;
 };
 class FeatureBindings {
 public:

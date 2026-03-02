@@ -77,6 +77,8 @@ struct Error {
         ERROR_METHOD_HAS_NOT_BODY,
         ERROR_SYNTAX_ERROR,
         ERROR_UNKNOWN_MODIFIER,
+        
+        ECS_ERROR_CANNOT_USE_INHERITANCE,
     };
 
     static void exit(Code code);

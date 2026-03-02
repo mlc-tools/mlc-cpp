@@ -77,6 +77,7 @@ static const std::unordered_map<Error::Code, std::string> kTexts = {
      "Error: method [{}] has not body.\nIn line: \n{}"},
     {Error::ERROR_SYNTAX_ERROR, "Error syntax: Line: \n{}"},
     {Error::ERROR_UNKNOWN_MODIFIER, "Error unknown modifier: :{}"},
+    {Error::ECS_ERROR_CANNOT_USE_INHERITANCE, "ECS: Cannot use inheritance for ECS-Component: {}"},
     
 
 };

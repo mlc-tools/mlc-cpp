@@ -70,7 +70,8 @@
   "common_features":{
     "ecs": {
       "model_base": "EcsModel",
-      "component_base": "EcsComponent"
+      "component_base": "EcsComponent",
+      "discard_inheritance": true
     },
     "unit_tests": {},
     "data_storage": {},

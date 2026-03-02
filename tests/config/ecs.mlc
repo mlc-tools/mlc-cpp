@@ -23,11 +23,16 @@ class ecs/Movement<EcsComponent>
 	int x = 0
 	int y = 0
 }
-class ecs/Movement2<Movement>
+class ecs/Movement2<EcsComponent>
 {
+	int x = 0
+	int y = 0
+	int z
 }
-class ecs/Movement3<Movement>
+class ecs/Movement3<EcsComponent>
 {
+	int x = 0
+	int y = 0
 }
 
 class ecs/SystemMovement:cpp
@@ -37,8 +42,8 @@ class ecs/SystemMovement:cpp
 		model->each<Transform, Movement>(
 			[](auto& tranform, auto& movement)
 			{
-				tranform->x += movement->x;
-				tranform->y += movement->y;
+				tranform.x += movement.x;
+				tranform.y += movement.y;
 			});
 	}
 }
@@ -49,8 +54,8 @@ class ecs/SystemMovement2:cpp
 		model->each<Transform, Movement2>(
 			[](auto& tranform, auto& movement)
 			{
-				tranform->x += movement->x;
-				tranform->y += movement->y;
+				tranform.x += movement.x;
+				tranform.y += movement.y;
 			});
 	}
 }
@@ -61,12 +66,12 @@ class ecs/SystemMovementIf:cpp
 		model->each_if<Transform, Movement>(
 			[](auto& tranform, auto& movement)
 			{
-				return movement->x > 0;
+				return movement.x > 0;
 			},
 			[](auto& tranform, auto& movement)
 			{
-				tranform->x += movement->x;
-				tranform->y += movement->y;
+				tranform.x += movement.x;
+				tranform.y += movement.y;
 			});
 	}
 }
@@ -82,70 +87,83 @@ class ecs/TestEcsModel<ITestEcsModel>
 	fn void test_update_systems():cpp
 	{
 		auto model = this->get_model();
-		model->add(new Transform(), 1);
-		model->add(new Movement(), 1);
+		model->add(Transform(), 1);
+		model->add(Movement(), 1);
 
-		model->get<Movement>(1)->y = 2;
+		model->get<Movement>(1).y = 2;
 		model->update_systems(0);
-		this->assertEqual(model->get<Transform>(1)->x, 0);
-		this->assertEqual(model->get<Transform>(1)->y, 2);
+		this->assertEqual(model->get<Transform>(1).x, 0);
+		this->assertEqual(model->get<Transform>(1).y, 2);
 	}
 
 	fn void test_clear():cpp
 	{
 		auto model = this->get_model();
-		model->add(new Transform(), 1);
-		model->add(new Movement(), 1);
+		model->add(Transform(), 1);
+		model->add(Movement(), 1);
 
 
-		this->assertNotNull(model->get<Movement>(1));
-		this->assertNotNull(model->get<Transform>(1));
+		this->assertEqual(model->get<Movement>(1).id, 1);
+		this->assertEqual(model->get<Transform>(1).id, 1);
 
 		model->clear<Movement>();
 		this->assertEqual(model->get_components<Movement>().size(), 0);
-		this->assertNull(model->get<Movement>(1));
+		this->assertEqual(model->get<Movement>(1).id, -1);
 
 		model->clear<Transform>();
 		this->assertEqual(model->get_components<Transform>().size(), 0);
-		this->assertNull(model->get<Transform>(1));
+		this->assertEqual(model->get<Transform>(1).id, -1);
 	}
 
 	fn void test_remove_if():cpp
 	{
 		auto model = this->get_model();
-		model->add(new Transform(), 1);
-		model->add(new Transform(), 2);
-		model->add(new Transform(), 3);
+		model->add(Transform(), 1);
+		model->add(Transform(), 2);
+		model->add(Transform(), 3);
 
-		model->remove_if<Transform>([&](auto& tranform){return tranform->id == 2;});
-		assertNull(model->get<Transform>(2), "tranform with id 2 is null");
-		assertNotNull(model->get<Transform>(1), "tranform with id 1 is not null");
-		assertNotNull(model->get<Transform>(3), "tranform with id 2 is not null");
+		model->remove_if<Transform>([&](auto& tranform){return tranform.id == 2;});
+		assertEqual(model->get<Transform>(2).id, -1, "tranform with id 2 is null");
+		assertEqual(model->get<Transform>(1).id, 1, "tranform with id 1 is not null");
+		assertEqual(model->get<Transform>(3).id, 3, "tranform with id 3 is not null");
 		assertEqual(model->get_components<Transform>().size(), 2);
+	}
+
+	fn void test_add():cpp
+	{
+		auto model = this->get_model();
+		model->add(Transform(), 1);
+		model->add(Transform(), 3);
+		model->add(Transform(), 2);
+
+		assertEqual(model->get<Transform>(1).id, 1, "tranform with id 2 is not null");
+		assertEqual(model->get<Transform>(2).id, 2, "tranform with id 1 is not null");
+		assertEqual(model->get<Transform>(3).id, 3, "tranform with id 3 is not null");
+		assertEqual(model->get_components<Transform>().size(), 3);
 	}
 
 	fn void test_each():cpp
 	{
 		auto model = this->get_model();
-		model->add(new Transform(), 1);
-		model->add(new Transform(), 2);
-		model->add(new Movement(), 2);
+		model->add(Transform(), 1);
+		model->add(Transform(), 2);
+		model->add(Movement(), 2);
 
-		model->get<Movement>(2)->x = 1;
+		model->get<Movement>(2).x = 1;
 
 		SystemMovement().update(model);
-		this->assertEqual(model->get<Transform>(1)->x, 0);
-		this->assertEqual(model->get<Transform>(1)->y, 0);
-		this->assertEqual(model->get<Transform>(2)->x, 1);
-		this->assertEqual(model->get<Transform>(2)->y, 0);
+		this->assertEqual(model->get<Transform>(1).x, 0);
+		this->assertEqual(model->get<Transform>(1).y, 0);
+		this->assertEqual(model->get<Transform>(2).x, 1);
+		this->assertEqual(model->get<Transform>(2).y, 0);
 
 
-		model->add(new Movement(), 1);
+		model->add(Movement(), 1);
 		SystemMovementIf().update(model);
-		this->assertEqual(model->get<Transform>(1)->x, 0);
-		this->assertEqual(model->get<Transform>(1)->y, 0);
-		this->assertEqual(model->get<Transform>(2)->x, 2);
-		this->assertEqual(model->get<Transform>(2)->y, 0);
+		this->assertEqual(model->get<Transform>(1).x, 0);
+		this->assertEqual(model->get<Transform>(1).y, 0);
+		this->assertEqual(model->get<Transform>(2).x, 2);
+		this->assertEqual(model->get<Transform>(2).y, 0);
 	}
 
 	fn void test_perfomance()
