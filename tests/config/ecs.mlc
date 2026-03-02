@@ -166,29 +166,141 @@ class ecs/TestEcsModel<ITestEcsModel>
 		this->assertEqual(model->get<Transform>(2).y, 0);
 	}
 
-	fn void test_perfomance()
+	fn void test_copy_entity_from_model():cpp
 	{
-		auto start = std::chrono::high_resolution_clock::now();
-		
+		auto source = this->get_model();
+		auto target = this->get_model();
 
+		source->add(Transform(), 1);
+		source->add(Movement(), 1);
+
+		source->get<Transform>(1).x = 4;
+		source->get<Transform>(1).y = 5;
+		source->get<Movement>(1).x = 6;
+		source->get<Movement>(1).y = 7;
+
+		target->copy_entity_from_model(source, 1, 2);
+
+		this->assertEqual(target->get<Transform>(2).id, 2);
+		this->assertEqual(target->get<Transform>(2).x, 4);
+		this->assertEqual(target->get<Transform>(2).y, 5);
+		this->assertEqual(target->get<Movement>(2).id, 2);
+		this->assertEqual(target->get<Movement>(2).x, 6);
+		this->assertEqual(target->get<Movement>(2).y, 7);
+		this->assertEqual(target->get<Transform>(1).id, -1);
+	}
+
+	fn void test_each_all_components():cpp
+	{
 		auto model = this->get_model();
+		model->add(Transform(), 1);
+		model->add(Transform(), 2);
+		model->add(Movement(), 2);
+		model->add(Movement2(), 2);
+		model->add(Movement2(), 3);
+
+		model->get<Movement>(2).x = 3;
+		model->get<Movement>(2).y = 4;
+		model->get<Movement2>(2).x = 5;
+		model->get<Movement2>(2).y = 6;
+
+		int count = 0;
+		model->each<Transform, Movement, Movement2>(
+			[&](auto& transform, auto& movement, auto& movement2)
+			{
+				++count;
+				transform.x = movement.x + movement2.x;
+				transform.y = movement.y + movement2.y;
+			});
+
+		this->assertEqual(count, 1);
+		this->assertEqual(model->get<Transform>(1).x, 0);
+		this->assertEqual(model->get<Transform>(1).y, 0);
+		this->assertEqual(model->get<Transform>(2).x, 8);
+		this->assertEqual(model->get<Transform>(2).y, 10);
+	}
+
+	fn void test_perfomance_all()
+	{
 		int count = 10000;
+		auto model = this->get_model();
+		model->get_components<Transform>().reserve(count);
+		model->get_components<Movement>().reserve(count);
+
+		auto start = std::chrono::high_resolution_clock::now();
 		for(int i=0; i<count; ++i)
 		{
 			model->add(Transform(), i+1);
-			model->add(Movement3(), i+1);
+			model->add(Movement(), i+1);
 		}
+		auto duration_add = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start);
+		for(int i=0; i<count; ++i)
+		{
+			model->get<Movement>(i+1).x = 1;
+		}
+		auto duration_get = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start);
 		SystemMovementIf().update(model);
+		auto duration_upd = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start);
+		std::cout << "Time add: " << duration_add.count() << " microseconds\n";
+		std::cout << "Time get: " << (duration_get - duration_add).count() << " microseconds\n";
+		std::cout << "Time upd: " << (duration_upd - duration_get).count() << " microseconds\n";
+	}
 
-		auto end = std::chrono::high_resolution_clock::now();
+	fn void test_perfomance_update()
+	{
+		using clock = std::chrono::steady_clock;
 
-	    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+	    constexpr int count = 10000;
+	    constexpr int frames = 200;
+	    constexpr int warmup = 5;
 
-    	std::cout << "Time: " << duration.count() << " microseconds\n";
+	    auto model = this->get_model();
+		model->get_components<Transform>().reserve(count);
+		model->get_components<Movement>().reserve(count);
+
+
+	    // populate (один раз)
+	    for (int i = 0; i < count; ++i)
+	    {
+	        int id = i + 1;
+	        model->add(Transform(), id);
+	        model->add(Movement(), id);
+	        auto& m = model->get<Movement>(id);
+	        m.x = 1;
+	    }
+
+	    // warmup
+	    for(int i=0;i<warmup;++i)
+	    {
+	        SystemMovementIf().update(model);
+	    }
+
+	    std::vector<long long> us;
+	    us.reserve(frames);
+
+	    volatile float sink = 0;
+
+	    for(int f=0; f<frames; ++f)
+	    {
+	        auto start = clock::now();
+
+	        SystemMovementIf().update(model);
+	        sink += model->get<Movement>(1).x;
+
+	        auto end = clock::now();
+	        us.push_back(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count());
+	    }
+
+	    std::sort(us.begin(), us.end());
+	    auto median = us[us.size()/2];
+	    auto best = us.front();
+
+	    std::cout << "Update: best=" << best << " us"
+	              << " median=" << median << " us"
+	              << " (" << (1000.0 * median / count) << " ns/entity)\n";
+	    std::cout << "sink=" << sink << "\n";
 	}
 }
-
-
 
 
 
