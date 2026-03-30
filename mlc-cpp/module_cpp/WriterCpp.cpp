@@ -22,6 +22,19 @@
 #include <format>
 #include <unordered_set>
 
+const std::string ENUM_HASH = R"(
+namespace std
+{
+    template<> struct hash<{namespace}::{class_name}> 
+    {
+        std::size_t operator()(const {namespace}::{class_name}& s) const noexcept 
+        {
+            return std::hash<int>{}(s.operator int());
+        }
+    };
+}
+)";
+
 WriterCpp::WriterCpp() {}
 
 std::vector<std::pair<std::string, std::string>>
@@ -153,6 +166,11 @@ auto WriterCpp::writeHpp(const std::shared_ptr<Class> &cls) -> std::tuple<std::s
     if(constructors.empty()){
         constructors = std::format("{}();\n", cls->name);
     }
+    
+    std::string hash;
+    if(cls->type == "enum"){
+        hash = ENUM_HASH;
+    }
 
     // Format header
     std::string header = HEADER;
@@ -164,6 +182,7 @@ auto WriterCpp::writeHpp(const std::shared_ptr<Class> &cls) -> std::tuple<std::s
             p += val.size();
         }
     };
+    replace("hash", hash);
     replace("namespace", ns);
     replace("class_name", cn);
     replace("includes", buildIncludes(cls, incs, true));
