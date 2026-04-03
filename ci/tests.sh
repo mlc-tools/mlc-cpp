@@ -5,7 +5,7 @@ pushd .
 ./build_and_install.sh
 
 cd ../tests
-mlc --config mlc.json
+~/.local/bin/mlc --config mlc.json
 
 python3 test_cpp.py xml
 python3 test_cpp.py json
