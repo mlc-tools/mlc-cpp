@@ -61,7 +61,7 @@ class TestConstructableClass<ITestConstructableClass>:test
         this->assertTrue(cls->b == 2);
     }
 
-    function void test_copy_ctor()
+    function void test_copy_ctor():cpp
     {
         MoveCtor2 obj1;
         obj1.s1 = "s1";
@@ -74,7 +74,7 @@ class TestConstructableClass<ITestConstructableClass>:test
         this->assertEqual(obj2.s2, "s2");
     }
 
-    function void test_copy_operator()
+    function void test_copy_operator():cpp
     {
         MoveCtor2 obj1;
         obj1.s1 = "s1";
@@ -88,7 +88,7 @@ class TestConstructableClass<ITestConstructableClass>:test
         this->assertEqual(obj2.s2, "s2");
     }
 
-    function void test_move_ctor()
+    function void test_move_ctor():cpp
     {
         MoveCtor2 obj1;
         obj1.s1 = "s1";
@@ -101,7 +101,7 @@ class TestConstructableClass<ITestConstructableClass>:test
         this->assertTrue(obj1.s2.empty());
     }
 
-    function void test_move_operator()
+    function void test_move_operator():cpp
     {
         MoveCtor2 obj1;
         obj1.s1 = "s1";
@@ -115,7 +115,7 @@ class TestConstructableClass<ITestConstructableClass>:test
         this->assertTrue(obj1.s2.empty());
     }
 
-    function void test_use_move_ctor_in_vector()
+    function void test_use_move_ctor_in_vector():cpp
     {
         std::vector<MoveCtor2> v1;
         v1.emplace_back();
