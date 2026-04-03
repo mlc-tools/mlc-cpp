@@ -1,5 +1,6 @@
-class ecs/EcsModel
+class ecs/EcsModel:prefer_use_forward_declarations
 {
+	hash_map<int, Observable<void()>> event_build_finish
 	fn void update_systems(float dt)
 	{
 		[SystemMovement2]

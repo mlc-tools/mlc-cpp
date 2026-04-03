@@ -645,7 +645,7 @@ WriterCpp::getIncludesForHeader(const std::shared_ptr<Class> &cls) {
         [&](std::set<std::string> &container, const Object &o) {
             addObj(container, o);
             for (auto &arg : o.template_args) {
-                if (cls->prefer_use_forward_declarations)
+                if (cls->prefer_use_forward_declarations && arg.template_args.empty())
                     parseObj(fwd, arg);
                 else
                     parseObj(container, arg);
