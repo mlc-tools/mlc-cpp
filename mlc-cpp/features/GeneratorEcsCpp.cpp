@@ -88,15 +88,26 @@ public:
     {
         return join_all(view<A, B>(), get_components<Rest>()...);
     }
+
+    void break_each()
+    {
+        assert(this->_in_each > 0);
+        this->_break_each = true;
+    }
     
     template<typename A, typename Func>
     void each(Func func)
     {
+        ++_in_each;
         auto& components = get_components<A>();
         for(auto& comp : components)
         {
             func(comp);
+            if(_break_each)
+                break;
         }
+        _break_each = false;
+        --_in_each;
     }
 
     template<typename A, typename B, typename... Rest, typename Func>
@@ -114,6 +125,8 @@ public:
     }
     
 private:
+    bool _break_each = false;
+    int _in_each = 0;
     //  Имплементация N-way merge через tuple<references> + индексы
     template<typename A, typename B, typename... Rest, size_t... Is, typename Func>
     void each_impl(std::index_sequence<Is...>, Func func)
@@ -131,6 +144,7 @@ private:
             std::get<Is>(containers).size()...
         };
         
+        _in_each++; 
         // 3) N-way merge
         while (true)
         {
@@ -167,7 +181,11 @@ private:
                     }
                 }
             }
+            if(_break_each)
+                break;
         }
+        _break_each = false;
+        --_in_each;
     }
     //  Имплементация N-way merge через tuple<references> + индексы
     template<typename A, typename B, typename... Rest, size_t... Is, typename Func, typename Cond>
@@ -186,6 +204,7 @@ private:
             std::get<Is>(containers).size()...
         };
         // 3) N-way merge
+        _in_each++;
         while (true)
         {
             // если любой индекс вышел за пределы — закончили
@@ -222,7 +241,11 @@ private:
                     }
                 }
             }
+            if(_break_each)
+                break;
         }
+        _break_each = false;
+        --_in_each;
     }
 )__EACH__";
 

@@ -148,4 +148,70 @@ class ecs/TestEcsModel<ITestEcsModel>
 		this->assertEqual(model->get<Transform>(2)->x, 2);
 		this->assertEqual(model->get<Transform>(2)->y, 0);
 	}
+
+	fn void test_each_break():cpp
+	{
+		auto model = this->get_model();
+		model->add(new Transform(), 1);
+		model->add(new Transform(), 2);
+		model->add(new Movement(), 1);
+		model->add(new Movement(), 2);
+		
+		bool each_2 = false;
+		model->each<Transform>([&](auto& transform)
+		{
+			each_2 = each_2 || transform->id == 2;
+			model->break_each();
+		});
+		this->assertFalse(each_2);
+		
+		each_2 = false;
+		model->each<Transform>([&](auto& transform)
+		{
+			each_2 = each_2 || transform->id == 2;
+			model->each<Movement>([&](auto& movement)
+			{
+				each_2 = each_2 || movement->id == 2;
+				model->break_each();
+			});
+			model->break_each();
+		});
+		this->assertFalse(each_2);
+
+		model->each<Transform>([&](auto& transform)
+		{
+			each_2 = each_2 || transform->id == 2;
+		});
+		this->assertTrue(each_2);
+
+		each_2 = false;
+		model->each<Transform, Movement>([&](auto& transform, auto& movement)
+		{
+			each_2 = each_2 || transform->id == 2;
+			model->break_each();
+		});
+		this->assertFalse(each_2);
+
+		each_2 = false;
+		model->each_if<Transform, Movement>([&](auto& transform, auto& movement)
+		{
+			return true;
+		}, [&](auto& transform, auto& movement)
+		{
+			each_2 = each_2 || transform->id == 2;
+			model->break_each();
+		});
+		this->assertFalse(each_2);
+
+		each_2 = false;
+		model->each_if<Transform, Movement>([&](auto& transform, auto& movement)
+		{
+			model->break_each();
+			return true;
+		}, [&](auto& transform, auto& movement)
+		{
+			each_2 = each_2 || transform->id == 2;
+		});
+		this->assertFalse(each_2);
+	}
 }
