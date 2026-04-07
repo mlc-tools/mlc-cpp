@@ -76,6 +76,8 @@ void Object::set_modifier(const std::string_view &modifier) {
         access = AccessSpecifier::m_public;
     else if (modifier == Modifier::m_pointer)
         this->is_pointer = true;
+    else if (modifier == Modifier::m_raw_pointer)
+        this->is_raw_pointer = true;
     else if (modifier == Modifier::m_ref)
         this->is_ref = true;
     else if (modifier == Modifier::m_ref)

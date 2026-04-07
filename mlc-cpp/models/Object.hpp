@@ -33,6 +33,7 @@ public:
     std::vector<Object> template_args;
     std::vector<Object> callable_args;
     bool is_pointer = false;
+    bool is_raw_pointer = false;
     bool is_ref = false;
     bool is_runtime = false;
     bool is_static = false;

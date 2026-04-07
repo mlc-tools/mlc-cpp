@@ -362,6 +362,8 @@ std::string WriterCpp::writeNamedObject(const Object &obj,
     std::string pattern =
         usePtr ? "{static}{const}intrusive_ptr<{type}{templates}>{ref}{name}"
                : "{static}{const}{type}{templates}{pointer}{ref}{name}";
+    if(obj.is_raw_pointer)
+        baseType += "*";
     std::string result = pattern;
     // replacements
     auto rep = [&](const std::string &key, const std::string &val) {
