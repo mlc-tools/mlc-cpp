@@ -351,11 +351,6 @@ void GeneratorEcsCpp::generate(Model &model) {
     generateContainers(model, ecsPimpl);
     generateClearComponents(model, ecsBase);
 
-    generateAddModelMethod(model);
-    generateRemoveModelMethod(model);
-    generateGetSelfFromModelMethod(model);
-    generateHasInModel(model);
-
     generateModelAddComponent(model);
     generateModelRemoveComponent(model);
     generateModelGetComponent(model, /*isConst*/ true);
@@ -678,56 +673,6 @@ s{0}.clean(this);)",
         joined += out[i];
     }
     update->body = joined;
-}
-
-void GeneratorEcsCpp::generateAddModelMethod(Model &model) {
-    for (auto &cls : model.classes) {
-        if (cls->name == _ecs_component_base_name || !isBased(cls, _ecs_component_base_name))
-            continue;
-        auto fn = parse_function(format_indexes("fn void add_self_to_model({0}* model_dungeon_class)", _ecs_model_base_name));
-        if (cls->name != _ecs_component_base_name) {
-            fn.body = format_indexes(R"(model_dungeon_class->add<{0}>(std::move(*this));)", cls->name);
-        }
-        cls->functions.push_back(std::move(fn));
-    }
-}
-
-void GeneratorEcsCpp::generateRemoveModelMethod(Model &model) {
-    for (auto &cls : model.classes) {
-        if (cls->name == _ecs_component_base_name || !isBased(cls, _ecs_component_base_name))
-            continue;
-        auto fn = parse_function(format_indexes("fn void remove_self_from_model({0}* model_dungeon_class)", _ecs_model_base_name));
-        if (cls->name != _ecs_component_base_name) {
-            fn.body = format_indexes(R"(model_dungeon_class->remove<{0}>(*this);)", cls->name);
-        }
-        cls->functions.push_back(std::move(fn));
-    }
-}
-
-void GeneratorEcsCpp::generateGetSelfFromModelMethod(Model &model) {
-    for (auto &cls : model.classes) {
-        if (!isBased(cls, _ecs_component_base_name))
-            continue;
-        if (cls->name == _ecs_component_base_name)
-            continue;
-        
-        auto fn = parse_function(format_indexes("fn {0}& get_self_from_model({1}* model_dungeon_class, int id)", _ecs_component_base_name, _ecs_model_base_name));
-        fn.body = format_indexes(R"(return model_dungeon_class->get<{0}>(id);)",
-                                 cls->name);
-        cls->functions.push_back(std::move(fn));
-    }
-}
-
-void GeneratorEcsCpp::generateHasInModel(Model &model) {
-    for (auto &cls : model.classes) {
-        if (!isBased(cls, "ComponentSkillBase"))
-            continue;
-        if (cls->name == "ComponentSkillBase")
-            continue;
-        auto fn = parse_function(format_indexes("fn bool has_in_model({0}* model_dungeon_class, int id)", _ecs_model_base_name));
-        fn.body = format_indexes("return model_dungeon_class->get_map_components<{0}>.count(id) > 0;", cls->name);
-        cls->functions.push_back(std::move(fn));
-    }
 }
 
 void GeneratorEcsCpp::generateBuildMaps(Model &model) {

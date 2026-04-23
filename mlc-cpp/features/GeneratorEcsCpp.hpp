@@ -39,10 +39,6 @@ private:
     void generateClearComponents(Model &model, const std::shared_ptr<Class> &ecsBase);
     void generateSystemsEndTurn(Model &model, const std::shared_ptr<Class> &cls);
     void generateRemoveEntity(Model &model);
-    void generateAddModelMethod(Model &model);
-    void generateRemoveModelMethod(Model &model);
-    void generateGetSelfFromModelMethod(Model &model);
-    void generateHasInModel(Model &model);
     void generateBuildMaps(Model &model);
     void generateModelAddComponent(Model &model);
     void generateModelRemoveComponent(Model &model);
