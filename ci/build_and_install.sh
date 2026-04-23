@@ -14,16 +14,22 @@ function increment_version(){
 }
 
 function build(){
+	pushd . > /dev/null
 	mkdir -p build_cli
 	cd build_cli
 	cmake -DCMAKE_BUILD_TYPE=Release ..
 	cmake --build .  -j8
 	cmake --install . --prefix "$HOME/.local"
+	popd > /dev/null
 }
 
 function push_tag(){
-	TAG="v/$1"
-	git tag $TAG
+	pwd
+	git add "mlc-cpp/version.hpp"
+	git commit -m "auto commit: version $1"
+	git push
+
+	git tag "v/$1"
 	git push origin --tags
 }
 
