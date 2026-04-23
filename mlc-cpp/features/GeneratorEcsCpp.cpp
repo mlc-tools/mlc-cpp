@@ -510,6 +510,8 @@ void GeneratorEcsCpp::createPimplClass(Model &model, const std::shared_ptr<Class
     pimpl->name = "EcsPimpl";
     pimpl->type = "class";
     pimpl->group = ecsBase->group;
+    pimpl->discard_copy = true;
+    pimpl->discard_copy_ctr = true;
     model.add_class(pimpl);
     
     auto impl = std::make_shared<Class>();
@@ -914,7 +916,7 @@ else
     });
     new_index = iter - components.begin();
     was_shift = true;
-    components.insert(iter, component);
+    components.insert(iter, std::move(component));
 }
 
 assert(std::is_sorted(components.begin(), components.end(), [](const auto& l, const auto& r)
@@ -971,35 +973,35 @@ void GeneratorEcsCpp::generateModelRemoveComponent(Model &model) {
 }
 
 void GeneratorEcsCpp::generateModelCopyEntityFromModel(Model &model) {
+    //TODO: copy_entity_from_model
     auto ecs = model.get_class(_ecs_model_base_name);
     if (!ecs)
         return;
-    auto m = parse_function("fn void copy_entity_from_model(" +
-                        _ecs_model_base_name + "* model, int id, int new_id)");
+    auto m = parse_function("fn void copy_entity_from_model(" + _ecs_model_base_name + "* model, int id, int new_id)");
+    
     std::string body;
     for (auto &cls : model.classes) {
         if (!isBased(cls, _ecs_component_base_name) ||
             cls->name == _ecs_component_base_name)
             continue;
         auto field = componentsField(cls);
-        body += format_indexes(R"(auto component_{0} = model->get<{1}>(id);
-)",
-                               field, cls->name);
-        body += format_indexes(R"(if(component_{0}.id > 0)
-{
-)",
-                               field);
-        body +=
-            format_indexes(R"(    {0} clone = component_{1};
-)",
-                           cls->name, field);
-        body += "    clone.id = new_id;\n";
-        body += format_indexes(R"(    this->add<{0}>(std::move(clone), new_id);
-)",
-                               cls->name);
-        body += "}\n";
+        body += format_indexes(R"(
+        if(auto& component_{0} = model->get<{1}>(id))
+        {
+            pugi::xml_document doc;
+            auto root = doc.append_child("comp");
+            SerializerXml serializer(root);
+            component_{0}.serialize_xml(serializer);
+
+            DeserializerXml deserializer(root);
+            {1} clone;
+            clone.deserialize_xml(deserializer);
+            this->add<{1}>(std::move(clone), new_id);
+        })", field, cls->name);
     }
     m.body = body;
+    
+//    m.body = "assert(false && \"TODO: add method\");";
     ecs->functions.push_back(std::move(m));
 }
 

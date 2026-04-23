@@ -29,11 +29,12 @@ void GeneratorOperatorEqualsBase::generate(const std::shared_ptr<Class>& cls){
     
     addEqualMethod(cls);
     addNotEqualMethod(cls);
-    if(!cls->get_copy_constructor())
+    if(!cls->is_discard_copy_ctr() && !cls->get_copy_constructor())
         addCopyConstructor(cls);
     addMoveConstructor(cls);
     addMoveOperator(cls);
-    addCopyOperator(cls);
+    if(!cls->is_discard_copy())
+        addCopyOperator(cls);
 }
 
 Object

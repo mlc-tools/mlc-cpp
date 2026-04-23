@@ -44,6 +44,10 @@ void Class::set_modifier(const std::string_view &modifier) {
         this->is_virtual = true;
     else if (modifier == Modifier::m_discard_virtual)
         this->discard_virtual = true;
+    else if (modifier == Modifier::m_discard_copy_ctr)
+        this->discard_copy_ctr = true;
+    else if (modifier == Modifier::m_discard_copy)
+        this->discard_copy = true;
     else if (modifier == Modifier::m_prefer_use_forward_declarations)
         this->prefer_use_forward_declarations = true;
     else if (modifier == Modifier::m_binding)
@@ -123,6 +127,8 @@ void Class::onLinked(Model &model) {
     
     if (!parent.expired()){
         this->discard_virtual = parent.lock()->is_discard_virtual();
+        this->discard_copy_ctr = parent.lock()->is_discard_copy_ctr();
+        this->discard_copy = parent.lock()->is_discard_copy();
     }
 
     if(!discard_virtual){
@@ -211,4 +217,11 @@ bool Class::has_function_in_parentclass(const Function &func, bool depth) {
 
 bool Class::is_discard_virtual() const{
     return this->discard_virtual || (!parent.expired() && parent.lock()->is_discard_virtual());
+}
+
+bool Class::is_discard_copy_ctr() const{
+    return this->discard_copy_ctr || (!parent.expired() && parent.lock()->is_discard_copy_ctr());
+}
+bool Class::is_discard_copy() const{
+    return this->discard_copy || (!parent.expired() && parent.lock()->is_discard_copy());
 }

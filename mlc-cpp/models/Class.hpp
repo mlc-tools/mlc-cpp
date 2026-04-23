@@ -36,6 +36,8 @@ struct Class : public Object {
     bool is_inline = false;
     bool is_virtual = false;
     bool discard_virtual = false;
+    bool discard_copy_ctr = false;
+    bool discard_copy = false;
     bool is_enum = false;
     bool generate_set_function = false;
     bool auto_generated = true;
@@ -65,6 +67,8 @@ struct Class : public Object {
     bool has_function_in_subclasses(const Function &func, bool depth = 0);
     bool has_function_in_parentclass(const Function &func, bool depth = 0);
     bool is_discard_virtual() const;
+    bool is_discard_copy_ctr() const;
+    bool is_discard_copy() const;
 
     void onLinked(Model &model);
 };

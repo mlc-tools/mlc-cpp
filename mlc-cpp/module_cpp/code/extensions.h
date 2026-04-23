@@ -1609,7 +1609,7 @@ public:
         {
             T value;
             item.deserialize(value, default_value::value<std::string>());
-            values.push_back(value);
+            values.push_back(std::move(value));
         }
     }
 /* Vectors deserialization finish */
@@ -2706,7 +2706,7 @@ public:
         {
             T value;
             item.deserialize(value, "");
-            values.push_back(value);
+            values.push_back(std::move(value));
         }
     }
 /* Vectors deserialization finish */

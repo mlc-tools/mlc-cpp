@@ -8,7 +8,7 @@ class ecs/EcsModel:prefer_use_forward_declarations
 	}
 }
 
-class ecs/EcsComponent:discard_virtual
+class ecs/EcsComponent:discard_virtual:discard_copy_ctr:discard_copy
 {
 	int id
 }
