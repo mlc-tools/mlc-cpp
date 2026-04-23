@@ -77,7 +77,8 @@ public:
             int idb = comp_b.id;
             if (ida == idb)
             {
-                result.emplace_back(comp_a, comp_b);
+                if(!comp_a.is_removed() && !comp_b.is_removed())
+                    result.emplace_back(comp_a, comp_b);
                 ++i; ++j;
             }
             else if (ida < idb)
@@ -95,7 +96,14 @@ public:
     template<typename A, typename B, typename... Rest>
     auto view_all() const
     {
-        return join_all(view<A, B>(), get_components<Rest>()...);
+        std::vector<std::tuple<A&, B&, Rest&...>> result;
+        auto& cont_a = get_components<A>();
+        result.reserve(cont_a.size());
+        each<A, B, Rest...>([&](A& a, B& b, Rest&... rest)
+        {
+            result.emplace_back(a, b, rest...);
+        });
+        return result;
     }
     
     template<typename A, typename Func>
@@ -104,6 +112,7 @@ public:
         auto& components = get_components<A>();
         for(auto& comp : components)
         {
+            if(!comp.is_removed())
             func(comp);
         }
     }
@@ -162,7 +171,9 @@ private:
             // если все id совпадают — вызовем func и сдвинем все индексы
             if (((ids[Is] == max_id) && ...))
             {
-                func(std::get<Is>(containers)[idxs[Is]]...);
+                auto args = std::forward_as_tuple(std::get<Is>(containers)[idxs[Is]]...);
+                if(std::apply([](auto&... comps){ return ((!comps.is_removed()) && ...); }, args))
+                    std::apply([&](auto&... comps){ func(comps...); }, args);
                 (++idxs[Is], ...);
             }
             else
@@ -216,8 +227,12 @@ private:
             // если все id совпадают — вызовем func и сдвинем все индексы
             if (((ids[Is] == max_id) && ...))
             {
-                if(cond(std::get<Is>(containers)[idxs[Is]]...))
-                    func(std::get<Is>(containers)[idxs[Is]]...);
+                auto args = std::forward_as_tuple(std::get<Is>(containers)[idxs[Is]]...);
+                if(std::apply([](auto&... comps){ return ((!comps.is_removed()) && ...); }, args) &&
+                   std::apply([&](auto&... comps){ return cond(comps...); }, args))
+                {
+                    std::apply([&](auto&... comps){ func(comps...); }, args);
+                }
                 (++idxs[Is], ...);
             }
             else
@@ -309,6 +324,7 @@ void GeneratorEcsCpp::generate(Model &model) {
     
     auto ecsPimpl = model.get_class("EcsPimplImpl");
     
+    generateComponentSystemMembers(model);
     generateContainers(model, ecsPimpl);
     generateClearComponents(model, ecsBase);
 
@@ -451,8 +467,7 @@ void GeneratorEcsCpp::generate_model_method_save_skills(Model &model) {
             restore_hero_skill_on_change->body += "\n}";
         }
         {
-            std::string member =
-                format_indexes(R"(hash_map<string, {0}*> {1})", skill->name, field);
+            std::string member = format_indexes(R"(hash_map<string, {0}*> {1})", skill->name, field);
             info->members.push_back(parse_object(member, true));
         }
     }
@@ -784,7 +799,8 @@ if(iter != impl->map_components_{3}.end())
 {
     auto index = iter->second;
     assert(impl->components_{3}.at(index).id == component_id);
-    return impl->components_{3}.at(index);
+    auto& result = impl->components_{3}.at(index);
+    if(!result.is_removed()) return result;
 }
 static {4} dummy;
 dummy.id = -1;
@@ -850,16 +866,6 @@ void GeneratorEcsCpp::generateModelAddComponent(Model &model) {
             std::string body;
             body += format_indexes(R"(template<> void {0}::add({1}&& component, int component_id)
 {
-)", _ecs_model_base_name, cls->name);
-            if (!cls->parent_class_name.empty() && cls->parent_class_name != _ecs_component_base_name) {
-                if(_discard_inheritance){
-                    Error::exit(Error::ECS_ERROR_CANNOT_USE_INHERITANCE, cls->name);
-                }
-                else {
-                    body += format_indexes(R"(    this->add<{0}>(component, component_id);\n)", cls->parent_class_name);
-                }
-            }
-            body += format_indexes(R"(    
 assert(component.id == 0 || component.id == component_id || component_id == 0);
 if(component_id != 0)
 {
@@ -868,11 +874,11 @@ if(component_id != 0)
 assert(component.id > 0);
 
 auto impl = static_cast<EcsPimplImpl*>(this->_pimpl.ptr());
-auto iter = impl->map_components_{0}.find(component.id);
-auto& components = impl->components_{0};
+auto iter = impl->map_components_{2}.find(component.id);
+auto& components = impl->components_{2};
 size_t new_index = -1;
 bool was_shift = false;
-if(iter != impl->map_components_{0}.end())
+if(iter != impl->map_components_{2}.end())
 {
     new_index = iter->second;
     components.at(new_index) = std::move(component);
@@ -896,12 +902,12 @@ if(was_shift)
 {
     for(size_t i=new_index; i<components.size(); ++i)
     {
-        impl->map_components_{0}[components.at(i).id] = i;
+        impl->map_components_{2}[components.at(i).id] = i;
     }
 }
 }
 
-)", field);
+)", _ecs_model_base_name, cls->name, field);
             decl1.specific_implementations += body;
         }
     }
@@ -933,8 +939,9 @@ void GeneratorEcsCpp::generateModelRemoveComponent(Model &model) {
         body += format_indexes(R"__(
         template<> void {0}::remove({1}& component)
         {
-            map_remove(static_cast<EcsPimplImpl*>(this->_pimpl.ptr())->map_components_{2}, component.id);
-            list_remove(static_cast<EcsPimplImpl*>(this->_pimpl.ptr())->components_{2}, component);
+//            map_remove(static_cast<EcsPimplImpl*>(this->_pimpl.ptr())->map_components_{2}, component.id);
+//            list_remove(static_cast<EcsPimplImpl*>(this->_pimpl.ptr())->components_{2}, component);
+            component.mark_removed();
         })__", _ecs_model_base_name, cls->name, field);
         decl.specific_implementations += std::move(body);
     }
@@ -1035,6 +1042,16 @@ void GeneratorEcsCpp::generateModelGetMapComponents(Model &model, bool isConst) 
         std::string body = format_indexes(GET_MAP_COMPONENETS, _ecs_model_base_name, cls->name, field, isConst ? " const" : "");
         method->specific_implementations += body;
     }
+}
+
+void GeneratorEcsCpp::generateComponentSystemMembers(Model &model){
+    auto base = model.get_class(_ecs_component_base_name);
+    base->members.push_back(parse_object("int:private _system_flags = 0", true));
+    base->members.push_back(parse_object("int:const:static FLAG_REMOVED = 0x1", true));
+    
+    base->functions.push_back(parse_function(R"(fn bool is_removed():const { return this->_system_flags & FLAG_REMOVED; })"));
+    base->functions.push_back(parse_function(R"(fn void mark_removed() { this->_system_flags |= FLAG_REMOVED; })"));
+    base->functions.push_back(parse_function(R"(fn void mark_unremoved() { this->_system_flags &= ~FLAG_REMOVED; })"));
 }
 
 

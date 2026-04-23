@@ -76,12 +76,89 @@ class ecs/SystemMovementIf:cpp
 	}
 }
 
+class ecs/SystemAddMovement:cpp
+{
+	fn void update(EcsModel* model)
+	{
+		model->add<Movement>(Movement(), 1);
+	}
+	fn void clean(EcsModel* model)
+	{
+		model->remove<Movement>(model->get<Movement>(1));
+	}
+}
+
 class ecs/TestEcsModel<ITestEcsModel>
 {
 	fn EcsModel* get_model()
 	{
 		auto model = new EcsModel();
 		return model;
+	}
+
+	fn void test_removed():cpp
+	{
+		Transform transform;
+
+		this->assertFalse(transform.is_removed(), "not removed on create");
+		this->assertFalse(transform.is_removed(), "not removed on create again");
+		
+		transform.mark_removed();
+		this->assertTrue(transform.is_removed(), "removed after mark removed");
+		
+		transform.mark_removed();
+		this->assertTrue(transform.is_removed(), "removed after mark removed again");
+		
+		transform.mark_unremoved();
+		this->assertFalse(transform.is_removed(), "not removed after unmark removed");
+		
+		transform.mark_unremoved();
+		this->assertFalse(transform.is_removed(), "not removed after unmark removed again");
+
+	}
+
+
+	fn void test_remove():cpp
+	{
+		auto model = this->get_model();
+		model->add(Transform(), 1);
+		assertEqual(model->get<Transform>(1).id, 1, "has component");
+		model->remove<Transform>(model->get<Transform>(1));
+		assertEqual(model->get<Transform>(1).id, -1, "has not component");
+	}
+
+
+	fn void test_each_after_remove():cpp
+	{
+		auto model = this->get_model();
+		model->add(Transform(), 1);
+		model->add(Movement(), 1);
+		model->remove<Transform>(model->get<Transform>(1));
+
+		int count = 0;
+		model->each<Transform>([&](auto& t) { ++count; });
+		assertEqual(count, 0, "has not iterate component on each");
+		
+		count = 0;
+		model->each<Transform, Movement>([&](auto& t, auto& m) { ++count; });
+		assertEqual(count, 0, "has not iterate component on each 2");		
+		
+		count = 0;
+		model->each<Movement, Transform>([&](auto& m, auto& t){++count;});
+		assertEqual(count, 0, "has not iterate component on each 2(a)");
+
+		//TODO: add each_if for one component
+		// count = 0;
+		// model->each_if<Transform>([&](auto& t){ return true; }, [&](auto& t){++count;});
+		// assertEqual(count, 0, "has not iterate component on each_if");
+		
+		count = 0;
+		model->each_if<Transform, Movement>([&](auto&, auto&){ return true; }, [&](auto& t, auto& m){ ++count; });
+		assertEqual(count, 0, "has not iterate component on each_if 2");		
+		
+		count = 0;
+		model->each_if<Movement, Transform>([&](auto&, auto&){ return true; }, [&](auto& m, auto& t){ ++count; });
+		assertEqual(count, 0, "has not iterate component on each_if 2(a)");
 	}
 
 	fn void test_update_systems():cpp
@@ -285,7 +362,7 @@ class ecs/TestEcsModel<ITestEcsModel>
 	        auto start = clock::now();
 
 	        SystemMovementIf().update(model);
-	        sink += model->get<Movement>(1).x;
+	        // sink += model->get<Movement>(1).x;
 
 	        auto end = clock::now();
 	        us.push_back(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count());
@@ -299,6 +376,34 @@ class ecs/TestEcsModel<ITestEcsModel>
 	              << " median=" << median << " us"
 	              << " (" << (1000.0 * median / count) << " ns/entity)\n";
 	    std::cout << "sink=" << sink << "\n";
+	}
+
+
+
+	fn void test_perfomance_add_on_first()
+	{
+		int count = 10000;
+		auto model = this->get_model();
+		model->get_components<Transform>().reserve(count);
+		model->get_components<Movement>().reserve(count);
+
+		for(int i=0; i<count; ++i)
+		{
+			model->add(Transform(), i+1);
+			model->add(Movement(), i+1);
+		}
+
+		auto start = std::chrono::high_resolution_clock::now();
+		for(int i=0; i<count; ++i)
+		{
+			SystemAddMovement().update(model);
+			this->assertEqual(model->get_components<Movement>().size(), count);
+			SystemAddMovement().clean(model);
+			this->assertEqual(model->get_components<Movement>().size(), count);
+		}
+		auto duration = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start);
+		auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start);
+		std::cout << "Time upd with add to first: " << duration.count() << " microseconds, AVG: " << ns.count() / count << "ns on iterate\n";
 	}
 }
 
