@@ -1075,6 +1075,12 @@ void GeneratorEcsCpp::generateComponentSystemMembers(Model &model){
     base->functions.push_back(parse_function(R"(fn bool is_removed():const { return this->_system_flags & FLAG_REMOVED; })"));
     base->functions.push_back(parse_function(R"(fn void mark_removed() { this->_system_flags |= FLAG_REMOVED; })"));
     base->functions.push_back(parse_function(R"(fn void mark_unremoved() { this->_system_flags &= ~FLAG_REMOVED; })"));
+    
+    Function cast_to_bool;
+    cast_to_bool.is_const = true;
+    cast_to_bool.name = "operator bool";
+    cast_to_bool.body = "return id > 0;";
+    base->functions.push_back(std::move(cast_to_bool));
 }
 
 
