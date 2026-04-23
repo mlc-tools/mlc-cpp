@@ -98,13 +98,13 @@ constexpr std::string_view Lexer::read_string(char quote) {
     return std::string_view(&text[start], pos - start);
 }
 constexpr bool Lexer::is_special(char c) {
-    return std::string("_@&[]!|.#?").find(c) != std::string::npos;
+    return std::string("_@[]!|.#?").find(c) != std::string::npos;
 }
 constexpr bool Lexer::is_symbol(char c) {
     return c == '{' || c == '}' || c == '(' || c == ')' || c == ';' ||
            c == '.' || c == ',' || c == ':' || c == '<' || c == '>' ||
            c == '+' || c == '-' || c == '*' || c == '/' || c == '=' ||
-           c == '%' || false;
+           c == '%' || c == '&' || false;
 }
 
 std::string_view Lexer::get_current_line() const {

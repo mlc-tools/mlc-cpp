@@ -187,6 +187,10 @@ void test_parse_members() {
     check_object(obj, "ModelEcsBase", "model");
     assert(obj.is_pointer);
 
+    obj = parse_object("ModelEcsBase& model", true);
+    check_object(obj, "ModelEcsBase", "model");
+    assert(obj.is_ref);
+
     obj = parse_object(
         "Observable<void(DataUnit:link, DataSkin:link)>:runtime:client "
         "event_current_skin_changed",

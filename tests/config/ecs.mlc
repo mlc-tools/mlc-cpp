@@ -41,11 +41,16 @@ class ecs/SystemMovement:cpp
 	fn void update(EcsModel* model)
 	{
 		model->each<Transform, Movement>(
-			[](auto& tranform, auto& movement)
+			[this](auto& transform, auto& movement)
 			{
-				tranform.x += movement.x;
-				tranform.y += movement.y;
+				this->move(transform, movement);
 			});
+	}
+
+	fn void move(Transform& transform, Movement& movement)
+	{
+		transform.x += movement.x;
+		transform.y += movement.y;
 	}
 }
 class ecs/SystemMovement2:cpp

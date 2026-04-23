@@ -201,6 +201,9 @@ std::vector<Object> ParserLexem::read_templates() {
                 } else if (cur.value == "*") {
                     raw += cur.value;
                     advance();
+                } else if (cur.value == "&") {
+                    raw += cur.value;
+                    advance();
                 } else if (cur.value == ":") {
                     raw += cur.value;
                     advance();
@@ -272,6 +275,10 @@ Object ParserLexem::parse_member(bool with_name, bool is_enum) {
     advance();
     if (cur.type == TokenType::Symbol && cur.value == "*") {
         member.is_pointer = true;
+        advance();
+    }
+    else if (cur.type == TokenType::Symbol && cur.value == "&") {
+        member.is_ref = true;
         advance();
     }
 
