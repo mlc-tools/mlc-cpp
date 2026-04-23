@@ -930,11 +930,13 @@ void GeneratorEcsCpp::generateModelRemoveComponent(Model &model) {
     for (auto &cls : getComponentClasses(model)) {
         auto field = componentsField(cls);
         std::string body;
-        body += format_indexes(R"(template<> void {0}::remove({1}& component){)", _ecs_model_base_name, cls->name);
-        body += format_indexes(R"(
-    list_remove(static_cast<EcsPimplImpl*>(this->_pimpl.ptr())->components_{0}, component);
-    map_remove(static_cast<EcsPimplImpl*>(this->_pimpl.ptr())->map_components_{0}, component.id);})", field);
-        decl.specific_implementations += body;
+        body += format_indexes(R"__(
+        template<> void {0}::remove({1}& component)
+        {
+            map_remove(static_cast<EcsPimplImpl*>(this->_pimpl.ptr())->map_components_{2}, component.id);
+            list_remove(static_cast<EcsPimplImpl*>(this->_pimpl.ptr())->components_{2}, component);
+        })__", _ecs_model_base_name, cls->name, field);
+        decl.specific_implementations += std::move(body);
     }
 }
 
