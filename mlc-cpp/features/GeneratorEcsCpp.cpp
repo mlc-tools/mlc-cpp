@@ -32,24 +32,26 @@ public:
     {
         auto& components = this->get_components<TComp>();
         auto& map_components = this->get_map_components<TComp>();
-        size_t index = 0;
-        while(index < components.size())
+        size_t index = -1;
+        auto iter = std::remove_if(components.begin(), components.end(), [&](auto& comp)
+            {
+                if(cond(comp))
+                {
+                    auto iter = map_components.find(comp.id);
+                    index = iter->second;
+                    map_components.erase(iter);
+                    return true;
+                }
+                return false;
+            });
+        if(iter != components.end())
         {
-            if(!cond(components.at(index)))
+            components.erase(iter, components.end());
+            // build_maps();
+            for(auto i=index;i<components.size(); ++i)
             {
-                ++index;
-                continue;
+                map_components[components.at(i).id] = i;
             }
-            auto iter = map_components.find(components.at(index).id);
-            if(iter != map_components.end())
-                map_components.erase(iter);
-            size_t last_index = components.size() - 1;
-            if(index != last_index)
-            {
-                components.at(index) = std::move(components.at(last_index));
-                map_components[components.at(index).id] = index;
-            }
-            components.pop_back();
         }
     }
     
@@ -58,32 +60,33 @@ public:
     {
         auto& cont_a = get_components<TCompA>();
         auto& cont_b = get_components<TCompB>();
-        auto& map_a = get_map_components<TCompA>();
-        auto& map_b = get_map_components<TCompB>();
+        assert(std::is_sorted(std::begin(cont_a), std::end(cont_a), [](auto const& lhs, auto const& rhs){return lhs.id < rhs.id;}));
+        assert(std::is_sorted(std::begin(cont_b), std::end(cont_b), [](auto const& lhs, auto const& rhs){return lhs.id < rhs.id;}));
         
         std::vector<std::tuple<TCompA&, TCompB&>> result;
         result.reserve(std::min(cont_a.size(), cont_b.size()));
-
-        if(cont_a.size() <= cont_b.size())
+        
+        size_t i = 0, j = 0;
+        auto size_a = cont_a.size();
+        auto size_b = cont_b.size();
+        while (i < size_a && j < size_b)
         {
-            for(auto& comp_a : cont_a)
+            auto& comp_a = cont_a[i];
+            auto& comp_b = cont_b[j];
+            int ida = comp_a.id;
+            int idb = comp_b.id;
+            if (ida == idb)
             {
-                auto iter_b = map_b.find(comp_a.id);
-                if(iter_b == map_b.end())
-                    continue;
-                auto& comp_b = cont_b.at(iter_b->second);
                 result.emplace_back(comp_a, comp_b);
+                ++i; ++j;
             }
-        }
-        else
-        {
-            for(auto& comp_b : cont_b)
+            else if (ida < idb)
             {
-                auto iter_a = map_a.find(comp_b.id);
-                if(iter_a == map_a.end())
-                    continue;
-                auto& comp_a = cont_a.at(iter_a->second);
-                result.emplace_back(comp_a, comp_b);
+                ++i;
+            }
+            else
+            {
+                ++j;
             }
         }
         return result;
@@ -92,14 +95,7 @@ public:
     template<typename A, typename B, typename... Rest>
     auto view_all() const
     {
-        std::vector<std::tuple<A&, B&, Rest&...>> result;
-        auto& cont_a = get_components<A>();
-        result.reserve(cont_a.size());
-        each<A, B, Rest...>([&](A& a, B& b, Rest&... rest)
-        {
-            result.emplace_back(a, b, rest...);
-        });
-        return result;
+        return join_all(view<A, B>(), get_components<Rest>()...);
     }
     
     template<typename A, typename Func>
@@ -115,63 +111,125 @@ public:
     template<typename A, typename B, typename... Rest, typename Func>
     void each(Func func)
     {
-        each_impl<A,B,Rest...>(std::index_sequence_for<Rest...>{}, func);
+        // запускаем внутренний имплементационный метод с индексовой последовательностью
+        each_impl<A,B,Rest...>(std::index_sequence_for<A,B,Rest...>{},func);
     }
     
     template<typename A, typename B, typename... Rest, typename Cond, typename Func>
     void each_if(Cond cond, Func func)
     {
-        each_if_impl<A,B,Rest...>(std::index_sequence_for<Rest...>{}, func, cond);
+        // запускаем внутренний имплементационный метод с индексовой последовательностью
+        each_if_impl<A,B,Rest...>(std::index_sequence_for<A,B,Rest...>{},func, cond);
     }
     
 private:
+    //  Имплементация N-way merge через tuple<references> + индексы
     template<typename A, typename B, typename... Rest, size_t... Is, typename Func>
     void each_impl(std::index_sequence<Is...>, Func func)
     {
-        auto& cont_a = get_components<A>();
-        auto& cont_b = get_components<B>();
-        auto& map_b = get_map_components<B>();
-        auto rest_maps = std::tie(get_map_components<Rest>()...);
-        auto rest_containers = std::tie(get_components<Rest>()...);
-
-        for(auto& comp_a : cont_a)
+        // 1) Собираем tuple из ссылок на наши контейнеры
+        auto containers = std::tie(get_components<A>(),
+                                   get_components<B>(),
+                                   get_components<Rest>()...);
+        constexpr size_t N = 2 + sizeof...(Rest);
+        
+        // 2) Индексы по каждому вектору и их размеры
+        std::array<size_t, N> idxs{};
+        std::array<size_t, N> sizes
         {
-            int id = comp_a.id;
-            auto iter_b = map_b.find(id);
-            if(iter_b == map_b.end())
-                continue;
-            if(!((std::get<Is>(rest_maps).find(id) != std::get<Is>(rest_maps).end()) && ...))
-                continue;
-            func(comp_a,
-                 cont_b.at(iter_b->second),
-                 std::get<Is>(rest_containers).at(std::get<Is>(rest_maps).at(id))...);
+            std::get<Is>(containers).size()...
+        };
+        
+        // 3) N-way merge
+        while (true)
+        {
+            // если любой индекс вышел за пределы — закончили
+            if (((idxs[Is] >= sizes[Is]) || ...)) break;
+            
+            // читаем все текущие id
+            std::array<int, N> ids
+            {
+                std::get<Is>(containers)[idxs[Is]].id...
+            };
+            
+            // найдём максимальный id
+            int max_id = ids[0];
+            for (size_t k = 1; k < N; ++k)
+            {
+                if (ids[k] > max_id) max_id = ids[k];
+            }
+            
+            // если все id совпадают — вызовем func и сдвинем все индексы
+            if (((ids[Is] == max_id) && ...))
+            {
+                func(std::get<Is>(containers)[idxs[Is]]...);
+                (++idxs[Is], ...);
+            }
+            else
+            {
+                // иначе продвигаем лишь те указатели, у которых id < max_id
+                for (size_t k = 0; k < N; ++k)
+                {
+                    if (ids[k] < max_id)
+                    {
+                        ++idxs[k];
+                    }
+                }
+            }
         }
     }
+    //  Имплементация N-way merge через tuple<references> + индексы
     template<typename A, typename B, typename... Rest, size_t... Is, typename Func, typename Cond>
     void each_if_impl(std::index_sequence<Is...>, Func func, Cond cond)
     {
-        auto& cont_a = get_components<A>();
-        auto& cont_b = get_components<B>();
-        auto& map_b = get_map_components<B>();
-        auto rest_maps = std::tie(get_map_components<Rest>()...);
-        auto rest_containers = std::tie(get_components<Rest>()...);
-
-        for(auto& comp_a : cont_a)
+        // 1) Собираем tuple из ссылок на наши контейнеры
+        auto containers = std::tie(get_components<A>(),
+                                   get_components<B>(),
+                                   get_components<Rest>()...);
+        constexpr size_t N = 2 + sizeof...(Rest);
+        
+        // 2) Индексы по каждому вектору и их размеры
+        std::array<size_t, N> idxs{};
+        std::array<size_t, N> sizes
         {
-            int id = comp_a.id;
-            auto iter_b = map_b.find(id);
-            if(iter_b == map_b.end())
-                continue;
-            if(!((std::get<Is>(rest_maps).find(id) != std::get<Is>(rest_maps).end()) && ...))
-                continue;
-            auto args = std::forward_as_tuple(
-                comp_a,
-                cont_b.at(iter_b->second),
-                std::get<Is>(rest_containers).at(std::get<Is>(rest_maps).at(id))...
-            );
-            if(std::apply([&](auto&... refs){ return cond(refs...); }, args))
+            std::get<Is>(containers).size()...
+        };
+        // 3) N-way merge
+        while (true)
+        {
+            // если любой индекс вышел за пределы — закончили
+            if (((idxs[Is] >= sizes[Is]) || ...)) break;
+            
+            // читаем все текущие id
+            std::array<int, N> ids
             {
-                std::apply([&](auto&... refs){ func(refs...); }, args);
+                std::get<Is>(containers)[idxs[Is]].id...
+            };
+            
+            // найдём максимальный id
+            int max_id = ids[0];
+            for (size_t k = 1; k < N; ++k)
+            {
+                if (ids[k] > max_id) max_id = ids[k];
+            }
+            
+            // если все id совпадают — вызовем func и сдвинем все индексы
+            if (((ids[Is] == max_id) && ...))
+            {
+                if(cond(std::get<Is>(containers)[idxs[Is]]...))
+                    func(std::get<Is>(containers)[idxs[Is]]...);
+                (++idxs[Is], ...);
+            }
+            else
+            {
+                // иначе продвигаем лишь те указатели, у которых id < max_id
+                for (size_t k = 0; k < N; ++k)
+                {
+                    if (ids[k] < max_id)
+                    {
+                        ++idxs[k];
+                    }
+                }
             }
         }
     }
@@ -194,6 +252,8 @@ bool GeneratorEcsCpp::isBased(const shared_ptr<Class> &cls,
                               const string &name) {
     if (!cls)
         return false;
+    if (cls->name == "Movement2")
+        std::cout << "";
     if (cls->name == name)
         return true;
     if (cls->parent.expired())
@@ -438,6 +498,8 @@ void GeneratorEcsCpp::createPimplMember(Model &model, const std::shared_ptr<Clas
 void GeneratorEcsCpp::generateContainers(
     Model &model, const shared_ptr<Class> &ecsBase) {
     for (auto &cls : model.classes) {
+        if (cls->name == "Transform")
+            std::cout << "";
         if (!isBased(cls, _ecs_component_base_name) ||
             cls->name == _ecs_component_base_name)
             continue;
@@ -642,7 +704,6 @@ void GeneratorEcsCpp::generateBuildMaps(Model &model) {
             continue;
         auto field = componentsField(cls);
         body += format_indexes(R"(
-map_clear(impl->map_components_{0});
 for(size_t index = 0; index < impl->components_{0}.size(); ++index)
 {
     impl->map_components_{0}[impl->components_{0}.at(index).id] = index;
@@ -677,8 +738,8 @@ void GeneratorEcsCpp::generateRemoveEntity(Model &model) {
         add += format_indexes(R"(
 if(in_map(id, impl->map_components_{0}))
 {
-    auto component_index = impl->map_components_{0}.at(id);
-    this->remove<{1}>(impl->components_{0}.at(component_index));
+    auto& component = impl->map_components_{0}.at(id);
+    this->remove<{1}>(component);
 }
 )", field, cls->name);
     }
@@ -809,14 +870,34 @@ assert(component.id > 0);
 auto impl = static_cast<EcsPimplImpl*>(this->_pimpl.ptr());
 auto iter = impl->map_components_{0}.find(component.id);
 auto& components = impl->components_{0};
+size_t new_index = -1;
+bool was_shift = false;
 if(iter != impl->map_components_{0}.end())
 {
-    components.at(iter->second) = std::move(component);
+    new_index = iter->second;
+    components.at(new_index) = std::move(component);
 } 
 else 
 {
-    components.push_back(std::move(component));
-    impl->map_components_{0}[components.back().id] = components.size() - 1;
+    auto iter = std::lower_bound(components.begin(), components.end(), component, [](const auto& a, const auto& b)
+    {
+        return a.id < b.id;
+    });
+    new_index = iter - components.begin();
+    was_shift = true;
+    components.insert(iter, component);
+}
+
+assert(std::is_sorted(components.begin(), components.end(), [](const auto& l, const auto& r)
+{
+    return l.id < r.id;
+}));
+if(was_shift)
+{
+    for(size_t i=new_index; i<components.size(); ++i)
+    {
+        impl->map_components_{0}[components.at(i).id] = i;
+    }
 }
 }
 
@@ -851,21 +932,8 @@ void GeneratorEcsCpp::generateModelRemoveComponent(Model &model) {
         std::string body;
         body += format_indexes(R"(template<> void {0}::remove({1}& component){)", _ecs_model_base_name, cls->name);
         body += format_indexes(R"(
-    auto impl = static_cast<EcsPimplImpl*>(this->_pimpl.ptr());
-    auto& components = impl->components_{0};
-    auto& map_components = impl->map_components_{0};
-    auto iter = map_components.find(component.id);
-    if(iter == map_components.end())
-        return;
-    auto index = iter->second;
-    auto last_index = components.size() - 1;
-    map_components.erase(iter);
-    if(index != last_index)
-    {
-        components.at(index) = std::move(components.at(last_index));
-        map_components[components.at(index).id] = index;
-    }
-    components.pop_back();})", field);
+    list_remove(static_cast<EcsPimplImpl*>(this->_pimpl.ptr())->components_{0}, component);
+    map_remove(static_cast<EcsPimplImpl*>(this->_pimpl.ptr())->map_components_{0}, component.id);})", field);
         decl.specific_implementations += body;
     }
 }
@@ -874,22 +942,30 @@ void GeneratorEcsCpp::generateModelCopyEntityFromModel(Model &model) {
     auto ecs = model.get_class(_ecs_model_base_name);
     if (!ecs)
         return;
-    auto m = parse_function("fn void copy_entity_from_model(" + _ecs_model_base_name + "* model, int id, int new_id)");
+    auto m = parse_function("fn void copy_entity_from_model(" +
+                        _ecs_model_base_name + "* model, int id, int new_id)");
     std::string body;
     for (auto &cls : model.classes) {
         if (!isBased(cls, _ecs_component_base_name) ||
             cls->name == _ecs_component_base_name)
             continue;
         auto field = componentsField(cls);
-        body += format_indexes(R"(
-        auto& component_{0} = model->get<{1}>(id);
-        if(component_{0}.id > 0)
-        {
-            {1} clone = component_{0};
-            clone.id = new_id;
-            this->add<{1}>(std::move(clone), new_id);
-        }
-        )", field, cls->name);
+        body += format_indexes(R"(auto component_{0} = model->get<{1}>(id);
+)",
+                               field, cls->name);
+        body += format_indexes(R"(if(component_{0}.id > 0)
+{
+)",
+                               field);
+        body +=
+            format_indexes(R"(    {0} clone = component_{1};
+)",
+                           cls->name, field);
+        body += "    clone.id = new_id;\n";
+        body += format_indexes(R"(    this->add<{0}>(std::move(clone), new_id);
+)",
+                               cls->name);
+        body += "}\n";
     }
     m.body = body;
     ecs->functions.push_back(std::move(m));
@@ -919,8 +995,14 @@ void GeneratorEcsCpp::generateModelGetComponents(Model &model, bool isConst) {
             cls->name == _ecs_component_base_name)
             continue;
         auto field = componentsField(cls);
-        std::string header = format_indexes(R"(template <> {0}std::vector<{1}>& {2}::get_components() {3})", (isConst ? std::string("const ") : std::string("")), cls->name, _ecs_model_base_name, (isConst ? std::string("const") : std::string("")));
-        std::string body = format_indexes(R"({
+        std::string header = format_indexes(
+            R"(template <> {0}std::vector<{1}>& {2}::get_components() {3}
+)",
+            (isConst ? std::string("const ") : std::string("")), cls->name,
+            _ecs_model_base_name,
+            (isConst ? std::string("const") : std::string("")));
+        std::string body = format_indexes(
+            R"({
 return static_cast<{0}EcsPimplImpl*>(this->_pimpl.ptr())->components_{1}; 
 }
 )", isConst ? std::string("const ") : std::string(""), field);
