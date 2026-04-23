@@ -1,5 +1,6 @@
-class ecs/EcsModel
+class ecs/EcsModel:prefer_use_forward_declarations
 {
+	hash_map<int, Observable<void()>> event_build_finish
 	fn void update_systems(float dt)
 	{
 		[SystemMovement2]
@@ -405,15 +406,70 @@ class ecs/TestEcsModel<ITestEcsModel>
 		auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - start);
 		std::cout << "Time upd with add to first: " << duration.count() << " microseconds, AVG: " << ns.count() / count << "ns on iterate\n";
 	}
+
+	fn void test_each_break():cpp
+	{
+		auto model = this->get_model();
+		model->add(Transform(), 1);
+		model->add(Transform(), 2);
+		model->add(Movement(), 1);
+		model->add(Movement(), 2);
+		
+		bool each_2 = false;
+		model->each<Transform>([&](auto& transform)
+		{
+			each_2 = each_2 || transform.id == 2;
+			model->break_each();
+		});
+		this->assertFalse(each_2);
+		
+		each_2 = false;
+		model->each<Transform>([&](auto& transform)
+		{
+			each_2 = each_2 || transform.id == 2;
+			model->each<Movement>([&](auto& movement)
+			{
+				each_2 = each_2 || movement.id == 2;
+				model->break_each();
+			});
+			model->break_each();
+		});
+		this->assertFalse(each_2);
+
+		model->each<Transform>([&](auto& transform)
+		{
+			each_2 = each_2 || transform.id == 2;
+		});
+		this->assertTrue(each_2);
+
+		each_2 = false;
+		model->each<Transform, Movement>([&](auto& transform, auto& movement)
+		{
+			each_2 = each_2 || transform.id == 2;
+			model->break_each();
+		});
+		this->assertFalse(each_2);
+
+		each_2 = false;
+		model->each_if<Transform, Movement>([&](auto& transform, auto& movement)
+		{
+			return true;
+		}, [&](auto& transform, auto& movement)
+		{
+			each_2 = each_2 || transform.id == 2;
+			model->break_each();
+		});
+		this->assertFalse(each_2);
+
+		each_2 = false;
+		model->each_if<Transform, Movement>([&](auto& transform, auto& movement)
+		{
+			model->break_each();
+			return true;
+		}, [&](auto& transform, auto& movement)
+		{
+			each_2 = each_2 || transform.id == 2;
+		});
+		this->assertFalse(each_2);
+	}
 }
-
-
-
-
-
-
-
-
-
-
-

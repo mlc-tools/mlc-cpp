@@ -22,6 +22,19 @@
 #include <format>
 #include <unordered_set>
 
+const std::string ENUM_HASH = R"(
+namespace std
+{
+    template<> struct hash<{namespace}::{class_name}> 
+    {
+        std::size_t operator()(const {namespace}::{class_name}& s) const noexcept 
+        {
+            return std::hash<int>{}(s.operator int());
+        }
+    };
+}
+)";
+
 WriterCpp::WriterCpp() {}
 
 std::vector<std::pair<std::string, std::string>>
@@ -155,6 +168,11 @@ auto WriterCpp::writeHpp(const std::shared_ptr<Class> &cls) -> std::tuple<std::s
     if(constructors.empty()){
         constructors = std::format("{}();\n", cls->name);
     }
+    
+    std::string hash;
+    if(cls->type == "enum"){
+        hash = ENUM_HASH;
+    }
 
     // Format header
     std::string header = HEADER;
@@ -166,6 +184,7 @@ auto WriterCpp::writeHpp(const std::shared_ptr<Class> &cls) -> std::tuple<std::s
             p += val.size();
         }
     };
+    replace("hash", hash);
     replace("namespace", ns);
     replace("class_name", cn);
     replace("includes", buildIncludes(cls, incs, true));
@@ -345,6 +364,8 @@ std::string WriterCpp::writeNamedObject(const Object &obj,
     std::string pattern =
         usePtr ? "{static}{const}intrusive_ptr<{type}{templates}>{ref}{name}"
                : "{static}{const}{type}{templates}{pointer}{ref}{name}";
+    if(obj.is_raw_pointer)
+        baseType += "*";
     std::string result = pattern;
     // replacements
     auto rep = [&](const std::string &key, const std::string &val) {
@@ -630,7 +651,7 @@ WriterCpp::getIncludesForHeader(const std::shared_ptr<Class> &cls) {
         [&](std::set<std::string> &container, const Object &o) {
             addObj(container, o);
             for (auto &arg : o.template_args) {
-                if (cls->prefer_use_forward_declarations)
+                if (cls->prefer_use_forward_declarations && arg.template_args.empty())
                     parseObj(fwd, arg);
                 else
                     parseObj(container, arg);

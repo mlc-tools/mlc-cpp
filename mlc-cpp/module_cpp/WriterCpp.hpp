@@ -129,6 +129,8 @@ namespace {namespace}
     };
 } //namespace {namespace}
 
+{hash}
+
 #endif //#ifndef __{namespace}_{class_name}_h__)";
     static constexpr const char *SOURCE = R"(#include "intrusive_ptr.h"
 #include "{path_to_root}{namespace}_Factory.h"

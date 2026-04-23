@@ -1,5 +1,7 @@
 class Intrusive:cpp:py
 {
+    DataUnit data
+    DataUnit* data_ptr
     function void add_self_to_list(list<Intrusive*>:ref list)
     {
         auto r = this;
@@ -9,6 +11,14 @@ class Intrusive:cpp:py
     {
         auto r = this;
         list_remove(list, r);
+    }
+    fn DataUnit:pointer get_data()
+    {
+        return this->data_ptr;
+    }
+    fn DataUnit:raw_pointer get_data_raw()
+    {
+        return &this->data;
     }
 }
 
@@ -34,4 +44,15 @@ class TestIntrusive<ITestIntrusive>:cpp:py
         this->assertEqual(list_size(this->pointers), 1, "list size == 1");
     }
     function void test_remove_self_from_list(){}
+
+    fn void test_get_data()
+    {
+        auto a = new Intrusive();
+        this->assertNull(a->get_data());
+    }
+    fn void test_get_data_raw()
+    {
+        auto a = new Intrusive();
+        this->assertNotNull(a->get_data_raw());
+    }
 }
