@@ -5,6 +5,89 @@ VERSION=""
 PREFIX=""
 USER_INSTALL="0"
 SUDO_STDIN="0"
+REPO_OWNER="mlc-tools"
+REPO_NAME="mlc-cpp"
+
+fail() {
+  echo "Error: $*" >&2
+  exit 1
+}
+
+need_cmd() {
+  if ! command -v "$1" >/dev/null 2>&1
+  then
+    fail "Required command '$1' is not installed."
+  fi
+}
+
+need_any_cmd() {
+  local label="$1"
+  shift
+  local cmd
+  for cmd in "$@"
+  do
+    if command -v "$cmd" >/dev/null 2>&1
+    then
+      return 0
+    fi
+  done
+  fail "$label is not installed. Expected one of: $*"
+}
+
+detect_re2_prefix() {
+  if command -v brew >/dev/null 2>&1
+  then
+    local brew_prefix
+    brew_prefix="$(brew --prefix re2 2>/dev/null || true)"
+    if [ -n "$brew_prefix" ] && [ -f "${brew_prefix}/lib/cmake/re2/re2Config.cmake" ]
+    then
+      printf '%s\n' "$brew_prefix"
+      return 0
+    fi
+  fi
+
+  local prefix
+  for prefix in /usr/local /opt/homebrew
+  do
+    if [ -f "${prefix}/lib/cmake/re2/re2Config.cmake" ]
+    then
+      printf '%s\n' "$prefix"
+      return 0
+    fi
+  done
+
+  return 1
+}
+
+check_dependencies() {
+  need_cmd curl
+  need_cmd tar
+  need_cmd cmake
+  need_cmd make
+  need_any_cmd "C++ compiler" c++ g++ clang++ gcc
+
+  if ! RE2_PREFIX="$(detect_re2_prefix)"
+  then
+    fail "RE2 library is not installed or CMake cannot find it. Install it first, for example: brew install re2"
+  fi
+}
+
+download_source_archive() {
+  local archive_path="$1"
+  local url
+  for url in \
+    "https://codeload.github.com/${REPO_OWNER}/${REPO_NAME}/tar.gz/refs/tags/v/${VERSION}" \
+    "https://codeload.github.com/${REPO_OWNER}/${REPO_NAME}/tar.gz/refs/tags/${VERSION}"
+  do
+    if curl -fsSL -o "$archive_path" "$url"
+    then
+      echo "Downloaded sources from ${url}"
+      return 0
+    fi
+  done
+
+  fail "Failed to download source archive for version '${VERSION}'. Checked tags '${VERSION}' and 'v${VERSION}'."
+}
 
 while [ $# -gt 0 ]
 do
@@ -39,15 +122,36 @@ then
   exit 2
 fi
 
+check_dependencies
+
 TMP_DIR="$(mktemp -d)"
 trap 'rm -rf "$TMP_DIR"' EXIT
 
-REF="osx/${VERSION}"
-BASE_URL="https://raw.githubusercontent.com/mlc-tools/mlc-binary-app-versions/${REF}"
+ARCHIVE_PATH="${TMP_DIR}/mlc-cpp-${VERSION}.tar.gz"
+download_source_archive "$ARCHIVE_PATH"
 
-echo "Downloading ${BASE_URL}/mlc ..."
-curl -fsSL -o "${TMP_DIR}/mlc" "${BASE_URL}/mlc"
-chmod +x "${TMP_DIR}/mlc"
+echo "Extracting sources ..."
+tar -xzf "$ARCHIVE_PATH" -C "$TMP_DIR"
+SOURCE_DIR="$(find "$TMP_DIR" -mindepth 1 -maxdepth 1 -type d -name "${REPO_NAME}-*" | head -n 1)"
+[ -n "$SOURCE_DIR" ] || fail "Unable to locate extracted source directory."
+
+BUILD_DIR="${TMP_DIR}/build"
+CPU_COUNT="$(sysctl -n hw.ncpu 2>/dev/null || echo 4)"
+
+echo "Configuring build in ${BUILD_DIR} ..."
+if ! cmake -S "$SOURCE_DIR" -B "$BUILD_DIR" -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${RE2_PREFIX}"
+then
+  fail "CMake configuration failed. Verify that build tools are installed and RE2 is available to CMake."
+fi
+
+echo "Building mlc ..."
+if ! cmake --build "$BUILD_DIR" -j"${CPU_COUNT}"
+then
+  fail "Build failed for version '${VERSION}'."
+fi
+
+BUILT_BINARY="${BUILD_DIR}/mlc"
+[ -x "$BUILT_BINARY" ] || fail "Built binary was not found at ${BUILT_BINARY}"
 
 # Decide target path
 if [ -n "$PREFIX" ]
@@ -72,7 +176,20 @@ else
 fi
 
 TARGET_DIR="$(dirname "$TARGET_PATH")"
-mkdir -p "$TARGET_DIR" 2>/dev/null || true
+if [ ! -d "$TARGET_DIR" ]
+then
+  if mkdir -p "$TARGET_DIR" 2>/dev/null
+  then
+    :
+  else
+    if [ "$SUDO_STDIN" = "1" ]
+    then
+      sudo -S mkdir -p "$TARGET_DIR"
+    else
+      sudo mkdir -p "$TARGET_DIR"
+    fi
+  fi
+fi
 
 BACKUP_PATH="${TARGET_PATH}.bak"
 if [ -f "$TARGET_PATH" ]
@@ -95,13 +212,13 @@ fi
 echo "Installing to ${TARGET_PATH} ..."
 if [ -w "$TARGET_DIR" ]
 then
-  install -m 755 "${TMP_DIR}/mlc" "$TARGET_PATH"
+  install -m 755 "${BUILT_BINARY}" "$TARGET_PATH"
 else
   if [ "$SUDO_STDIN" = "1" ]
   then
-    sudo -S install -m 755 "${TMP_DIR}/mlc" "$TARGET_PATH"
+    sudo -S install -m 755 "${BUILT_BINARY}" "$TARGET_PATH"
   else
-    sudo install -m 755 "${TMP_DIR}/mlc" "$TARGET_PATH"
+    sudo install -m 755 "${BUILT_BINARY}" "$TARGET_PATH"
   fi
 fi
 
