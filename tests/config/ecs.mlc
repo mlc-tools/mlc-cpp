@@ -7,7 +7,7 @@ class ecs/EcsModel
 	}
 }
 
-class ecs/EcsComponent
+class ecs/EcsComponent:discard_virtual
 {
 	int id
 }

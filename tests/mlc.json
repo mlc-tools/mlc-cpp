@@ -19,52 +19,6 @@
           "group_to_one": false
         }
       }
-    },
-    {
-      "out": "generated_cpp/json",
-      "data_out": "assets",
-      "auto_registration": false,
-      "generate_intrusive": true,
-      "generate_tests": true,
-      "language": "cpp",
-      "side": "client",
-      "serialize_protocol": "json",
-      "filter_code": [],
-      "features": {
-        "unity_file":{
-          "group_to_one": true
-        }
-      }
-    },
-    {
-      "out": "generated_py/xml",
-      "auto_registration": false,
-      "generate_intrusive": true,
-      "generate_tests": true,
-      "language": "py",
-      "side": "server",
-      "serialize_protocol": "xml",
-      "filter_code": [],
-      "features": {
-        "unity_file":{
-          "all_to_one": false
-        }
-      }
-    },
-    {
-      "out": "generated_py/json",
-      "auto_registration": false,
-      "generate_intrusive": true,
-      "generate_tests": true,
-      "language": "py",
-      "side": "client",
-      "serialize_protocol": "json",
-      "filter_code": [],
-      "features": {
-        "unity_file":{
-          "all_to_one": false
-        }
-      }
     }
   ],
   "common_features":{

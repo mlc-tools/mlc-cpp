@@ -28,6 +28,7 @@ const std::string m_numeric = "numeric";
 const std::string m_test = "test";
 const std::string m_inline = "inline";
 const std::string m_virtual = "virtual";
+const std::string m_discard_virtual = "discard_virtual";
 const std::string m_pointer = "pointer";
 const std::string m_ref = "ref";
 const std::string m_generate = "generate";

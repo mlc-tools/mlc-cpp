@@ -42,6 +42,8 @@ void Class::set_modifier(const std::string_view &modifier) {
         this->is_inline = true;
     else if (modifier == Modifier::m_virtual)
         this->is_virtual = true;
+    else if (modifier == Modifier::m_discard_virtual)
+        this->discard_virtual = true;
     else if (modifier == Modifier::m_prefer_use_forward_declarations)
         this->prefer_use_forward_declarations = true;
     else if (modifier == Modifier::m_binding)
@@ -118,33 +120,43 @@ Function *Class::get_method(const std::string &name) {
 void Class::onLinked(Model &model) {
     if (_linked)
         return;
-
-    for (auto &func : functions) {
-        if (func.name.find("operator") == 0) {
-            func.is_virtual = false;
-            continue;
-        }
-        func.is_virtual = is_virtual || func.is_virtual || func.is_abstract ||
-                          has_function_in_subclasses(func) ||
-                          has_function_in_parentclass(func);
+    
+    if (!parent.expired()){
+        this->discard_virtual = parent.lock()->is_discard_virtual();
     }
 
-    if (!is_abstract) {
-        for (auto &method : functions) {
-            if (method.is_abstract) {
-                is_abstract = true;
-                method.is_virtual = true;
-                break;
+    if(!discard_virtual){
+        for (auto &func : functions) {
+            if (func.name.find("operator") == 0) {
+                func.is_virtual = false;
+                continue;
+            }
+            func.is_virtual = is_virtual || func.is_virtual || func.is_abstract ||
+            has_function_in_subclasses(func) ||
+            has_function_in_parentclass(func);
+        }
+        
+        if (!is_abstract) {
+            for (auto &method : functions) {
+                if (method.is_abstract) {
+                    is_abstract = true;
+                    method.is_virtual = true;
+                    break;
+                }
             }
         }
-        if (!parent.expired())
-            parent.lock()->onLinked(model);
     }
+    if (!parent.expired()){
+        parent.lock()->onLinked(model);
+    }
+    
     _linked = true;
 }
 
 bool Class::has_virtual() const {
     bool result = false;
+    if(this->discard_virtual)
+        return false;
     result = result || this->is_virtual;
     result = result || !this->parent.expired();
     result = result || !this->subclasses.empty();
@@ -195,4 +207,8 @@ bool Class::has_function_in_parentclass(const Function &func, bool depth) {
         return has_method(func);
     }
     return false;
+}
+
+bool Class::is_discard_virtual() const{
+    return this->discard_virtual || (!parent.expired() && parent.lock()->is_discard_virtual());
 }

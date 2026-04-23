@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6.2)
+cmake_minimum_required(VERSION 3.19)
 
 option(BUILD_XML "Build the xml test" OFF)
 option(BUILD_JSON "Build the json test" OFF)

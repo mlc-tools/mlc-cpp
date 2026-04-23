@@ -62,7 +62,7 @@ void SerializerBase::createSerializationFunction(Class &cls,
     Function fn;
     fn.name = methodName;
     fn.return_type = Objects::VOID;
-    fn.is_virtual = !cls.parent_class_name.empty() || !cls.subclasses.empty();
+    fn.is_virtual = !cls.discard_virtual && (!cls.parent_class_name.empty() || !cls.subclasses.empty());
     fn.is_const = (t == SerializationType::SERIALIZATION);
     fn.translated = true;
 

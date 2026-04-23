@@ -106,9 +106,10 @@ void Linker::addGetTypeMethod(Model &model) {
                 method.return_type = Objects::STRING;
                 method.is_const = true;
                 method.body += "return " + cls->name + "::TYPE;";
-                method.is_virtual = cls->is_virtual ||
+                method.is_virtual = !cls->is_discard_virtual() && (
+                                    cls->is_virtual ||
                                     !cls->parent_class_name.empty() ||
-                                    !cls->subclasses.empty();
+                                    !cls->subclasses.empty());
                 cls->functions.push_back(std::move(method));
             }
         }

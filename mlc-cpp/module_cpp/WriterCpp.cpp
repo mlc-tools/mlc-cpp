@@ -90,7 +90,7 @@ WriterCpp::writeFunction(const Function &fn) {
 }
 
 auto WriterCpp::writeHpp(const std::shared_ptr<Class> &cls) -> std::tuple<std::string, std::set<std::string>, std::set<std::string>, std::set<std::string>> {
-    if (cls->name == "FightModel") {
+    if (cls->name == "Transform") {
         std::cout << "";
     }
     const std::string ns = "mg";
@@ -109,6 +109,8 @@ auto WriterCpp::writeHpp(const std::shared_ptr<Class> &cls) -> std::tuple<std::s
     for (auto &fn : cls->functions) {
         if (fn.name == "constructor")
             continue;
+        if (fn.name == "get_type")
+            std::cout << "";
         if (fn.access != lastAcc) {
             funcs += AccessSpecifierToString(fn.access) + ":\n";
             lastAcc = fn.access;
@@ -447,6 +449,8 @@ std::string WriterCpp::writeFunctionHpp(const Function &method) {
     // args
     std::string args = createFunctionHppArgs(method);
     // qualifiers
+    if(currentClass_->name == "EcsComponent")
+        std::cout <<"";
     std::string virt = (method.is_virtual || method.is_abstract || currentClass_->is_virtual) && method.name != currentClass_->name && !method.is_static
                            ? "virtual "
                            : "";
