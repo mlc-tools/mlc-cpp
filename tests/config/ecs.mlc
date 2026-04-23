@@ -58,10 +58,10 @@ class ecs/SystemMovement2:cpp
 	fn void update(EcsModel* model, float dt)
 	{
 		model->each<Transform, Movement2>(
-			[](auto& tranform, auto& movement)
+			[](auto& transform, auto& movement)
 			{
-				tranform.x += movement.x;
-				tranform.y += movement.y;
+				transform.x += movement.x;
+				transform.y += movement.y;
 			});
 	}
 }
@@ -70,14 +70,14 @@ class ecs/SystemMovementIf:cpp
 	fn void update(EcsModel* model)
 	{
 		model->each_if<Transform, Movement>(
-			[](auto& tranform, auto& movement)
+			[](auto& transform, auto& movement)
 			{
 				return movement.x > 0;
 			},
-			[](auto& tranform, auto& movement)
+			[](auto& transform, auto& movement)
 			{
-				tranform.x += movement.x;
-				tranform.y += movement.y;
+				transform.x += movement.x;
+				transform.y += movement.y;
 			});
 	}
 }
@@ -205,10 +205,10 @@ class ecs/TestEcsModel<ITestEcsModel>
 		model->add(Transform(), 2);
 		model->add(Transform(), 3);
 
-		model->remove_if<Transform>([&](auto& tranform){return tranform.id == 2;});
-		assertEqual(model->get<Transform>(2).id, -1, "tranform with id 2 is null");
-		assertEqual(model->get<Transform>(1).id, 1, "tranform with id 1 is not null");
-		assertEqual(model->get<Transform>(3).id, 3, "tranform with id 3 is not null");
+		model->remove_if<Transform>([&](auto& transform){return transform.id == 2;});
+		assertEqual(model->get<Transform>(2).id, -1, "transform with id 2 is null");
+		assertEqual(model->get<Transform>(1).id, 1, "transform with id 1 is not null");
+		assertEqual(model->get<Transform>(3).id, 3, "transform with id 3 is not null");
 		assertEqual(model->get_components<Transform>().size(), 2);
 	}
 
@@ -219,9 +219,9 @@ class ecs/TestEcsModel<ITestEcsModel>
 		model->add(Transform(), 3);
 		model->add(Transform(), 2);
 
-		assertEqual(model->get<Transform>(1).id, 1, "tranform with id 2 is not null");
-		assertEqual(model->get<Transform>(2).id, 2, "tranform with id 1 is not null");
-		assertEqual(model->get<Transform>(3).id, 3, "tranform with id 3 is not null");
+		assertEqual(model->get<Transform>(1).id, 1, "transform with id 2 is not null");
+		assertEqual(model->get<Transform>(2).id, 2, "transform with id 1 is not null");
+		assertEqual(model->get<Transform>(3).id, 3, "transform with id 3 is not null");
 		assertEqual(model->get_components<Transform>().size(), 3);
 	}
 
