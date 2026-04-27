@@ -49,6 +49,12 @@ void GeneratorPredefinedFiles::generate(Model &model) {
         size_t pos;
         replace_all(content, "@{namespace}", ns);
         replace_all(content, "@{namespace_upper}", NS);
+        
+        std::string custom_serializers = "";
+        for(auto& h : model.config.custom_serialize_headers){
+            custom_serializers += "#include \"" + h + "\"";
+        }
+        replace_all(content, "{include_custom_serializer}", custom_serializers);
 
         // подготовка WriterBase (добавляет заголовки, форматирование и т.п.)
         content = writer.prepareFile(content);

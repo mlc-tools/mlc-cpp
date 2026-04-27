@@ -86,6 +86,7 @@ public:
     bool empty_methods = false;
     int serializeFormats = static_cast<int>(SerializeFormat::Xml) |
                            static_cast<int>(SerializeFormat::Json);
+    std::vector<std::string> custom_serialize_headers;
     std::vector<SerializeFormat> serialize_protocol;
     std::function<bool(const std::string &)> filter_code;
     std::function<bool(const std::string &)> filter_data;

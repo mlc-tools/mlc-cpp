@@ -222,6 +222,22 @@ void test_parse_members() {
     assert(obj.side == Side::client);
     obj = parse_object("FooEnum:server enumFoo = FooEnum::foo", true);
     assert(obj.side == Side::server);
+    
+    obj = parse_object("std::variant<T, M> components", true);
+    assert(obj.type == "std::variant");
+    assert(obj.name == "components");
+    assert(obj.template_args.size() == 2);
+    assert(obj.template_args.at(0).type == "T");
+    assert(obj.template_args.at(1).type == "M");
+    
+    obj = parse_object("list<std::variant<T, M>> components", true);
+    assert(obj.type == "list");
+    assert(obj.name == "components");
+    assert(obj.template_args.size() == 1);
+    assert(obj.template_args[0].type == "std::variant");
+    assert(obj.template_args[0].template_args.size() == 2);
+    assert(obj.template_args[0].template_args.at(0).type == "T");
+    assert(obj.template_args[0].template_args.at(1).type == "M");
 }
 
 void test_parse_functions() {

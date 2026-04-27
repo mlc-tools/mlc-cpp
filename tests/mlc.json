@@ -13,6 +13,7 @@
       "language": "cpp",
       "side": "server",
       "serialize_protocol": "xml",
+      "custom_serialize_headers": ["custom_serialize_xml.h"],
       "filter_code": [],
       "features": {
         "unity_file":{
@@ -29,6 +30,7 @@
       "language": "cpp",
       "side": "client",
       "serialize_protocol": "json",
+      "custom_serialize_headers": ["custom_serialize_json.h"],
       "filter_code": [],
       "features": {
         "unity_file":{

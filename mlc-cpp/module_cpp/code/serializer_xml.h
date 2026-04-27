@@ -19,6 +19,7 @@ const std::string SERIALIZER_XML_HPP = R"__EXT__(#ifndef __mg_serialize_xml_h__
 #include "SerializerCommon.h"
 #include "DataStorage.h"
 #include "mg_Factory.h"
+{include_custom_serializer}
 
 namespace pugi
 {
