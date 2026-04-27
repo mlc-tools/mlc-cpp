@@ -109,8 +109,7 @@ for (auto& node : {data})
             {{"data", dataName}, {"map", mapName}, {"cls", cls->name}});
     }
     body += R"(
-DeserializerJson deserializer(json);
-non_const_this->deserialize_json(deserializer);
+non_const_this->deserialize_json(json);
 non_const_this->_loaded = true;
 )";
     return body;
@@ -140,8 +139,7 @@ if(doc.root() != nullptr)
             {{"map", mapName}, {"cls", cls->name}});
     }
     body += R"(
-    DeserializerXml deserializer(root);
-    non_const_this->deserialize_xml(deserializer);
+    non_const_this->deserialize_xml(root);
     non_const_this->_loaded = true;
 }
 )";

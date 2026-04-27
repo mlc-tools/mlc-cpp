@@ -1,0 +1,29 @@
+{
+  "source": {
+    "configs": ["config"],
+    "data": ["data_xml"]
+  },
+  "generation": [
+    {
+      "out": "generated_cpp/xml",
+      "data_out": "assets",
+      "auto_registration": false,
+      "generate_intrusive": true,
+      "generate_tests": true,
+      "language": "cpp",
+      "side": "server",
+      "filter_code": [],
+      "features": {
+        "unity_file":{
+          "group_to_one": true
+        }
+      }
+    }
+  ],
+  "common_features":{
+    "unit_tests": {},
+    "data_storage": {},
+    "ref_counter": {},
+    "operator_equals": {}
+  }
+}
