@@ -273,6 +273,189 @@ private:
     }
 )__EACH__";
 
+std::string ECS_SERIALIZER_XML_H = R"__(#pragma once
+
+#include <variant>
+#include <vector>
+#include <string>
+
+namespace pugi { class xml_node; }
+{forward_declarations}
+
+namespace mg 
+{
+namespace serializer_xml 
+{
+
+using ComponentVariant = {AllComponents};
+
+void serialize(pugi::xml_node node, const ComponentVariant &value, const std::string &key);
+void deserialize(pugi::xml_node node, ComponentVariant &value, const std::string &key);
+void serialize(pugi::xml_node node, const std::vector<ComponentVariant> &value, const std::string &key);
+void deserialize(pugi::xml_node node, std::vector<ComponentVariant> &value, const std::string &key);
+
+} // namespace serializer_xml
+} // namespace mg
+)__";
+
+std::string ECS_SERIALIZER_XML_CPP = R"__(#include "{header}"
+
+#include <string>
+#include "pugixml/pugixml.hpp"
+{includes}
+
+namespace mg
+{
+namespace serializer_xml
+{
+
+template <class T>
+bool deserialize_variant_value(pugi::xml_node node, ComponentVariant &value, const std::string &type)
+{
+    if (type != T::TYPE)
+        return false;
+
+    value.emplace<T>();
+    std::get<T>(value).deserialize_xml(node);
+    return true;
+}
+
+void serialize(pugi::xml_node node, const ComponentVariant &value, const std::string &key)
+{
+    pugi::xml_node child = key.empty() ? node : node.append_child(key.c_str());
+    std::visit([&child](const auto &component)
+    {
+        child.append_attribute("type").set_value(component.get_type().c_str());
+        component.serialize_xml(child);
+    }, value);
+}
+
+void deserialize(pugi::xml_node node, ComponentVariant &value, const std::string &key)
+{
+    pugi::xml_node child = key.empty() ? node : node.child(key.c_str());
+    const std::string type = child.attribute("type").as_string();
+
+    {deserialize_components}
+}
+
+void serialize(pugi::xml_node node, const std::vector<ComponentVariant> &value, const std::string &key)
+{
+    pugi::xml_node child = key.empty() ? node : node.append_child(key.c_str());
+    for (const auto &item : value)
+    {
+        serialize(child.append_child("component"), item, "");
+    }
+}
+
+void deserialize(pugi::xml_node node, std::vector<ComponentVariant> &value, const std::string &key)
+{
+    pugi::xml_node child = key.empty() ? node : node.child(key.c_str());
+    value.clear();
+    for (pugi::xml_node item : child)
+    {
+        ComponentVariant component;
+        deserialize(item, component, "");
+        value.push_back(std::move(component));
+    }
+}
+
+} // namespace serializer_xml
+} // namespace mg
+)__";
+
+std::string ECS_SERIALIZER_JSON_H = R"__(#pragma once
+
+#include <variant>
+#include <vector>
+#include <string>
+
+namespace Json { class Value; }
+{forward_declarations}
+
+namespace mg
+{
+namespace serializer_json
+{
+
+using ComponentVariant = {AllComponents};
+
+void serialize(Json::Value &node, const ComponentVariant &value, const std::string &key);
+void deserialize(Json::Value &node, ComponentVariant &value, const std::string &key);
+void serialize(Json::Value &node, const std::vector<ComponentVariant> &value, const std::string &key);
+void deserialize(Json::Value &node, std::vector<ComponentVariant> &value, const std::string &key);
+
+} // namespace serializer_json
+} // namespace mg
+)__";
+
+std::string ECS_SERIALIZER_JSON_CPP = R"__(#include "{header}"
+
+#include <string>
+#include "jsoncpp/value.h"
+{includes}
+
+namespace mg
+{
+namespace serializer_json
+{
+
+template <class T>
+bool deserialize_variant_value(Json::Value &node, ComponentVariant &value, const std::string &type)
+{
+    if (type != T::TYPE)
+        return false;
+
+    value.emplace<T>();
+    std::get<T>(value).deserialize_json(node);
+    return true;
+}
+
+void serialize(Json::Value &node, const ComponentVariant &value, const std::string &key)
+{
+    Json::Value &child = key.empty() ? node : node[key];
+    std::visit([&child](const auto &component)
+    {
+        child["type"] = component.get_type();
+        component.serialize_json(child);
+    },value);
+}
+
+void deserialize(Json::Value &node, ComponentVariant &value, const std::string &key)
+{
+    Json::Value &child = key.empty() ? node : node[key];
+    const std::string type = child["type"].asString();
+    {deserialize_components}
+}
+
+void serialize(Json::Value &node, const std::vector<ComponentVariant> &value, const std::string &key)
+{
+    Json::Value &child = key.empty() ? node : node[key];
+    for (const auto &item : value)
+    {
+        Json::Value serialized_item(Json::objectValue);
+        serialize(serialized_item, item, "");
+        child.append(serialized_item);
+    }
+}
+
+void deserialize(Json::Value &node, std::vector<ComponentVariant> &value, const std::string &key)
+{
+    Json::Value &child = key.empty() ? node : node[key];
+    value.clear();
+    for (Json::Value &item : child)
+    {
+        ComponentVariant component;
+        deserialize(item, component, "");
+        value.push_back(std::move(component));
+    }
+}
+
+} // namespace serializer_json
+} // namespace mg
+)__";
+
+
+
 static string to_snake(const string &s) {
     string out;
     out.reserve(s.size() * 2);
@@ -290,8 +473,6 @@ bool GeneratorEcsCpp::isBased(const shared_ptr<Class> &cls,
                               const string &name) {
     if (!cls)
         return false;
-    if (cls->name == "Movement2")
-        std::cout << "";
     if (cls->name == name)
         return true;
     if (cls->parent.expired())
@@ -322,7 +503,9 @@ string GeneratorEcsCpp::componentsField(const shared_ptr<Class> &cls) {
 GeneratorEcsCpp::GeneratorEcsCpp(const FeatureEcs &feature) {
     _ecs_model_base_name = feature.model_base;
     _ecs_component_base_name = feature.component_base;
+    _ecs_list_components = feature.list_components;
     _discard_inheritance = feature.discard_inheritance;
+    
     if (_ecs_model_base_name.empty())
         _ecs_model_base_name = "ModelEcsBase";
     if (_ecs_component_base_name.empty())
@@ -374,9 +557,9 @@ void GeneratorEcsCpp::generate(Model &model) {
     generate_system_skills(model, "update");
     generate_system_skills(model, "clean");
     generate_model_method_save_skills(model);
-
-    // provide helper header file (optional utilities)
     addHelperFile(model);
+    changeListEcsComponents(model);
+    addSerializeListEcsComponents(model);
 }
 
 std::vector<shared_ptr<Class>>
@@ -494,10 +677,42 @@ void GeneratorEcsCpp::generate_model_method_save_skills(Model &model) {
 void GeneratorEcsCpp::modifySources(Model &model,
                                     const std::shared_ptr<Class> &cls,
                                     std::string &header, std::string &source) {
-    if (cls->name != _ecs_model_base_name)
+    if (cls->name == _ecs_model_base_name) {
+        replace_all(header, "};", MODEL_ECS_TEMPLATES + "\n};");
+    }
+
+    if (_ecs_list_components.empty())
         return;
 
-    replace_all(header, "};", MODEL_ECS_TEMPLATES + "\n};");
+    bool uses_ecs_components_variant = false;
+    for (const auto &member : cls->members) {
+        if (member.type == "list" && !member.template_args.empty() &&
+            member.template_args.front().type == "std::variant") {
+            uses_ecs_components_variant = true;
+            break;
+        }
+        if (member.type == "std::variant") {
+            uses_ecs_components_variant = true;
+            break;
+        }
+    }
+    if (!uses_ecs_components_variant)
+        return;
+
+    auto ecsModel = model.get_class(_ecs_model_base_name);
+    std::string header_path;
+    if (ecsModel && !ecsModel->group.empty())
+        header_path = ecsModel->group + "/";
+    header_path += "ecs_serializer_";
+
+    if (model.config.serializeFormats & static_cast<int>(SerializeFormat::Json)) {
+        replace_all(source, "#include \"SerializerJson.h\"", "#include \"SerializerJson.h\"\n#include \"" + header_path + "json.h\"");
+        replace_all(source, "#include \"../SerializerJson.h\"", "#include \"../SerializerJson.h\"\n#include \"" + header_path + "json.h\"");
+    }
+    if (model.config.serializeFormats & static_cast<int>(SerializeFormat::Xml)) {
+        replace_all(source, "#include \"SerializerXml.h\"", "#include \"SerializerXml.h\"\n#include \"" + header_path + "xml.h\"");
+        replace_all(source, "#include \"../SerializerXml.h\"", "#include \"../SerializerXml.h\"\n#include \"" + header_path + "xml.h\"");
+    }
 }
 
 void GeneratorEcsCpp::createPimplClass(Model &model, const std::shared_ptr<Class> &ecsBase){
@@ -933,15 +1148,9 @@ void GeneratorEcsCpp::generateModelCopyEntityFromModel(Model &model) {
         body += format_indexes(R"(
         if(auto& component_{0} = model->get<{1}>(id))
         {
-            pugi::xml_document doc;
-            auto root = doc.append_child("comp");
-            SerializerXml serializer(root);
-            component_{0}.serialize_xml(serializer);
-
-            DeserializerXml deserializer(root);
-            {1} clone;
-            clone.deserialize_xml(deserializer);
-            this->add<{1}>(std::move(clone), new_id);
+            {1} clone = component_{0};
+            clone.id = new_id;
+            this->add<{1}>(std::move(clone));
         })", field, cls->name);
     }
     m.body = body;
@@ -1119,4 +1328,94 @@ auto join_all(
 )__";
 
     model.addFile(nullptr, "ecs/ecs_helper.h", HELPER_HPP);
+}
+
+Object GeneratorEcsCpp::build_all_components(Model& model)
+{
+    std::string all_components = "std::variant<";
+    for (auto &cls : model.classes) {
+        if (isBased(cls, _ecs_component_base_name) && cls->name != _ecs_component_base_name){
+            all_components += cls->name + ",";
+        }
+    }
+    all_components.pop_back();
+    all_components += ">";
+    return parse_object("list<" + all_components + ">", false);
+}
+
+void GeneratorEcsCpp::changeListEcsComponents(Model &model){
+    if(_ecs_list_components.empty()){
+        return;
+    }
+    
+    auto list_all_components = build_all_components(model);
+    for(auto& cls : model.classes){
+        for(auto& member : cls->members){
+            if(member.type == _ecs_list_components){
+                auto name = member.name;
+                member = list_all_components;
+                member.name = std::move(name);
+            }
+        }
+    }
+}
+
+
+void GeneratorEcsCpp::addSerializeListEcsComponents(Model &model){
+    if(_ecs_list_components.empty()){
+        return;
+    }
+    
+    auto ecsModel = model.get_class(_ecs_model_base_name);
+    std::string header;
+    if(!ecsModel->group.empty())
+        header = ecsModel->group + "/";
+    header += "ecs_serializer_";
+    
+    std::string all_components = "std::variant<";
+    std::string deserialize;
+    std::string includes;
+    std::string forward_declarations = "namespace mg\n{\n";
+    for (auto &cls : model.classes) {
+        if (isBased(cls, _ecs_component_base_name) && cls->name != _ecs_component_base_name){
+            all_components += cls->name + ",";
+            deserialize += "deserialize_variant_value<" + cls->name + ">(child, value, type) ||";
+            
+            includes += "#include \"" + (cls->group.empty() ? "" : cls->group + "/") + cls->name + ".h\"\n";
+            forward_declarations += "class " + cls->name + ";\n";
+        }
+    }
+    forward_declarations += "} // namespace mg\n";
+    all_components.pop_back();
+    all_components += ">";
+    
+    deserialize.pop_back();
+    deserialize.pop_back();
+    deserialize.pop_back();
+    deserialize += ";";
+    
+    if(model.config.serializeFormats & static_cast<int>(SerializeFormat::Xml)) {
+        auto header_data = ECS_SERIALIZER_XML_H;
+        replace_all(header_data, "{forward_declarations}", forward_declarations);
+        replace_all(header_data, "{AllComponents}", all_components);
+        model.addFile(nullptr, header + "xml.h", header_data);
+
+        auto cpp_data = ECS_SERIALIZER_XML_CPP;
+        replace_all(cpp_data, "{header}", header + "xml.h");
+        replace_all(cpp_data, "{includes}", includes);
+        replace_all(cpp_data, "{deserialize_components}", deserialize);
+        model.addFile(nullptr, header + "xml.cpp", cpp_data);
+    }
+    if(model.config.serializeFormats & static_cast<int>(SerializeFormat::Json)) {
+        auto header_data = ECS_SERIALIZER_JSON_H;
+        replace_all(header_data, "{forward_declarations}", forward_declarations);
+        replace_all(header_data, "{AllComponents}", all_components);
+        model.addFile(nullptr, header + "json.h", header_data);
+
+        auto cpp_data = ECS_SERIALIZER_JSON_CPP;
+        replace_all(cpp_data, "{header}", header + "json.h");
+        replace_all(cpp_data, "{includes}", includes);
+        replace_all(cpp_data, "{deserialize_components}", deserialize);
+        model.addFile(nullptr, header + "json.cpp", cpp_data);
+    }
 }

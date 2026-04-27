@@ -1,14 +1,19 @@
 class ecs/EcsModel:prefer_use_forward_declarations
 {
+	int free_id = 0;
 	hash_map<int, Observable<void()>> event_build_finish
 	fn void update_systems(float dt)
 	{
 		[SystemMovement2]
 		[SystemMovement]
 	}
+	fn int get_next_free_id()
+	{
+		return ++free_id;
+	}
 }
 
-class ecs/EcsComponent:discard_virtual:discard_copy_ctr:discard_copy
+class ecs/EcsComponent:discard_virtual
 {
 	int id
 }
@@ -34,6 +39,29 @@ class ecs/Movement3<EcsComponent>
 {
 	int x = 0
 	int y = 0
+}
+
+class ecs/DataEntity:storage
+{
+	string name
+	ListEcsComponents components
+}
+
+class ecs/EcsBuilder
+{
+	fn int build(EcsModel* model, string entity_name)
+	{
+		auto id = model->get_next_free_id();
+		auto data = DataStorage::shared().get<DataEntity>(entity_name);
+		for(auto& component : data->components)
+		{
+			std::visit([&](auto& component){
+				auto copy = component;
+				model->add(std::move(copy), id);
+			}, component);
+		}
+		return id;
+	}
 }
 
 class ecs/SystemMovement:cpp
@@ -301,6 +329,28 @@ class ecs/TestEcsModel<ITestEcsModel>
 		this->assertEqual(model->get<Transform>(1).y, 0);
 		this->assertEqual(model->get<Transform>(2).x, 8);
 		this->assertEqual(model->get<Transform>(2).y, 10);
+	}
+
+	fn void test_load_entity():server
+	{
+		auto data = DataStorage::shared().get<DataEntity>("ecs1");
+		this->assertEqual(std::get<Transform>(data->components[0]).x, 101);
+		this->assertEqual(std::get<Transform>(data->components[0]).y, 102);
+		this->assertEqual(std::get<Movement>(data->components[1]).x, 103);
+		this->assertEqual(std::get<Movement>(data->components[1]).y, 104);
+	}
+
+	fn void test_build_entity():server
+	{
+		auto model = this->get_model();
+		EcsBuilder().build(model, "ecs1");
+
+		this->assertTrue(model->get<Transform>(1));
+		this->assertEqual(model->get<Transform>(1).x, 101);
+		this->assertEqual(model->get<Transform>(1).y, 102);
+		this->assertTrue(model->get<Movement>(1));
+		this->assertEqual(model->get<Movement>(1).x, 103);
+		this->assertEqual(model->get<Movement>(1).y, 104);
 	}
 
 	fn void test_perfomance_all()

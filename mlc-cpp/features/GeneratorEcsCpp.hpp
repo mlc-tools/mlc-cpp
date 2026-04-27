@@ -55,10 +55,15 @@ private:
     std::vector<std::shared_ptr<Class>> getComponentClasses(Model &model);
 
     void addHelperFile(Model &model);
+    
+    Object build_all_components(Model& model);
+    void changeListEcsComponents(Model &model);
+    void addSerializeListEcsComponents(Model &model);
 
 private:
     Model *_model;
     std::string _ecs_model_base_name;
     std::string _ecs_component_base_name;
+    std::string _ecs_list_components;
     bool _discard_inheritance = false;
 };

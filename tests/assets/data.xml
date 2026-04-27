@@ -1,15 +1,10 @@
 <?xml version="1.0"?>
 <data>
-  <dicts>
-    <pair key="default">
-      <value name="default">
-        <resources>
-          <pair key="gold" value="10" />
-          <pair key="gems" value="20" />
-        </resources>
-      </value>
+  <test_bindingses>
+    <pair key="test_bindings">
+      <value name="test_bindings" />
     </pair>
-  </dicts>
+  </test_bindingses>
   <list_list_bools>
     <pair key="test">
       <value name="test">
@@ -26,11 +21,16 @@
       </value>
     </pair>
   </list_list_bools>
-  <test_bindingses>
-    <pair key="test_bindings">
-      <value name="test_bindings" />
+  <dicts>
+    <pair key="default">
+      <value name="default">
+        <resources>
+          <pair key="gold" value="10" />
+          <pair key="gems" value="20" />
+        </resources>
+      </value>
     </pair>
-  </test_bindingses>
+  </dicts>
   <adds>
     <pair key="add_data">
       <value name="add_data" />
@@ -88,4 +88,14 @@
       </value>
     </pair>
   </units>
+  <entities>
+    <pair key="ecs1">
+      <value name="ecs1">
+        <components>
+          <component type="Transform" x="101" y="102" />
+          <component type="Movement" x="103" y="104" />
+        </components>
+      </value>
+    </pair>
+  </entities>
 </data>

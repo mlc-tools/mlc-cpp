@@ -73,7 +73,8 @@
     "ecs": {
       "model_base": "EcsModel",
       "component_base": "EcsComponent",
-      "discard_inheritance": true
+      "discard_inheritance": true,
+      "list_components_variant": "ListEcsComponents"
     },
     "unit_tests": {},
     "data_storage": {},

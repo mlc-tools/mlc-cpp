@@ -52,7 +52,7 @@ void GeneratorPredefinedFiles::generate(Model &model) {
         
         std::string custom_serializers = "";
         for(auto& h : model.config.custom_serialize_headers){
-            custom_serializers += "#include \"" + h + "\"";
+            custom_serializers += "#include \"" + h + "\"\n";
         }
         replace_all(content, "{include_custom_serializer}", custom_serializers);
 

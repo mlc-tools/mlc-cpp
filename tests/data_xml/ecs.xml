@@ -1,0 +1,8 @@
+<data>
+	<entity name="ecs1">
+		<components>
+			<component type="Transform" x="101" y="102"/>
+			<component type="Movement" x="103" y="104"/>
+		</components>
+	</entity>
+</data>

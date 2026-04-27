@@ -252,6 +252,7 @@ void loadFeatures(std::vector<FeatureVariant>& vfeatures, const Json::Value& fea
         FeatureEcs ecs;
         ecs.model_base = feature_ecs["model_base"].asString();
         ecs.component_base = feature_ecs["component_base"].asString();
+        ecs.list_components = feature_ecs["list_components_variant"].asString();
         ecs.discard_inheritance = feature_ecs["discard_inheritance"].asBool();
         vfeatures.push_back(std::move(ecs));
     }
