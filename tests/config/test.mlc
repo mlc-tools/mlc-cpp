@@ -64,6 +64,8 @@ class AllTypes
 	map<string, AllTypesChildren> object_map
 	map<string, AllTypesChildren*> object_ptr_map
 
+    hash_map<int, hash_map<DataUnit:link, int64_t>> int_unit_int
+
 	list<TestEnum> enum_list
 	map<TestEnum, int> enum_map
 
@@ -114,6 +116,10 @@ class AllTypes
 
         this->enum_map[TestEnum::value1] = 1;
         this->enum_map[TestEnum::value2] = 2;
+
+        auto unit = DataStorage::shared().get<DataUnit>("unitname1");
+        this->int_unit_int[0][unit] = 0;
+        this->int_unit_int[1][unit] = 1;
     }
 
     function bool tests(Logger* logger):static

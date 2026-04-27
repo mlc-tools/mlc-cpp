@@ -16,7 +16,7 @@ const std::string SERIALIZER_JSON_HPP = R"__EXT__(#ifndef __mg_serializer_json_H
 #include "SerializerCommon.h"
 #include "DataStorage.h"
 #include "mg_Factory.h"
-{include_custom_serializer}
+
 
 namespace Json
 {
@@ -67,6 +67,285 @@ namespace serializer_json
 
     template<class T>
     typename std::enable_if<is_enum<T>::value, void>::type
+    serialize(Json::Value& node, const T &value, const std::string &key);
+
+    template<class T>
+    typename std::enable_if<!is_attribute<T>::value, void>::type
+    serialize(Json::Value& node, const T *value, const std::string &key);
+
+    template<class T>
+    typename std::enable_if<!is_attribute<T>::value, void>::type
+    serialize(Json::Value& node, const intrusive_ptr<T> &value, const std::string &key);
+
+    template<class T>
+    typename std::enable_if<!is_attribute<T>::value && !is_enum<T>::value && !is_map<T>::value, void>::type
+    serialize(Json::Value& node, const T &value, const std::string &key);
+
+    template<template<class...> class Set, class T, class... Args>
+    typename std::enable_if<is_set_container<Set<T, Args...>>::value && ((is_attribute<T>::value && !std::is_same<T, bool>::value) || is_enum<T>::value), void>::type
+    serialize(Json::Value& node, const Set<T, Args...> &values, const std::string &key);
+
+    template<template<class...> class Set, class... Args>
+    typename std::enable_if<is_set_container<Set<bool, Args...>>::value, void>::type
+    serialize(Json::Value& node, const Set<bool, Args...> &values, const std::string &key);
+
+    template<template<class...> class Set, class T, class... Args>
+    typename std::enable_if<is_set_container<Set<T, Args...>>::value && is_data<T>::value, void>::type
+    serialize(Json::Value& node, const Set<T, Args...> &values, const std::string &key);
+
+    template<template<class...> class Set, class T, class... Args>
+    typename std::enable_if<is_set_container<Set<T, Args...>>::value && is_not_serialize_to_attribute<T>::value, void>::type
+    serialize(Json::Value& node, const Set<T, Args...> &values, const std::string &key);
+
+    /* Vectors serialization start */
+
+    template<class T>
+    typename std::enable_if<(is_attribute<T>::value && !std::is_same<T, bool>::value) || is_enum<T>::value, void>::type
+    serialize(Json::Value& node, const std::vector<T> &values, const std::string &key);
+
+    template<class T>
+    typename std::enable_if<is_attribute<T>::value && std::is_same<T, bool>::value>::type
+    serialize(Json::Value& node, const std::vector<T> &values, const std::string &key);
+
+    template<class T>
+    typename std::enable_if<is_data<T>::value, void>::type
+    serialize(Json::Value& node, const std::vector<T> &values, const std::string &key);
+
+    template<class T>
+    typename std::enable_if<is_not_serialize_to_attribute<T>::value, void>::type
+    serialize(Json::Value& node, const std::vector<T> &values, const std::string &key);
+
+    /* Vectors serialization finish */
+
+    /* Set serialization start */
+
+    template<template<class...> class Set, class T, class... Args>
+    typename std::enable_if<is_set_container<Set<T, Args...>>::value && ((is_attribute<T>::value && !std::is_same<T, bool>::value) || is_enum<T>::value), void>::type
+    serialize(Json::Value& node, const Set<T, Args...> &values, const std::string &key);
+
+    template<template<class...> class Set, class... Args>
+    typename std::enable_if<is_set_container<Set<bool, Args...>>::value, void>::type
+    serialize(Json::Value& node, const Set<bool, Args...> &values, const std::string &key);
+
+    template<template<class...> class Set, class T, class... Args>
+    typename std::enable_if<is_set_container<Set<T, Args...>>::value && is_data<T>::value, void>::type
+    serialize(Json::Value& node, const Set<T, Args...> &values, const std::string &key);
+
+    template<template<class...> class Set, class T, class... Args>
+    typename std::enable_if<is_set_container<Set<T, Args...>>::value && is_not_serialize_to_attribute<T>::value, void>::type
+    serialize(Json::Value& node, const Set<T, Args...> &values, const std::string &key);
+
+    /* Set serialization finish */
+
+    /* Maps serialization start */
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(Json::Value& node, const Map& values, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    serialize(Json::Value& node, const Map& values, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    serialize(Json::Value& node, const Map& values, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(Json::Value& node, const Map& values, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(Json::Value& node, const Map& values, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    serialize(Json::Value& node, const Map& values, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    serialize(Json::Value& node, const Map& values, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(Json::Value& node, const Map& values, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(Json::Value& node, const Map& values, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    serialize(Json::Value& node, const Map& values, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    serialize(Json::Value& node, const Map& values, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(Json::Value& node, const Map& values, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(Json::Value& node, const Map& values, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    serialize(Json::Value& node, const Map& values, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    serialize(Json::Value& node, const Map& values, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(Json::Value& node, const Map& values, const std::string& key);
+
+    /* Maps serialization finish */
+
+    template<class T>
+    typename std::enable_if<is_attribute<T>::value, void>::type
+    deserialize(Json::Value& node, T &value, const std::string &key, const T &default_value);
+
+    template<class T>
+    typename std::enable_if<is_enum<T>::value, void>::type
+    deserialize(Json::Value& node, T &value, const std::string &key);
+
+    template<class T>
+    typename std::enable_if<!is_attribute<T>::value, void>::type
+    deserialize(Json::Value& node, const T *&value, const std::string &key);
+
+    template<class T>
+    typename std::enable_if<!is_attribute<T>::value, void>::type
+    deserialize(Json::Value& node, intrusive_ptr<T> &value, const std::string &key);
+
+    template<class T>
+    typename std::enable_if<!is_attribute<T>::value && !is_enum<T>::value && !is_map<T>::value, void>::type
+    deserialize(Json::Value& node, T &value, const std::string &key);
+
+    template<template<class...> class Set, class T, class... Args>
+    typename std::enable_if<is_set_container<Set<T, Args...>>::value && is_attribute<T>::value, void>::type
+    deserialize(Json::Value& node, Set<T, Args...> &values, const std::string &key);
+
+    template<template<class...> class Set, class T, class... Args>
+    typename std::enable_if<is_set_container<Set<T, Args...>>::value && is_enum<T>::value, void>::type
+    deserialize(Json::Value& node, Set<T, Args...> &values, const std::string &key);
+
+    template<template<class...> class Set, class T, class... Args>
+    typename std::enable_if<is_set_container<Set<T, Args...>>::value && is_data<T>::value, void>::type
+    deserialize(Json::Value& node, Set<T, Args...> &values, const std::string &key);
+
+    template<template<class...> class Set, class T, class... Args>
+    typename std::enable_if<is_set_container<Set<T, Args...>>::value && is_not_serialize_to_attribute<T>::value, void>::type
+    deserialize(Json::Value& node, Set<T, Args...> &values, const std::string &key);
+
+    /* Vectors deserialization start */
+    template<class T>
+    typename std::enable_if<is_attribute<T>::value, void>::type
+    deserialize(Json::Value& node, std::vector<T> &values, const std::string &key);
+
+    template<class T>
+    typename std::enable_if<is_enum<T>::value, void>::type
+    deserialize(Json::Value& node, std::vector<T> &values, const std::string &key);
+
+    template<class T>
+    typename std::enable_if<is_data<T>::value, void>::type
+    deserialize(Json::Value& node, std::vector<T> &values, const std::string &key);
+
+    template<class T>
+    typename std::enable_if<is_not_serialize_to_attribute<T>::value, void>::type
+    deserialize(Json::Value& node, std::vector<T> &values, const std::string &key);
+
+    /* Vectors deserialization finish */
+    /* Set deserialization start */
+
+    template<template<class...> class Set, class T, class... Args>
+    typename std::enable_if<is_set_container<Set<T, Args...>>::value && is_attribute<T>::value, void>::type
+    deserialize(Json::Value& node, Set<T, Args...> &values, const std::string &key);
+
+    template<template<class...> class Set, class T, class... Args>
+    typename std::enable_if<is_set_container<Set<T, Args...>>::value && is_enum<T>::value, void>::type
+    deserialize(Json::Value& node, Set<T, Args...> &values, const std::string &key);
+
+    template<template<class...> class Set, class T, class... Args>
+    typename std::enable_if<is_set_container<Set<T, Args...>>::value && is_data<T>::value, void>::type
+    deserialize(Json::Value& node, Set<T, Args...> &values, const std::string &key);
+
+    template<template<class...> class Set, class T, class... Args>
+    typename std::enable_if<is_set_container<Set<T, Args...>>::value && is_not_serialize_to_attribute<T>::value, void>::type
+    deserialize(Json::Value& node, Set<T, Args...> &values, const std::string &key);
+
+    /* Set deserialization finish */
+    /* Maps deserialization start */
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(Json::Value& node, Map& map, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    deserialize(Json::Value& node, Map& map, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    deserialize(Json::Value& node, Map& map, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(Json::Value& node, Map& map, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(Json::Value& node, Map& map, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    deserialize(Json::Value& node, Map& map, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    deserialize(Json::Value& node, Map& map, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(Json::Value& node, Map& map, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(Json::Value& node, Map& map, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    deserialize(Json::Value& node, Map& map, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    deserialize(Json::Value& node, Map& map, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(Json::Value& node, Map& map, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(Json::Value& node, Map& map, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    deserialize(Json::Value& node, Map& map, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    deserialize(Json::Value& node, Map& map, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(Json::Value& node, Map& map, const std::string& key);
+
+    template<class T>
+    typename std::enable_if<is_enum<T>::value, void>::type
     serialize(Json::Value& node, const T &value, const std::string &key)
     {
         add_attribute(node, key.empty() ? std::string("value") : key, value.str(), default_value::value<std::string>());
@@ -102,32 +381,6 @@ namespace serializer_json
         value.serialize_json(child);
     }
 
-    template<template<class...> class Set, class T, class... Args>
-    typename std::enable_if<
-        is_set_container<Set<T, Args...>>::value &&
-        ((is_attribute<T>::value && !std::is_same<T, bool>::value) || is_enum<T>::value),
-        void>::type
-    serialize(Json::Value& node, const Set<T, Args...> &values, const std::string &key);
-
-    template<template<class...> class Set, class... Args>
-    typename std::enable_if<
-        is_set_container<Set<bool, Args...>>::value,
-        void>::type
-    serialize(Json::Value& node, const Set<bool, Args...> &values, const std::string &key);
-
-    template<template<class...> class Set, class T, class... Args>
-    typename std::enable_if<
-        is_set_container<Set<T, Args...>>::value &&
-        is_data<T>::value,
-        void>::type
-    serialize(Json::Value& node, const Set<T, Args...> &values, const std::string &key);
-
-    template<template<class...> class Set, class T, class... Args>
-    typename std::enable_if<
-        is_set_container<Set<T, Args...>>::value &&
-        is_not_serialize_to_attribute<T>::value,
-        void>::type
-    serialize(Json::Value& node, const Set<T, Args...> &values, const std::string &key);
 /* Vectors serialization start */
     template<class T>
     typename std::enable_if<(is_attribute<T>::value && !std::is_same<T, bool>::value) || is_enum<T>::value, void>::type
@@ -183,9 +436,9 @@ namespace serializer_json
 /* Set serialization start */
     template<template<class...> class Set, class T, class... Args>
     typename std::enable_if<
-        is_set_container<Set<T, Args...>>::value &&
-        ((is_attribute<T>::value && !std::is_same<T, bool>::value) || is_enum<T>::value),
-        void>::type
+    is_set_container<Set<T, Args...>>::value &&
+    ((is_attribute<T>::value && !std::is_same<T, bool>::value) || is_enum<T>::value),
+    void>::type
     serialize(Json::Value& node, const Set<T, Args...> &values, const std::string &key)
     {
         if (values.empty())
@@ -198,8 +451,8 @@ namespace serializer_json
     }
     template<template<class...> class Set, class... Args>
     typename std::enable_if<
-        is_set_container<Set<bool, Args...>>::value,
-        void>::type
+    is_set_container<Set<bool, Args...>>::value,
+    void>::type
     serialize(Json::Value& node, const Set<bool, Args...> &values, const std::string &key)
     {
         if (values.empty())
@@ -212,9 +465,9 @@ namespace serializer_json
     }
     template<template<class...> class Set, class T, class... Args>
     typename std::enable_if<
-        is_set_container<Set<T, Args...>>::value &&
-        is_data<T>::value,
-        void>::type
+    is_set_container<Set<T, Args...>>::value &&
+    is_data<T>::value,
+    void>::type
     serialize(Json::Value& node, const Set<T, Args...> &values, const std::string &key)
     {
         if (values.empty())
@@ -228,9 +481,9 @@ namespace serializer_json
 
     template<template<class...> class Set, class T, class... Args>
     typename std::enable_if<
-        is_set_container<Set<T, Args...>>::value &&
-        is_not_serialize_to_attribute<T>::value,
-        void>::type
+    is_set_container<Set<T, Args...>>::value &&
+    is_not_serialize_to_attribute<T>::value,
+    void>::type
     serialize(Json::Value& node, const Set<T, Args...> &values, const std::string &key)
     {
         if (values.empty())
@@ -244,7 +497,7 @@ namespace serializer_json
     }
 /* Set serialization finish */
 /* Maps serialization start */
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_attribute<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
     serialize(Json::Value& node, const Map& values, const std::string& key)
     {
@@ -259,7 +512,7 @@ namespace serializer_json
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_attribute<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
     serialize(Json::Value& node, const Map& values, const std::string& key)
     {
@@ -274,7 +527,7 @@ namespace serializer_json
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_attribute<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
     serialize(Json::Value& node, const Map& values, const std::string& key)
     {
@@ -289,7 +542,7 @@ namespace serializer_json
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_attribute<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
     serialize(Json::Value& node, const Map& values, const std::string& key)
     {
@@ -304,7 +557,7 @@ namespace serializer_json
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_enum<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
     serialize(Json::Value& node, const Map& values, const std::string& key)
     {
@@ -319,7 +572,7 @@ namespace serializer_json
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_enum<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
     serialize(Json::Value& node, const Map& values, const std::string& key)
     {
@@ -334,7 +587,7 @@ namespace serializer_json
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_enum<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
     serialize(Json::Value& node, const Map& values, const std::string& key)
     {
@@ -349,7 +602,7 @@ namespace serializer_json
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_enum<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
     serialize(Json::Value& node, const Map& values, const std::string& key)
     {
@@ -364,7 +617,7 @@ namespace serializer_json
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_data<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
     serialize(Json::Value& node, const Map& values, const std::string& key)
     {
@@ -379,7 +632,7 @@ namespace serializer_json
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_data<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
     serialize(Json::Value& node, const Map& values, const std::string& key)
     {
@@ -394,7 +647,7 @@ namespace serializer_json
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_data<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
     serialize(Json::Value& node, const Map& values, const std::string& key)
     {
@@ -409,7 +662,7 @@ namespace serializer_json
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_data<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
     serialize(Json::Value& node, const Map& values, const std::string& key)
     {
@@ -424,7 +677,7 @@ namespace serializer_json
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
     serialize(Json::Value& node, const Map& values, const std::string& key)
     {
@@ -439,7 +692,7 @@ namespace serializer_json
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
     serialize(Json::Value& node, const Map& values, const std::string& key)
     {
@@ -454,7 +707,7 @@ namespace serializer_json
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
     serialize(Json::Value& node, const Map& values, const std::string& key)
     {
@@ -469,7 +722,7 @@ namespace serializer_json
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
     serialize(Json::Value& node, const Map& values, const std::string& key)
     {
@@ -698,7 +951,7 @@ namespace serializer_json
     }
 /* Set deserialization finish */
 /* Maps deserialization start */
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_attribute<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
     deserialize(Json::Value& node, Map& map, const std::string& key)
     {
@@ -711,7 +964,7 @@ namespace serializer_json
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_attribute<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
     deserialize(Json::Value& node, Map& map, const std::string& key)
     {
@@ -724,7 +977,7 @@ namespace serializer_json
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_attribute<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
     deserialize(Json::Value& node, Map& map, const std::string& key)
     {
@@ -737,7 +990,7 @@ namespace serializer_json
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_attribute<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
     deserialize(Json::Value& node, Map& map, const std::string& key)
     {
@@ -750,7 +1003,7 @@ namespace serializer_json
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_enum<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
     deserialize(Json::Value& node, Map& map, const std::string& key)
     {
@@ -763,7 +1016,7 @@ namespace serializer_json
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_enum<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
     deserialize(Json::Value& node, Map& map, const std::string& key)
     {
@@ -776,7 +1029,7 @@ namespace serializer_json
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_enum<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
     deserialize(Json::Value& node, Map& map, const std::string& key)
     {
@@ -789,7 +1042,7 @@ namespace serializer_json
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_enum<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
     deserialize(Json::Value& node, Map& map, const std::string& key)
     {
@@ -802,7 +1055,7 @@ namespace serializer_json
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_data<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
     deserialize(Json::Value& node, Map& map, const std::string& key)
     {
@@ -815,7 +1068,7 @@ namespace serializer_json
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_data<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
     deserialize(Json::Value& node, Map& map, const std::string& key)
     {
@@ -828,7 +1081,7 @@ namespace serializer_json
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_data<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
     deserialize(Json::Value& node, Map& map, const std::string& key)
     {
@@ -841,7 +1094,7 @@ namespace serializer_json
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_data<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
     deserialize(Json::Value& node, Map& map, const std::string& key)
     {
@@ -854,7 +1107,7 @@ namespace serializer_json
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
     deserialize(Json::Value& node, Map& map, const std::string& key)
     {
@@ -867,7 +1120,7 @@ namespace serializer_json
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
     deserialize(Json::Value& node, Map& map, const std::string& key)
     {
@@ -880,7 +1133,7 @@ namespace serializer_json
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
     deserialize(Json::Value& node, Map& map, const std::string& key)
     {
@@ -893,7 +1146,7 @@ namespace serializer_json
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
     deserialize(Json::Value& node, Map& map, const std::string& key)
     {
@@ -910,7 +1163,6 @@ namespace serializer_json
 }
 }
 #endif //__mg_serializer_json__
-
 )__EXT__";
 
 #pragma mark SERIALIZER_JSON_CPP

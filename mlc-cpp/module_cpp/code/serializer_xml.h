@@ -19,7 +19,7 @@ const std::string SERIALIZER_XML_HPP = R"__EXT__(#ifndef __mg_serialize_xml_h__
 #include "SerializerCommon.h"
 #include "DataStorage.h"
 #include "mg_Factory.h"
-{include_custom_serializer}
+
 
 namespace pugi
 {
@@ -31,6 +31,279 @@ namespace mg
 {
 namespace serializer_xml
 {
+    template <class T>
+    typename std::enable_if<is_attribute<T>::value, void>::type
+    serialize(pugi::xml_node node, const T& value, const std::string& key, const T& default_value);
+
+    template <class T>
+    typename std::enable_if<is_enum<T>::value, void>::type
+    serialize(pugi::xml_node node, const T& value, const std::string& key);
+
+    template <class T>
+    typename std::enable_if<!is_attribute<T>::value, void>::type
+    serialize(pugi::xml_node node, const T *value, const std::string& key);
+
+    template <class T>
+    typename std::enable_if<!is_attribute<T>::value && !is_enum<T>::value && !is_map<T>::value, void>::type
+    serialize(pugi::xml_node node, const intrusive_ptr<T>& value, const std::string& key);
+
+    template <class T>
+    typename std::enable_if<is_serializable<T>::value, void>::type
+    serialize(pugi::xml_node node, const T& value, const std::string& key);
+
+    /* Vectors serialization start */
+    template <class T>
+    typename std::enable_if<is_attribute<T>::value && !std::is_same<T, bool>::value, void>::type
+    serialize(pugi::xml_node node, const std::vector<T>& values, const std::string& key);
+
+    template <class T>
+    typename std::enable_if<is_attribute<T>::value && std::is_same<T, bool>::value, void>::type
+    serialize(pugi::xml_node node, const std::vector<T>& values, const std::string& key);
+
+    template <class T>
+    typename std::enable_if<!is_attribute<T>::value, void>::type
+    serialize(pugi::xml_node node, const std::vector<intrusive_ptr<T>>& values, const std::string& key);
+
+    template <class T>
+    typename std::enable_if<!is_attribute<T>::value, void>::type
+    serialize(pugi::xml_node node, const std::vector<T>& values, const std::string& key);
+
+    template <class T>
+    typename std::enable_if<!is_attribute<T>::value, void>::type
+    serialize(pugi::xml_node node, const std::vector<const T*>& values, const std::string& key);
+
+    /* Vectors serialization finish */
+    /* Set serialization start */
+
+    template <template<class...> class Set, class T, class... Args>
+    typename std::enable_if<is_set_container<Set<T, Args...>>::value && is_attribute<T>::value && !std::is_same<T, bool>::value, void>::type
+    serialize(pugi::xml_node node, const Set<T, Args...>& values, const std::string& key);
+
+    template <template<class...> class Set, class... Args>
+    typename std::enable_if<is_set_container<Set<bool, Args...>>::value, void>::type
+    serialize(pugi::xml_node node, const Set<bool, Args...>& values, const std::string& key);
+
+    template <template<class...> class Set, class T, class... Args>
+    typename std::enable_if<is_set_container<Set<intrusive_ptr<T>, Args...>>::value && !is_attribute<T>::value, void>::type
+    serialize(pugi::xml_node node, const Set<intrusive_ptr<T>, Args...>& values, const std::string& key);
+
+    template <template<class...> class Set, class T, class... Args>
+    typename std::enable_if<is_set_container<Set<T, Args...>>::value && !is_attribute<T>::value && !is_intrusive<T>::value && !std::is_pointer<T>::value, void>::type
+    serialize(pugi::xml_node node, const Set<T, Args...>& values, const std::string& key);
+
+    template <template<class...> class Set, class T, class... Args>
+    typename std::enable_if<is_set_container<Set<const T*, Args...>>::value && !is_attribute<T>::value, void>::type
+    serialize(pugi::xml_node node, const Set<const T*, Args...>& values, const std::string& key);
+
+    /* Set serialization finish */
+    /* Maps serialization start */
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(pugi::xml_node node, const Map& values, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    serialize(pugi::xml_node node, const Map& values, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    serialize(pugi::xml_node node, const Map& values, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(pugi::xml_node node, const Map& values, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(pugi::xml_node node, const Map& values, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    serialize(pugi::xml_node node, const Map& values, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    serialize(pugi::xml_node node, const Map& values, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(pugi::xml_node node, const Map& values, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(pugi::xml_node node, const Map& values, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    serialize(pugi::xml_node node, const Map& values, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    serialize(pugi::xml_node node, const Map& values, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(pugi::xml_node node, const Map& values, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(pugi::xml_node node, const Map& values, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    serialize(pugi::xml_node node, const Map& values, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    serialize(pugi::xml_node node, const Map& values, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    serialize(pugi::xml_node node, const Map& values, const std::string& key);
+
+    /* Maps serialization finish */
+
+    /* Deserialize */
+
+    template <class T>
+    typename std::enable_if<is_attribute<T>::value, void>::type
+    deserialize(pugi::xml_node node, T& value, const std::string& key, const T& default_value);
+
+    template <class T>
+    typename std::enable_if<is_enum<T>::value, void>::type
+    deserialize(pugi::xml_node node, T& value, const std::string& key);
+
+    template <class T>
+    typename std::enable_if<!is_attribute<T>::value, void>::type
+    deserialize(pugi::xml_node node, T const *&value, const std::string& key);
+
+    template <class T>
+    typename std::enable_if<!is_attribute<T>::value, void>::type
+    deserialize(pugi::xml_node node, intrusive_ptr<T>& value, const std::string& key);
+
+    template <class T>
+    typename std::enable_if<!is_attribute<T>::value && !is_enum<T>::value && !is_map<T>::value, void>::type
+    deserialize(pugi::xml_node node, T& value, const std::string& key);
+
+    template <template<class...> class Set, class T, class... Args>
+    typename std::enable_if<is_set_container<Set<T, Args...>>::value && is_attribute<T>::value, void>::type
+    deserialize(pugi::xml_node node, Set<T, Args...>& values, const std::string& key);
+
+    template <template<class...> class Set, class T, class... Args>
+    typename std::enable_if<is_set_container<Set<intrusive_ptr<T>, Args...>>::value && !is_attribute<T>::value, void>::type
+    deserialize(pugi::xml_node node, Set<intrusive_ptr<T>, Args...>& values, const std::string& key);
+
+    template <template<class...> class Set, class T, class... Args>
+    typename std::enable_if<is_set_container<Set<const T*, Args...>>::value && !is_attribute<T>::value, void>::type
+    deserialize(pugi::xml_node node, Set<const T*, Args...>& values, const std::string& key);
+
+    template <template<class...> class Set, class T, class... Args>
+    typename std::enable_if<is_set_container<Set<T, Args...>>::value && !is_attribute<T>::value && !is_intrusive<T>::value && !std::is_pointer<T>::value, void>::type
+    deserialize(pugi::xml_node node, Set<T, Args...>& values, const std::string& key);
+
+    /* Vectors deserialization start */
+    template <class T>
+    typename std::enable_if<is_attribute<T>::value, void>::type
+    deserialize(pugi::xml_node node, std::vector<T>& values, const std::string& key);
+
+    template <class T>
+    typename std::enable_if<!is_attribute<T>::value, void>::type
+    deserialize(pugi::xml_node node, std::vector<intrusive_ptr<T>>& values, const std::string& key);
+
+    template <class T>
+    typename std::enable_if<!is_attribute<T>::value, void>::type
+    deserialize(pugi::xml_node node, std::vector<const T*>& values, const std::string& key);
+
+    template <class T>
+    typename std::enable_if<!is_attribute<T>::value, void>::type
+    deserialize(pugi::xml_node node, std::vector<T>& values, const std::string& key);
+    /* Vectors deserialization finish */
+    /* Set deserialization start */
+    template <template<class...> class Set, class T, class... Args>
+    typename std::enable_if<is_set_container<Set<T, Args...>>::value && is_attribute<T>::value, void>::type
+    deserialize(pugi::xml_node node, Set<T, Args...>& values, const std::string& key);
+
+    template <template<class...> class Set, class T, class... Args>
+    typename std::enable_if<is_set_container<Set<intrusive_ptr<T>, Args...>>::value && !is_attribute<T>::value, void>::type
+    deserialize(pugi::xml_node node, Set<intrusive_ptr<T>, Args...>& values, const std::string& key);
+
+    template <template<class...> class Set, class T, class... Args>
+    typename std::enable_if<is_set_container<Set<const T*, Args...>>::value && !is_attribute<T>::value, void>::type
+    deserialize(pugi::xml_node node, Set<const T*, Args...>& values, const std::string& key);
+
+    template <template<class...> class Set, class T, class... Args>
+    typename std::enable_if<is_set_container<Set<T, Args...>>::value && !is_attribute<T>::value && !is_intrusive<T>::value && !std::is_pointer<T>::value, void>::type
+    deserialize(pugi::xml_node node, Set<T, Args...>& values, const std::string& key);
+
+    /* Set deserialization finish */
+
+    /* Maps deserialization start */
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(pugi::xml_node node, Map& map, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    deserialize(pugi::xml_node node, Map& map, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    deserialize(pugi::xml_node node, Map& map, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_attribute<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(pugi::xml_node node, Map& map, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(pugi::xml_node node, Map& map, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    deserialize(pugi::xml_node node, Map& map, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    deserialize(pugi::xml_node node, Map& map, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_enum<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(pugi::xml_node node, Map& map, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(pugi::xml_node node, Map& map, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    deserialize(pugi::xml_node node, Map& map, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    deserialize(pugi::xml_node node, Map& map, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_data<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(pugi::xml_node node, Map& map, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(pugi::xml_node node, Map& map, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
+    deserialize(pugi::xml_node node, Map& map, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
+    deserialize(pugi::xml_node node, Map& map, const std::string& key);
+
+    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
+    deserialize(pugi::xml_node node, Map& map, const std::string& key);
+
     pugi::xml_node add_child(pugi::xml_node node, const std::string& name);
 
     void add_attribute(pugi::xml_node node, const std::string& key, const int& value, int default_value=0);
@@ -85,44 +358,6 @@ namespace serializer_xml
         auto child = key.empty() ? node : add_child(node, key);
         value.serialize_xml(child);
     }
-
-    template <template<class...> class Set, class T, class... Args>
-    typename std::enable_if<
-        is_set_container<Set<T, Args...>>::value &&
-        is_attribute<T>::value &&
-        !std::is_same<T, bool>::value,
-        void>::type
-    serialize(pugi::xml_node node, const Set<T, Args...>& values, const std::string& key);
-
-    template <template<class...> class Set, class... Args>
-    typename std::enable_if<
-        is_set_container<Set<bool, Args...>>::value,
-        void>::type
-    serialize(pugi::xml_node node, const Set<bool, Args...>& values, const std::string& key);
-
-    template <template<class...> class Set, class T, class... Args>
-    typename std::enable_if<
-        is_set_container<Set<intrusive_ptr<T>, Args...>>::value &&
-        !is_attribute<T>::value,
-        void>::type
-    serialize(pugi::xml_node node, const Set<intrusive_ptr<T>, Args...>& values, const std::string& key);
-
-    template <template<class...> class Set, class T, class... Args>
-    typename std::enable_if<
-        is_set_container<Set<T, Args...>>::value &&
-        !is_attribute<T>::value &&
-        !is_intrusive<T>::value &&
-        !std::is_pointer<T>::value,
-        void>::type
-    serialize(pugi::xml_node node, const Set<T, Args...>& values, const std::string& key);
-
-    template <template<class...> class Set, class T, class... Args>
-    typename std::enable_if<
-        is_set_container<Set<const T*, Args...>>::value &&
-        !is_attribute<T>::value,
-        void>::type
-    serialize(pugi::xml_node node, const Set<const T*, Args...>& values, const std::string& key);
-
 /* Vectors serialization start */
     template <class T>
     typename std::enable_if<is_attribute<T>::value && !std::is_same<T, bool>::value, void>::type
@@ -289,7 +524,7 @@ namespace serializer_xml
     }
 /* Set serialization finish */
 /* Maps serialization start */
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_attribute<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
     serialize(pugi::xml_node node, const Map& values, const std::string& key)
     {
@@ -304,7 +539,7 @@ namespace serializer_xml
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_attribute<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
     serialize(pugi::xml_node node, const Map& values, const std::string& key)
     {
@@ -319,7 +554,7 @@ namespace serializer_xml
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_attribute<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
     serialize(pugi::xml_node node, const Map& values, const std::string& key)
     {
@@ -334,7 +569,7 @@ namespace serializer_xml
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_attribute<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
     serialize(pugi::xml_node node, const Map& values, const std::string& key)
     {
@@ -349,7 +584,7 @@ namespace serializer_xml
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_enum<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
     serialize(pugi::xml_node node, const Map& values, const std::string& key)
     {
@@ -364,7 +599,7 @@ namespace serializer_xml
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_enum<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
     serialize(pugi::xml_node node, const Map& values, const std::string& key)
     {
@@ -379,7 +614,7 @@ namespace serializer_xml
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_enum<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
     serialize(pugi::xml_node node, const Map& values, const std::string& key)
     {
@@ -394,7 +629,7 @@ namespace serializer_xml
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_enum<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
     serialize(pugi::xml_node node, const Map& values, const std::string& key)
     {
@@ -409,7 +644,7 @@ namespace serializer_xml
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_data<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
     serialize(pugi::xml_node node, const Map& values, const std::string& key)
     {
@@ -424,7 +659,7 @@ namespace serializer_xml
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_data<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
     serialize(pugi::xml_node node, const Map& values, const std::string& key)
     {
@@ -439,7 +674,7 @@ namespace serializer_xml
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_data<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
     serialize(pugi::xml_node node, const Map& values, const std::string& key)
     {
@@ -454,7 +689,7 @@ namespace serializer_xml
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_data<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
     serialize(pugi::xml_node node, const Map& values, const std::string& key)
     {
@@ -469,7 +704,7 @@ namespace serializer_xml
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
     serialize(pugi::xml_node node, const Map& values, const std::string& key)
     {
@@ -484,7 +719,7 @@ namespace serializer_xml
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
     serialize(pugi::xml_node node, const Map& values, const std::string& key)
     {
@@ -499,7 +734,7 @@ namespace serializer_xml
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
     serialize(pugi::xml_node node, const Map& values, const std::string& key)
     {
@@ -514,7 +749,7 @@ namespace serializer_xml
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
     serialize(pugi::xml_node node, const Map& values, const std::string& key)
     {
@@ -528,8 +763,8 @@ namespace serializer_xml
             serialize(item, pair.second, "value");
         }
     }
-/* Maps serialization finish */
-    
+    /* Maps serialization finish */
+
     /* Deserialize */
     pugi::xml_node get_child(pugi::xml_node node, const std::string& name);
 
@@ -617,7 +852,7 @@ namespace serializer_xml
         void>::type
     deserialize(pugi::xml_node node, Set<T, Args...>& values, const std::string& key);
 
-/* Vectors deserialization start */
+    /* Vectors deserialization start */
     template <class T>
     typename std::enable_if<is_attribute<T>::value, void>::type
     deserialize(pugi::xml_node node, std::vector<T>& values, const std::string& key)
@@ -672,8 +907,8 @@ namespace serializer_xml
             values.push_back(std::move(value));
         }
     }
-/* Vectors deserialization finish */
-/* Set deserialization start */
+    /* Vectors deserialization finish */
+    /* Set deserialization start */
     template <template<class...> class Set, class T, class... Args>
     typename std::enable_if<
         is_set_container<Set<T, Args...>>::value &&
@@ -742,9 +977,9 @@ namespace serializer_xml
             values.insert(value);
         }
     }
-/* Set deserialization finish */
-/* Maps deserialization start */
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    /* Set deserialization finish */
+    /* Maps deserialization start */
+    template<class Map, class>
     typename std::enable_if<is_attribute<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
     deserialize(pugi::xml_node node, Map& map, const std::string& key)
     {
@@ -757,7 +992,7 @@ namespace serializer_xml
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_attribute<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
     deserialize(pugi::xml_node node, Map& map, const std::string& key)
     {
@@ -770,7 +1005,7 @@ namespace serializer_xml
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_attribute<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
     deserialize(pugi::xml_node node, Map& map, const std::string& key)
     {
@@ -783,7 +1018,7 @@ namespace serializer_xml
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_attribute<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
     deserialize(pugi::xml_node node, Map& map, const std::string& key)
     {
@@ -796,7 +1031,7 @@ namespace serializer_xml
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_enum<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
     deserialize(pugi::xml_node node, Map& map, const std::string& key)
     {
@@ -809,7 +1044,7 @@ namespace serializer_xml
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_enum<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
     deserialize(pugi::xml_node node, Map& map, const std::string& key)
     {
@@ -822,7 +1057,7 @@ namespace serializer_xml
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_enum<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
     deserialize(pugi::xml_node node, Map& map, const std::string& key)
     {
@@ -835,7 +1070,7 @@ namespace serializer_xml
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_enum<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
     deserialize(pugi::xml_node node, Map& map, const std::string& key)
     {
@@ -848,7 +1083,7 @@ namespace serializer_xml
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_data<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
     deserialize(pugi::xml_node node, Map& map, const std::string& key)
     {
@@ -861,7 +1096,7 @@ namespace serializer_xml
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_data<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
     deserialize(pugi::xml_node node, Map& map, const std::string& key)
     {
@@ -874,7 +1109,7 @@ namespace serializer_xml
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_data<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
     deserialize(pugi::xml_node node, Map& map, const std::string& key)
     {
@@ -887,7 +1122,7 @@ namespace serializer_xml
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_data<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
     deserialize(pugi::xml_node node, Map& map, const std::string& key)
     {
@@ -900,7 +1135,7 @@ namespace serializer_xml
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
     deserialize(pugi::xml_node node, Map& map, const std::string& key)
     {
@@ -913,7 +1148,7 @@ namespace serializer_xml
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_enum<typename Map::mapped_type>::value, void>::type
     deserialize(pugi::xml_node node, Map& map, const std::string& key)
     {
@@ -926,7 +1161,7 @@ namespace serializer_xml
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_data<typename Map::mapped_type>::value, void>::type
     deserialize(pugi::xml_node node, Map& map, const std::string& key)
     {
@@ -939,7 +1174,7 @@ namespace serializer_xml
         }
     }
 
-    template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
+    template<class Map, class>
     typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
     deserialize(pugi::xml_node node, Map& map, const std::string& key)
     {
@@ -951,13 +1186,12 @@ namespace serializer_xml
             map[key_] = std::move(value_);
         }
     }
-/* Maps deserialization finish */
+    /* Maps deserialization finish */
 
 }
 
 }
 #endif
-
 )__EXT__";
 
 #pragma mark SERIALIZER_XML_CPP
