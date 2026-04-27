@@ -204,7 +204,11 @@ Config Config::loadString(const std::string &content, std::string &err) {
                 }
             }
         }
-        
+        if (g.isMember("custom_serialize_headers")) {
+            for(auto& h : g["custom_serialize_headers"]){
+                job.custom_serialize_headers.push_back(h.asString());
+            }
+        }
         if (g.isMember("filter_code")) {
             auto pats = read_patterns(g["filter_code"]);
             if (!pats.empty())

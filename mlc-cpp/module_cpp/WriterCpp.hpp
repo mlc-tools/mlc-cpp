@@ -113,10 +113,6 @@ private:
 {forward_declarations_out}
 namespace {namespace}
 {
-    class SerializerXml;
-    class DeserializerXml;
-    class SerializerJson;
-    class DeserializerJson;
 {forward_declarations}
 
     class {class_name}{superclass}
