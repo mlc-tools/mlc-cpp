@@ -12,7 +12,7 @@ elseif(BUILD_JSON)
     set(TYPE json)
 endif(BUILD_XML)
 
-project(test_mlc_serializer_${TYPE})
+project(test_mlc_ecs)
 
 file(GLOB_RECURSE SRC
 						${ROOT}/common/*.cpp *.h

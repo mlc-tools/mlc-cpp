@@ -1,0 +1,80 @@
+class ecs/EcsModel:prefer_use_forward_declarations
+{
+	int free_id = 0;
+
+	fn void update_systems(float dt)
+	{
+		[SystemGravity]
+		[SystemForceToAcceleration]
+		[SystemVelocityIntegration]
+		[SystemMovement]
+		[SystemMergeCollision]
+		[SystemDestroy]
+	}
+	fn int get_next_free_id()
+	{
+		return ++free_id;
+	}
+}
+
+class ecs/EcsBuilder
+{
+	fn int build(EcsModel* model, string entity_name, float world_size)
+	{
+		auto id = model->get_next_free_id();
+		auto data = DataStorage::shared().get<DataEntity>(entity_name);
+		for(auto& component : data->components)
+		{
+			std::visit([&](auto& component)
+			{
+				auto copy = component.copy();
+				model->add(std::move(copy), id);
+			}, component);
+		}
+
+		auto& transform = model->get<Transform>(id);
+		transform.pos.x = (random_float() - 0.5f) * world_size;
+		transform.pos.y = (random_float() - 0.5f) * world_size;
+
+		auto& velocity = model->get<Velocity>(id);
+		velocity.value.x = (random_float() - 0.5f);
+		velocity.value.y = (random_float() - 0.5f);
+
+		return id;
+	}
+}
+
+
+class ecs/TestEcsModel<ITestEcsModel>
+{
+	fn EcsModel* get_model(int entities_count)
+	{
+		auto model = new EcsModel();
+		while(entities_count-- > 0)
+		{
+			EcsBuilder().build(model, "bit", 100);
+		}
+		return model;
+	}
+
+	fn void test_simulate()
+	{
+		auto model = get_model(1000);
+		int iterations = 100000;
+		for(int i=0; i<iterations; ++i)
+		{
+			this->timepoint();
+			model->update_systems(1/60.f);
+			auto ms = this->get_elapsed_time<std::chrono::microseconds>();
+			logger->log("us on one tick: " + std::to_string(ms) + ". FPS: " + std::to_string(1000000.f / ms) + ". Particles: " + std::to_string(model->get_components<CollisionBody>().size()));
+			if(model->get_components<GravityBody>().size() == 1){
+				break;
+			}
+		}
+		auto& mass = model->get_components<Mass>().front();
+		auto& velocity = model->get<Velocity>(mass.id);
+		logger->log("Finish simulate with " + std::to_string(model->get_components<GravityBody>().size()) + " entities");
+		logger->log("mass: " + std::to_string(mass.kg));
+		logger->log("velocity: " + std::to_string(velocity.value.x) + "x" + std::to_string(velocity.value.y));
+	}
+}

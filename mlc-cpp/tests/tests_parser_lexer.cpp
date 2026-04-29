@@ -307,6 +307,13 @@ void test_parse_functions() {
     assert(func.callable_args.size() == 2);
     assert(func.callable_args.at(0).value == "");
     assert(func.callable_args.at(1).value == "");
+    
+    func = parse_function("fn<T> void add(T&& component, int component_id=0)");
+    assert(func.callable_args.size() == 2);
+    assert(func.callable_args.at(0).type == "T");
+    assert(func.callable_args.at(0).name == "component");
+    assert(func.callable_args.at(0).is_ref == true);
+    assert(func.callable_args.at(0).is_rvalue == true);
 }
 
 void run() {

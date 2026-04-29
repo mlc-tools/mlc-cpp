@@ -1,0 +1,5 @@
+class ecs/DataEntity:storage:discard_copy_ctr:discard_copy
+{
+	string name
+	ListEcsComponents components
+}

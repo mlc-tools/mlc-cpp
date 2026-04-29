@@ -54,8 +54,7 @@ void GeneratorRefCounterCpp::generate(Model &model) {
     }
 
     for (auto &cls : model.classes) {
-        if (cls->parent_class_name.empty() && cls->type != "enum" &&
-            !cls->is_abstract)
+        if (cls->parent_class_name.empty() && cls->type != "enum" && !cls->is_abstract)
             addToClass(cls);
     }
 }

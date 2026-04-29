@@ -102,6 +102,12 @@ void Object::set_modifier(const std::string_view &modifier) {
         this->is_test = true;
     else if (modifier == Modifier::m_discard_const_ref)
         this->is_discard_const_ref = true;
+    else if (modifier == Modifier::m_discard_copy_ctr)
+        this->discard_copy_ctr = true;
+    else if (modifier == Modifier::m_discard_copy)
+        this->discard_copy = true;
+    else if (modifier == Modifier::m_discard_move)
+        this->discard_move = true;
 
     else if (modifier == Modifier::l_cpp)
         this->lang_specific.insert(Modifier::l_cpp);

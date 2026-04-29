@@ -960,7 +960,7 @@ namespace serializer_json
         {
             typename Map::key_type key_ = get_attribute(item, "key", default_value::value<typename Map::key_type>());
             typename Map::mapped_type value_ = get_attribute(item, "value", default_value::value<typename Map::mapped_type>());
-            map[key_] = value_;
+            map[key_] = std::move(value_);
         }
     }
 
@@ -973,7 +973,7 @@ namespace serializer_json
         {
             typename Map::key_type key_ = get_attribute(item, "key", default_value::value<typename Map::key_type>());
             typename Map::mapped_type value_; deserialize(item, value_, "value");
-            map[key_] = value_;
+            map[key_] = std::move(value_);
         }
     }
 
@@ -986,7 +986,7 @@ namespace serializer_json
         {
             typename Map::key_type key_ = get_attribute(item, "key", default_value::value<typename Map::key_type>());
             typename Map::mapped_type value_ = DataStorage::shared().get<typename data_type<typename Map::mapped_type>::type>(get_attribute(item, "value", default_value::value<std::string>()));
-            map[key_] = value_;
+            map[key_] = std::move(value_);
         }
     }
 
@@ -999,7 +999,7 @@ namespace serializer_json
         {
             typename Map::key_type key_ = get_attribute(item, "key", default_value::value<typename Map::key_type>());
             typename Map::mapped_type value_; deserialize(item, value_, "value");
-            map[key_] = value_;
+            map[key_] = std::move(value_);
         }
     }
 
@@ -1012,7 +1012,7 @@ namespace serializer_json
         {
             typename Map::key_type key_; deserialize(item, key_, "key");
             typename Map::mapped_type value_ = get_attribute(item, "value", default_value::value<typename Map::mapped_type>());
-            map[key_] = value_;
+            map[key_] = std::move(value_);
         }
     }
 
@@ -1025,7 +1025,7 @@ namespace serializer_json
         {
             typename Map::key_type key_; deserialize(item, key_, "key");
             typename Map::mapped_type value_; deserialize(item, value_, "value");
-            map[key_] = value_;
+            map[key_] = std::move(value_);
         }
     }
 
@@ -1038,7 +1038,7 @@ namespace serializer_json
         {
             typename Map::key_type key_; deserialize(item, key_, "key");
             typename Map::mapped_type value_ = DataStorage::shared().get<typename data_type<typename Map::mapped_type>::type>(get_attribute(item, "value", default_value::value<std::string>()));
-            map[key_] = value_;
+            map[key_] = std::move(value_);
         }
     }
 
@@ -1051,7 +1051,7 @@ namespace serializer_json
         {
             typename Map::key_type key_; deserialize(item, key_, "key");
             typename Map::mapped_type value_; deserialize(item, value_, "value");
-            map[key_] = value_;
+            map[key_] = std::move(value_);
         }
     }
 
@@ -1064,7 +1064,7 @@ namespace serializer_json
         {
             typename Map::key_type key_ = DataStorage::shared().get<typename data_type<typename Map::key_type>::type>(get_attribute(item, "key", default_value::value<std::string>()));
             typename Map::mapped_type value_ = get_attribute(item, "value", default_value::value<typename Map::mapped_type>());
-            map[key_] = value_;
+            map[key_] = std::move(value_);
         }
     }
 
@@ -1077,7 +1077,7 @@ namespace serializer_json
         {
             typename Map::key_type key_ = DataStorage::shared().get<typename data_type<typename Map::key_type>::type>(get_attribute(item, "key", default_value::value<std::string>()));
             typename Map::mapped_type value_; deserialize(item, value_, "value");
-            map[key_] = value_;
+            map[key_] = std::move(value_);
         }
     }
 
@@ -1090,7 +1090,7 @@ namespace serializer_json
         {
             typename Map::key_type key_ = DataStorage::shared().get<typename data_type<typename Map::key_type>::type>(get_attribute(item, "key", default_value::value<std::string>()));
             typename Map::mapped_type value_ = DataStorage::shared().get<typename data_type<typename Map::mapped_type>::type>(get_attribute(item, "value", default_value::value<std::string>()));
-            map[key_] = value_;
+            map[key_] = std::move(value_);
         }
     }
 
@@ -1103,7 +1103,7 @@ namespace serializer_json
         {
             typename Map::key_type key_ = DataStorage::shared().get<typename data_type<typename Map::key_type>::type>(get_attribute(item, "key", default_value::value<std::string>()));
             typename Map::mapped_type value_; deserialize(item, value_, "value");
-            map[key_] = value_;
+            map[key_] = std::move(value_);
         }
     }
 
@@ -1116,7 +1116,7 @@ namespace serializer_json
         {
             typename Map::key_type key_; deserialize(item, key_, "key");
             typename Map::mapped_type value_ = get_attribute(item, "value", default_value::value<typename Map::mapped_type>());
-            map[key_] = value_;
+            map[key_] = std::move(value_);
         }
     }
 
@@ -1129,7 +1129,7 @@ namespace serializer_json
         {
             typename Map::key_type key_; deserialize(item, key_, "key");
             typename Map::mapped_type value_; deserialize(item, value_, "value");
-            map[key_] = value_;
+            map[key_] = std::move(value_);
         }
     }
 
@@ -1142,7 +1142,7 @@ namespace serializer_json
         {
             typename Map::key_type key_; deserialize(item, key_, "key");
             typename Map::mapped_type value_ = DataStorage::shared().get<typename data_type<typename Map::mapped_type>::type>(get_attribute(item, "value", default_value::value<std::string>()));
-            map[key_] = value_;
+            map[key_] = std::move(value_);
         }
     }
 
@@ -1155,7 +1155,7 @@ namespace serializer_json
         {
             typename Map::key_type key_; deserialize(item, key_, "key");
             typename Map::mapped_type value_; deserialize(item, value_, "value");
-            map[key_] = value_;
+            map[key_] = std::move(value_);
         }
     }
 /* Maps deserialization finish */

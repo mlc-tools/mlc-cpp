@@ -118,7 +118,7 @@ class ecs/SystemAddMovement:cpp
 	}
 	fn void clean(EcsModel* model)
 	{
-		model->remove<Movement>(model->get<Movement>(1));
+		model->remove<Movement>(model->get<Movement>(1), false);
 	}
 }
 
@@ -277,6 +277,88 @@ class ecs/TestEcsModel<ITestEcsModel>
 		this->assertEqual(model->get<Transform>(2).y, 0);
 	}
 
+	fn void test_each2():cpp
+	{
+		auto model = this->get_model();
+		model->add(Transform(), 1);
+		model->add(Transform(), 2);
+		model->add(Movement(), 2);
+
+		std::set<int> ids;
+		model->each<Transform, Movement>([&](auto& t, auto& m)
+		{
+			this->assertEqual(t.id, m.id);
+			ids.insert(t.id);
+		});
+		this->assertTrue(ids == std::set<int>{2});
+		ids.clear();
+
+		model->each<Movement, Transform>([&](auto& t, auto& m)
+		{
+			this->assertEqual(t.id, m.id);
+			ids.insert(t.id);
+		});
+		this->assertTrue(ids == std::set<int>{2});
+		ids.clear();
+
+
+		model->add(Movement(), 1);
+
+		model->each<Transform, Movement>([&](auto& t, auto& m)
+		{
+			this->assertEqual(t.id, m.id);
+			ids.insert(t.id);
+		});
+		this->assertTrue(ids == std::set<int>{1, 2});
+		ids.clear();
+
+		model->each<Movement, Transform>([&](auto& t, auto& m)
+		{
+			this->assertEqual(t.id, m.id);
+			ids.insert(t.id);
+		});
+		this->assertTrue(ids == std::set<int>{1, 2});
+		ids.clear();
+
+		model->remove(model->get<Movement>(1));
+		model->remove(model->get<Movement>(2));
+		model->each<Transform, Movement>([&](auto& t, auto& m)
+		{
+			this->assertEqual(t.id, m.id);
+			ids.insert(t.id);
+		});
+		this->assertTrue(ids == std::set<int>{});
+		ids.clear();
+
+		model->each<Movement, Transform>([&](auto& t, auto& m)
+		{
+			this->assertEqual(t.id, m.id);
+			ids.insert(t.id);
+		});
+		this->assertTrue(ids == std::set<int>{});
+		ids.clear();
+	}
+
+	fn void test_each3():cpp
+	{
+		auto model = this->get_model();
+		model->add(Transform(), 1);
+		model->add(Transform(), 2);
+		model->add(Movement(), 2);
+		model->add(Movement2(), 2);
+
+		std::set<int> ids;
+		model->each<Transform, Movement, Movement2>([&](auto& t, auto& m, auto& m2)
+		{
+			this->assertEqual(t.id, m.id);
+			this->assertEqual(t.id, m2.id);
+			ids.insert(t.id);
+		});
+		this->assertTrue(ids == std::set<int>{2});
+		ids.clear();
+
+	}
+
 	fn void test_copy_entity_from_model():cpp
 	{
 		auto source = this->get_model();
@@ -353,6 +435,28 @@ class ecs/TestEcsModel<ITestEcsModel>
 		this->assertEqual(model->get<Movement>(1).y, 104);
 	}
 
+	fn void test_remove_entities_with()
+	{
+		auto model = this->get_model();
+		for(int i=0; i<10; ++i)
+		{
+			model->add(Transform(), i+1);
+		}
+		for(int i=0; i<5; ++i)
+		{
+			model->add(Movement(), i+1);
+		}
+		model->remove_entities_with<Movement>();
+		model->clear_removed<Transform>();
+		auto& transforms = model->get_components<Transform>();
+		this->assertEqual(transforms.size(), 5);
+		this->assertEqual(transforms.at(0).id, 6);
+		this->assertEqual(transforms.at(1).id, 7);
+		this->assertEqual(transforms.at(2).id, 8);
+		this->assertEqual(transforms.at(3).id, 9);
+		this->assertEqual(transforms.at(4).id, 10);
+	}
+
 	fn void test_perfomance_all()
 	{
 		int count = 10000;
@@ -398,6 +502,7 @@ class ecs/TestEcsModel<ITestEcsModel>
 	        int id = i + 1;
 	        model->add(Transform(), id);
 	        model->add(Movement(), id);
+	        model->add(Movement2(), id);
 	        auto& m = model->get<Movement>(id);
 	        m.x = 1;
 	    }
@@ -405,21 +510,16 @@ class ecs/TestEcsModel<ITestEcsModel>
 	    // warmup
 	    for(int i=0;i<warmup;++i)
 	    {
-	        SystemMovementIf().update(model);
+	        SystemMovement().update(model);
 	    }
 
 	    std::vector<long long> us;
 	    us.reserve(frames);
 
-	    volatile float sink = 0;
-
 	    for(int f=0; f<frames; ++f)
 	    {
 	        auto start = clock::now();
-
-	        SystemMovementIf().update(model);
-	        // sink += model->get<Movement>(1).x;
-
+	        SystemMovement().update(model);
 	        auto end = clock::now();
 	        us.push_back(std::chrono::duration_cast<std::chrono::microseconds>(end-start).count());
 	    }
@@ -431,10 +531,7 @@ class ecs/TestEcsModel<ITestEcsModel>
 	    std::cout << "Update: best=" << best << " us"
 	              << " median=" << median << " us"
 	              << " (" << (1000.0 * median / count) << " ns/entity)\n";
-	    std::cout << "sink=" << sink << "\n";
 	}
-
-
 
 	fn void test_perfomance_add_on_first()
 	{

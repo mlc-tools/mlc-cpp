@@ -283,6 +283,11 @@ Object ParserLexem::parse_member(bool with_name, bool is_enum) {
     else if (cur.type == TokenType::Symbol && cur.value == "&") {
         member.is_ref = true;
         advance();
+        
+        if (cur.type == TokenType::Symbol && cur.value == "&") {
+            member.is_rvalue = true;
+            advance();
+        }
     }
 
     while (cur.type == TokenType::Symbol && cur.value == "::") {

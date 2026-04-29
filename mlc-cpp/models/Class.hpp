@@ -36,8 +36,6 @@ struct Class : public Object {
     bool is_inline = false;
     bool is_virtual = false;
     bool discard_virtual = false;
-    bool discard_copy_ctr = false;
-    bool discard_copy = false;
     bool is_enum = false;
     bool generate_set_function = false;
     bool auto_generated = true;
@@ -59,7 +57,10 @@ struct Class : public Object {
     bool has_member(const std::string &name) const;
     bool has_method(const std::string &name) const;
     bool has_method(const Function &func) const;
-    const Function* get_copy_constructor() const;
+    Function* get_copy_constructor();
+    Function* get_move_constructor();
+    Function* get_copy_operator();
+    Function* get_move_operator();
     Function* get_method(const std::string &name);
     bool has_virtual() const;
     bool has_virtual_method() const;
@@ -67,8 +68,9 @@ struct Class : public Object {
     bool has_function_in_subclasses(const Function &func, bool depth = 0);
     bool has_function_in_parentclass(const Function &func, bool depth = 0);
     bool is_discard_virtual() const;
-    bool is_discard_copy_ctr() const;
-    bool is_discard_copy() const;
+    bool is_discard_copy_ctr() const override;
+    bool is_discard_copy() const override;
+    bool is_discard_move() const override;
 
     void onLinked(Model &model);
 };

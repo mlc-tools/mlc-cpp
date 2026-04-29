@@ -1,0 +1,51 @@
+class ecs/EcsComponent:discard_virtual
+{
+	int id
+}
+
+class ecs/Transform<EcsComponent>
+{
+	Vector pos
+}
+
+class ecs/Accelerate<EcsComponent>
+{
+	Vector accelerate
+}
+
+class ecs/Forces<EcsComponent>
+{
+	Vector force
+}
+
+class ecs/Mass<EcsComponent>
+{
+	float kg
+}
+class ecs/Velocity<EcsComponent>
+{
+    Vector value
+}
+
+class ecs/Radius<EcsComponent>
+{
+    float value
+}
+
+class ecs/GravityBody<EcsComponent>
+{
+    bool enabled = true
+}
+
+class ecs/CollisionBody<EcsComponent>
+{
+    bool enabled = true
+}
+
+class ecs/ToDestroy<EcsComponent>
+{
+}
+class ecs/CollisionPair<EcsComponent>
+{
+	int b
+}

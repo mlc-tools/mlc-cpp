@@ -15,7 +15,7 @@
       "filter_code": [],
       "features": {
         "unity_file":{
-          "group_to_one": true
+          "group_to_one": false
         }
       }
     }
@@ -24,6 +24,12 @@
     "unit_tests": {},
     "data_storage": {},
     "ref_counter": {},
-    "operator_equals": {}
+    "operator_equals": {},
+    "ecs": {
+      "model_base": "EcsModel",
+      "component_base": "EcsComponent",
+      "discard_inheritance": true,
+      "list_components_variant": "ListEcsComponents"
+    }
   }
 }

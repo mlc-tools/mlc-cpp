@@ -15,12 +15,13 @@
 class GeneratorOperatorEqualsCpp : public GeneratorOperatorEqualsBase {
 public:
     GeneratorOperatorEqualsCpp() = default;
+    virtual void generate(Model &model) override;
+    static void generate_signaturs(const std::shared_ptr<Class> &cls);
 
 protected:
     std::string getEqualMethodName() const override;
     std::string getNotEqualMethodName() const override;
-    std::string getCompareMethodPattern(const std::shared_ptr<Class> &cls,
-                                        const Object &member) const override;
+    std::string getCompareMethodPattern(const std::shared_ptr<Class> &cls, const Object &member) const override;
     std::string getNotEqualMethodOperation() const override;
 
     void addCopyConstructor(const std::shared_ptr<Class> &cls) override;

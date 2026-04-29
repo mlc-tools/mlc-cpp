@@ -1,0 +1,138 @@
+
+class ecs/SystemMovement:cpp
+{
+	fn void update(EcsModel* model, float dt)
+	{
+		model->each<Transform, Velocity>([&](auto& transform, auto& velocity)
+		{
+			transform.pos += velocity.value * dt;
+		    assert(!std::isnan(transform.pos.x));
+		    assert(!std::isnan(transform.pos.y));
+		});
+	}
+}
+class ecs/SystemVelocityIntegration:cpp
+{
+	fn void update(EcsModel* model, float dt)
+	{
+		model->each<Velocity, Accelerate>([&](auto& velocity, auto& accelerate)
+		{
+			auto old = velocity.value;
+			velocity.value += accelerate.accelerate * dt;
+		    assert(!std::isnan(velocity.value.x));
+		    assert(!std::isnan(velocity.value.y));
+		});
+	}
+}
+
+class ecs/SystemForceToAcceleration
+{
+	fn void update(EcsModel* model)
+	{
+		model->each<Forces, Mass, Accelerate>([this](auto& force, auto& mass, auto& accelerate)
+		{
+		    accelerate.accelerate = force.force / mass.kg;
+		    assert(!std::isnan(accelerate.accelerate.x));
+		    assert(!std::isnan(accelerate.accelerate.y));
+		});
+	}
+}
+class ecs/SystemGravity:cpp
+{
+	float:static G = 6.67430e-11;
+	float:static softening = 0.1e-12;
+
+	fn void update(EcsModel* model)
+	{
+		model->each<Forces>([&](auto& forces){forces.force = Vector(0, 0);});
+		model->each<GravityBody, Transform, Mass, Forces, Radius>([&](auto& gravityA, auto& transformA, auto& massA, auto& forcesA, auto& radiusA)
+		{
+			model->each<GravityBody, Transform, Mass, Forces, Radius>([&](auto& gravityB, auto& transformB, auto& massB, auto& forcesB, auto& radiusB)
+			{
+				if(gravityA.id >= gravityB.id)
+				{
+					return;
+				}
+				auto delta = transformB.pos - transformA.pos;
+		        auto dist_sq = delta.length_sq() + softening * softening;
+		        
+		        if(dist_sq <= (radiusA.value + radiusB.value) * (radiusA.value + radiusB.value))
+				{
+					CollisionPair pair;
+					pair.b = gravityB.id;
+					model->add(std::move(pair), gravityA.id);
+				}
+				else
+				{
+			        auto inv_sq = 1.f / dist_sq;
+			        auto dist = std::sqrt(dist_sq);
+			        auto inv = 1.f / dist;
+			        auto dir = delta.normalize();
+
+			        auto forceMag = G * massA.kg * massB.kg * inv_sq;
+			        auto f = dir * (forceMag * inv);
+			        forcesA.force += f;
+			        forcesB.force += -f;
+			    }
+			});
+		});
+	}
+}
+
+class ecs/SystemMergeCollision:cpp
+{
+	fn void update(EcsModel* model)
+	{
+		model->each<CollisionPair>([&](auto& pair)
+		{
+			if(model->get<ToDestroy>(pair.id) || model->get<ToDestroy>(pair.b))
+			{
+				return;
+			}
+
+			auto& transformA = model->get<Transform>(pair.id);
+			auto& transformB = model->get<Transform>(pair.b);
+			assert(transformA);
+			assert(transformB);
+
+			auto& velocityA = model->get<Velocity>(pair.id);
+			auto& velocityB = model->get<Velocity>(pair.b);
+
+			auto& massA = model->get<Mass>(pair.id);
+			auto& massB = model->get<Mass>(pair.b);
+
+			auto& radiusA = model->get<Radius>(pair.id);
+			auto& radiusB = model->get<Radius>(pair.b);
+
+			float newMass = massA.kg + massB.kg;
+			assert(newMass >= 1 && newMass < 100000);
+
+			Vector newPos = (transformA.pos + transformB.pos) / 2;
+			Vector newVelocity = (velocityA.value * massA.kg + velocityB.value * massB.kg) / newMass;
+			float newRadius = pow(pow(radiusA.value, 2.0) + pow(radiusB.value, 2.0), 1.0 / 2.0);
+
+		    assert(!std::isnan(newPos.x));
+		    assert(!std::isnan(newPos.y));
+		    assert(!std::isnan(newVelocity.x));
+		    assert(!std::isnan(newVelocity.y));
+		    assert(!std::isnan(newRadius));
+		    assert(!std::isnan(newMass));
+
+			transformA.pos = newPos;
+			velocityA.value = newVelocity;
+			massA.kg = newMass;
+			radiusA.value = newRadius;
+
+			model->add<ToDestroy>({}, pair.b);
+		});
+		model->clear<CollisionPair>();
+
+	}
+}
+class ecs/SystemDestroy:cpp
+{
+	fn void update(EcsModel* model)
+	{
+		model->remove_entities_with<ToDestroy>();
+	}
+}

@@ -41,6 +41,7 @@ const std::string m_binding = "binding";
 const std::string m_discard_const_ref = "discard_const_ref";
 const std::string m_discard_copy_ctr = "discard_copy_ctr";
 const std::string m_discard_copy = "discard_copy";
+const std::string m_discard_move = "discard_move";
 
 const std::string l_cpp = "cpp";
 const std::string l_py = "py";

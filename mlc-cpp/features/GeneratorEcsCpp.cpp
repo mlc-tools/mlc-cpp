@@ -20,6 +20,7 @@
 #include "../models/Object.hpp"
 #include "../utils/Common.hpp"
 #include "../utils/Error.hpp"
+#include "cpp/GeneratorOperatorEqualsCpp.hpp"
 
 using std::shared_ptr;
 using std::string;
@@ -34,26 +35,37 @@ public:
         auto& map_components = this->get_map_components<TComp>();
         size_t index = -1;
         auto iter = std::remove_if(components.begin(), components.end(), [&](auto& comp)
+        {
+            if(cond(comp))
             {
-                if(cond(comp))
-                {
-                    auto iter = map_components.find(comp.id);
-                    index = iter->second;
-                    map_components.erase(iter);
-                    return true;
-                }
-                return false;
-            });
+                auto iter = map_components.find(comp.id);
+                index = iter->second;
+                map_components.erase(iter);
+                return true;
+            }
+            return false;
+        });
         if(iter != components.end())
         {
             components.erase(iter, components.end());
-            // build_maps();
             for(auto i=index;i<components.size(); ++i)
             {
                 map_components[components.at(i).id] = i;
             }
         }
     }
+    
+    template <class T>
+    void remove_entities_with()
+    {
+        auto& cont = get_components<T>();
+        while(!cont.empty())
+        {
+            this->remove_entity(cont.back().id);
+        }
+    }
+
+    
     
     template <class TCompA, class TCompB>
     std::vector<std::tuple<TCompA&, TCompB&>> view()const
@@ -113,7 +125,7 @@ public:
     }
     
     template<typename A, typename Func>
-    void each(Func func)
+    void each(Func&& func)
     {
         ++_in_each;
         auto& components = get_components<A>();
@@ -129,33 +141,51 @@ public:
     }
 
     template<typename A, typename B, typename... Rest, typename Func>
-    void each(Func func)
+    void each(Func&& func)
     {
-        // запускаем внутренний имплементационный метод с индексовой последовательностью
-        each_impl<A,B,Rest...>(std::index_sequence_for<A,B,Rest...>{},func);
+        each_impl<A,B,Rest...>(std::index_sequence_for<A,B,Rest...>{}, std::forward<Func>(func));
     }
     
     template<typename A, typename B, typename... Rest, typename Cond, typename Func>
-    void each_if(Cond cond, Func func)
+    void each_if(Cond&& cond, Func&& func)
     {
-        // запускаем внутренний имплементационный метод с индексовой последовательностью
-        each_if_impl<A,B,Rest...>(std::index_sequence_for<A,B,Rest...>{},func, cond);
+        each_if_impl<A,B,Rest...>(std::index_sequence_for<A,B,Rest...>{},std::forward<Func>(func), std::forward<Cond>(cond));
+    }
+
+    template <class T>
+    void clear_removed()
+    {
+        auto& cont = get_components<T>();
+        auto& map = get_map_components<T>();
+        auto iter = std::remove_if(cont.begin(), cont.end(), [&](auto& component){
+            if(component.is_removed())
+            {
+                map.erase(component.id);
+                return true;
+            }
+            return false;
+        });
+        cont.erase(iter, cont.end());
+    
+        map.clear();
+        for(size_t index=0; index<cont.size(); ++index)
+        {
+            map[cont[index].id] = index;
+        }
     }
     
 private:
     bool _break_each = false;
     int _in_each = 0;
-    //  Имплементация N-way merge через tuple<references> + индексы
+    
     template<typename A, typename B, typename... Rest, size_t... Is, typename Func>
-    void each_impl(std::index_sequence<Is...>, Func func)
+    void each_impl(std::index_sequence<Is...>, Func&& func)
     {
-        // 1) Собираем tuple из ссылок на наши контейнеры
         auto containers = std::tie(get_components<A>(),
                                    get_components<B>(),
                                    get_components<Rest>()...);
         constexpr size_t N = 2 + sizeof...(Rest);
         
-        // 2) Индексы по каждому вектору и их размеры
         std::array<size_t, N> idxs{};
         std::array<size_t, N> sizes
         {
@@ -163,26 +193,23 @@ private:
         };
         
         _in_each++; 
-        // 3) N-way merge
         while (true)
         {
-            // если любой индекс вышел за пределы — закончили
-            if (((idxs[Is] >= sizes[Is]) || ...)) break;
+            if (((idxs[Is] >= sizes[Is]) || ...)) 
+            break;
             
-            // читаем все текущие id
             std::array<int, N> ids
             {
                 std::get<Is>(containers)[idxs[Is]].id...
             };
             
-            // найдём максимальный id
             int max_id = ids[0];
             for (size_t k = 1; k < N; ++k)
             {
-                if (ids[k] > max_id) max_id = ids[k];
+                if (ids[k] > max_id)
+                    max_id = ids[k];
             }
             
-            // если все id совпадают — вызовем func и сдвинем все индексы
             if (((ids[Is] == max_id) && ...))
             {
                 auto args = std::forward_as_tuple(std::get<Is>(containers)[idxs[Is]]...);
@@ -192,7 +219,6 @@ private:
             }
             else
             {
-                // иначе продвигаем лишь те указатели, у которых id < max_id
                 for (size_t k = 0; k < N; ++k)
                 {
                     if (ids[k] < max_id)
@@ -207,43 +233,37 @@ private:
         _break_each = false;
         --_in_each;
     }
-    //  Имплементация N-way merge через tuple<references> + индексы
+
     template<typename A, typename B, typename... Rest, size_t... Is, typename Func, typename Cond>
-    void each_if_impl(std::index_sequence<Is...>, Func func, Cond cond)
+    void each_if_impl(std::index_sequence<Is...>, Func&& func, Cond&& cond)
     {
-        // 1) Собираем tuple из ссылок на наши контейнеры
         auto containers = std::tie(get_components<A>(),
                                    get_components<B>(),
                                    get_components<Rest>()...);
         constexpr size_t N = 2 + sizeof...(Rest);
         
-        // 2) Индексы по каждому вектору и их размеры
         std::array<size_t, N> idxs{};
         std::array<size_t, N> sizes
         {
             std::get<Is>(containers).size()...
         };
-        // 3) N-way merge
+
         _in_each++;
         while (true)
         {
-            // если любой индекс вышел за пределы — закончили
             if (((idxs[Is] >= sizes[Is]) || ...)) break;
             
-            // читаем все текущие id
             std::array<int, N> ids
             {
                 std::get<Is>(containers)[idxs[Is]].id...
             };
             
-            // найдём максимальный id
             int max_id = ids[0];
             for (size_t k = 1; k < N; ++k)
             {
                 if (ids[k] > max_id) max_id = ids[k];
             }
             
-            // если все id совпадают — вызовем func и сдвинем все индексы
             if (((ids[Is] == max_id) && ...))
             {
                 auto args = std::forward_as_tuple(std::get<Is>(containers)[idxs[Is]]...);
@@ -256,7 +276,6 @@ private:
             }
             else
             {
-                // иначе продвигаем лишь те указатели, у которых id < max_id
                 for (size_t k = 0; k < N; ++k)
                 {
                     if (ids[k] < max_id)
@@ -538,7 +557,7 @@ void GeneratorEcsCpp::generate(Model &model) {
     generateModelRemoveComponent(model);
     generateModelGetComponent(model, /*isConst*/ true);
     generateModelGetComponent(model, /*isConst*/ false);
-    generateModelCopyEntityFromModel(model);
+//    generateModelCopyEntityFromModel(model);
     generateModelGetComponents(model, /*isConst*/ true);
     generateModelGetComponents(model, /*isConst*/ false);
     generateModelGetMapComponents(model, false);
@@ -552,12 +571,9 @@ void GeneratorEcsCpp::generate(Model &model) {
     }
     generateBuildMaps(model);
     generateRemoveEntity(model);
-    
-
     generate_system_skills(model, "update");
     generate_system_skills(model, "clean");
     generate_model_method_save_skills(model);
-    addHelperFile(model);
     changeListEcsComponents(model);
     addSerializeListEcsComponents(model);
 }
@@ -924,8 +940,11 @@ void GeneratorEcsCpp::generateRemoveEntity(Model &model) {
             fn = &f;
             break;
         }
-    if (!fn)
-        return;
+    if (!fn){
+        auto f = parse_function("fn void remove_entity(int id)");
+        ecs->functions.push_back(std::move(f));
+        fn = &ecs->functions.back();
+    }
     std::string add;
     add += "auto impl = static_cast<EcsPimplImpl*>(this->_pimpl.ptr());";
     if (!fn->body.empty())
@@ -936,9 +955,9 @@ void GeneratorEcsCpp::generateRemoveEntity(Model &model) {
             continue;
         auto field = componentsField(cls);
         add += format_indexes(R"(
-if(in_map(id, impl->map_components_{0}))
+if(auto iter = impl->map_components_{0}.find(id); iter != impl->map_components_{0}.end())
 {
-    auto& component = impl->map_components_{0}.at(id);
+    auto& component = impl->components_{0}.at(iter->second);
     this->remove<{1}>(component);
 }
 )", field, cls->name);
@@ -990,9 +1009,7 @@ if(iter != impl->map_components_{3}.end())
 static {4} dummy;
 dummy.id = -1;
 return dummy;
-}
-
-)", retType, _ecs_model_base_name, (isConst ? " const" : ""), field, cls->name);
+})", retType, _ecs_model_base_name, (isConst ? " const" : ""), field, cls->name);
         ecs->functions.front().specific_implementations += spec;
     }
 }
@@ -1016,124 +1033,73 @@ void GeneratorEcsCpp::generateModelAddComponent(Model &model) {
     if (!ecs)
         return;
 
-    // template <class T> void add(intrusive_ptr<T> component, int
-    // component_id=0)
-    {
-        Function m;
-        m.name = "add";
-        Object tpl;
-        tpl.type = "T";
-        m.template_args.push_back(tpl);
-        m.return_type.type = "void";
-        // args
-        Object arg0;
-        if(!_discard_inheritance){
-            arg0.type = "intrusive_ptr";
-            Object inner;
-            inner.type = "T";
-            arg0.template_args.push_back(inner);
-        }
-        else{
-            arg0.type = "T&&";
-        }
-        arg0.name = "component";
-        m.callable_args.push_back(arg0);
-        Object arg1;
-        arg1.type = "int";
-        arg1.name = "component_id";
-        arg1.value = "0";
-        m.callable_args.push_back(arg1);
-        ecs->functions.push_back(m);
-        auto &decl1 = ecs->functions.back();
+    Function m = parse_function("fn<T> void add(T&& component, int component_id=0)");
 
-        for (auto &cls : getComponentClasses(model)) {
-            auto field = componentsField(cls);
-            std::string body;
-            body += format_indexes(R"(template<> void {0}::add({1}&& component, int component_id)
-{
-assert(component.id == 0 || component.id == component_id || component_id == 0);
-if(component_id != 0)
-{
-    component.id = component_id;
-}
-assert(component.id > 0);
-
-auto impl = static_cast<EcsPimplImpl*>(this->_pimpl.ptr());
-auto iter = impl->map_components_{2}.find(component.id);
-auto& components = impl->components_{2};
-size_t new_index = -1;
-bool was_shift = false;
-if(iter != impl->map_components_{2}.end())
-{
-    new_index = iter->second;
-    components.at(new_index) = std::move(component);
-} 
-else 
-{
-    auto iter = std::lower_bound(components.begin(), components.end(), component, [](const auto& a, const auto& b)
+    for (auto &cls : getComponentClasses(model)) {
+        auto field = componentsField(cls);
+        m.specific_implementations += format_indexes(R"(template<> void {0}::add({1}&& component, int component_id)
     {
-        return a.id < b.id;
-    });
-    new_index = iter - components.begin();
-    was_shift = true;
-    components.insert(iter, std::move(component));
-}
-
-assert(std::is_sorted(components.begin(), components.end(), [](const auto& l, const auto& r)
-{
-    return l.id < r.id;
-}));
-if(was_shift)
-{
-    for(size_t i=new_index; i<components.size(); ++i)
+    assert(component.id == 0 || component.id == component_id || component_id == 0);
+    if(component_id != 0)
     {
-        impl->map_components_{2}[components.at(i).id] = i;
+        component.id = component_id;
     }
-}
-}
+    assert(component.id > 0);
 
-)", _ecs_model_base_name, cls->name, field);
-            decl1.specific_implementations += body;
+    auto impl = static_cast<EcsPimplImpl*>(this->_pimpl.ptr());
+    auto iter = impl->map_components_{2}.find(component.id);
+    auto& components = impl->components_{2};
+    size_t new_index = -1;
+    bool was_shift = false;
+    if(iter != impl->map_components_{2}.end())
+    {
+        new_index = iter->second;
+        components.at(new_index) = std::move(component);
+    } 
+    else 
+    {
+        auto iter = std::lower_bound(components.begin(), components.end(), component, [](const auto& a, const auto& b)
+        {
+            return a.id < b.id;
+        });
+        new_index = iter - components.begin();
+        was_shift = true;
+        components.insert(iter, std::move(component));
+    }
+
+    assert(std::is_sorted(components.begin(), components.end(), [](const auto& l, const auto& r)
+    {
+        return l.id < r.id;
+    }));
+    if(was_shift)
+    {
+        for(size_t i=new_index; i<components.size(); ++i)
+        {
+            impl->map_components_{2}[components.at(i).id] = i;
         }
     }
+    })", _ecs_model_base_name, cls->name, field);
+    }
+    ecs->functions.push_back(std::move(m));
 }
 
 void GeneratorEcsCpp::generateModelRemoveComponent(Model &model) {
     auto ecs = model.get_class(_ecs_model_base_name);
     if (!ecs)
         return;
-    Function m;
-    m.name = "remove";
-    Object tpl;
-    tpl.type = "T";
-    m.template_args.push_back(tpl);
-    m.return_type.type = "void";
+    Function m = parse_function("fn<T> void remove(T& component, bool clean=true)");
 
-    Object arg;
-    arg.type = "T";
-    arg.is_ref = true;
-    arg.name = "component";
-    m.callable_args.push_back(arg);
-
-    ecs->functions.insert(ecs->functions.begin(), m);
-    auto &decl = ecs->functions.front();
-
-    for (auto &cls : getComponentClasses(model)) {
-        auto field = componentsField(cls);
-        std::string body;
-        body += format_indexes(R"__(
-        template<> void {0}::remove({1}& component)
-        {
-//            map_remove(static_cast<EcsPimplImpl*>(this->_pimpl.ptr())->map_components_{2}, component.id);
-//            list_remove(static_cast<EcsPimplImpl*>(this->_pimpl.ptr())->components_{2}, component);
-            component.mark_removed();
-        })__", _ecs_model_base_name, cls->name, field);
-        decl.specific_implementations += std::move(body);
-    }
+//    for (auto &cls : getComponentClasses(model)) {
+//        auto field = componentsField(cls);
+    m.body += R"__(
+    component.mark_removed();
+    if(clean) clear_removed<T>();
+    )__";
+//    }
+    ecs->functions.insert(ecs->functions.begin(), std::move(m));
 }
 
 void GeneratorEcsCpp::generateModelCopyEntityFromModel(Model &model) {
-    //TODO: copy_entity_from_model
     auto ecs = model.get_class(_ecs_model_base_name);
     if (!ecs)
         return;
@@ -1145,82 +1111,79 @@ void GeneratorEcsCpp::generateModelCopyEntityFromModel(Model &model) {
             cls->name == _ecs_component_base_name)
             continue;
         auto field = componentsField(cls);
-        body += format_indexes(R"(
-        if(auto& component_{0} = model->get<{1}>(id))
-        {
-            {1} clone = component_{0};
-            clone.id = new_id;
-            this->add<{1}>(std::move(clone));
-        })", field, cls->name);
+        if(cls->is_discard_copy_ctr()){
+            if(model.config.serializeFormats & static_cast<int>(SerializeFormat::Xml))
+                body += format_indexes(R"(
+                if(auto& component_{0} = model->get<{1}>(id))
+                {
+                    pugi::xml_node node;
+                    component_{0}.serialize_xml(node);
+                    {1} clone;
+                    clone.deserialize_xml(node);
+                    clone.id = new_id;
+                    this->add<{1}>(std::move(clone));
+                })", field, cls->name);
+            else
+                body += format_indexes(R"(
+                if(auto& component_{0} = model->get<{1}>(id))
+                {
+                    Json::Value node;
+                    component_{0}.serialize_json(node);
+                    {1} clone;
+                    clone.deserialize_json(node);
+                    clone.id = new_id;
+                    this->add<{1}>(std::move(clone));
+                })", field, cls->name);
+        } else {
+            body += format_indexes(R"(
+            if(auto& component_{0} = model->get<{1}>(id))
+            {
+                {1} clone = component_{0};
+                clone.id = new_id;
+                this->add<{1}>(std::move(clone));
+            })", field, cls->name);
+        }
     }
     m.body = body;
-    
-//    m.body = "assert(false && \"TODO: add method\");";
     ecs->functions.push_back(std::move(m));
 }
 
 void GeneratorEcsCpp::generateModelGetComponents(Model &model, bool isConst) {
     auto ecs = model.get_class(_ecs_model_base_name);
 
-    Function m;
-    m.name = "get_components";
-    Object tpl;
-    tpl.type = "T";
-    m.template_args.push_back(tpl);
-    m.return_type.type = "list"; // converts to std::vector
-    m.return_type.is_ref = true;
+    Function m = parse_function("fn<T> list<T>:ref get_components()");
     m.return_type.is_const = isConst;
     m.is_const = isConst;
-    {
-        Object inner;
-        inner.type = "T";
-        m.return_type.template_args.push_back(inner);
-    }
-    ecs->functions.insert(ecs->functions.begin(), m);
-    auto &decl = ecs->functions.front();
     for (auto &cls : model.classes) {
-        if (!isBased(cls, _ecs_component_base_name) ||
-            cls->name == _ecs_component_base_name)
+        if (!isBased(cls, _ecs_component_base_name) || cls->name == _ecs_component_base_name)
             continue;
         auto field = componentsField(cls);
-        std::string header = format_indexes(
-            R"(template <> {0}std::vector<{1}>& {2}::get_components() {3}
-)",
-            (isConst ? std::string("const ") : std::string("")), cls->name,
-            _ecs_model_base_name,
-            (isConst ? std::string("const") : std::string("")));
-        std::string body = format_indexes(
-            R"({
-return static_cast<{0}EcsPimplImpl*>(this->_pimpl.ptr())->components_{1}; 
-}
-)", isConst ? std::string("const ") : std::string(""), field);
-        decl.specific_implementations += header + body;
+        m.specific_implementations += format_indexes(R"(
+        template <> {0}std::vector<{1}>& {2}::get_components() {3}
+        {
+            return static_cast<{0}EcsPimplImpl*>(this->_pimpl.ptr())->components_{4};;
+        }
+        )", (isConst ? std::string("const ") : std::string("")), cls->name, _ecs_model_base_name, (isConst ? std::string("const") : std::string("")), field);
     }
+    ecs->functions.insert(ecs->functions.begin(), std::move(m));
 }
-
-const std::string GET_MAP_COMPONENETS = R"(
-    template <>{3} std::unordered_map<int, uint64_t>& {0}::get_map_components<{1}>(){3}
-    {
-        return static_cast<{3} EcsPimplImpl*>(this->_pimpl.ptr())->map_components_{2};
-    }
-)";
 
 void GeneratorEcsCpp::generateModelGetMapComponents(Model &model, bool isConst) {
     auto ecs = model.get_class(_ecs_model_base_name);
 
     auto m = parse_function(format_indexes("fn<T> hash_map<int, uint64_t>:ref{0} get_map_components():protected{0}", isConst ? ":const" : ""));
-    ecs->functions.insert(ecs->functions.begin(), std::move(m));
-    auto method = ecs->get_method("get_map_components");
-    assert(method);
-    
     for (auto &cls : model.classes) {
-        if (!isBased(cls, _ecs_component_base_name) ||
-            cls->name == _ecs_component_base_name)
+        if (!isBased(cls, _ecs_component_base_name) || cls->name == _ecs_component_base_name)
             continue;
         auto field = componentsField(cls);
-        std::string body = format_indexes(GET_MAP_COMPONENETS, _ecs_model_base_name, cls->name, field, isConst ? " const" : "");
-        method->specific_implementations += body;
+        m.specific_implementations += format_indexes(R"(
+        template <>{3} std::unordered_map<int, uint64_t>& {0}::get_map_components<{1}>(){3}
+        {
+            return static_cast<{3} EcsPimplImpl*>(this->_pimpl.ptr())->map_components_{2};
+        }
+        )", _ecs_model_base_name, cls->name, field, isConst ? " const" : "");
     }
+    ecs->functions.insert(ecs->functions.begin(), std::move(m));
 }
 
 void GeneratorEcsCpp::generateComponentSystemMembers(Model &model){
@@ -1235,99 +1198,21 @@ void GeneratorEcsCpp::generateComponentSystemMembers(Model &model){
     Function cast_to_bool;
     cast_to_bool.is_const = true;
     cast_to_bool.name = "operator bool";
-    cast_to_bool.body = "return id > 0;";
+    cast_to_bool.body = "return id > 0 && !is_removed();";
     base->functions.push_back(std::move(cast_to_bool));
-}
-
-
-void GeneratorEcsCpp::addHelperFile(Model &model) {
-    static const char *HELPER_HPP = R"__(#ifndef __mg_ecs_helper_h__
-#define __mg_ecs_helper_h__
-
-#include <vector>
-#include <tuple>
-#include "intrusive_ptr.h"
-#include <algorithm>
-
-template<typename A, typename B>
-auto join_two_sorted(
-    const std::vector<A>& va,
-    const std::vector<B>& vb)
-{
-    std::vector<std::pair<A, intrusive_ptr<B>>> result;
-    result.reserve(std::min(va.size(), vb.size()));
-
-    size_t ia = 0, ib = 0;
-    while (ia < va.size() && ib < vb.size()) {
-        int idA = va[ia].id;
-        int idB = vb[ib].id;
-        if      (idA < idB) ++ia;
-        else if (idB < idA) ++ib;
-        else {
-            result.emplace_back(va[ia], vb[ib]);
-            ++ia; ++ib;
+    
+    for (auto &cls : model.classes) {
+        if (!isBased(cls, _ecs_component_base_name) || cls->name == _ecs_component_base_name)
+            continue;
+        GeneratorOperatorEqualsCpp::generate_signaturs(cls);
+        cls->get_copy_operator()->access = AccessSpecifier::m_private;
+        for(auto& f : cls->functions){
+            if(f.name == cls->name && f.callable_args.size() == 1 && f.callable_args[0].type == cls->name && f.callable_args[0].is_ref && !f.callable_args[0].is_rvalue)
+                f.access = AccessSpecifier::m_private;
         }
+        
+        cls->functions.push_back(parse_function(format_indexes(R"(fn {0} copy():const { return *this; })", cls->name)));
     }
-    return result;
-}
-
-template<typename Tuple, typename C>
-auto join_tuple_vector(
-    const std::vector<Tuple>& partial,
-    const std::vector<C>& vc)
-{
-    using new_tuple_t = decltype(
-        std::tuple_cat(
-            std::declval<Tuple>(),
-            std::declval<std::tuple<C&>>()
-        )
-    );
-
-    std::vector<new_tuple_t> result;
-    result.reserve(std::min(partial.size(), vc.size()));
-
-    size_t i = 0, j = 0;
-    while (i < partial.size() && j < vc.size()) {
-        int idP = std::get<0>(partial[i]).id;
-        int idC = vc[j].id;
-        if      (idP < idC) ++i;
-        else if (idC < idP) ++j;
-        else {
-            result.emplace_back(
-                std::tuple_cat(partial[i], std::make_tuple(vc[j]))
-            );
-            ++i; ++j;
-        }
-    }
-    return result;
-}
-
-template<typename A, typename B>
-auto join_all(
-    const std::vector<A>& va,
-    const std::vector<B>& vb)
-{
-    return join_two_sorted(va, vb);
-}
-
-template<typename Tuple, typename C, typename... Rest>
-auto join_all(
-    const std::vector<Tuple>&                  partial,
-    const std::vector<C>&     vc,
-    const std::vector<Rest>&... rest)
-{
-    auto next = join_tuple_vector(partial, vc);
-    if constexpr(sizeof...(rest) > 0) {
-        return join_all(next, rest...);
-    }
-    else {
-        return next;
-    }
-}
-#endif
-)__";
-
-    model.addFile(nullptr, "ecs/ecs_helper.h", HELPER_HPP);
 }
 
 Object GeneratorEcsCpp::build_all_components(Model& model)
@@ -1380,7 +1265,6 @@ void GeneratorEcsCpp::addSerializeListEcsComponents(Model &model){
         if (isBased(cls, _ecs_component_base_name) && cls->name != _ecs_component_base_name){
             all_components += cls->name + ",";
             deserialize += "deserialize_variant_value<" + cls->name + ">(child, value, type) ||";
-            
             includes += "#include \"" + (cls->group.empty() ? "" : cls->group + "/") + cls->name + ".h\"\n";
             forward_declarations += "class " + cls->name + ";\n";
         }

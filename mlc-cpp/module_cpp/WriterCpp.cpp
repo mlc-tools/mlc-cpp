@@ -380,7 +380,7 @@ std::string WriterCpp::writeNamedObject(const Object &obj,
     rep("type", baseType);
     rep("templates", templates);
     rep("pointer", obj.is_pointer || obj.is_link ? "*" : "");
-    rep("ref", isRef ? "&" : "");
+    rep("ref", obj.is_rvalue ? "&&" : isRef ? "&" : "");
     rep("name", name.empty() ? "" : " " + name);
     return result;
 }

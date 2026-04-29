@@ -35,6 +35,7 @@ public:
     bool is_pointer = false;
     bool is_raw_pointer = false;
     bool is_ref = false;
+    bool is_rvalue = false;
     bool is_runtime = false;
     bool is_static = false;
     bool is_const = false;
@@ -43,6 +44,9 @@ public:
     bool is_test = false;
     bool is_binding = false;
     bool is_discard_const_ref = false;
+    bool discard_copy_ctr = false;
+    bool discard_copy = false;
+    bool discard_move = false;
     Side side;
     AccessSpecifier access;
     bool denied_intrusive = false;
@@ -59,6 +63,9 @@ public:
 
     virtual void set_modifier(const std::string_view &modifier);
     void set_default_initial_value();
+    virtual bool is_discard_copy_ctr() const {return discard_copy_ctr;}
+    virtual bool is_discard_copy() const {return discard_copy;}
+    virtual bool is_discard_move() const {return discard_move;}
 
 };
 

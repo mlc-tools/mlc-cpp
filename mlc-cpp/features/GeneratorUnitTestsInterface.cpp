@@ -112,6 +112,16 @@ class tests/TestCase:test
         bool result = value < min_value || value > max_value;
         this->add_result(result, message);
     }
+
+    std::chrono::system_clock::time_point:private:runtime _time
+    fn void timepoint()
+    {
+        _time = std::chrono::system_clock::now();
+    }
+    fn<T> int get_elapsed_time()
+    {
+        return std::chrono::duration_cast<T>(std::chrono::system_clock::now() - _time).count();
+    }
 }
 )";
 

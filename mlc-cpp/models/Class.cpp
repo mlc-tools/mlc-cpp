@@ -44,10 +44,6 @@ void Class::set_modifier(const std::string_view &modifier) {
         this->is_virtual = true;
     else if (modifier == Modifier::m_discard_virtual)
         this->discard_virtual = true;
-    else if (modifier == Modifier::m_discard_copy_ctr)
-        this->discard_copy_ctr = true;
-    else if (modifier == Modifier::m_discard_copy)
-        this->discard_copy = true;
     else if (modifier == Modifier::m_prefer_use_forward_declarations)
         this->prefer_use_forward_declarations = true;
     else if (modifier == Modifier::m_binding)
@@ -97,16 +93,63 @@ bool Class::has_method(const Function &func) const {
     return iter != functions.end();
 }
 
-const Function *Class::get_copy_constructor() const{
-    for(auto& ctor : constructors){
-        if(ctor.callable_args.size() == 1 &&
-           ctor.callable_args.at(0).type == name &&
-           ctor.callable_args.at(0).is_ref &&
-           ctor.callable_args.at(0).is_const &&
-           ctor.callable_args.at(0).template_args.empty() &&
-           ctor.is_static == false
+Function *Class::get_copy_constructor(){
+    for(auto& func : functions){
+        if(func.name == name &&
+           func.callable_args.size() == 1 &&
+           func.callable_args.at(0).type == name &&
+           func.callable_args.at(0).is_ref &&
+           func.callable_args.at(0).is_const &&
+           func.callable_args.at(0).template_args.empty() &&
+           func.is_static == false
            ){
-            return &ctor;
+            return &func;
+        }
+    }
+    return nullptr;
+}
+
+Function* Class::get_move_constructor(){
+    for(auto& func : functions){
+        if(func.name == name &&
+           func.callable_args.size() == 1 &&
+           func.callable_args.at(0).type == name &&
+           func.callable_args.at(0).is_ref &&
+           func.callable_args.at(0).is_rvalue &&
+           func.callable_args.at(0).template_args.empty() &&
+           func.is_static == false
+           ){
+            return &func;
+        }
+    }
+    return nullptr;
+}
+Function* Class::get_copy_operator(){
+    for(auto& func : functions){
+        if(func.name == "operator =" &&
+           func.callable_args.size() == 1 &&
+           func.callable_args.at(0).type == name &&
+           func.callable_args.at(0).is_ref &&
+           func.callable_args.at(0).is_const &&
+           func.callable_args.at(0).template_args.empty() &&
+           func.is_static == false
+           ){
+            return &func;
+        }
+    }
+    return nullptr;
+}
+Function* Class::get_move_operator(){
+    for(auto& func : functions){
+        if(func.name == "operator =" &&
+           func.callable_args.size() == 1 &&
+           func.callable_args.at(0).type == name &&
+           func.callable_args.at(0).is_ref &&
+           func.callable_args.at(0).is_rvalue &&
+           func.callable_args.at(0).template_args.empty() &&
+           func.is_static == false
+           ){
+            return &func;
         }
     }
     return nullptr;
@@ -220,8 +263,29 @@ bool Class::is_discard_virtual() const{
 }
 
 bool Class::is_discard_copy_ctr() const{
-    return this->discard_copy_ctr || (!parent.expired() && parent.lock()->is_discard_copy_ctr());
+    if(this->discard_copy_ctr || (!parent.expired() && parent.lock()->is_discard_copy_ctr()))
+        return true;
+    for(auto& obj : members){
+        if(obj.is_discard_copy_ctr())
+            return true;
+    }
+    return false;
 }
 bool Class::is_discard_copy() const{
-    return this->discard_copy || (!parent.expired() && parent.lock()->is_discard_copy());
+    if(this->discard_copy || (!parent.expired() && parent.lock()->is_discard_copy()))
+        return true;
+    for(auto& obj : members){
+        if(obj.is_discard_copy())
+            return true;
+    }
+    return false;
+}
+bool Class::is_discard_move() const{
+    if(this->discard_move || (!parent.expired() && parent.lock()->is_discard_move()))
+        return true;
+    for(auto& obj : members){
+        if(obj.is_discard_move())
+            return true;
+    }
+    return false;
 }

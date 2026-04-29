@@ -11,7 +11,50 @@
 #include "../models/Function.hpp"
 #include "../models/Model.hpp"
 #include "../models/Object.hpp"
+#include "../core/Parser.hpp"
 #include "Error.hpp"
+#include <cassert>
+#include <iostream>
+
+void GeneratorOperatorEqualsCpp::generate(Model &model) {
+    for (auto &cls : model.classes) {
+        GeneratorOperatorEqualsCpp::generate_signaturs(cls);
+    }
+    GeneratorOperatorEqualsBase::generate(model);
+}
+
+void GeneratorOperatorEqualsCpp::generate_signaturs(const std::shared_ptr<Class> &cls){
+    if (cls->type == "enum")
+        return;
+    if (cls->is_inline)
+        return;
+    if (cls->name == "DataStorage")
+        return;
+
+    if(!cls->is_discard_copy_ctr() && !cls->get_copy_constructor()){
+        cls->functions.push_back(parse_function(format_indexes("fn void {0}({0}:ref:const rhs)", cls->name)));
+        assert(cls->get_copy_constructor());
+    }
+    if(!cls->is_discard_move() && !cls->get_move_constructor()){
+        auto func = parse_function(format_indexes("fn void {0}({0}&& rhs)", cls->name));
+        func.is_noexcept = true;
+        cls->functions.push_back(std::move(func));
+        assert(cls->get_move_constructor());
+    }
+    if(!cls->is_discard_copy() && !cls->get_copy_operator()){
+        auto func = parse_function(format_indexes("fn {0}:ref operator({0}:ref:const rhs)", cls->name));
+        func.name = "operator =";
+        cls->functions.push_back(std::move(func));
+        assert(cls->get_copy_operator());
+    }
+    if(!cls->is_discard_move() && !cls->get_move_operator()){
+        auto func = parse_function(format_indexes("fn {0}:ref operator({0}&& rhs)", cls->name));
+        func.name = "operator =";
+        func.is_noexcept = true;
+        cls->functions.push_back(std::move(func));
+        assert(cls->get_move_operator());
+    }
+}
 
 std::string GeneratorOperatorEqualsCpp::getEqualMethodName() const {
     return "operator ==";
@@ -35,36 +78,26 @@ std::string GeneratorOperatorEqualsCpp::getNotEqualMethodOperation() const {
 }
 
 void GeneratorOperatorEqualsCpp::addCopyConstructor(const std::shared_ptr<Class> &cls) {
-    Function ctor;
-    ctor.name = cls->name;
-    ctor.return_type = Objects::VOID;
-    ctor.callable_args.push_back(getConstRef(cls, "rhs"));
-    
+    auto ctor = cls->get_copy_constructor();
+    if(!ctor)
+        return;
     if(cls->has_member("_reference_counter")){
-        ctor.body += "\nthis->_reference_counter = 1;";;
+        ctor->body += "\nthis->_reference_counter = 1;";;
     }
-    ctor.body += "\nthis->operator=(rhs);";
-    cls->functions.push_back(std::move(ctor));
+    ctor->body += "\nthis->operator = (rhs);";
 }
 
 
-void GeneratorOperatorEqualsCpp::addMoveConstructor(
-    const std::shared_ptr<Class> &cls) {
-    Function ctor;
-    ctor.name = cls->name;
-    ctor.return_type = Objects::VOID;
-
-    Object arg;
-    arg.type = cls->name + "&&";
-    arg.name = "rhs";
-    ctor.callable_args.push_back(std::move(arg));
-    ctor.is_noexcept = true;
+void GeneratorOperatorEqualsCpp::addMoveConstructor(const std::shared_ptr<Class> &cls) {
+    auto ctor = cls->get_move_constructor();
+    if(!ctor)
+        return;
 
     if (!cls->parent_class_name.empty() && cls->parent_class_name != "SerializedObject"){
-        ctor.ctor_initializations += "\n: " + cls->parent_class_name + "(std::move(rhs))";
+        ctor->ctor_initializations += "\n: " + cls->parent_class_name + "(std::move(rhs))";
     }
 
-    std::string delimiter = ctor.ctor_initializations.empty() ? ": " : ", ";
+    std::string delimiter = ctor->ctor_initializations.empty() ? ": " : ", ";
     for (auto &m : cls->members) {
         if (m.is_static || m.is_const)
             continue;
@@ -72,28 +105,19 @@ void GeneratorOperatorEqualsCpp::addMoveConstructor(
             continue;
         if(m.name == "_reference_counter")
             continue;
-        ctor.ctor_initializations += "\n" + delimiter + m.name + "(std::move(rhs." + m.name + "))";
+        ctor->ctor_initializations += "\n" + delimiter + m.name + "(std::move(rhs." + m.name + "))";
         delimiter = ", ";
     }
-
-    cls->functions.push_back(std::move(ctor));
 }
 
-void GeneratorOperatorEqualsCpp::addMoveOperator(
-    const std::shared_ptr<Class> &cls) {
-    Function op;
-    op.name = "operator=";
-    op.return_type = getRef(cls, "");
-    op.is_noexcept = true;
-
-    Object arg;
-    arg.type = cls->name + "&&";
-    arg.name = "rhs";
-    op.callable_args.push_back(std::move(arg));
+void GeneratorOperatorEqualsCpp::addMoveOperator(const std::shared_ptr<Class> &cls) {
+    auto op = cls->get_move_operator();
+    if(!op)
+        return;
 
     if (!cls->parent_class_name.empty() &&
         cls->parent_class_name != "SerializedObject")
-        op.body += "\nthis->" + cls->parent_class_name + "::operator=(std::move(rhs));";
+        op->body += "\nthis->" + cls->parent_class_name + "::operator = (std::move(rhs));";
 
     for (auto &m : cls->members) {
         if (m.is_static || m.is_const)
@@ -102,22 +126,19 @@ void GeneratorOperatorEqualsCpp::addMoveOperator(
             continue;
         if(m.name == "_reference_counter")
             continue;
-        op.body += "\nthis->" + m.name + " = std::move(rhs." + m.name + ");";
+        op->body += "\nthis->" + m.name + " = std::move(rhs." + m.name + ");";
     }
-    op.body += "\nreturn *this;";
-
-    cls->functions.push_back(std::move(op));
+    op->body += "\nreturn *this;";
 }
 
 void GeneratorOperatorEqualsCpp::addCopyOperator(const std::shared_ptr<Class> &cls) {
-    Function op;
-    op.name = "operator =";
-    op.return_type = getRef(cls, "");
-    op.callable_args.emplace_back(getConstRef(cls, "rhs"));
-    
+    auto op = cls->get_copy_operator();
+    if(!op)
+        return;
+
     if (!cls->parent_class_name.empty() &&
         cls->parent_class_name != "SerializedObject")
-        op.body += "\nthis->" + cls->parent_class_name + "::operator=(rhs);";
+        op->body += "\nthis->" + cls->parent_class_name + "::operator = (rhs);";
 
     for (auto &m : cls->members) {
         if (m.is_static || m.is_const)
@@ -127,9 +148,8 @@ void GeneratorOperatorEqualsCpp::addCopyOperator(const std::shared_ptr<Class> &c
         if (m.name == "_reference_counter")
             continue;
         else
-            op.body += "\nthis->" + m.name + " = rhs." + m.name + ";";
+            op->body += "\nthis->" + m.name + " = rhs." + m.name + ";";
     }
 
-    op.body += "\nreturn *this;";
-    cls->functions.push_back(std::move(op));
+    op->body += "\nreturn *this;";
 }

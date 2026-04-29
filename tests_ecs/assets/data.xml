@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<data>
+  <entities>
+    <pair key="bit">
+      <value name="bit">
+        <components>
+          <component type="Transform" />
+          <component type="Accelerate" />
+          <component type="Forces" />
+          <component type="Mass" kg="1" />
+          <component type="Velocity" />
+          <component type="Radius" value="1" />
+          <component type="GravityBody" />
+          <component type="CollisionBody" />
+        </components>
+      </value>
+    </pair>
+  </entities>
+</data>

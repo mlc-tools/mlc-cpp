@@ -11,6 +11,7 @@
 #include "Model.hpp"
 #include "Object.hpp"
 #include <algorithm>
+#include <cassert>
 
 void GeneratorOperatorEqualsBase::generate(Model &model) {
     _model = &model;
@@ -26,10 +27,10 @@ void GeneratorOperatorEqualsBase::generate(const std::shared_ptr<Class>& cls){
         return;
     if (cls->name == "DataStorage")
         return;
-    
+
     addEqualMethod(cls);
     addNotEqualMethod(cls);
-    if(!cls->is_discard_copy_ctr() && !cls->get_copy_constructor())
+    if(!cls->is_discard_copy_ctr())
         addCopyConstructor(cls);
     addMoveConstructor(cls);
     addMoveOperator(cls);

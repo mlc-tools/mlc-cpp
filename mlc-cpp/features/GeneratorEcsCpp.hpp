@@ -53,8 +53,6 @@ private:
     void generate_model_method_save_skills(Model &model);
 
     std::vector<std::shared_ptr<Class>> getComponentClasses(Model &model);
-
-    void addHelperFile(Model &model);
     
     Object build_all_components(Model& model);
     void changeListEcsComponents(Model &model);
