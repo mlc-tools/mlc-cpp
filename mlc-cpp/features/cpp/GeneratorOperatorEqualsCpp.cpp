@@ -104,8 +104,9 @@ void GeneratorOperatorEqualsCpp::addMoveConstructor(const std::shared_ptr<Class>
         if (_model->is_skip(m))
             continue;
         if(m.name == "_reference_counter")
-            continue;
-        ctor->ctor_initializations += "\n" + delimiter + m.name + "(std::move(rhs." + m.name + "))";
+            ctor->ctor_initializations += "\n" + delimiter + m.name + "(1)";
+        else
+            ctor->ctor_initializations += "\n" + delimiter + m.name + "(std::move(rhs." + m.name + "))";
         delimiter = ", ";
     }
 }
