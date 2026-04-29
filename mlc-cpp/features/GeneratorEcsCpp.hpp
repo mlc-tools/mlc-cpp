@@ -47,6 +47,7 @@ private:
     void generateModelGetComponents(Model &model, bool isConst);
     void generateModelGetMapComponents(Model &model, bool isConst);
     void generateComponentSystemMembers(Model &model);
+    void generateFactory(Model &model);
     
     std::vector<std::shared_ptr<Class>> get_skill_components(Model &model);
     void generate_system_skills(Model &model, const std::string &method_name);
@@ -54,7 +55,8 @@ private:
 
     std::vector<std::shared_ptr<Class>> getComponentClasses(Model &model);
     
-    Object build_all_components(Model& model);
+    std::string build_all_components(Model& model);
+    std::string build_list_all_components(Model& model);
     void changeListEcsComponents(Model &model);
     void addSerializeListEcsComponents(Model &model);
 

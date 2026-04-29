@@ -574,6 +574,7 @@ void GeneratorEcsCpp::generate(Model &model) {
     generate_system_skills(model, "update");
     generate_system_skills(model, "clean");
     generate_model_method_save_skills(model);
+    generateFactory(model);
     changeListEcsComponents(model);
     addSerializeListEcsComponents(model);
 }
@@ -1215,7 +1216,36 @@ void GeneratorEcsCpp::generateComponentSystemMembers(Model &model){
     }
 }
 
-Object GeneratorEcsCpp::build_all_components(Model& model)
+void GeneratorEcsCpp::generateFactory(Model &model){
+    auto ecs = model.get_class(_ecs_model_base_name);
+    
+    if(model.config.serializeFormats & static_cast<int>(SerializeFormat::Xml)) {
+        auto fn = parse_function("fn bool add_component_from_xml(pugi::xml_node node, int id)");
+        fn.body += "auto name = node.name();\n";
+        fn.body += build_all_components(model) + " component;\n";
+        ecs->functions.push_back(std::move(fn));
+    }
+    auto fn = ecs->get_method("add_component_from_xml");
+    fn->body += "bool result = true;\nif(0){}\n";
+    for (auto &cls : model.classes) {
+        if (isBased(cls, _ecs_component_base_name) && cls->name != _ecs_component_base_name){
+            fn->body += "else if(name == " + cls->name + "::TYPE) \ncomponent = " + cls->name + "();\n";
+        }
+    }
+    fn->body += "else result = false;\n";
+    if(model.config.serializeFormats & static_cast<int>(SerializeFormat::Xml)) {
+        fn->body += R"_(
+        std::visit([&](auto& component)
+        {
+            component.deserialize_xml(node);
+            this->add(std::move(component), id);
+        }, component);
+        )_";
+    }
+    fn->body += "return result;";
+}
+
+std::string GeneratorEcsCpp::build_all_components(Model& model)
 {
     std::string all_components = "std::variant<";
     for (auto &cls : model.classes) {
@@ -1225,7 +1255,20 @@ Object GeneratorEcsCpp::build_all_components(Model& model)
     }
     all_components.pop_back();
     all_components += ">";
-    return parse_object("list<" + all_components + ">", false);
+    return all_components;
+}
+
+std::string GeneratorEcsCpp::build_list_all_components(Model& model)
+{
+    std::string all_components = "std::variant<";
+    for (auto &cls : model.classes) {
+        if (isBased(cls, _ecs_component_base_name) && cls->name != _ecs_component_base_name){
+            all_components += cls->name + ",";
+        }
+    }
+    all_components.pop_back();
+    all_components += ">";
+    return "list<" + all_components + ">";
 }
 
 void GeneratorEcsCpp::changeListEcsComponents(Model &model){
@@ -1233,7 +1276,7 @@ void GeneratorEcsCpp::changeListEcsComponents(Model &model){
         return;
     }
     
-    auto list_all_components = build_all_components(model);
+    auto list_all_components = parse_object(build_list_all_components(model));
     for(auto& cls : model.classes){
         for(auto& member : cls->members){
             if(member.type == _ecs_list_components){
@@ -1244,7 +1287,6 @@ void GeneratorEcsCpp::changeListEcsComponents(Model &model){
         }
     }
 }
-
 
 void GeneratorEcsCpp::addSerializeListEcsComponents(Model &model){
     if(_ecs_list_components.empty()){
@@ -1257,21 +1299,18 @@ void GeneratorEcsCpp::addSerializeListEcsComponents(Model &model){
         header = ecsModel->group + "/";
     header += "ecs_serializer_";
     
-    std::string all_components = "std::variant<";
+    std::string all_components = build_all_components(model);
     std::string deserialize;
     std::string includes;
     std::string forward_declarations = "namespace mg\n{\n";
     for (auto &cls : model.classes) {
         if (isBased(cls, _ecs_component_base_name) && cls->name != _ecs_component_base_name){
-            all_components += cls->name + ",";
             deserialize += "deserialize_variant_value<" + cls->name + ">(child, value, type) ||";
             includes += "#include \"" + (cls->group.empty() ? "" : cls->group + "/") + cls->name + ".h\"\n";
             forward_declarations += "class " + cls->name + ";\n";
         }
     }
     forward_declarations += "} // namespace mg\n";
-    all_components.pop_back();
-    all_components += ">";
     
     deserialize.pop_back();
     deserialize.pop_back();
