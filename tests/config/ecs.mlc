@@ -41,7 +41,7 @@ class ecs/Movement3<EcsComponent>
 	int y = 0
 }
 
-class ecs/DataEntity:storage
+class ecs/DataEntity:storage:discard_copy:discard_copy_ctr
 {
 	string name
 	ListEcsComponents components
@@ -56,7 +56,7 @@ class ecs/EcsBuilder
 		for(auto& component : data->components)
 		{
 			std::visit([&](auto& component){
-				auto copy = component;
+				auto copy = component.copy();
 				model->add(std::move(copy), id);
 			}, component);
 		}
@@ -251,6 +251,24 @@ class ecs/TestEcsModel<ITestEcsModel>
 		assertEqual(model->get<Transform>(2).id, 2, "transform with id 1 is not null");
 		assertEqual(model->get<Transform>(3).id, 3, "transform with id 3 is not null");
 		assertEqual(model->get_components<Transform>().size(), 3);
+	}
+	fn void test_remove_if2():cpp
+	{
+		auto model = this->get_model();
+		model->add(Transform(), 1);
+		model->add(Transform(), 2);
+		model->add(Transform(), 3);
+		model->add(Transform(), 4);
+
+		model->get<Transform>(2).x = 100;
+		model->get<Transform>(3).x = 100;
+
+		model->remove_if<Transform>([](auto& t){return t.x >= 100;});
+
+		this->assertTrue(model->get<Transform>(1));
+		this->assertTrue(model->get<Transform>(4));
+		this->assertFalse(model->get<Transform>(2));
+		this->assertFalse(model->get<Transform>(3));
 	}
 
 	fn void test_each():cpp

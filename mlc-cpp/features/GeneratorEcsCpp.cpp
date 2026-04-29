@@ -39,7 +39,7 @@ public:
             if(cond(comp))
             {
                 auto iter = map_components.find(comp.id);
-                index = iter->second;
+                if(index == -1) index = iter->second;
                 map_components.erase(iter);
                 return true;
             }
@@ -557,7 +557,7 @@ void GeneratorEcsCpp::generate(Model &model) {
     generateModelRemoveComponent(model);
     generateModelGetComponent(model, /*isConst*/ true);
     generateModelGetComponent(model, /*isConst*/ false);
-//    generateModelCopyEntityFromModel(model);
+    generateModelCopyEntityFromModel(model);
     generateModelGetComponents(model, /*isConst*/ true);
     generateModelGetComponents(model, /*isConst*/ false);
     generateModelGetMapComponents(model, false);
@@ -1112,38 +1112,13 @@ void GeneratorEcsCpp::generateModelCopyEntityFromModel(Model &model) {
             cls->name == _ecs_component_base_name)
             continue;
         auto field = componentsField(cls);
-        if(cls->is_discard_copy_ctr()){
-            if(model.config.serializeFormats & static_cast<int>(SerializeFormat::Xml))
-                body += format_indexes(R"(
-                if(auto& component_{0} = model->get<{1}>(id))
-                {
-                    pugi::xml_node node;
-                    component_{0}.serialize_xml(node);
-                    {1} clone;
-                    clone.deserialize_xml(node);
-                    clone.id = new_id;
-                    this->add<{1}>(std::move(clone));
-                })", field, cls->name);
-            else
-                body += format_indexes(R"(
-                if(auto& component_{0} = model->get<{1}>(id))
-                {
-                    Json::Value node;
-                    component_{0}.serialize_json(node);
-                    {1} clone;
-                    clone.deserialize_json(node);
-                    clone.id = new_id;
-                    this->add<{1}>(std::move(clone));
-                })", field, cls->name);
-        } else {
-            body += format_indexes(R"(
-            if(auto& component_{0} = model->get<{1}>(id))
-            {
-                {1} clone = component_{0};
-                clone.id = new_id;
-                this->add<{1}>(std::move(clone));
-            })", field, cls->name);
-        }
+        body += format_indexes(R"(
+        if(auto& component_{0} = model->get<{1}>(id))
+        {
+            {1} clone = component_{0}.copy();
+            clone.id = new_id;
+            this->add<{1}>(std::move(clone));
+        })", field, cls->name);
     }
     m.body = body;
     ecs->functions.push_back(std::move(m));
@@ -1223,26 +1198,26 @@ void GeneratorEcsCpp::generateFactory(Model &model){
         auto fn = parse_function("fn bool add_component_from_xml(pugi::xml_node node, int id)");
         fn.body += "auto name = node.name();\n";
         fn.body += build_all_components(model) + " component;\n";
+        fn.body += "bool result = true;\nif(0){}\n";
+        for (auto &cls : model.classes) {
+            if (isBased(cls, _ecs_component_base_name) && cls->name != _ecs_component_base_name){
+                fn.body += "else if(name == " + cls->name + "::TYPE) \ncomponent = " + cls->name + "();\n";
+            }
+        }
+        fn.body += "else result = false;\n";
+        if(model.config.serializeFormats & static_cast<int>(SerializeFormat::Xml)) {
+            fn.body += R"_(
+            std::visit([&](auto& component)
+            {
+                component.deserialize_xml(node);
+                this->add(std::move(component), id);
+            }, component);
+            )_";
+        }
+        fn.body += "return result;";
         ecs->functions.push_back(std::move(fn));
     }
-    auto fn = ecs->get_method("add_component_from_xml");
-    fn->body += "bool result = true;\nif(0){}\n";
-    for (auto &cls : model.classes) {
-        if (isBased(cls, _ecs_component_base_name) && cls->name != _ecs_component_base_name){
-            fn->body += "else if(name == " + cls->name + "::TYPE) \ncomponent = " + cls->name + "();\n";
-        }
-    }
-    fn->body += "else result = false;\n";
-    if(model.config.serializeFormats & static_cast<int>(SerializeFormat::Xml)) {
-        fn->body += R"_(
-        std::visit([&](auto& component)
-        {
-            component.deserialize_xml(node);
-            this->add(std::move(component), id);
-        }, component);
-        )_";
-    }
-    fn->body += "return result;";
+    
 }
 
 std::string GeneratorEcsCpp::build_all_components(Model& model)
