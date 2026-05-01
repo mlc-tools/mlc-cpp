@@ -1,0 +1,22 @@
+class tests/TestAllTypes<ITestAllTypes>
+{
+	fn void test_perfomance_serialize()
+	{
+		int iterations = 1000;
+
+		AllTypes obj;
+		obj.initialize();
+
+		for(int i=0; i<iterations; ++i)
+		{
+			volatile auto copy = clone_object<AllTypes>(&obj);
+		}
+
+		this->timepoint();
+		for(int i=0; i<iterations; ++i)
+		{
+			volatile auto copy = clone_object<AllTypes>(&obj);
+		}
+		this->logger->log("test_perfomance_serialize: " + std::to_string(this->get_elapsed_time<std::chrono::microseconds>() / iterations) + "us on one clone_object");
+	}
+}
