@@ -217,11 +217,23 @@ shared_ptr<Class> GeneratorUnitTestsInterface::generateTestInterface(
     Function exec;
     exec.name = "execute";
     exec.return_type = Objects::VOID;
+    exec.body += "logger->message(\"--------------------[ Test" + cls->name + " begin: ]--------------------\");\n";
     for (auto &mf : i_test_interface->functions) {
         if (mf.name != "initialize" && mf.name != "execute") {
-            exec.body += "this->" + mf.name + "();\n";
+            exec.body += format_indexes(R"(try
+                {
+                    this->{0}();
+                    logger->message("[ Ok ]: Test{1}::{0}");
+                }
+                catch(const std::exception& e)
+                {
+                    logger->message("[Fail]: Test{1}::{0}");
+                }
+                )", mf.name, cls->name);
         }
     }
+    exec.body += "logger->message(\"--------------------[ Test" + cls->name + " end.  ]--------------------\");\n";
+    exec.body += "logger->message(\"\");\n";
     i_test_interface->functions.push_back(std::move(exec));
 
     tests_.push_back(i_test_interface);
