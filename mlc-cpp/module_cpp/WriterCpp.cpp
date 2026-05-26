@@ -293,6 +293,7 @@ std::string WriterCpp::writeCpp(const std::shared_ptr<Class> &cls,
 std::string WriterCpp::convertType(const std::string &t) {
     static const std::unordered_map<std::string, std::string> m = {
         {"vector", "std::vector"},
+        {"array", "std::array"},
         {"map", "std::map"},
         {"hash_map", "std::unordered_map"},
         {"set", "std::set"},
@@ -332,7 +333,7 @@ std::string WriterCpp::writeNamedObject(const Object &obj,
     auto canUseConstRef = [&](const Object &o) {
         if(o.is_discard_const_ref)
             return false;
-        return o.type == "string" || o.type == "vector" || o.type == "map" || o.type == "hash_map" || o.type == "set" || o.type == "hash_set";
+        return o.type == "string" || o.type == "vector" || o.type == "array" || o.type == "map" || o.type == "hash_map" || o.type == "set" || o.type == "hash_set";
     };
     bool isRef = obj.is_ref;
     bool is_const = obj.is_const;
@@ -665,7 +666,7 @@ WriterCpp::getIncludesForHeader(const std::shared_ptr<Class> &cls) {
             inc.insert("std::atomic");
     }
     // functions
-    static const std::set<std::string> stdIns = {"map", "vector", "string", "set", "hash_map", "unordered_set"};
+    static const std::set<std::string> stdIns = {"map", "vector", "array", "string", "set", "hash_map", "unordered_set"};
     static std::vector<std::string> mg_extensions = {
         "in_map",
         "in_vector",

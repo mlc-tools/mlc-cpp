@@ -1,0 +1,4 @@
+class ClassWithArray
+{
+	array<int, 64> array
+}

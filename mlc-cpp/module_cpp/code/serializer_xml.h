@@ -15,6 +15,7 @@ const std::string SERIALIZER_XML_HPP = R"__EXT__(#ifndef __mg_serialize_xml_h__
 #include <map>
 #include <vector>
 #include <set>
+#include <array>
 #include "intrusive_ptr.h"
 #include "SerializerCommon.h"
 #include "DataStorage.h"
@@ -71,10 +72,32 @@ namespace serializer_xml
     template <class T>
     typename std::enable_if<!is_attribute<T>::value, void>::type
     serialize(pugi::xml_node node, const std::vector<const T*>& values, const std::string& key);
-
     /* Vectors serialization finish */
-    /* Set serialization start */
 
+    /* Array serialization start */
+    template <class T, size_t Size>
+    typename std::enable_if<is_attribute<T>::value && !std::is_same<T, bool>::value, void>::type
+    serialize(pugi::xml_node node, const std::array<T, Size>& values, const std::string& key);
+
+    template <class T, size_t Size>
+    typename std::enable_if<is_attribute<T>::value && std::is_same<T, bool>::value, void>::type
+    serialize(pugi::xml_node node, const std::array<T, Size>& values, const std::string& key);
+
+    template <class T, size_t Size>
+    typename std::enable_if<!is_attribute<T>::value, void>::type
+    serialize(pugi::xml_node node, const std::array<intrusive_ptr<T>, Size>& values, const std::string& key);
+
+    template <class T, size_t Size>
+    typename std::enable_if<!is_attribute<T>::value, void>::type
+    serialize(pugi::xml_node node, const std::array<T, Size>& values, const std::string& key);
+
+    template <class T, size_t Size>
+    typename std::enable_if<!is_attribute<T>::value, void>::type
+    serialize(pugi::xml_node node, const std::array<const T*, Size>& values, const std::string& key);
+    /* Array serialization finish */
+
+
+    /* Set serialization start */
     template <template<class...> class Set, class T, class... Args>
     typename std::enable_if<is_set_container<Set<T, Args...>>::value && is_attribute<T>::value && !std::is_same<T, bool>::value, void>::type
     serialize(pugi::xml_node node, const Set<T, Args...>& values, const std::string& key);
@@ -94,10 +117,9 @@ namespace serializer_xml
     template <template<class...> class Set, class T, class... Args>
     typename std::enable_if<is_set_container<Set<const T*, Args...>>::value && !is_attribute<T>::value, void>::type
     serialize(pugi::xml_node node, const Set<const T*, Args...>& values, const std::string& key);
-
     /* Set serialization finish */
-    /* Maps serialization start */
 
+    /* Maps serialization start */
     template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
     typename std::enable_if<is_attribute<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
     serialize(pugi::xml_node node, const Map& values, const std::string& key);
@@ -161,11 +183,9 @@ namespace serializer_xml
     template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
     typename std::enable_if<is_not_serialize_to_attribute<typename Map::key_type>::value && is_not_serialize_to_attribute<typename Map::mapped_type>::value, void>::type
     serialize(pugi::xml_node node, const Map& values, const std::string& key);
-
     /* Maps serialization finish */
 
     /* Deserialize */
-
     template <class T>
     typename std::enable_if<is_attribute<T>::value, void>::type
     deserialize(pugi::xml_node node, T& value, const std::string& key, const T& default_value);
@@ -219,6 +239,25 @@ namespace serializer_xml
     typename std::enable_if<!is_attribute<T>::value, void>::type
     deserialize(pugi::xml_node node, std::vector<T>& values, const std::string& key);
     /* Vectors deserialization finish */
+
+    /* Array deserialization start */
+    template <class T, size_t Size>
+    typename std::enable_if<is_attribute<T>::value, void>::type
+    deserialize(pugi::xml_node node, std::array<T, Size>& values, const std::string& key);
+
+    template <class T, size_t Size>
+    typename std::enable_if<!is_attribute<T>::value, void>::type
+    deserialize(pugi::xml_node node, std::array<intrusive_ptr<T>, Size>& values, const std::string& key);
+
+    template <class T, size_t Size>
+    typename std::enable_if<!is_attribute<T>::value, void>::type
+    deserialize(pugi::xml_node node, std::array<const T*, Size>& values, const std::string& key);
+
+    template <class T, size_t Size>
+    typename std::enable_if<!is_attribute<T>::value, void>::type
+    deserialize(pugi::xml_node node, std::array<T, Size>& values, const std::string& key);
+    /* Array deserialization finish */
+
     /* Set deserialization start */
     template <template<class...> class Set, class T, class... Args>
     typename std::enable_if<is_set_container<Set<T, Args...>>::value && is_attribute<T>::value, void>::type
@@ -235,11 +274,9 @@ namespace serializer_xml
     template <template<class...> class Set, class T, class... Args>
     typename std::enable_if<is_set_container<Set<T, Args...>>::value && !is_attribute<T>::value && !is_intrusive<T>::value && !std::is_pointer<T>::value, void>::type
     deserialize(pugi::xml_node node, Set<T, Args...>& values, const std::string& key);
-
     /* Set deserialization finish */
 
     /* Maps deserialization start */
-
     template<class Map, class = std::void_t<typename Map::key_type, typename Map::mapped_type>>
     typename std::enable_if<is_attribute<typename Map::key_type>::value && is_attribute<typename Map::mapped_type>::value, void>::type
     deserialize(pugi::xml_node node, Map& map, const std::string& key);
@@ -358,6 +395,7 @@ namespace serializer_xml
         auto child = key.empty() ? node : add_child(node, key);
         value.serialize_xml(child);
     }
+
 /* Vectors serialization start */
     template <class T>
     typename std::enable_if<is_attribute<T>::value && !std::is_same<T, bool>::value, void>::type
@@ -432,6 +470,82 @@ namespace serializer_xml
         }
     }
 /* Vectors serialization finish */
+
+/* Array serialization start */
+    template <class T, size_t Size>
+    typename std::enable_if<is_attribute<T>::value && !std::is_same<T, bool>::value, void>::type
+    serialize(pugi::xml_node node, const std::array<T, Size>& values, const std::string& key)
+    {
+        if (values.empty())
+            return;
+        auto child = key.empty() ? node : add_child(node, key);
+        for (const T& value : values)
+        {
+            auto item = add_child(child, "item");
+            serialize(item, value, "value", default_value::value<T>());
+        }
+    }
+
+    template <class T, size_t Size>
+    typename std::enable_if<is_attribute<T>::value && std::is_same<T, bool>::value, void>::type
+    serialize(pugi::xml_node node, const std::array<T, Size>& values, const std::string& key)
+    {
+        if (values.empty())
+            return;
+        auto child = key.empty() ? node : add_child(node, key);
+        for (T value : values)
+        {
+            auto item = add_child(child, "item");
+            serialize(item, value, "value", default_value::value<T>());
+        }
+    }
+
+    template <class T, size_t Size>
+    typename std::enable_if<!is_attribute<T>::value, void>::type
+    serialize(pugi::xml_node node, const std::array<intrusive_ptr<T>, Size>& values, const std::string& key)
+    {
+        if (values.empty())
+            return;
+        auto child = key.empty() ? node : add_child(node, key);
+        for (const intrusive_ptr<T>& value : values)
+        {
+            auto item = add_child(child, value ? value->get_type() : "");
+            if(value)
+            {
+                value->serialize_xml(item);
+            }
+        }
+    }
+
+    template <class T, size_t Size>
+    typename std::enable_if<!is_attribute<T>::value, void>::type
+    serialize(pugi::xml_node node, const std::array<T, Size>& values, const std::string& key)
+    {
+        if (values.empty())
+            return;
+        auto child = key.empty() ? node : add_child(node, key);
+        for (const T& value : values)
+        {
+            auto item = add_child(child, "item");
+            serializer_xml::serialize(item, value, "");
+        }
+    }
+
+    template <class T, size_t Size>
+    typename std::enable_if<!is_attribute<T>::value, void>::type
+    serialize(pugi::xml_node node, const std::array<const T*, Size>& values, const std::string& key)
+    {
+        if (values.empty())
+            return;
+        auto child = key.empty() ? node : add_child(node, key);
+        for (const T* value : values)
+        {
+            auto item = add_child(child, "item");
+            serialize(item, value, "value");
+        }
+    }
+/* Array serialization finish */
+
 /* Set serialization start */
     template <template<class...> class Set, class T, class... Args>
     typename std::enable_if<
@@ -908,6 +1022,68 @@ namespace serializer_xml
         }
     }
     /* Vectors deserialization finish */
+
+    /* Array deserialization start */
+    template <class T, size_t Size>
+    typename std::enable_if<is_attribute<T>::value, void>::type
+    deserialize(pugi::xml_node node, std::array<T, Size>& values, const std::string& key)
+    {
+        auto child = key.empty() ? node : get_child(node, key);
+        size_t index = 0;
+        for (auto item : child)
+        {
+            T value;
+            deserialize(item, value, "value", default_value::value<T>());
+            values[index++] = value;
+        }
+    }
+
+    template <class T, size_t Size>
+    typename std::enable_if<!is_attribute<T>::value, void>::type
+    deserialize(pugi::xml_node node, std::array<intrusive_ptr<T>, Size>& values, const std::string& key)
+    {
+        auto child = key.empty() ? node : get_child(node, key);
+        size_t index = 0;
+        for (auto item : child)
+        {
+            std::string type = item.name();
+            intrusive_ptr<T> object = Factory::shared().build<T>(type);
+            if(object)
+            {
+                object->deserialize_xml(item);
+            }
+            values[index++] = object;
+        }
+    }
+
+    template <class T, size_t Size>
+    typename std::enable_if<!is_attribute<T>::value, void>::type
+    deserialize(pugi::xml_node node, std::array<const T*, Size>& values, const std::string& key)
+    {
+        auto child = key.empty() ? node : get_child(node, key);
+        size_t index = 0;
+        for (auto item : child)
+        {
+            const T* value = DataStorage::shared().get<T>(get_attribute(item, "value", default_value::value<std::string>()));
+            values[index++] = value;
+        }
+    }
+
+    template <class T, size_t Size>
+    typename std::enable_if<!is_attribute<T>::value, void>::type
+    deserialize(pugi::xml_node node, std::array<T, Size>& values, const std::string& key)
+    {
+        auto child = key.empty() ? node : get_child(node, key);
+        size_t index = 0;
+        for (auto item : child)
+        {
+            T value;
+            deserialize(item, value, default_value::value<std::string>());
+            values[index++] = std::move(value);
+        }
+    }
+    /* Array deserialization finish */
+
     /* Set deserialization start */
     template <template<class...> class Set, class T, class... Args>
     typename std::enable_if<
