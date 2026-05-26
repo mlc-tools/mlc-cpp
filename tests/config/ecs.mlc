@@ -41,7 +41,7 @@ class ecs/Movement3<EcsComponent>
 	int y = 0
 }
 
-class ecs/DataEntity:storage:discard_copy:discard_copy_ctr
+class ecs/DataEntity:storage:discard_copy:discard_copy_ctr:prefer_use_forward_declarations
 {
 	string name
 	ListEcsComponents components
@@ -53,13 +53,14 @@ class ecs/EcsBuilder
 	{
 		auto id = model->get_next_free_id();
 		auto data = DataStorage::shared().get<DataEntity>(entity_name);
-		for(auto& component : data->components)
-		{
-			std::visit([&](auto& component){
-				auto copy = component.copy();
-				model->add(std::move(copy), id);
-			}, component);
-		}
+		model->add_copy_components(data->components, id);
+		// for(auto& component : data->components)
+		// {
+		// 	std::visit([&](auto& component){
+		// 		auto copy = component.copy();
+		// 		model->add(std::move(copy), id);
+		// 	}, component);
+		// }
 		return id;
 	}
 }
@@ -124,6 +125,11 @@ class ecs/SystemAddMovement:cpp
 
 class ecs/TestEcsModel<ITestEcsModel>
 {
+	@include Transform
+	@include Movement
+	@include Movement2
+	@include Movement3
+	
 	fn EcsModel* get_model()
 	{
 		auto model = new EcsModel();
