@@ -41,9 +41,9 @@ class TestFunctions
         return new ReturnValue();
     }
 
-    function list<ReturnValue*> test_2()
+    function vector<ReturnValue*> test_2()
     {
-        list<intrusive_ptr<ReturnValue>> result;
+        vector<intrusive_ptr<ReturnValue>> result;
         return result;
     }
 
@@ -58,9 +58,9 @@ class TestFunctions
         return nullptr;
     }
 
-    function list<ReturnValue*:link> test_5():const
+    function vector<ReturnValue*:link> test_5():const
     {
-        list<const ReturnValue*> result;
+        vector<const ReturnValue*> result;
         return result;
     }
 
@@ -79,7 +79,7 @@ class TestFunctions
         return this->r0;
     }
 
-    function list<list<string>> test_10()
+    function vector<vector<string>> test_10()
     {
         std::vector<std::vector<std::string>> result;
         return result;

@@ -11,8 +11,8 @@ class clone/CloneObject2<CloneObject>
 {
     CloneObject* ptr
 
-	list<CloneObject*> list1
-	list<DataUnit:link> list2
+	vector<CloneObject*> list1
+	vector<DataUnit:link> list2
 
 	map<CloneObject*, CloneObject*>:cpp:py map1
 	map<CloneObject*, DataUnit:link>:cpp:py map2
@@ -52,24 +52,24 @@ class clone/TestCloneObject<ITestCloneObject>:test
     }
 
 
-    function void test_copy_list_with_null():cpp:py
+    function void test_copy_vector_with_null():cpp:py
     {
         auto obj1 = new CloneObject2();
-        list_push(obj1->list1, new CloneObject2());
-        list_push(obj1->list1, nullptr);
-        list_push(obj1->list1, new CloneObject2());
+        vector_push(obj1->list1, new CloneObject2());
+        vector_push(obj1->list1, nullptr);
+        vector_push(obj1->list1, new CloneObject2());
         auto obj2 = clone_object<CloneObject2>(obj1);
-        this->assertEqual(list_size(obj2->list1), 3);
+        this->assertEqual(vector_size(obj2->list1), 3);
     }
 
-    function void test_copy_list_with_null2():cpp:py
+    function void test_copy_vector_with_null2():cpp:py
     {
         auto obj1 = new CloneObject2();
-        list_push(obj1->list2, DataStorage::shared().get<DataUnit>("unitname1"));
-        list_push(obj1->list2, nullptr);
-        list_push(obj1->list2, DataStorage::shared().get<DataUnit>("unitname1"));
+        vector_push(obj1->list2, DataStorage::shared().get<DataUnit>("unitname1"));
+        vector_push(obj1->list2, nullptr);
+        vector_push(obj1->list2, DataStorage::shared().get<DataUnit>("unitname1"));
         auto obj2 = clone_object<CloneObject2>(obj1);
-        this->assertEqual(list_size(obj2->list2), 3);
+        this->assertEqual(vector_size(obj2->list2), 3);
     }
 
     function void test_copy_map1():cpp:py

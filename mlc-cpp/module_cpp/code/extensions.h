@@ -48,81 +48,81 @@ namespace @{namespace}
     }
 
     template <class I, class T>
-    bool in_list(I item, const std::vector<T>& list)
+    bool in_vector(I item, const std::vector<T>& values)
     {
-        return std::find(list.begin(), list.end(), item) != list.end();
+        return std::find(values.begin(), values.end(), item) != values.end();
     }
 
     template <class T, class I>
-    void list_push(std::vector<T>& list, const I& t)
+    void vector_push(std::vector<T>& values, const I& t)
     {
-        list.push_back(t);
+        values.push_back(t);
     }
 
     template <class T, class I>
-    void list_append(std::vector<T>& list, const std::vector<I>& other_list)
+    void vector_append(std::vector<T>& values, const std::vector<I>& other_values)
     {
-        list.insert(list.end(), other_list.begin(), other_list.end());
+        values.insert(values.end(), other_values.begin(), other_values.end());
     }
 
     template <class T, class I>
-    void list_insert(std::vector<T>& list, size_t index, const I& t)
+    void vector_insert(std::vector<T>& values, size_t index, const I& t)
     {
-        assert(index <= list.size());
-        list.insert(list.begin() + index, t);
+        assert(index <= values.size());
+        values.insert(values.begin() + index, t);
     }
 
     template <class T, class I>
-    void list_remove(std::vector<T>& list, const I& t)
+    void vector_remove(std::vector<T>& values, const I& t)
     {
-        auto iter = std::find(list.begin(), list.end(), t);
-        if(iter != list.end())
-            list.erase(iter);
+        auto iter = std::find(values.begin(), values.end(), t);
+        if(iter != values.end())
+            values.erase(iter);
     }
 
     template <class T>
-    void list_erase(std::vector<T>& list, size_t index)
+    void vector_erase(std::vector<T>& values, size_t index)
     {
-        assert(index < list.size());
-        list.erase(list.begin() + index);
+        assert(index < values.size());
+        values.erase(values.begin() + index);
     }
 
     template <class T>
-    void list_truncate(std::vector<T>& list, size_t length)
+    void vector_truncate(std::vector<T>& values, size_t length)
     {
-        assert(length < list.size());
-        list.erase(list.begin() + length, list.end());
+        assert(length < values.size());
+        values.erase(values.begin() + length, values.end());
     }
 
     template <class T>
-    int list_size(const std::vector<T>& vector)
+    int vector_size(const std::vector<T>& vector)
     {
         return static_cast<int>(vector.size());
     }
     
     template <class T>
-    int list_index(const std::vector<T>& list, const T& t)
+    int vector_index(const std::vector<T>& values, const T& t)
     {
-        auto iter = std::find(list.begin(), list.end(), t);
-        if(iter != list.end())
-            return iter - list.begin();
+        auto iter = std::find(values.begin(), values.end(), t);
+        if(iter != values.end())
+            return iter - values.begin();
         return -1;
     }
 
     template <class T>
-    void list_clear(std::vector<T>& vector)
+    void vector_clear(std::vector<T>& vector)
     {
         vector.clear();
     }
 
     template <class T>
-    void list_resize(std::vector<T>& vector, int size)
+    void vector_resize(std::vector<T>& vector, int size)
     {
         vector.resize(size);
     }
 
     template <class T, class Comp>
-    void list_sort_if(std::vector<T>& vector, Comp comp)
+    void vector_sort_if(std::vector<T>& vector, Comp comp)
     {
         std::sort(vector.begin(), vector.end(), comp);
     }

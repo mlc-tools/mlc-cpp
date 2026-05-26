@@ -61,13 +61,13 @@ class RegexPatternCpp {
              {"map_remove_if"}});
         v.push_back(
             {std::make_unique<RE2>(
-                 R"(list_remove_if\(([\w\d\-\>\.\[\]\(\)<>]+),\s*\((\w+)\s*:>\s*(.+)\)\))"),
+                 R"(vector_remove_if\(([\w\d\-\>\.\[\]\(\)<>]+),\s*\((\w+)\s*:>\s*(.+)\)\))"),
              R"(auto iter = std::remove_if(\1.begin(), \1.end(), [&](const auto& \2)
 {
     return \3;
 });
 \1.erase(iter, \1.end());)",
-             {"list_remove_if"}});
+             {"vector_remove_if"}});
         v.push_back(
             {std::make_unique<RE2>(
                  R"(map_do_if\(([\w\d\-\>\.\[\]\(\)<>]+),\s*\((\w+),\s*(\w+?)\s*:>\s*(.+?):>\s*(.+)\)\);)"),
@@ -80,7 +80,7 @@ class RegexPatternCpp {
              {"map_do_if"}});
         v.push_back(
             {std::make_unique<RE2>(
-                 R"(list_do_if\(([\w\d\-\>\.\[\]\(\)<>]+),\s*\((\w+)\s*:>\s*(.+?):>\s*(.+)\)\);)"),
+                 R"(vector_do_if\(([\w\d\-\>\.\[\]\(\)<>]+),\s*\((\w+)\s*:>\s*(.+?):>\s*(.+)\)\);)"),
              R"(for(int __index__ = 0; __index__ < \1.size(); ++__index__)
 {
     auto& \2 = \1.at(__index__);
@@ -91,16 +91,16 @@ class RegexPatternCpp {
         if(__size__ != \1.size()) { --__index__; }
     }
 })",
-             {"list_do_if"}});
+             {"vector_do_if"}});
         v.push_back(
             {std::make_unique<RE2>(
-                 R"(list_do\(([\w\d\-\>\.\[\]\(\)<>]+),\s*\((\w+)\s*:>\s*(.+)\)\))"),
+                 R"(vector_do\(([\w\d\-\>\.\[\]\(\)<>]+),\s*\((\w+)\s*:>\s*(.+)\)\))"),
              R"(for(int __index__ = 0; __index__ < \1.size(); ++__index__)
 {
     auto& \2 = \1.at(__index__);
     \3;
 })",
-             {"list_do"}});
+             {"vector_do"}});
         v.push_back({std::make_unique<RE2>(R"(throw new Exception\((.*?)\))"),
                      R"(throw std::exception(\1);)",
                      {"throw "}});
@@ -112,9 +112,9 @@ class RegexPatternCpp {
                      R"(auto \2 = make_intrusive<\3>();)",
                      {"new"}});
         v.push_back(
-            {std::make_unique<RE2>(R"(\blist<([<:>\w\s\*&]+)>\s*(\w+))"),
+            {std::make_unique<RE2>(R"(\bvector<([<:>\w\s\*&]+)>\s*(\w+))"),
              R"(std::vector<\1> \2)",
-             {"list<"}});
+             {"vector<"}});
         v.push_back(
             {std::make_unique<RE2>(
                  R"(\bmap<([<:>\w\s\*&]+),\s*([<:>\w\s\*&]+)>\s*(\w+))"),

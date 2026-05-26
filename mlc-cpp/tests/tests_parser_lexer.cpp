@@ -158,16 +158,16 @@ void test_parse_members() {
     check_object(parse_object("float", false), "float", "");
     check_object(parse_object("bool", false), "bool", "");
     check_object(parse_object("string", false), "string", "");
-    check_object(parse_object("list<int>", false), "list", "");
-    check_object(parse_object("list<float>", false), "list", "");
-    check_object(parse_object("list<float> l", true), "list", "l");
+    check_object(parse_object("vector<int>", false), "vector", "");
+    check_object(parse_object("vector<float>", false), "vector", "");
+    check_object(parse_object("vector<float> l", true), "vector", "l");
     check_object(parse_object("map<int, int>", false), "map", "");
     check_object(parse_object("set<int>", false), "set", "");
     check_object(parse_object("hash_set<int>", false), "hash_set", "");
     check_object(parse_object("hash_map<int>", false), "hash_map", "");
     check_templates(check_object(parse_object("map<int, float> m", true), "map", "m"), {"int", "float"});
 
-    check_templates( check_object(parse_object("map<int, list<float>> m", true), "map", "m"), {"int", "list"});
+    check_templates( check_object(parse_object("map<int, vector<float>> m", true), "map", "m"), {"int", "vector"});
 
     check_object(parse_object("float t=0", true), "float", "t", "0");
     check_object(parse_object("float t=0.1f", true), "float", "t", "0.1f");
@@ -234,8 +234,8 @@ void test_parse_members() {
     assert(obj.template_args.at(0).type == "T");
     assert(obj.template_args.at(1).type == "M");
     
-    obj = parse_object("list<std::variant<T, M>> components", true);
-    assert(obj.type == "list");
+    obj = parse_object("vector<std::variant<T, M>> components", true);
+    assert(obj.type == "vector");
     assert(obj.name == "components");
     assert(obj.template_args.size() == 1);
     assert(obj.template_args[0].type == "std::variant");

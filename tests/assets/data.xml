@@ -5,22 +5,6 @@
       <value name="test_bindings" />
     </pair>
   </test_bindingses>
-  <list_list_bools>
-    <pair key="test">
-      <value name="test">
-        <list_list_bool>
-          <item>
-            <item value="true" />
-            <item value="false" />
-          </item>
-          <item>
-            <item value="false" />
-            <item value="true" />
-          </item>
-        </list_list_bool>
-      </value>
-    </pair>
-  </list_list_bools>
   <dicts>
     <pair key="default">
       <value name="default">
@@ -50,6 +34,16 @@
       </value>
     </pair>
   </complex_maps>
+  <entities>
+    <pair key="ecs1">
+      <value name="ecs1">
+        <components>
+          <component type="Transform" x="101" y="102" />
+          <component type="Movement" x="103" y="104" />
+        </components>
+      </value>
+    </pair>
+  </entities>
   <units>
     <pair key="unitname1">
       <value name="unitname1" link_to_data="unitname2" unit_type="attack" enum_with_int_value="foo" convert_float_to_int="1.0">
@@ -88,14 +82,20 @@
       </value>
     </pair>
   </units>
-  <entities>
-    <pair key="ecs1">
-      <value name="ecs1">
-        <components>
-          <component type="Transform" x="101" y="102" />
-          <component type="Movement" x="103" y="104" />
-        </components>
+  <vector_vector_bools>
+    <pair key="test">
+      <value name="test">
+        <vector_vector_bool>
+          <item>
+            <item value="true" />
+            <item value="false" />
+          </item>
+          <item>
+            <item value="false" />
+            <item value="true" />
+          </item>
+        </vector_vector_bool>
       </value>
     </pair>
-  </entities>
+  </vector_vector_bools>
 </data>

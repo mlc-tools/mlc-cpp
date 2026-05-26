@@ -465,10 +465,10 @@ def strTo(value, class_):
         return value.lower() in ['yes', 'true', 'y']
     return class_(value)
 
-def in_list(key, container):
+def in_vector(key, container):
     return key in container
 
-def list_push(container, value):
+def vector_push(container, value):
     container.append(value)
 
 def list_insert(container, value, index):

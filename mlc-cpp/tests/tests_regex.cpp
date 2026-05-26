@@ -15,19 +15,19 @@
 
 namespace tests {
 
-RegexPattern pattern_list_do = {
+RegexPattern pattern_vector_do = {
     std::make_unique<RE2>(
-        R"(list_do\(([\w\d\-\>\.\[\]]+),\s*\((\w+)\s*:>\s*(.+)\)\))"),
+        R"(vector_do\(([\w\d\-\>\.\[\]]+),\s*\((\w+)\s*:>\s*(.+)\)\))"),
     R"(for(int __index__ = 0; __index__ < \1.size(); ++__index__)
 {
 auto& \2 = \1.at(__index__);
 \3;
 })",
-    {"list_do"}};
+    {"vector_do"}};
 
-void test_regex_list_do() {
+void test_regex_vector_do() {
     static re2::RE2 re2(
-        R"(list_do\(([\w\d\-\>\.\[\]]+),\s*\((\w+)\s*:>\s*(.+)\)\))");
+        R"(vector_do\(([\w\d\-\>\.\[\]]+),\s*\((\w+)\s*:>\s*(.+)\)\))");
     static std::string replace =
         R"(for(int __index__ = 0; __index__ < \1.size(); ++__index__)
 {
@@ -35,12 +35,12 @@ auto& \2 = \1.at(__index__);
 \3;
 })";
 
-    std::string text = "list_do(this->test_list_lambda2, (model :> model->data "
+    std::string text = "vector_do(this->test_vector_lambda2, (model :> model->data "
                        "= DataStorage::shared().get<DataUnit>(name)));";
     std::string wait_result =
-        R"(for(int __index__ = 0; __index__ < this->test_list_lambda2.size(); ++__index__)
+        R"(for(int __index__ = 0; __index__ < this->test_vector_lambda2.size(); ++__index__)
 {
-auto& model = this->test_list_lambda2.at(__index__);
+auto& model = this->test_vector_lambda2.at(__index__);
 model->data = DataStorage::shared().get<DataUnit>(name);
 };)";
 
@@ -48,33 +48,33 @@ model->data = DataStorage::shared().get<DataUnit>(name);
     assert(text == wait_result);
 }
 
-void test_replace_list_do_with_translator() {
+void test_replace_vector_do_with_translator() {
     TranslatorCpp translator;
     std::string text = R"__(
-        list_clear(this->test_list_lambda2);
-        list_push(this->test_list_lambda2, new Model());
-        list_push(this->test_list_lambda2, new Model());
+        vector_clear(this->test_vector_lambda2);
+        vector_push(this->test_vector_lambda2, new Model());
+        vector_push(this->test_vector_lambda2, new Model());
         std::string name = @{{__string_0__}};
-        list_do(this->test_list_lambda2, (model :> model->data = DataStorage::shared().get<DataUnit>(name)));
+        vector_do(this->test_vector_lambda2, (model :> model->data = DataStorage::shared().get<DataUnit>(name)));
 
-        this->assertEqual(this->test_list_lambda2[0]->data->name, name);
-        this->assertEqual(this->test_list_lambda2[1]->data->name, name);
+        this->assertEqual(this->test_vector_lambda2[0]->data->name, name);
+        this->assertEqual(this->test_vector_lambda2[1]->data->name, name);
     )__";
     std::string wait_result = R"__(
-        list_clear(this->test_list_lambda2);
-        list_push(this->test_list_lambda2, new Model());
-        list_push(this->test_list_lambda2, new Model());
+        vector_clear(this->test_vector_lambda2);
+        vector_push(this->test_vector_lambda2, new Model());
+        vector_push(this->test_vector_lambda2, new Model());
         std::string name = @{{__string_0__}};
-        for(int __index__ = 0; __index__ < this->test_list_lambda2.size(); ++__index__)
+        for(int __index__ = 0; __index__ < this->test_vector_lambda2.size(); ++__index__)
 {
-auto& model = this->test_list_lambda2.at(__index__);
+auto& model = this->test_vector_lambda2.at(__index__);
 model->data = DataStorage::shared().get<DataUnit>(name);
 };
 
-        this->assertEqual(this->test_list_lambda2[0]->data->name, name);
-        this->assertEqual(this->test_list_lambda2[1]->data->name, name);
+        this->assertEqual(this->test_vector_lambda2[0]->data->name, name);
+        this->assertEqual(this->test_vector_lambda2[1]->data->name, name);
     )__";
-    translator.replacePattern(text, pattern_list_do);
+    translator.replacePattern(text, pattern_vector_do);
     assert(text == wait_result);
 }
 
@@ -89,8 +89,8 @@ void test_make_intrusive() {
 }
 
 void run_regex_tests() {
-    test_regex_list_do();
-    test_replace_list_do_with_translator();
+    test_regex_vector_do();
+    test_replace_vector_do_with_translator();
     test_make_intrusive();
 }
 

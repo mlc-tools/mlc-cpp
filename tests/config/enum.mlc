@@ -3,11 +3,11 @@ enum FooEnum
     foo
     bar
 
-	function list<FooEnum> get_all():static
+	function vector<FooEnum> get_all():static
 	{
-		list<FooEnum> stats;
-		list_push(stats, FooEnum::foo);
-		list_push(stats, FooEnum::bar);
+		vector<FooEnum> stats;
+		vector_push(stats, FooEnum::foo);
+		vector_push(stats, FooEnum::bar);
 		return stats;
 	}
 }

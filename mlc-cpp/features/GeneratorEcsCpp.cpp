@@ -704,7 +704,7 @@ void GeneratorEcsCpp::modifySources(Model &model,
 
     bool uses_ecs_components_variant = false;
     for (const auto &member : cls->members) {
-        if (member.type == "list" && !member.template_args.empty() &&
+        if (member.type == "vector" && !member.template_args.empty() &&
             member.template_args.front().type == "std::variant") {
             uses_ecs_components_variant = true;
             break;
@@ -773,7 +773,7 @@ void GeneratorEcsCpp::generateContainers(
             continue;
         auto field = componentsField(cls);
 
-        std::string decl = format_indexes(R"(list<{0}> components_{1})", cls->name, field);
+        std::string decl = format_indexes(R"(vector<{0}> components_{1})", cls->name, field);
         ecsBase->members.push_back(parse_object(decl, true));
 
         decl = format_indexes( "hash_map<int, uint64_t>:runtime map_components_{1}", cls->name, field);
@@ -789,7 +789,7 @@ void GeneratorEcsCpp::generateClearComponents(Model &model, const std::shared_pt
     static std::string BODY = R"(
 template<> void {0}::clear<{1}>()
 {
-    list_clear(static_cast<EcsPimplImpl*>(this->_pimpl.ptr())->components_{2});
+    vector_clear(static_cast<EcsPimplImpl*>(this->_pimpl.ptr())->components_{2});
     map_clear(static_cast<EcsPimplImpl*>(this->_pimpl.ptr())->map_components_{2});
 })";
     
@@ -1144,7 +1144,7 @@ void GeneratorEcsCpp::generateModelCopyComponents(Model &model){
 void GeneratorEcsCpp::generateModelGetComponents(Model &model, bool isConst) {
     auto ecs = model.get_class(_ecs_model_base_name);
 
-    Function m = parse_function("fn<T> list<T>:ref get_components()");
+    Function m = parse_function("fn<T> vector<T>:ref get_components()");
     m.return_type.is_const = isConst;
     m.is_const = isConst;
     for (auto &cls : model.classes) {
@@ -1260,7 +1260,7 @@ std::string GeneratorEcsCpp::build_list_all_components(Model& model)
     }
     all_components.pop_back();
     all_components += ">";
-    return "list<" + all_components + ">";
+    return "vector<" + all_components + ">";
 }
 
 void GeneratorEcsCpp::changeListEcsComponents(Model &model){

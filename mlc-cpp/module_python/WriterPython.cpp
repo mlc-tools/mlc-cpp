@@ -152,7 +152,7 @@ WriterPython::writeObject(const Object &obj) {
             value = "0";
         if (type_ == "bool")
             value = "False";
-        if (type_ == "list")
+        if (type_ == "vector")
             value = "[]";
         if (type_ == "map" || type_ == "hash_map")
             value = "{}";

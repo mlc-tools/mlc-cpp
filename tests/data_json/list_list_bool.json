@@ -1,6 +1,6 @@
 {
-  "list_list_bool": {
+  "vector_vector_bool": {
     "name": "test",
-    "list_list_bool": [[true, false], [false, true]]
+    "vector_vector_bool": [[true, false], [false, true]]
   }
 }

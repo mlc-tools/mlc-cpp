@@ -26,7 +26,7 @@ const map<string, int> GeneratorUnitTestsInterface::ASSERTS = {
     {"assertEqual(", 2},   {"assertNotEqual(", 2},
     {"assertNull(", 1},    {"assertNotNull(", 1},
     {"assertInMap(", 2},   {"assertNotInMap(", 2},
-    {"assertInList(", 2},  {"assertNotInList(", 2},
+    {"assertIn(", 2},  {"assertNotIn(", 2},
     {"assertInRange(", 3}, {"assertNotInRange(", 3},
 };
 
@@ -94,13 +94,13 @@ class tests/TestCase:test
     {
         this->add_result(!in_map(key, map), message);
     }
-    fn<T> void assertInList(T item, list<T>:const:ref list, string message="")
+    fn<T> void assertIn(T item, vector<T>:const:ref values, string message="")
     {
-        this->add_result(in_list(item, list), message);
+        this->add_result(in_vector(item, values), message);
     }
-    fn<T> void assertNotInList(T item, list<T>:const:ref list, string message="")
+    fn<T> void assertNotIn(T item, vector<T>:const:ref values, string message="")
     {
-        this->add_result(!in_list(item, list), message);
+        this->add_result(!in_vector(item, values), message);
     }
     fn<T> void assertInRange(T value, T min_value, T max_value, string message="")
     {

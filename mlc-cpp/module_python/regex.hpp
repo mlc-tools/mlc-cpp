@@ -86,14 +86,14 @@ class RegexPatternPython {
                  R"(map_remove_if\(([\w\d\-\>\.\[\]]+),\s*\((\w+),\s*(\w+)\s*:>\s*(.+)\)\))"),
              R"(\1 = [@[\2: \3 for \2, \3 in \1.items() if not(\4)]@])",
              {"map_remove_if"}});
-        // list_remove_if
+        // vector_remove_if
         v.push_back(
             {std::make_unique<RE2>(
-                 R"(list_remove_if\(([\w\d\-\>\[\]]+),\s*\((\w+)\s*:>\s*(.+)\)\))"),
+                 R"(vector_remove_if\(([\w\d\-\>\[\]]+),\s*\((\w+)\s*:>\s*(.+)\)\))"),
              R"__(
 \1 = [\2 for \2 in \1 if not(\3)]
 )__",
-             {"list_remove_if"}});
+             {"vector_remove_if"}});
         // map_do_if
         v.push_back(
             {std::make_unique<RE2>(
@@ -212,7 +212,7 @@ for __index__ in range(len(\1)):
                      {"std::string"}});
         v.push_back({std::make_unique<RE2>(R"(\blist<.+>\s+(\w+))"),
                      R"(\1 = list())",
-                     {"list<"}});
+                     {"vector<"}});
         v.push_back(
             {std::make_unique<RE2>(
                  R"(\bmap<([<:>\w\s\*&]+),\s*([<:>\w\s\*&]+)>\s*(\w+))"),

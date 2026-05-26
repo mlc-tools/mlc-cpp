@@ -35,10 +35,10 @@ class AllTypes
 	bool bool_value1 = false
 	string str_value0 = ""
 	string str_value1
-	list<int> int_list
-	list<float> float_list
-	list<bool> bool_list
-	list<string> string_list
+	vector<int> int_list
+	vector<float> float_list
+	vector<bool> bool_list
+	vector<string> string_list
 	map<int, string> int_string_map
 	map<float, string> float_string_map
 	map<bool, string> bool_string_map
@@ -51,22 +51,22 @@ class AllTypes
     hash_set<int> unordered_set_int
     hash_map<string, string> hash_map_str_str
 
-    set<list<int>> set_list_int
-    list<set<int>> list_set_int
+    set<vector<int>> set_vector_int
+    vector<set<int>> vector_set_int
     set<set<int>> set_set_int
     map<int, set<int>> map_set_int
     map<int, hash_set<int>> map_hash_set_int
 
 	AllTypesChildren object
 	AllTypesChildren* object_ptr = 0
-	list<AllTypesChildren> object_list
-	list<AllTypesChildren*> object_ptr_list
+	vector<AllTypesChildren> object_list
+	vector<AllTypesChildren*> object_ptr_list
 	map<string, AllTypesChildren> object_map
 	map<string, AllTypesChildren*> object_ptr_map
 
     hash_map<int, hash_map<DataUnit:link, int64_t>> int_unit_int
 
-	list<TestEnum> enum_list
+	vector<TestEnum> enum_list
 	map<TestEnum, int> enum_map
 
     function void initialize()
@@ -80,14 +80,14 @@ class AllTypes
         this->str_value0 = "test_string";
         this->str_value1 = "test_string";
 
-        list_push(this->int_list, 0);
-        list_push(this->int_list, 1);
-        list_push(this->float_list, 0.f);
-        list_push(this->float_list, 1.f);
-        list_push(this->bool_list, true);
-        list_push(this->bool_list, true);
-        list_push(this->string_list, "0");
-        list_push(this->string_list, "1");
+        vector_push(this->int_list, 0);
+        vector_push(this->int_list, 1);
+        vector_push(this->float_list, 0.f);
+        vector_push(this->float_list, 1.f);
+        vector_push(this->bool_list, true);
+        vector_push(this->bool_list, true);
+        vector_push(this->string_list, "0");
+        vector_push(this->string_list, "1");
 
         this->int_string_map[0] = "0";
         this->int_string_map[1] = "1";
@@ -111,8 +111,8 @@ class AllTypes
         this->object_ptr = new AllTypesChildren();
         this->object_ptr->value = 0;
 
-        list_push(this->enum_list, TestEnum::value1);
-        list_push(this->enum_list, TestEnum::value2);
+        vector_push(this->enum_list, TestEnum::value1);
+        vector_push(this->enum_list, TestEnum::value2);
 
         this->enum_map[TestEnum::value1] = 1;
         this->enum_map[TestEnum::value2] = 2;
@@ -273,7 +273,7 @@ class FunctionTest
 {
     bool initialized = false
     DataUnit*:link data_unit
-    list<int> list
+    vector<int> list
     map<int, int> map
 
     function void initialize()
@@ -308,7 +308,7 @@ class FunctionTest
         auto result = true;
         auto units = DataStorage::shared().get_units_keys();
         int index = 0;
-        int count = list_size(units);
+        int count = vector_size(units);
         for(auto& pair : units)
         {
             ++index;
@@ -365,10 +365,10 @@ class FunctionTest
         int index = 0;
         while(index < 10)
         {
-            list_push(test_vector, index);
+            vector_push(test_vector, index);
             index++;
         }
-        result = list_size(test_vector) == 10;
+        result = vector_size(test_vector) == 10;
         return result;
     }
 
@@ -410,9 +410,9 @@ class FunctionTest
         auto result = true;
         auto pointer = new FunctionTest();
 
-        list_push(pointer->list, 1);
-        result = result && list_size(pointer->list) == 1;
-        //result = result && in_list(1, pointer->list);
+        vector_push(pointer->list, 1);
+        result = result && vector_size(pointer->list) == 1;
+        //result = result && in_vector(1, pointer->list);
 
         pointer->map[1] = 1;
         result = result && map_size(pointer->map) == 1;
@@ -477,7 +477,7 @@ class TestFactory
 class DataComplexMap:storage
 {
     string name
-    map<int, list<float>> complex_map
+    map<int, vector<float>> complex_map
     function void foo()
     {
     }
@@ -486,10 +486,10 @@ class DataComplexMap:storage
     }
 }
 
-class DataListListBool:storage:cpp:py
+class DataVectorVectorBool:storage:cpp:py
 {
     string name
-    list<list<bool>> list_list_bool
+    vector<vector<bool>> vector_vector_bool
     function void foo()
     {
     }
@@ -504,24 +504,24 @@ class TestDataComplexMap<ITestDataComplexMap>:test
     {
         auto data = DataStorage::shared().get<DataComplexMap>("test");
         this->assertTrue(map_size(data->complex_map) == 1);
-        this->assertTrue(list_size(data->complex_map.at(1)) == 2);
+        this->assertTrue(vector_size(data->complex_map.at(1)) == 2);
         this->assertTrue(data->complex_map.at(1)[0] == 1);
         this->assertTrue(data->complex_map.at(1)[1] == 2);
     }
 }
 
-class TestDataListListBool<ITestDataListListBool>:test:cpp:py
+class TestDataVectorVectorBool<ITestDataVectorVectorBool>:test:cpp:py
 {
     function void test_foo()
     {
-        auto data = DataStorage::shared().get<DataListListBool>("test");
-        this->assertTrue(list_size(data->list_list_bool) == 2);
-        this->assertTrue(list_size(data->list_list_bool[0]) == 2);
-        this->assertTrue(list_size(data->list_list_bool[1]) == 2);
-        this->assertTrue(data->list_list_bool[0][0] == true);
-        this->assertTrue(data->list_list_bool[0][1] == false);
-        this->assertTrue(data->list_list_bool[1][0] == false);
-        this->assertTrue(data->list_list_bool[1][1] == true);
+        auto data = DataStorage::shared().get<DataVectorVectorBool>("test");
+        this->assertTrue(vector_size(data->vector_vector_bool) == 2);
+        this->assertTrue(vector_size(data->vector_vector_bool[0]) == 2);
+        this->assertTrue(vector_size(data->vector_vector_bool[1]) == 2);
+        this->assertTrue(data->vector_vector_bool[0][0] == true);
+        this->assertTrue(data->vector_vector_bool[0][1] == false);
+        this->assertTrue(data->vector_vector_bool[1][0] == false);
+        this->assertTrue(data->vector_vector_bool[1][1] == true);
     }
 }
 

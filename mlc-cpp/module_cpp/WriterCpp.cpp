@@ -292,7 +292,7 @@ std::string WriterCpp::writeCpp(const std::shared_ptr<Class> &cls,
 // Static helper to convert Python-style type names to C++ types
 std::string WriterCpp::convertType(const std::string &t) {
     static const std::unordered_map<std::string, std::string> m = {
-        {"list", "std::vector"},
+        {"vector", "std::vector"},
         {"map", "std::map"},
         {"hash_map", "std::unordered_map"},
         {"set", "std::set"},
@@ -332,7 +332,7 @@ std::string WriterCpp::writeNamedObject(const Object &obj,
     auto canUseConstRef = [&](const Object &o) {
         if(o.is_discard_const_ref)
             return false;
-        return o.type == "string" || o.type == "list" || o.type == "map" || o.type == "hash_map" || o.type == "set" || o.type == "hash_set";
+        return o.type == "string" || o.type == "vector" || o.type == "map" || o.type == "hash_map" || o.type == "set" || o.type == "hash_set";
     };
     bool isRef = obj.is_ref;
     bool is_const = obj.is_const;
@@ -436,8 +436,6 @@ std::string WriterCpp::writeMemberStaticInit(const Class &cls,
 
 // Member initialization in ctor initializer list
 std::string WriterCpp::writeMemberInitialization(const Object &obj) {
-    if(obj.name == "visibled")
-        std::cout << "";
     auto val = convert_initial_value(obj);
     val = "(" + val + ")";
     return obj.name + val;
@@ -667,19 +665,19 @@ WriterCpp::getIncludesForHeader(const std::shared_ptr<Class> &cls) {
             inc.insert("std::atomic");
     }
     // functions
-    static const std::set<std::string> stdIns = {"map", "list", "string", "set", "hash_map", "unordered_set"};
+    static const std::set<std::string> stdIns = {"map", "vector", "string", "set", "hash_map", "unordered_set"};
     static std::vector<std::string> mg_extensions = {
         "in_map",
-        "in_list",
-        "list_push",
-        "list_insert",
-        "list_remove",
-        "list_erase",
-        "list_truncate",
-        "list_size",
-        "list_index",
-        "list_clear",
-        "list_resize",
+        "in_vector",
+        "vector_push",
+        "vector_insert",
+        "vector_remove",
+        "vector_erase",
+        "vector_truncate",
+        "vector_size",
+        "vector_index",
+        "vector_clear",
+        "vector_resize",
         "map_size",
         "map_clear",
         "map_remove",

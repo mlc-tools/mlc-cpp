@@ -51,10 +51,10 @@ class TestTranslates<ITestTranslates>
         DataUnit:link data
     }
     map<string, Model*> test_map_models
-    list<int> test_list_lambda
-    list<Model*> test_list_lambda2
-    list<int> test_list_swap1
-    list<int> test_list_swap2
+    vector<int> test_vector_lambda
+    vector<Model*> test_vector_lambda2
+    vector<int> test_vector_swap1
+    vector<int> test_vector_swap2
 
     function void test_map_remove_if():cpp:py
     {
@@ -93,36 +93,36 @@ class TestTranslates<ITestTranslates>
         this->assertTrue(in_map("1", this->test_map_models));
         this->assertFalse(in_map("2", this->test_map_models));
     }
-    function void test_list_remove_if():cpp:py
+    function void test_vector_remove_if():cpp:py
     {
-        list_clear(this->test_list_lambda);
-        list_push(this->test_list_lambda, 3);
-        list_push(this->test_list_lambda, 4);
-        list_remove_if(this->test_list_lambda, (val :> val == 3));
+        vector_clear(this->test_vector_lambda);
+        vector_push(this->test_vector_lambda, 3);
+        vector_push(this->test_vector_lambda, 4);
+        vector_remove_if(this->test_vector_lambda, (val :> val == 3));
 
-        this->assertEqual(list_size(this->test_list_lambda), 1);
-        this->assertEqual(this->test_list_lambda[0], 4);
+        this->assertEqual(vector_size(this->test_vector_lambda), 1);
+        this->assertEqual(this->test_vector_lambda[0], 4);
     }
-    function void test_list_do_if():cpp:py
+    function void test_vector_do_if():cpp:py
     {
-        list_clear(this->test_list_lambda);
-        list_push(this->test_list_lambda, 3);
-        list_push(this->test_list_lambda, 4);
-        list_do_if(this->test_list_lambda, (value :> value == 3 :> list_remove(this->test_list_lambda, 3)));
+        vector_clear(this->test_vector_lambda);
+        vector_push(this->test_vector_lambda, 3);
+        vector_push(this->test_vector_lambda, 4);
+        vector_do_if(this->test_vector_lambda, (value :> value == 3 :> vector_remove(this->test_vector_lambda, 3)));
 
-        this->assertEqual(list_size(this->test_list_lambda), 1);
-        this->assertEqual(this->test_list_lambda[0], 4);
+        this->assertEqual(vector_size(this->test_vector_lambda), 1);
+        this->assertEqual(this->test_vector_lambda[0], 4);
     }
-    function void test_list_do():cpp:py
+    function void test_vector_do():cpp:py
     {
-        list_clear(this->test_list_lambda2);
-        list_push(this->test_list_lambda2, new Model());
-        list_push(this->test_list_lambda2, new Model());
+        vector_clear(this->test_vector_lambda2);
+        vector_push(this->test_vector_lambda2, new Model());
+        vector_push(this->test_vector_lambda2, new Model());
         std::string name = "unitname1";
-        list_do(this->test_list_lambda2, (model :> model->data = DataStorage::shared().get<DataUnit>(name)));
+        vector_do(this->test_vector_lambda2, (model :> model->data = DataStorage::shared().get<DataUnit>(name)));
 
-        this->assertEqual(this->test_list_lambda2[0]->data->name, name);
-        this->assertEqual(this->test_list_lambda2[1]->data->name, name);
+        this->assertEqual(this->test_vector_lambda2[0]->data->name, name);
+        this->assertEqual(this->test_vector_lambda2[1]->data->name, name);
     }
     function void test_dummy_function()
     {
@@ -146,45 +146,45 @@ class TestTranslates<ITestTranslates>
     }
     function void test_list()
     {
-        list<int> l0;
-        list<int*> l1;
-        list<std::string> l2;
-        list<intrusive_ptr<Translates>> l3;
+        std::vector<int> l0;
+        std::vector<int*> l1;
+        std::vector<std::string> l2;
+        std::vector<intrusive_ptr<Translates>> l3;
 
-        list_push(l0, 1);
-        list_push(l1, nullptr);
-        list_push(l2, "");
-        list_push(l3, new Translates());
+        vector_push(l0, 1);
+        vector_push(l1, nullptr);
+        vector_push(l2, "");
+        vector_push(l3, new Translates());
 
-        this->assertTrue(in_list(1, l0));
-        this->assertTrue(in_list(nullptr, l1));
-        this->assertTrue(in_list("", l2));
-        this->assertTrue(list_size(l3) == 1);
+        this->assertTrue(in_vector(1, l0));
+        this->assertTrue(in_vector(nullptr, l1));
+        this->assertTrue(in_vector("", l2));
+        this->assertTrue(vector_size(l3) == 1);
     }
-    function void test_list_index()
+    function void test_vector_index()
     {
-        list<int> l;
-        list_push(l, 1);
-        list_push(l, 2);
-        list_push(l, 5);
-        list_push(l, 4);
-        list_push(l, 3);
+        std::vector<int> l;
+        vector_push(l, 1);
+        vector_push(l, 2);
+        vector_push(l, 5);
+        vector_push(l, 4);
+        vector_push(l, 3);
 
-        this->assertTrue(list_index(l, 1) == 0);
-        this->assertTrue(list_index(l, 2) == 1);
-        this->assertTrue(list_index(l, 5) == 2);
-        this->assertTrue(list_index(l, 4) == 3);
-        this->assertTrue(list_index(l, 3) == 4);
-        this->assertTrue(list_index(l, 0) == -1);
-        this->assertInList(1, l, "1 result list");
+        this->assertTrue(vector_index(l, 1) == 0);
+        this->assertTrue(vector_index(l, 2) == 1);
+        this->assertTrue(vector_index(l, 5) == 2);
+        this->assertTrue(vector_index(l, 4) == 3);
+        this->assertTrue(vector_index(l, 3) == 4);
+        this->assertTrue(vector_index(l, 0) == -1);
+        this->assertIn(1, l, "1 result list");
     }
 
     function void test_map()
     {
-        map<int, int> m0;
-        map<int, int*> m1;
-        map<std::string, std::string> m2;
-        map<std::string, Translates*> m3;
+        std::map<int, int> m0;
+        std::map<int, int*> m1;
+        std::map<std::string, std::string> m2;
+        std::map<std::string, Translates*> m3;
 
         m0[0] = 1;
         m1[0] = nullptr;
@@ -221,53 +221,53 @@ class TestTranslates<ITestTranslates>
     }
     function void test_at()
     {
-        list<int> vector;
-        list_push(vector, 1);
+        std::vector<int> vector;
+        vector_push(vector, 1);
         this->assertTrue(vector.at(0) == 1);
 
-        map<int, int> map;
+        std::map<int, int> map;
         map[0] = 1;
         this->assertTrue(map.at(0) == 1);
     }
-    function void test_list_remove()
+    function void test_vector_remove()
     {
-        list<int> vector;
-        list_push(vector, 1);
-        list_push(vector, 2);
-        list_push(vector, 3);
-        list_push(vector, 4);
+        std::vector<int> vector;
+        vector_push(vector, 1);
+        vector_push(vector, 2);
+        vector_push(vector, 3);
+        vector_push(vector, 4);
 
-        list_remove(vector, 2);
-        this->assertTrue(list_size(vector) == 3);
+        vector_remove(vector, 2);
+        this->assertTrue(vector_size(vector) == 3);
         this->assertTrue(vector[0] == 1);
         this->assertTrue(vector[1] == 3);
         this->assertTrue(vector[2] == 4);
     }
-    function void test_list_clear()
+    function void test_vector_clear()
     {
-        list<int> vector;
-        list_push(vector, 1);
-        list_push(vector, 2);
-        list_push(vector, 3);
-        list_push(vector, 4);
+        std::vector<int> vector;
+        vector_push(vector, 1);
+        vector_push(vector, 2);
+        vector_push(vector, 3);
+        vector_push(vector, 4);
 
-        list_clear(vector);
-        this->assertTrue(list_size(vector) == 0);
+        vector_clear(vector);
+        this->assertTrue(vector_size(vector) == 0);
     }
-    function void test_list_resize()
+    function void test_vector_resize()
     {
-        list<int> vector;
+        std::vector<int> vector;
 
-        list_resize(vector, 1);
-        this->assertTrue(list_size(vector) == 1);
-        list_resize(vector, 2);
-        this->assertTrue(list_size(vector) == 2);
-        list_resize(vector, 10);
-        this->assertTrue(list_size(vector) == 10);
+        vector_resize(vector, 1);
+        this->assertTrue(vector_size(vector) == 1);
+        vector_resize(vector, 2);
+        this->assertTrue(vector_size(vector) == 2);
+        vector_resize(vector, 10);
+        this->assertTrue(vector_size(vector) == 10);
 
         vector[0] = 123;
-        list_resize(vector, 1);
-        this->assertTrue(list_size(vector) == 1);
+        vector_resize(vector, 1);
+        this->assertTrue(vector_size(vector) == 1);
         this->assertTrue(vector[0] == 123);
     }
     function void test_string_size()
@@ -289,7 +289,7 @@ class TestTranslates<ITestTranslates>
     }
     function void test_map_clear()
     {
-        map<int, int> map;
+        std::map<int, int> map;
         map[1] = 2;
         map[2] = 3;
         map_clear(map);
@@ -297,7 +297,7 @@ class TestTranslates<ITestTranslates>
     }
     function void test_map_remove()
     {
-        map<int, int> map;
+        std::map<int, int> map;
         map[1] = 2;
         map[2] = 3;
         map_remove(map, 1);
@@ -306,89 +306,89 @@ class TestTranslates<ITestTranslates>
         this->assertFalse(in_map(1, map));
     }
 
-    function void test_list_push()
+    function void test_vector_push()
     {
         // https://trello.com/c/86FPV2aa/21-fixes.
-        list<Point> result;
+        vector<Point> result;
         Point point;
         point.x = 1;
         point.y = 2;
-        list_push(result, Point::create(point.x, point.y-1));
+        vector_push(result, Point::create(point.x, point.y-1));
     }
 
-    function void test_list_insert()
+    function void test_vector_insert()
     {
-        list<int> vector;
+        std::vector<int> vector;
 
-        list_insert(vector, 0, 1);
-        this->assertTrue(list_size(vector) == 1);
+        vector_insert(vector, 0, 1);
+        this->assertTrue(vector_size(vector) == 1);
         this->assertTrue(vector[0] == 1);
 
-        list_insert(vector, 0, 2);
-        this->assertTrue(list_size(vector) == 2);
+        vector_insert(vector, 0, 2);
+        this->assertTrue(vector_size(vector) == 2);
         this->assertTrue(vector[0] == 2);
         this->assertTrue(vector[1] == 1);
 
-        list_insert(vector, 1, 3);
-        this->assertTrue(list_size(vector) == 3);
+        vector_insert(vector, 1, 3);
+        this->assertTrue(vector_size(vector) == 3);
         this->assertTrue(vector[0] == 2);
         this->assertTrue(vector[1] == 3);
         this->assertTrue(vector[2] == 1);
     }
 
-    function void test_list_erase()
+    function void test_vector_erase()
     {
-        list<int> vector;
-        list_push(vector, 1);
-        list_push(vector, 2);
-        list_push(vector, 3);
-        list_push(vector, 4);
+        std::vector<int> vector;
+        vector_push(vector, 1);
+        vector_push(vector, 2);
+        vector_push(vector, 3);
+        vector_push(vector, 4);
 
-        list_erase(vector, 0);
-        this->assertTrue(list_size(vector) == 3);
+        vector_erase(vector, 0);
+        this->assertTrue(vector_size(vector) == 3);
         this->assertTrue(vector[0] == 2);
         this->assertTrue(vector[1] == 3);
         this->assertTrue(vector[2] == 4);
 
-        list_erase(vector, 1);
-        this->assertTrue(list_size(vector) == 2);
+        vector_erase(vector, 1);
+        this->assertTrue(vector_size(vector) == 2);
         this->assertTrue(vector[0] == 2);
         this->assertTrue(vector[1] == 4);
 
-        list_erase(vector, 1);
-        this->assertTrue(list_size(vector) == 1);
+        vector_erase(vector, 1);
+        this->assertTrue(vector_size(vector) == 1);
         this->assertTrue(vector[0] == 2);
     }
 
-    function void test_list_truncate()
+    function void test_vector_truncate()
     {
-        list<int> vector;
-        list_push(vector, 1);
-        list_push(vector, 2);
-        list_push(vector, 3);
-        list_push(vector, 4);
+        std::vector<int> vector;
+        vector_push(vector, 1);
+        vector_push(vector, 2);
+        vector_push(vector, 3);
+        vector_push(vector, 4);
 
-        list_truncate(vector, 3);
-        this->assertTrue(list_size(vector) == 3);
+        vector_truncate(vector, 3);
+        this->assertTrue(vector_size(vector) == 3);
         this->assertTrue(vector[0] == 1);
         this->assertTrue(vector[1] == 2);
         this->assertTrue(vector[2] == 3);
 
-        list_truncate(vector, 1);
-        this->assertTrue(list_size(vector) == 1);
+        vector_truncate(vector, 1);
+        this->assertTrue(vector_size(vector) == 1);
         this->assertTrue(vector[0] == 1);
 
-        list_truncate(vector, 0);
-        this->assertTrue(list_size(vector) == 0);
+        vector_truncate(vector, 0);
+        this->assertTrue(vector_size(vector) == 0);
     }
 
     function void test_translate_declare_empty_string()
     {
         //mock data
-        map<int, std::string> possible_objects;
+        std::map<int, std::string> possible_objects;
         possible_objects[1] = "1";
-        list<int> indexes;
-        list_push(indexes, 1);
+        std::vector<int> indexes;
+        vector_push(indexes, 1);
 
         //from production code
         for(auto index : indexes)
@@ -437,15 +437,15 @@ class TestTranslates<ITestTranslates>
 
     function void test_swap()
     {
-        list_push(this->test_list_swap1, 1);
-        list_push(this->test_list_swap1, 2);
-        list_push(this->test_list_swap2, 3);
-        mg_swap(this->test_list_swap1, this->test_list_swap2);
-        this->assertEqual(list_size(this->test_list_swap1), 1);
-        this->assertEqual(list_size(this->test_list_swap2), 2);
-        this->assertEqual(this->test_list_swap1[0], 3);
-        this->assertEqual(this->test_list_swap2[0], 1);
-        this->assertEqual(this->test_list_swap2[1], 2);
+        vector_push(this->test_vector_swap1, 1);
+        vector_push(this->test_vector_swap1, 2);
+        vector_push(this->test_vector_swap2, 3);
+        mg_swap(this->test_vector_swap1, this->test_vector_swap2);
+        this->assertEqual(vector_size(this->test_vector_swap1), 1);
+        this->assertEqual(vector_size(this->test_vector_swap2), 2);
+        this->assertEqual(this->test_vector_swap1[0], 3);
+        this->assertEqual(this->test_vector_swap2[0], 1);
+        this->assertEqual(this->test_vector_swap2[1], 2);
 
         int a = 1;
         int b = 2;
@@ -464,40 +464,40 @@ class TestTranslates<ITestTranslates>
     {
         auto string = "123x4568";
         auto values = split(string, 'x');
-        this->assertEqual(list_size(values), 2);
+        this->assertEqual(vector_size(values), 2);
         this->assertTrue(values[0] == "123");
         this->assertTrue(values[1] == "4568");
         this->assertTrue(join(values, 'x') == string);
 
         string = "123x";
         values = split(string, 'x');
-        this->assertEqual(list_size(values), 2);
+        this->assertEqual(vector_size(values), 2);
         this->assertTrue(values[0] == "123");
         this->assertTrue(values[1] == "");
         this->assertTrue(join(values, 'x') == string);
 
         string = "x123";
         values = split(string, 'x');
-        this->assertEqual(list_size(values), 2);
+        this->assertEqual(vector_size(values), 2);
         this->assertTrue(values[0] == "");
         this->assertTrue(values[1] == "123");
         this->assertTrue(join(values, 'x') == string);
 
         string = "x";
         values = split(string, 'x');
-        this->assertEqual(list_size(values), 2);
+        this->assertEqual(vector_size(values), 2);
         this->assertTrue(values[0] == "");
         this->assertTrue(values[1] == "");
         this->assertTrue(join(values, 'x') == string);
 
         string = "";
         values = split(string, 'x');
-        this->assertEqual(list_size(values), 1);
+        this->assertEqual(vector_size(values), 1);
         this->assertTrue(join(values, 'x') == string);
 
         string = "1,,2,,3";
         values = split(string, ',');
-        this->assertEqual(list_size(values), 5);
+        this->assertEqual(vector_size(values), 5);
         this->assertTrue(values[0] == "1");
         this->assertTrue(values[1] == "");
         this->assertTrue(values[2] == "2");
@@ -552,15 +552,15 @@ class TestTranslates<ITestTranslates>
     }
     fn void test_safe_at_vector():cpp
     {
-        list<int> values;
+        std::vector<int> values;
 
         auto& result1, value1 = values.at(0);
 
         this->assertFalse(result1);
         this->assertEqual(value1, 0);
 
-        list_push(values, 1);
-        list_push(values, 2);
+        vector_push(values, 1);
+        vector_push(values, 2);
 
         auto result2, value2 = values.at(0);
         this->assertTrue(result2, "1");
@@ -583,7 +583,7 @@ class TestTranslates<ITestTranslates>
     }
     fn void test_safe_at_map():cpp
     {
-        map<int, std::string> values;
+        std::map<int, std::string> values;
         {
             auto& result, value = values.at(0);
 

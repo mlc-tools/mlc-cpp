@@ -20,7 +20,7 @@ class inner/OuterClass
     }
 
     InnerClass inner
-    list<InnerClass> test_list
+    vector<InnerClass> test_list
     map<int, InnerClass> test_map
 }
 

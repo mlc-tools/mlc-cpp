@@ -44,10 +44,6 @@ std::string TranslatorCpp::replaceByRegex(const std::string &body, Class &cls,
     auto tmp = pair.first;
     auto strings = pair.second;
 
-    if (cls.name == "TestTranslates" && method.name == "test_list_do") {
-        std::cout << "";
-    }
-
     // Функции-замены
     for (auto &pat : RegexPatternCpp::functionPatterns) {
         replacePattern(tmp, pat);

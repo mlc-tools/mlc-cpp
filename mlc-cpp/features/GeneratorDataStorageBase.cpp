@@ -257,13 +257,13 @@ void GeneratorDataStorageBase::createKeysGetter(const std::string &mapName) {
     Function m;
     m.name = "get_" + mapName + "_keys";
     m.is_const = true;
-    m.return_type = parse_object("list<string>");
+    m.return_type = parse_object("vector<string>");
     m.body += R"(
         std::vector<std::string> result;
         for (auto&& [key, _] : this->)" +
               mapName + R"() 
         {
-            list_push(result, key);
+            vector_push(result, key);
         }
         return result;
     )";

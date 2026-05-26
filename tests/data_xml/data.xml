@@ -50,8 +50,8 @@
 	</complex_map>
 
 
-	<list_list_bool name="test">
-		<list_list_bool>
+	<vector_vector_bool name="test">
+		<vector_vector_bool>
 			<item>
 				<item value="true"/>
 				<item value="false"/>
@@ -60,8 +60,8 @@
 				<item value="false"/>
 				<item value="true"/>
 			</item>
-		</list_list_bool>
-	</list_list_bool>
+		</vector_vector_bool>
+	</vector_vector_bool>
 
 	<dict name="default">
 		<resources>

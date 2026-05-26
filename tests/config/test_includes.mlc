@@ -17,7 +17,7 @@ class test/TestIncludes
         command->user_id = 0;
     }
 
-    fn list<int> get_vector():cpp
+    fn vector<int> get_vector():cpp
     {
         return std::vector<int>();
     }

@@ -26,7 +26,7 @@ class data/DataUnit:storage
 	UnitType unit_type
 	VisualUnit visual
 	DataUnit*:link link_to_data
-	list<DataUnit*:link> all_units
+	vector<DataUnit*:link> all_units
 	map<string, int> map_units
 	map<DataUnit:link, int>:cpp:py map_units_data
 	EnumWithIntValue enum_with_int_value
@@ -56,7 +56,7 @@ class data/DataUnit:storage
 	    result = DataUnit::test_0(data) && result;
 	    result = DataUnit::test_links(logger) && result;
 	    result = DataUnit::test_enums(logger) && result;
-	    result = DataUnit::test_list_links(logger) && result;
+	    result = DataUnit::test_vector_links(logger) && result;
 	    result = DataUnit::test_map_links(logger) && result;
 	    result = DataUnit::test_map_data_links(logger) && result;
 	    result = DataUnit::test_convert_float_to_int(logger) && result;
@@ -85,7 +85,7 @@ class data/DataUnit:storage
         bool result = true;
 
         auto units = DataStorage::shared().get_units_keys();
-        result = (2 == list_size(units)) && result;
+        result = (2 == vector_size(units)) && result;
 
         auto unit1 = DataStorage::shared().get<DataUnit>("unitname1");
         auto unit2 = DataStorage::shared().get<DataUnit>("unitname2");
@@ -119,15 +119,15 @@ class data/DataUnit:storage
     }
 
 
-    function bool test_list_links(Logger* logger):static
+    function bool test_vector_links(Logger* logger):static
     {
         bool result = true;
 
         auto unit1 = DataStorage::shared().get<DataUnit>("unitname1");
         auto unit2 = DataStorage::shared().get<DataUnit>("unitname2");
 
-        result = result && list_size(unit1->all_units) == 2;
-        result = result && list_size(unit2->all_units) == 2;
+        result = result && vector_size(unit1->all_units) == 2;
+        result = result && vector_size(unit2->all_units) == 2;
         for (auto unit : unit1->all_units)
         {
             result = result && (unit->name == unit1->name || unit->name == unit2->name);
@@ -218,7 +218,7 @@ class TestDataAdd<ITestDataAdd>:test
     {
         DataStorage::shared().get<DataAdd>("add_data");
         auto keys = DataStorage::shared().get_adds_keys();
-        this->assertTrue(in_list("add_data", keys), "Additional data in DataStorage");
+        this->assertTrue(in_vector("add_data", keys), "Additional data in DataStorage");
 
         auto unit = DataStorage::shared().get<DataUnit>("unitname1");
         this->assertTrue(unit->empty == nullptr, "empty is null");
