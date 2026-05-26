@@ -44,6 +44,7 @@ private:
     void generateModelRemoveComponent(Model &model);
     void generateModelGetComponent(Model &model, bool isConst);
     void generateModelCopyEntityFromModel(Model &model);
+    void generateModelCopyComponents(Model &model);
     void generateModelGetComponents(Model &model, bool isConst);
     void generateModelGetMapComponents(Model &model, bool isConst);
     void generateComponentSystemMembers(Model &model);
@@ -57,6 +58,7 @@ private:
     
     std::string build_all_components(Model& model);
     std::string build_list_all_components(Model& model);
+    
     void changeListEcsComponents(Model &model);
     void addSerializeListEcsComponents(Model &model);
 

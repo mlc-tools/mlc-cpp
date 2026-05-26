@@ -558,6 +558,7 @@ void GeneratorEcsCpp::generate(Model &model) {
     generateModelGetComponent(model, /*isConst*/ true);
     generateModelGetComponent(model, /*isConst*/ false);
     generateModelCopyEntityFromModel(model);
+    generateModelCopyComponents(model);
     generateModelGetComponents(model, /*isConst*/ true);
     generateModelGetComponents(model, /*isConst*/ false);
     generateModelGetMapComponents(model, false);
@@ -1122,6 +1123,22 @@ void GeneratorEcsCpp::generateModelCopyEntityFromModel(Model &model) {
     }
     m.body = body;
     ecs->functions.push_back(std::move(m));
+}
+
+void GeneratorEcsCpp::generateModelCopyComponents(Model &model){
+    auto ecs = model.get_class(_ecs_model_base_name);
+    if (!ecs)
+        return;
+    auto fn = parse_function(format_indexes("fn void add_copy_components({0}:ref:const components, int id)", build_list_all_components(model)));
+    fn.body = R"(
+        for(auto& component : components)
+        {
+            std::visit([&](auto& component){
+                auto copy = component.copy();
+                this->add(std::move(copy), id);
+            }, component);
+        })";
+    ecs->functions.push_back(std::move(fn));
 }
 
 void GeneratorEcsCpp::generateModelGetComponents(Model &model, bool isConst) {
