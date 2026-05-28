@@ -640,7 +640,7 @@ namespace serializer_xml
         {
             auto item = add_child(child, "pair");
             add_attribute(item, "key", pair.first.str(), default_value::value<std::string>());
-            serialize(node, pair.second, "value");
+            serialize(item, pair.second, "value");
         }
     }
 
