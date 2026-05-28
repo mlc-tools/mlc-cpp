@@ -352,7 +352,11 @@ void serialize(pugi::xml_node node, const ComponentVariant &value, const std::st
 void deserialize(pugi::xml_node node, ComponentVariant &value, const std::string &key)
 {
     pugi::xml_node child = key.empty() ? node : node.child(key.c_str());
-    const std::string type = child.attribute("type").as_string();
+    std::string type = child.attribute("type").as_string();
+    if(type.empty())
+    {
+        type = child.name();
+    }
 
     {deserialize_components}
 }
@@ -624,6 +628,7 @@ void GeneratorEcsCpp::generate_system_skills(Model &model,
 }
 
 void GeneratorEcsCpp::generate_model_method_save_skills(Model &model) {
+    return;
     auto controller = model.get_class("ControllerDungeonBase");
     if (!controller)
         return;
@@ -650,13 +655,13 @@ void GeneratorEcsCpp::generate_model_method_save_skills(Model &model) {
         save_skills_current_hero->body += "\n";
     save_skills_current_hero->body += "auto id = this->model->player_id;\n";
     save_skills_current_hero->body +=
-        "auto name = this->model->get<ComponentData>(id)->data->name;";
+        "auto name = this->model->get<ComponentData>(id).data->name;";
 
     if (!restore_hero_skill_on_change->body.empty())
         restore_hero_skill_on_change->body += "\n";
     restore_hero_skill_on_change->body +=
         "auto name = "
-        "this->model->get<ComponentData>(this->model->player_id)->data->name;"
+        "this->model->get<ComponentData>(this->model->player_id).data->name;"
         "\n";
 
     auto skills = get_skill_components(model);
@@ -1035,11 +1040,11 @@ void GeneratorEcsCpp::generateModelAddComponent(Model &model) {
     if (!ecs)
         return;
 
-    Function m = parse_function("fn<T> void add(T&& component, int component_id=0)");
+    Function m = parse_function("fn<T> T& add(T&& component, int component_id=0)");
 
     for (auto &cls : getComponentClasses(model)) {
         auto field = componentsField(cls);
-        m.specific_implementations += format_indexes(R"(template<> void {0}::add({1}&& component, int component_id)
+        m.specific_implementations += format_indexes(R"(template<> {1}& {0}::add({1}&& component, int component_id)
     {
     assert(component.id == 0 || component.id == component_id || component_id == 0);
     if(component_id != 0)
@@ -1047,6 +1052,7 @@ void GeneratorEcsCpp::generateModelAddComponent(Model &model) {
         component.id = component_id;
     }
     assert(component.id > 0);
+    component_id = component.id; 
 
     auto impl = static_cast<EcsPimplImpl*>(this->_pimpl.ptr());
     auto iter = impl->map_components_{2}.find(component.id);
@@ -1080,7 +1086,9 @@ void GeneratorEcsCpp::generateModelAddComponent(Model &model) {
             impl->map_components_{2}[components.at(i).id] = i;
         }
     }
-    })", _ecs_model_base_name, cls->name, field);
+    return this->get<{1}>(component_id);
+    }
+)", _ecs_model_base_name, cls->name, field);
     }
     ecs->functions.push_back(std::move(m));
 }
@@ -1198,10 +1206,10 @@ void GeneratorEcsCpp::generateComponentSystemMembers(Model &model){
         if (!isBased(cls, _ecs_component_base_name) || cls->name == _ecs_component_base_name)
             continue;
         GeneratorOperatorEqualsCpp::generate_signaturs(cls);
-        cls->get_copy_operator()->access = AccessSpecifier::m_private;
+        cls->get_copy_operator()->access = AccessSpecifier::m_protected;
         for(auto& f : cls->functions){
             if(f.name == cls->name && f.callable_args.size() == 1 && f.callable_args[0].type == cls->name && f.callable_args[0].is_ref && !f.callable_args[0].is_rvalue)
-                f.access = AccessSpecifier::m_private;
+                f.access = AccessSpecifier::m_protected;
         }
         
         cls->functions.push_back(parse_function(format_indexes(R"(fn {0} copy():const { return *this; })", cls->name)));
@@ -1297,16 +1305,16 @@ void GeneratorEcsCpp::addSerializeListEcsComponents(Model &model){
     std::string forward_declarations = "namespace mg\n{\n";
     for (auto &cls : model.classes) {
         if (isBased(cls, _ecs_component_base_name) && cls->name != _ecs_component_base_name){
-            deserialize += "deserialize_variant_value<" + cls->name + ">(child, value, type) ||";
+            deserialize += "deserialize_variant_value<" + cls->name + ">(child, value, type) ||\n    ";
             includes += "#include \"" + (cls->group.empty() ? "" : cls->group + "/") + cls->name + ".h\"\n";
             forward_declarations += "class " + cls->name + ";\n";
         }
     }
     forward_declarations += "} // namespace mg\n";
     
-    deserialize.pop_back();
-    deserialize.pop_back();
-    deserialize.pop_back();
+    auto k = deserialize.rfind("||");
+    if(k != std::string::npos)
+        deserialize = deserialize.substr(0, k);
     deserialize += ";";
     
     if(model.config.serializeFormats & static_cast<int>(SerializeFormat::Xml)) {
