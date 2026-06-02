@@ -10,6 +10,7 @@
 #include "Object.hpp"
 #include <memory>
 #include <set>
+#include <unordered_map>
 
 class Model;
 
@@ -27,6 +28,7 @@ struct Class : public Object {
     std::vector<std::weak_ptr<Class>> subclasses;
     std::vector<std::shared_ptr<Class>> inner_classes;
     std::set<std::string> user_includes;
+    std::unordered_map<std::string, std::string> sources;
     bool is_abstract = false;
     bool is_serialized = false;
     bool is_visitor = false;

@@ -48,7 +48,6 @@ private:
     void generateModelGetComponents(Model &model, bool isConst);
     void generateModelGetMapComponents(Model &model, bool isConst);
     void generateComponentSystemMembers(Model &model);
-    void generateFactory(Model &model);
     
     std::vector<std::shared_ptr<Class>> get_skill_components(Model &model);
     void generate_system_skills(Model &model, const std::string &method_name);

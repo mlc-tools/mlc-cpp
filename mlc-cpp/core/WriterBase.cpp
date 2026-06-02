@@ -32,9 +32,15 @@ void WriterBase::save(Model &model) {
             model.dirty_classes.count(cls->name) == 0)
             continue;
         currentClass_ = cls;
-        auto sources = writeClass(cls);
-        for (auto &p : sources) {
-            model.addFile(cls, p.first, p.second);
+        if(cls->sources.empty()){
+            auto sources = writeClass(cls);
+            for (auto &p : sources) {
+                model.addFile(cls, p.first, p.second);
+            }
+        } else {
+            for(auto&& [path, content] : cls->sources){
+                model.addFile(cls, path, content);
+            }
         }
     }
 }
