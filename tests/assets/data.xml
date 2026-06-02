@@ -92,8 +92,8 @@
     <pair key="ecs1">
       <value name="ecs1">
         <components>
-          <component type="Transform" x="101" y="102" />
-          <component type="Movement" x="103" y="104" />
+          <Transform x="101" y="102" />
+          <Movement x="103" y="104" />
         </components>
       </value>
     </pair>

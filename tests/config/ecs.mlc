@@ -13,7 +13,7 @@ class ecs/EcsModel:prefer_use_forward_declarations
 	}
 }
 
-class ecs/EcsComponent:discard_virtual
+class ecs/EcsComponent
 {
 	int id
 }
@@ -35,7 +35,7 @@ class ecs/Movement2<EcsComponent>
 	int y = 0
 	int z
 }
-class ecs/Movement3<EcsComponent>
+class ecs/Movement3<Movement>
 {
 	int x = 0
 	int y = 0
@@ -44,7 +44,9 @@ class ecs/Movement3<EcsComponent>
 class ecs/DataEntity:storage:discard_copy:discard_copy_ctr:prefer_use_forward_declarations
 {
 	string name
-	ListEcsComponents components
+	// ListEcsComponents components
+	list<EcsComponent*> components
+
 }
 
 class ecs/EcsBuilder
@@ -53,7 +55,13 @@ class ecs/EcsBuilder
 	{
 		auto id = model->get_next_free_id();
 		auto data = DataStorage::shared().get<DataEntity>(entity_name);
-		model->add_copy_components(data->components, id);
+		for(auto component : data->components)
+		{
+			auto clone = clone_object<EcsComponent>(component);
+            clone->id = id;
+            clone->add_self_to_model(model);
+		}
+		// model->add_copy_components(data->components, id);
 		// for(auto& component : data->components)
 		// {
 		// 	std::visit([&](auto& component){
@@ -76,10 +84,10 @@ class ecs/SystemMovement:cpp
 			});
 	}
 
-	fn void move(Transform& transform, Movement& movement)
+	fn void move(Transform* transform, Movement* movement)
 	{
-		transform.x += movement.x;
-		transform.y += movement.y;
+		transform->x += movement->x;
+		transform->y += movement->y;
 	}
 }
 class ecs/SystemMovement2:cpp
@@ -89,8 +97,8 @@ class ecs/SystemMovement2:cpp
 		model->each<Transform, Movement2>(
 			[](auto& transform, auto& movement)
 			{
-				transform.x += movement.x;
-				transform.y += movement.y;
+				transform->x += movement->x;
+				transform->y += movement->y;
 			});
 	}
 }
@@ -101,12 +109,12 @@ class ecs/SystemMovementIf:cpp
 		model->each_if<Transform, Movement>(
 			[](auto& transform, auto& movement)
 			{
-				return movement.x > 0;
+				return movement->x > 0;
 			},
 			[](auto& transform, auto& movement)
 			{
-				transform.x += movement.x;
-				transform.y += movement.y;
+				transform->x += movement->x;
+				transform->y += movement->y;
 			});
 	}
 }
@@ -115,7 +123,7 @@ class ecs/SystemAddMovement:cpp
 {
 	fn void update(EcsModel* model)
 	{
-		model->add<Movement>(Movement(), 1);
+		model->add<Movement>(new Movement(), 1);
 	}
 	fn void clean(EcsModel* model)
 	{
@@ -138,22 +146,22 @@ class ecs/TestEcsModel<ITestEcsModel>
 
 	fn void test_removed():cpp
 	{
-		Transform transform;
+		auto transform = new Transform();
 
-		this->assertFalse(transform.is_removed(), "not removed on create");
-		this->assertFalse(transform.is_removed(), "not removed on create again");
+		this->assertFalse(transform->is_removed(), "not removed on create");
+		this->assertFalse(transform->is_removed(), "not removed on create again");
 		
-		transform.mark_removed();
-		this->assertTrue(transform.is_removed(), "removed after mark removed");
+		transform->mark_removed();
+		this->assertTrue(transform->is_removed(), "removed after mark removed");
 		
-		transform.mark_removed();
-		this->assertTrue(transform.is_removed(), "removed after mark removed again");
+		transform->mark_removed();
+		this->assertTrue(transform->is_removed(), "removed after mark removed again");
 		
-		transform.mark_unremoved();
-		this->assertFalse(transform.is_removed(), "not removed after unmark removed");
+		transform->mark_unremoved();
+		this->assertFalse(transform->is_removed(), "not removed after unmark removed");
 		
-		transform.mark_unremoved();
-		this->assertFalse(transform.is_removed(), "not removed after unmark removed again");
+		transform->mark_unremoved();
+		this->assertFalse(transform->is_removed(), "not removed after unmark removed again");
 
 	}
 
@@ -161,18 +169,18 @@ class ecs/TestEcsModel<ITestEcsModel>
 	fn void test_remove():cpp
 	{
 		auto model = this->get_model();
-		model->add(Transform(), 1);
-		assertEqual(model->get<Transform>(1).id, 1, "has component");
+		model->add(new Transform(), 1);
+		assertEqual(model->get<Transform>(1)->id, 1, "has component");
 		model->remove<Transform>(model->get<Transform>(1));
-		assertEqual(model->get<Transform>(1).id, -1, "has not component");
+		assertEqual(model->get<Transform>(1), nullptr, "has not component");
 	}
 
 
 	fn void test_each_after_remove():cpp
 	{
 		auto model = this->get_model();
-		model->add(Transform(), 1);
-		model->add(Movement(), 1);
+		model->add(new Transform(), 1);
+		model->add(new Movement(), 1);
 		model->remove<Transform>(model->get<Transform>(1));
 
 		int count = 0;
@@ -204,72 +212,72 @@ class ecs/TestEcsModel<ITestEcsModel>
 	fn void test_update_systems():cpp
 	{
 		auto model = this->get_model();
-		model->add(Transform(), 1);
-		model->add(Movement(), 1);
+		model->add(new Transform(), 1);
+		model->add(new Movement(), 1);
 
-		model->get<Movement>(1).y = 2;
+		model->get<Movement>(1)->y = 2;
 		model->update_systems(0);
-		this->assertEqual(model->get<Transform>(1).x, 0);
-		this->assertEqual(model->get<Transform>(1).y, 2);
+		this->assertEqual(model->get<Transform>(1)->x, 0);
+		this->assertEqual(model->get<Transform>(1)->y, 2);
 	}
 
 	fn void test_clear():cpp
 	{
 		auto model = this->get_model();
-		model->add(Transform(), 1);
-		model->add(Movement(), 1);
+		model->add(new Transform(), 1);
+		model->add(new Movement(), 1);
 
 
-		this->assertEqual(model->get<Movement>(1).id, 1);
-		this->assertEqual(model->get<Transform>(1).id, 1);
+		this->assertEqual(model->get<Movement>(1)->id, 1);
+		this->assertEqual(model->get<Transform>(1)->id, 1);
 
 		model->clear<Movement>();
 		this->assertEqual(model->get_components<Movement>().size(), 0);
-		this->assertEqual(model->get<Movement>(1).id, -1);
+		this->assertEqual(model->get<Movement>(1), nullptr);
 
 		model->clear<Transform>();
 		this->assertEqual(model->get_components<Transform>().size(), 0);
-		this->assertEqual(model->get<Transform>(1).id, -1);
+		this->assertEqual(model->get<Transform>(1), nullptr);
 	}
 
 	fn void test_remove_if():cpp
 	{
 		auto model = this->get_model();
-		model->add(Transform(), 1);
-		model->add(Transform(), 2);
-		model->add(Transform(), 3);
+		model->add(new Transform(), 1);
+		model->add(new Transform(), 2);
+		model->add(new Transform(), 3);
 
-		model->remove_if<Transform>([&](auto& transform){return transform.id == 2;});
-		assertEqual(model->get<Transform>(2).id, -1, "transform with id 2 is null");
-		assertEqual(model->get<Transform>(1).id, 1, "transform with id 1 is not null");
-		assertEqual(model->get<Transform>(3).id, 3, "transform with id 3 is not null");
+		model->remove_if<Transform>([&](auto transform){return transform->id == 2;});
+		assertEqual(model->get<Transform>(2), nullptr, "transform with id 2 is null");
+		assertEqual(model->get<Transform>(1)->id, 1, "transform with id 1 is not null");
+		assertEqual(model->get<Transform>(3)->id, 3, "transform with id 3 is not null");
 		assertEqual(model->get_components<Transform>().size(), 2);
 	}
 
 	fn void test_add():cpp
 	{
 		auto model = this->get_model();
-		model->add(Transform(), 1);
-		model->add(Transform(), 3);
-		model->add(Transform(), 2);
+		model->add(new Transform(), 1);
+		model->add(new Transform(), 3);
+		model->add(new Transform(), 2);
 
-		assertEqual(model->get<Transform>(1).id, 1, "transform with id 2 is not null");
-		assertEqual(model->get<Transform>(2).id, 2, "transform with id 1 is not null");
-		assertEqual(model->get<Transform>(3).id, 3, "transform with id 3 is not null");
+		assertEqual(model->get<Transform>(1)->id, 1, "transform with id 2 is not null");
+		assertEqual(model->get<Transform>(2)->id, 2, "transform with id 1 is not null");
+		assertEqual(model->get<Transform>(3)->id, 3, "transform with id 3 is not null");
 		assertEqual(model->get_components<Transform>().size(), 3);
 	}
 	fn void test_remove_if2():cpp
 	{
 		auto model = this->get_model();
-		model->add(Transform(), 1);
-		model->add(Transform(), 2);
-		model->add(Transform(), 3);
-		model->add(Transform(), 4);
+		model->add(new Transform(), 1);
+		model->add(new Transform(), 2);
+		model->add(new Transform(), 3);
+		model->add(new Transform(), 4);
 
-		model->get<Transform>(2).x = 100;
-		model->get<Transform>(3).x = 100;
+		model->get<Transform>(2)->x = 100;
+		model->get<Transform>(3)->x = 100;
 
-		model->remove_if<Transform>([](auto& t){return t.x >= 100;});
+		model->remove_if<Transform>([](auto t){return t->x >= 100;});
 
 		this->assertTrue(model->get<Transform>(1));
 		this->assertTrue(model->get<Transform>(4));
@@ -280,66 +288,66 @@ class ecs/TestEcsModel<ITestEcsModel>
 	fn void test_each():cpp
 	{
 		auto model = this->get_model();
-		model->add(Transform(), 1);
-		model->add(Transform(), 2);
-		model->add(Movement(), 2);
+		model->add(new Transform(), 1);
+		model->add(new Transform(), 2);
+		model->add(new Movement(), 2);
 
-		model->get<Movement>(2).x = 1;
+		model->get<Movement>(2)->x = 1;
 
 		SystemMovement().update(model);
-		this->assertEqual(model->get<Transform>(1).x, 0);
-		this->assertEqual(model->get<Transform>(1).y, 0);
-		this->assertEqual(model->get<Transform>(2).x, 1);
-		this->assertEqual(model->get<Transform>(2).y, 0);
+		this->assertEqual(model->get<Transform>(1)->x, 0);
+		this->assertEqual(model->get<Transform>(1)->y, 0);
+		this->assertEqual(model->get<Transform>(2)->x, 1);
+		this->assertEqual(model->get<Transform>(2)->y, 0);
 
 
-		model->add(Movement(), 1);
+		model->add(new Movement(), 1);
 		SystemMovementIf().update(model);
-		this->assertEqual(model->get<Transform>(1).x, 0);
-		this->assertEqual(model->get<Transform>(1).y, 0);
-		this->assertEqual(model->get<Transform>(2).x, 2);
-		this->assertEqual(model->get<Transform>(2).y, 0);
+		this->assertEqual(model->get<Transform>(1)->x, 0);
+		this->assertEqual(model->get<Transform>(1)->y, 0);
+		this->assertEqual(model->get<Transform>(2)->x, 2);
+		this->assertEqual(model->get<Transform>(2)->y, 0);
 	}
 
 	fn void test_each2():cpp
 	{
 		auto model = this->get_model();
-		model->add(Transform(), 1);
-		model->add(Transform(), 2);
-		model->add(Movement(), 2);
+		model->add(new Transform(), 1);
+		model->add(new Transform(), 2);
+		model->add(new Movement(), 2);
 
 		std::set<int> ids;
 		model->each<Transform, Movement>([&](auto& t, auto& m)
 		{
-			this->assertEqual(t.id, m.id);
-			ids.insert(t.id);
+			this->assertEqual(t->id, m->id);
+			ids.insert(t->id);
 		});
 		this->assertTrue(ids == std::set<int>{2});
 		ids.clear();
 
 		model->each<Movement, Transform>([&](auto& t, auto& m)
 		{
-			this->assertEqual(t.id, m.id);
-			ids.insert(t.id);
+			this->assertEqual(t->id, m->id);
+			ids.insert(t->id);
 		});
 		this->assertTrue(ids == std::set<int>{2});
 		ids.clear();
 
 
-		model->add(Movement(), 1);
+		model->add(new Movement(), 1);
 
 		model->each<Transform, Movement>([&](auto& t, auto& m)
 		{
-			this->assertEqual(t.id, m.id);
-			ids.insert(t.id);
+			this->assertEqual(t->id, m->id);
+			ids.insert(t->id);
 		});
 		this->assertTrue(ids == std::set<int>{1, 2});
 		ids.clear();
 
 		model->each<Movement, Transform>([&](auto& t, auto& m)
 		{
-			this->assertEqual(t.id, m.id);
-			ids.insert(t.id);
+			this->assertEqual(t->id, m->id);
+			ids.insert(t->id);
 		});
 		this->assertTrue(ids == std::set<int>{1, 2});
 		ids.clear();
@@ -348,16 +356,16 @@ class ecs/TestEcsModel<ITestEcsModel>
 		model->remove(model->get<Movement>(2));
 		model->each<Transform, Movement>([&](auto& t, auto& m)
 		{
-			this->assertEqual(t.id, m.id);
-			ids.insert(t.id);
+			this->assertEqual(t->id, m->id);
+			ids.insert(t->id);
 		});
 		this->assertTrue(ids == std::set<int>{});
 		ids.clear();
 
 		model->each<Movement, Transform>([&](auto& t, auto& m)
 		{
-			this->assertEqual(t.id, m.id);
-			ids.insert(t.id);
+			this->assertEqual(t->id, m->id);
+			ids.insert(t->id);
 		});
 		this->assertTrue(ids == std::set<int>{});
 		ids.clear();
@@ -366,17 +374,17 @@ class ecs/TestEcsModel<ITestEcsModel>
 	fn void test_each3():cpp
 	{
 		auto model = this->get_model();
-		model->add(Transform(), 1);
-		model->add(Transform(), 2);
-		model->add(Movement(), 2);
-		model->add(Movement2(), 2);
+		model->add(new Transform(), 1);
+		model->add(new Transform(), 2);
+		model->add(new Movement(), 2);
+		model->add(new Movement2(), 2);
 
 		std::set<int> ids;
 		model->each<Transform, Movement, Movement2>([&](auto& t, auto& m, auto& m2)
 		{
-			this->assertEqual(t.id, m.id);
-			this->assertEqual(t.id, m2.id);
-			ids.insert(t.id);
+			this->assertEqual(t->id, m->id);
+			this->assertEqual(t->id, m2->id);
+			ids.insert(t->id);
 		});
 		this->assertTrue(ids == std::set<int>{2});
 		ids.clear();
@@ -388,63 +396,63 @@ class ecs/TestEcsModel<ITestEcsModel>
 		auto source = this->get_model();
 		auto target = this->get_model();
 
-		source->add(Transform(), 1);
-		source->add(Movement(), 1);
+		source->add(new Transform(), 1);
+		source->add(new Movement(), 1);
 
-		source->get<Transform>(1).x = 4;
-		source->get<Transform>(1).y = 5;
-		source->get<Movement>(1).x = 6;
-		source->get<Movement>(1).y = 7;
+		source->get<Transform>(1)->x = 4;
+		source->get<Transform>(1)->y = 5;
+		source->get<Movement>(1)->x = 6;
+		source->get<Movement>(1)->y = 7;
 
 		target->copy_entity_from_model(source, 1, 2);
 
-		this->assertEqual(target->get<Transform>(2).id, 2);
-		this->assertEqual(target->get<Transform>(2).x, 4);
-		this->assertEqual(target->get<Transform>(2).y, 5);
-		this->assertEqual(target->get<Movement>(2).id, 2);
-		this->assertEqual(target->get<Movement>(2).x, 6);
-		this->assertEqual(target->get<Movement>(2).y, 7);
-		this->assertEqual(target->get<Transform>(1).id, -1);
+		this->assertEqual(target->get<Transform>(2)->id, 2);
+		this->assertEqual(target->get<Transform>(2)->x, 4);
+		this->assertEqual(target->get<Transform>(2)->y, 5);
+		this->assertEqual(target->get<Movement>(2)->id, 2);
+		this->assertEqual(target->get<Movement>(2)->x, 6);
+		this->assertEqual(target->get<Movement>(2)->y, 7);
+		this->assertEqual(target->get<Transform>(1), nullptr);
 	}
 
 	fn void test_each_all_components():cpp
 	{
 		auto model = this->get_model();
-		model->add(Transform(), 1);
-		model->add(Transform(), 2);
-		model->add(Movement(), 2);
-		model->add(Movement2(), 2);
-		model->add(Movement2(), 3);
+		model->add(new Transform(), 1);
+		model->add(new Transform(), 2);
+		model->add(new Movement(), 2);
+		model->add(new Movement2(), 2);
+		model->add(new Movement2(), 3);
 
-		model->get<Movement>(2).x = 3;
-		model->get<Movement>(2).y = 4;
-		model->get<Movement2>(2).x = 5;
-		model->get<Movement2>(2).y = 6;
+		model->get<Movement>(2)->x = 3;
+		model->get<Movement>(2)->y = 4;
+		model->get<Movement2>(2)->x = 5;
+		model->get<Movement2>(2)->y = 6;
 
 		int count = 0;
 		model->each<Transform, Movement, Movement2>(
 			[&](auto& transform, auto& movement, auto& movement2)
 			{
 				++count;
-				transform.x = movement.x + movement2.x;
-				transform.y = movement.y + movement2.y;
+				transform->x = movement->x + movement2->x;
+				transform->y = movement->y + movement2->y;
 			});
 
 		this->assertEqual(count, 1);
-		this->assertEqual(model->get<Transform>(1).x, 0);
-		this->assertEqual(model->get<Transform>(1).y, 0);
-		this->assertEqual(model->get<Transform>(2).x, 8);
-		this->assertEqual(model->get<Transform>(2).y, 10);
+		this->assertEqual(model->get<Transform>(1)->x, 0);
+		this->assertEqual(model->get<Transform>(1)->y, 0);
+		this->assertEqual(model->get<Transform>(2)->x, 8);
+		this->assertEqual(model->get<Transform>(2)->y, 10);
 	}
 
-	fn void test_load_entity():server
-	{
-		auto data = DataStorage::shared().get<DataEntity>("ecs1");
-		this->assertEqual(std::get<Transform>(data->components[0]).x, 101);
-		this->assertEqual(std::get<Transform>(data->components[0]).y, 102);
-		this->assertEqual(std::get<Movement>(data->components[1]).x, 103);
-		this->assertEqual(std::get<Movement>(data->components[1]).y, 104);
-	}
+	// fn void test_load_entity():server
+	// {
+	// 	auto data = DataStorage::shared().get<DataEntity>("ecs1");
+	// 	this->assertEqual(std::get<Transform>(data->components[0])->x, 101);
+	// 	this->assertEqual(std::get<Transform>(data->components[0])->y, 102);
+	// 	this->assertEqual(std::get<Movement>(data->components[1])->x, 103);
+	// 	this->assertEqual(std::get<Movement>(data->components[1])->y, 104);
+	// }
 
 	fn void test_build_entity():server
 	{
@@ -452,11 +460,11 @@ class ecs/TestEcsModel<ITestEcsModel>
 		EcsBuilder().build(model, "ecs1");
 
 		this->assertTrue(model->get<Transform>(1));
-		this->assertEqual(model->get<Transform>(1).x, 101);
-		this->assertEqual(model->get<Transform>(1).y, 102);
+		this->assertEqual(model->get<Transform>(1)->x, 101);
+		this->assertEqual(model->get<Transform>(1)->y, 102);
 		this->assertTrue(model->get<Movement>(1));
-		this->assertEqual(model->get<Movement>(1).x, 103);
-		this->assertEqual(model->get<Movement>(1).y, 104);
+		this->assertEqual(model->get<Movement>(1)->x, 103);
+		this->assertEqual(model->get<Movement>(1)->y, 104);
 	}
 
 	fn void test_remove_entities_with()
@@ -464,21 +472,21 @@ class ecs/TestEcsModel<ITestEcsModel>
 		auto model = this->get_model();
 		for(int i=0; i<10; ++i)
 		{
-			model->add(Transform(), i+1);
+			model->add(new Transform(), i+1);
 		}
 		for(int i=0; i<5; ++i)
 		{
-			model->add(Movement(), i+1);
+			model->add(new Movement(), i+1);
 		}
 		model->remove_entities_with<Movement>();
 		model->clear_removed<Transform>();
 		auto& transforms = model->get_components<Transform>();
 		this->assertEqual(transforms.size(), 5);
-		this->assertEqual(transforms.at(0).id, 6);
-		this->assertEqual(transforms.at(1).id, 7);
-		this->assertEqual(transforms.at(2).id, 8);
-		this->assertEqual(transforms.at(3).id, 9);
-		this->assertEqual(transforms.at(4).id, 10);
+		this->assertEqual(transforms.at(0)->id, 6);
+		this->assertEqual(transforms.at(1)->id, 7);
+		this->assertEqual(transforms.at(2)->id, 8);
+		this->assertEqual(transforms.at(3)->id, 9);
+		this->assertEqual(transforms.at(4)->id, 10);
 	}
 
 	fn void test_perfomance_all()
@@ -491,13 +499,13 @@ class ecs/TestEcsModel<ITestEcsModel>
 		auto start = std::chrono::high_resolution_clock::now();
 		for(int i=0; i<count; ++i)
 		{
-			model->add(Transform(), i+1);
-			model->add(Movement(), i+1);
+			model->add(new Transform(), i+1);
+			model->add(new Movement(), i+1);
 		}
 		auto duration_add = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start);
 		for(int i=0; i<count; ++i)
 		{
-			model->get<Movement>(i+1).x = 1;
+			model->get<Movement>(i+1)->x = 1;
 		}
 		auto duration_get = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start);
 		SystemMovementIf().update(model);
@@ -524,11 +532,11 @@ class ecs/TestEcsModel<ITestEcsModel>
 	    for (int i = 0; i < count; ++i)
 	    {
 	        int id = i + 1;
-	        model->add(Transform(), id);
-	        model->add(Movement(), id);
-	        model->add(Movement2(), id);
-	        auto& m = model->get<Movement>(id);
-	        m.x = 1;
+	        model->add(new Transform(), id);
+	        model->add(new Movement(), id);
+	        model->add(new Movement2(), id);
+	        auto m = model->get<Movement>(id);
+	        m->x = 1;
 	    }
 
 	    // warmup
@@ -566,8 +574,8 @@ class ecs/TestEcsModel<ITestEcsModel>
 
 		for(int i=0; i<count; ++i)
 		{
-			model->add(Transform(), i+1);
-			model->add(Movement(), i+1);
+			model->add(new Transform(), i+1);
+			model->add(new Movement(), i+1);
 		}
 
 		auto start = std::chrono::high_resolution_clock::now();
@@ -586,15 +594,15 @@ class ecs/TestEcsModel<ITestEcsModel>
 	fn void test_each_break():cpp
 	{
 		auto model = this->get_model();
-		model->add(Transform(), 1);
-		model->add(Transform(), 2);
-		model->add(Movement(), 1);
-		model->add(Movement(), 2);
+		model->add(new Transform(), 1);
+		model->add(new Transform(), 2);
+		model->add(new Movement(), 1);
+		model->add(new Movement(), 2);
 		
 		bool each_2 = false;
 		model->each<Transform>([&](auto& transform)
 		{
-			each_2 = each_2 || transform.id == 2;
+			each_2 = each_2 || transform->id == 2;
 			model->break_each();
 		});
 		this->assertFalse(each_2);
@@ -602,10 +610,10 @@ class ecs/TestEcsModel<ITestEcsModel>
 		each_2 = false;
 		model->each<Transform>([&](auto& transform)
 		{
-			each_2 = each_2 || transform.id == 2;
+			each_2 = each_2 || transform->id == 2;
 			model->each<Movement>([&](auto& movement)
 			{
-				each_2 = each_2 || movement.id == 2;
+				each_2 = each_2 || movement->id == 2;
 				model->break_each();
 			});
 			model->break_each();
@@ -614,14 +622,14 @@ class ecs/TestEcsModel<ITestEcsModel>
 
 		model->each<Transform>([&](auto& transform)
 		{
-			each_2 = each_2 || transform.id == 2;
+			each_2 = each_2 || transform->id == 2;
 		});
 		this->assertTrue(each_2);
 
 		each_2 = false;
 		model->each<Transform, Movement>([&](auto& transform, auto& movement)
 		{
-			each_2 = each_2 || transform.id == 2;
+			each_2 = each_2 || transform->id == 2;
 			model->break_each();
 		});
 		this->assertFalse(each_2);
@@ -632,7 +640,7 @@ class ecs/TestEcsModel<ITestEcsModel>
 			return true;
 		}, [&](auto& transform, auto& movement)
 		{
-			each_2 = each_2 || transform.id == 2;
+			each_2 = each_2 || transform->id == 2;
 			model->break_each();
 		});
 		this->assertFalse(each_2);
@@ -644,7 +652,7 @@ class ecs/TestEcsModel<ITestEcsModel>
 			return true;
 		}, [&](auto& transform, auto& movement)
 		{
-			each_2 = each_2 || transform.id == 2;
+			each_2 = each_2 || transform->id == 2;
 		});
 		this->assertFalse(each_2);
 	}

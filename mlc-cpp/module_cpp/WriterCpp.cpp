@@ -468,10 +468,10 @@ std::string WriterCpp::writeFunctionHpp(const Function &method) {
     if (method.name != currentClass_->name)
         ret = writeNamedObject(method.return_type, "", false, true);
     // args
+    if(currentClass_->name == "EcsModel" && method.name == "add")
+        std::cout <<"";
     std::string args = createFunctionHppArgs(method);
     // qualifiers
-    if(currentClass_->name == "EcsComponent")
-        std::cout <<"";
     std::string virt = (method.is_virtual || method.is_abstract || currentClass_->is_virtual) && method.name != currentClass_->name && !method.is_static
                            ? "virtual "
                            : "";
