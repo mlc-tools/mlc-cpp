@@ -134,7 +134,7 @@ void GeneratorDataStorageBase::generate(Model &model) {
     _class->type = "class";
     _class->name = "DataStorage";
     _class->is_serialized = true;
-    _class->prefer_use_forward_declarations = true;
+    _class->prefer_use_forward_declarations = _config.use_forward_declaration;
 
     // создаём контейнеры для каждого storage-класса
     for (auto &cls : _model->classes) {

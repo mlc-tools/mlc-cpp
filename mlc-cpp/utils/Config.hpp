@@ -25,6 +25,7 @@ public:
 class FeatureDataStorage {
 public:
     bool private_members = true;
+    bool use_forward_declaration = true;
 };
 
 class FeatureRefCounter {

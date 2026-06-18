@@ -262,6 +262,8 @@ void loadFeatures(std::vector<FeatureVariant>& vfeatures, const Json::Value& fea
         FeatureDataStorage f;
         if(feature_data_storage.isMember("private_members"))
             f.private_members = feature_data_storage["private_members"].asBool();
+        if(feature_data_storage.isMember("use_forward_declaration"))
+            f.use_forward_declaration = feature_data_storage["use_forward_declaration"].asBool();
         vfeatures.push_back(std::move(f));
     }
 
