@@ -37,7 +37,7 @@ pushd .
 cd ../
 VERSION=$(increment_version)
 build
-# push_tag $VERSION
+push_tag $VERSION
 echo "New version is: " "$VERSION"
 
 popd
