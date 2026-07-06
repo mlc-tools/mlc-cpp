@@ -7,4 +7,4 @@
 
 #pragma once
 
-const char * APP_VERSION = "0.5.94";
+const char * APP_VERSION = "0.5.95";
