@@ -30,9 +30,10 @@ void Linker::link(Model &model) {
 
 void Linker::convertSuperclasses(Model &model) {
     for (auto &cls : model.classes) {
+        if(model.is_skip(*cls))
+            continue;
         if (!cls->parent_class_name.empty()) {
             auto parent = model.get_class(cls->parent_class_name);
-            assert(parent);
             if (!parent) {
                 Error::exit(Error::UNKNOWN_SUPERCLASS, cls->name,
                             cls->parent_class_name);

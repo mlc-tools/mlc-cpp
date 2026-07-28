@@ -29,6 +29,8 @@ void SerializerBase::generateMethods(Model &m) {
 
         // For each class
         for (auto &clsPtr : m.classes) {
+            if(m.is_skip(*clsPtr))
+                continue;
             if (clsPtr->type == "enum" || clsPtr->name == "BaseEnum")
                 continue;
             if (clsPtr->name == "DataStorage")
