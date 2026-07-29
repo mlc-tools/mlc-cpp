@@ -610,7 +610,6 @@ void GeneratorEcsCpp::generate_system_skills(Model &model, const std::string &me
 }
 
 void GeneratorEcsCpp::generate_model_method_save_skills(Model &model) {
-    return;
     auto controller = model.get_class("ControllerDungeonBase");
     if (!controller)
         return;
@@ -635,47 +634,32 @@ void GeneratorEcsCpp::generate_model_method_save_skills(Model &model) {
 
     if (!save_skills_current_hero->body.empty())
         save_skills_current_hero->body += "\n";
+    
+    auto operator_dot = _discard_inheritance ? "." : "->";
     save_skills_current_hero->body += "auto id = this->model->player_id;\n";
-    save_skills_current_hero->body +=
-        "auto name = this->model->get<ComponentData>(id).data->name;";
+    save_skills_current_hero->body += format_indexes("auto name = this->model->get<ComponentData>(id){0}data->name;", operator_dot);
 
     if (!restore_hero_skill_on_change->body.empty())
         restore_hero_skill_on_change->body += "\n";
-    restore_hero_skill_on_change->body +=
-        "auto name = "
-        "this->model->get<ComponentData>(this->model->player_id).data->name;"
-        "\n";
+    restore_hero_skill_on_change->body += format_indexes("auto name = this->model->get<ComponentData>(this->model->player_id){0}data->name;\n", operator_dot);
 
     auto skills = get_skill_components(model);
     for (auto &skill : skills) {
         auto field = componentsField(skill);
+
+        save_skills_current_hero->body += format_indexes(R"(
+        this->model->change_heroes_info.{0}[name] = this->model->get<{1}>(id);)", field, skill->name);
+
+        restore_hero_skill_on_change->body += format_indexes(R"(
+        if(in_map(name, this->model->change_heroes_info.{0}) && this->model->change_heroes_info.{0}[name])
         {
-            std::string line = format_indexes(
-                R"(this->model->change_heroes_info.{0}[name] = this->model->get<{1}>(id);)",
-                field, skill->name);
-            if (!save_skills_current_hero->body.empty())
-                save_skills_current_hero->body += "\n";
-            save_skills_current_hero->body += line;
-        }
-        {
-            std::string a = format_indexes(
-                R"(if(in_map(name, this->model->change_heroes_info.{0}) && this->model->change_heroes_info.{0}[name]))",
-                field);
-            if (!restore_hero_skill_on_change->body.empty())
-                restore_hero_skill_on_change->body += "\n";
-            restore_hero_skill_on_change->body += a;
-            restore_hero_skill_on_change->body += "\n{";
-            std::string b = format_indexes(
-                R"(    this->model->add<{0}>(this->model->change_heroes_info.{1}[name]);)",
-                skill->name, field);
-            restore_hero_skill_on_change->body += "\n";
-            restore_hero_skill_on_change->body += b;
-            restore_hero_skill_on_change->body += "\n}";
-        }
-        {
-            std::string member = format_indexes(R"(hash_map<string, {0}*> {1})", skill->name, field);
-            info->members.push_back(parse_object(member, true));
-        }
+            auto component = this->model->change_heroes_info.{0}[name];
+            component->mark_unremoved();
+            this->model->add<{1}>(component);
+        })", field, skill->name);
+
+        std::string member = format_indexes(R"(hash_map<string, {1}*> {0})", field, skill->name);
+        info->members.push_back(parse_object(member, true));
     }
 }
 
