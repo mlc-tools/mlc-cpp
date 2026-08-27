@@ -873,8 +873,7 @@ namespace serializer_xml
         auto child = key.empty() ? node : get_child(node, key);
         for (auto item : child)
         {
-            std::string type = item.name();
-            intrusive_ptr<T> object = Factory::shared().build<T>(type);
+            intrusive_ptr<T> object = Factory::shared().build<T>(item.name());
             if(object)
             {
                 object->deserialize_xml(item);
@@ -935,8 +934,7 @@ namespace serializer_xml
         auto child = key.empty() ? node : get_child(node, key);
         for (auto item : child)
         {
-            std::string type = item.name();
-            intrusive_ptr<T> object = Factory::shared().build<T>(type);
+            intrusive_ptr<T> object = Factory::shared().build<T>(item.name());
             if(object)
             {
                 object->deserialize_xml(item);
@@ -1317,7 +1315,7 @@ double get_attribute(pugi::xml_node node, const std::string &key, double default
 
 std::string get_attribute(pugi::xml_node node, const std::string &key, const std::string &default_value)
 {
-    return node.attribute(key.c_str()).as_string(default_value.c_str());
+    return std::string(node.attribute(key.c_str()).as_string(default_value.c_str()));
 }
 
 }

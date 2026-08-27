@@ -91,8 +91,7 @@ void Registrar::generate(Model &model) {
         if (model.is_skip(*cls.get()))
             continue;
         includes += "#include " + get_include_path_to_class(mock, cls) + "\n";
-        registrations += "    Factory::shared().registrationCommand<" +
-                         cls->name + ">(" + cls->name + "::TYPE);\n";
+        registrations += "    Factory::shared().registrationCommand<" + cls->name + ">(" + cls->name + "::TYPE);\n";
     }
 
     // Files

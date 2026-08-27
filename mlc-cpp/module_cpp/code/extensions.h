@@ -607,7 +607,7 @@ namespace @{namespace}
     template <> uint64_t get(const pugi::xml_attribute& xml) { return xml.as_uint(); }
     template <> bool get(const pugi::xml_attribute& xml) { return xml.as_bool(); }
     template <> float get(const pugi::xml_attribute& xml) { return xml.as_float(); }
-    template <> std::string get(const pugi::xml_attribute& xml) { return xml.as_string(); }
+    template <> std::string get(const pugi::xml_attribute& xml) { return std::string(xml.as_string()); }
 
     //JSON
     template <> void set( Json::Value& json, int8_t value ) { json = value; }
@@ -958,6 +958,11 @@ namespace @{namespace}
             intrusive_ptr<TType> result(reinterpret_cast<TType*>(builder->build()));
             result->release();
             return result;
+        }
+        template <class TType>
+        intrusive_ptr<TType> build( std::string_view key ) const
+        {
+            return build<TType>(std::string(key));
         }
     private:
         std::map<std::string, IBuilder*> _builders;
