@@ -964,6 +964,11 @@ namespace @{namespace}
         {
             return build<TType>(std::string(key));
         }
+        template <class TType>
+        intrusive_ptr<TType> build( const char* key ) const
+        {
+            return build<TType>(std::string(key));
+        }
     private:
         std::map<std::string, IBuilder*> _builders;
     };

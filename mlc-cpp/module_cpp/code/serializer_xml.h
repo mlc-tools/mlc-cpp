@@ -873,7 +873,7 @@ namespace serializer_xml
         auto child = key.empty() ? node : get_child(node, key);
         for (auto item : child)
         {
-            intrusive_ptr<T> object = Factory::shared().build<T>(item.name());
+            intrusive_ptr<T> object = Factory::shared().build<T>(std::string(item.name()));
             if(object)
             {
                 object->deserialize_xml(item);
@@ -934,7 +934,7 @@ namespace serializer_xml
         auto child = key.empty() ? node : get_child(node, key);
         for (auto item : child)
         {
-            intrusive_ptr<T> object = Factory::shared().build<T>(item.name());
+            intrusive_ptr<T> object = Factory::shared().build<T>(std::string(item.name()));
             if(object)
             {
                 object->deserialize_xml(item);
