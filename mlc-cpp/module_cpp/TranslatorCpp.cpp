@@ -12,6 +12,7 @@
 #include "Object.hpp"
 #include "RegexPatternCpp.hpp"
 #include <iostream>
+#include "Parser.hpp"
 
 #include <re2/re2.h>
 
@@ -242,5 +243,19 @@ void TranslatorCpp::convertToEnum(Class &cls) {
             }
         }
         method->body += "\nreturn std::string();";
+    }
+    
+    //get all - получение всех значений enum
+    {
+        auto method = addMethod(parse_object(format_indexes("list<{0}>", cls.name)), "get_all", false);
+        method->body += "return\n{\n";
+        for (size_t i = 0; i < cls.members.size() && i < values.size(); ++i) {
+            const auto &mb = cls.members[i];
+            if (mb.name != "value") {
+                method->body += format_indexes("{0},\n", mb.name);
+            }
+        }
+        method->is_static = true;
+        method->body += "};";
     }
 }
