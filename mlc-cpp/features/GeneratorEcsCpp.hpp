@@ -30,7 +30,6 @@ public:
 private:
     // helpers
     bool isBased(const std::shared_ptr<Class> &cls, const std::string &name);
-    static std::string componentsField(const std::shared_ptr<Class> &cls); // ComponentFoo -> foo
 
     // generation steps
     void createPimplClass(Model &model, const std::shared_ptr<Class> &ecsBase);

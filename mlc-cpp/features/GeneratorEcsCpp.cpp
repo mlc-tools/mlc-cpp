@@ -471,6 +471,16 @@ static string to_snake(const string &s) {
     return out;
 }
 
+
+string componentsField(const shared_ptr<Class> &cls) {
+    // ComponentFoo -> foo, CamelCase to snake
+    string n = cls->name;
+    const string pref = "Component";
+    if (n.rfind(pref, 0) == 0)
+        n = n.substr(pref.size());
+    return to_snake(n);
+}
+
 bool GeneratorEcsCpp::isBased(const shared_ptr<Class> &cls,
                               const string &name) {
     if (!cls)
@@ -490,15 +500,6 @@ bool GeneratorEcsCpp::isBased(const shared_ptr<Class> &cls,
             return true;
     }
     return false;
-}
-
-string GeneratorEcsCpp::componentsField(const shared_ptr<Class> &cls) {
-    // ComponentFoo -> foo, CamelCase to snake
-    string n = cls->name;
-    const string pref = "Component";
-    if (n.rfind(pref, 0) == 0)
-        n = n.substr(pref.size());
-    return to_snake(n);
 }
 
 
@@ -1071,6 +1072,72 @@ std::vector<shared_ptr<Class>> GeneratorEcsCpp::getComponentClasses(Model &model
     return out;
 }
 
+void add_implementation(Function& m, std::shared_ptr<Class> cls, std::set<std::string>& implemented,
+                               const std::string& _ecs_component_base_name,
+                               const std::string& _ecs_model_base_name,
+                               bool _discard_inheritance,
+                               const char* ref,
+                               const char* ref2,
+                               const char* op){
+    
+    if(implemented.count(cls->name) > 0)
+        return;
+
+    if(!cls->parent.expired() && cls->parent.lock()->name != _ecs_component_base_name)
+        add_implementation(m, cls->parent.lock(), implemented, _ecs_component_base_name, _ecs_model_base_name, _discard_inheritance, ref, ref2, op);
+    
+    implemented.insert(cls->name);
+    auto field = componentsField(cls);
+    auto ret_type = _discard_inheritance ? cls->name + "&" : "intrusive_ptr<" + cls->name + ">";
+    bool add_base_class = !_discard_inheritance && cls->parent_class_name != _ecs_component_base_name;
+    auto add_base = add_base_class ? format_indexes("\nthis->add<{0}>(component, component_id);", cls->parent_class_name) : "";
+    m.specific_implementations += format_indexes(R"(template<> {6} {0}::add({1}{4} component, int component_id)
+{{7}
+assert(component{5}id == 0 || component{5}id == component_id || component_id == 0);
+if(component_id != 0)
+{
+    component{5}id = component_id;
+}
+assert(component{5}id > 0);
+component_id = component{5}id; 
+
+auto impl = static_cast<EcsPimplImpl*>(this->_pimpl.ptr());
+auto iter = impl->map_components_{2}.find(component{5}id);
+auto& components = impl->components_{2};
+size_t new_index = -1;
+bool was_shift = false;
+if(iter != impl->map_components_{2}.end())
+{
+    new_index = iter->second;
+    components.at(new_index) = std::move(component);
+} 
+else 
+{
+    auto iter = std::lower_bound(components.begin(), components.end(), component, [](const auto& a, const auto& b)
+    {
+        return a{5}id < b{5}id;
+    });
+    new_index = iter - components.begin();
+    was_shift = true;
+    components.insert(iter, std::move(component));
+}
+
+assert(std::is_sorted(components.begin(), components.end(), [](const auto& l, const auto& r)
+{
+    return l{5}id < r{5}id;
+}));
+if(was_shift)
+{
+    for(size_t i=new_index; i<components.size(); ++i)
+    {
+        impl->map_components_{2}[components.at(i){5}id] = i;
+    }
+}
+return this->get<{1}>(component_id);
+}
+)", _ecs_model_base_name, cls->name, field, ref, ref2, op, ret_type, add_base);
+}
+
 void GeneratorEcsCpp::generateModelAddComponent(Model &model) {
     auto ecs = model.get_class(_ecs_model_base_name);
     if (!ecs)
@@ -1080,56 +1147,12 @@ void GeneratorEcsCpp::generateModelAddComponent(Model &model) {
     const char * ref2 = _discard_inheritance ? "&&" : "*";
     const char * op = _discard_inheritance ? "." : "->";
     Function m = parse_function(format_indexes("fn<T> T{0} add(T{1} component, int component_id=0)", ref, ref2));
-
+    
+    std::set<std::string> implemented;
     for (auto &cls : getComponentClasses(model)) {
-        auto field = componentsField(cls);
-        auto ret_type = _discard_inheritance ? cls->name + "&" : "intrusive_ptr<" + cls->name + ">";
-        m.specific_implementations += format_indexes(R"(template<> {6} {0}::add({1}{4} component, int component_id)
-    {
-    assert(component{5}id == 0 || component{5}id == component_id || component_id == 0);
-    if(component_id != 0)
-    {
-        component{5}id = component_id;
-    }
-    assert(component{5}id > 0);
-    component_id = component{5}id; 
-
-    auto impl = static_cast<EcsPimplImpl*>(this->_pimpl.ptr());
-    auto iter = impl->map_components_{2}.find(component{5}id);
-    auto& components = impl->components_{2};
-    size_t new_index = -1;
-    bool was_shift = false;
-    if(iter != impl->map_components_{2}.end())
-    {
-        new_index = iter->second;
-        components.at(new_index) = std::move(component);
-    } 
-    else 
-    {
-        auto iter = std::lower_bound(components.begin(), components.end(), component, [](const auto& a, const auto& b)
-        {
-            return a{5}id < b{5}id;
-        });
-        new_index = iter - components.begin();
-        was_shift = true;
-        components.insert(iter, std::move(component));
+        add_implementation(m, cls, implemented, _ecs_component_base_name, _ecs_model_base_name, _discard_inheritance, ref, ref2, op);
     }
 
-    assert(std::is_sorted(components.begin(), components.end(), [](const auto& l, const auto& r)
-    {
-        return l{5}id < r{5}id;
-    }));
-    if(was_shift)
-    {
-        for(size_t i=new_index; i<components.size(); ++i)
-        {
-            impl->map_components_{2}[components.at(i){5}id] = i;
-        }
-    }
-    return this->get<{1}>(component_id);
-    }
-)", _ecs_model_base_name, cls->name, field, ref, ref2, op, ret_type);
-    }
     ecs->functions.push_back(std::move(m));
     
     if(!_discard_inheritance){
