@@ -157,7 +157,8 @@ public:
     {
         auto& cont = get_components<T>();
         auto& map = get_map_components<T>();
-        auto iter = std::remove_if(cont.begin(), cont.end(), [&](auto& component){
+        auto iter = std::remove_if(cont.begin(), cont.end(), [&](auto& component)
+        {
             if(component{operator_dot}is_removed())
             {
                 map.erase(component{operator_dot}id);
@@ -487,8 +488,11 @@ bool GeneratorEcsCpp::isBased(const shared_ptr<Class> &cls,
         return false;
     if (cls->name == name)
         return true;
-    if (cls->parent.expired())
-        cls->parent = _model->get_class(cls->parent_class_name);
+    if (cls->parent.expired() && !cls->parent_class_name.empty()){
+        auto parent = _model->get_class(cls->parent_class_name);
+        cls->parent = parent;
+        parent->subclasses.push_back(cls);
+    }
     if (!cls->parent.expired()) {
         auto p = cls->parent.lock();
         if (isBased(p, name))
