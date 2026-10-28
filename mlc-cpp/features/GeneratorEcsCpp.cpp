@@ -157,7 +157,8 @@ public:
     {
         auto& cont = get_components<T>();
         auto& map = get_map_components<T>();
-        auto iter = std::remove_if(cont.begin(), cont.end(), [&](auto& component){
+        auto iter = std::remove_if(cont.begin(), cont.end(), [&](auto& component)
+        {
             if(component{operator_dot}is_removed())
             {
                 map.erase(component{operator_dot}id);
@@ -561,8 +562,8 @@ void GeneratorEcsCpp::generate(Model &model) {
     }
     generateBuildMaps(model);
     generateRemoveEntity(model);
-    generate_system_skills(model, "update");
-    generate_system_skills(model, "clean");
+//    generate_system_skills(model, "update");
+//    generate_system_skills(model, "clean");
     generate_model_method_save_skills(model);
     changeListEcsComponents(model);
     addSerializeListEcsComponents(model);
@@ -919,7 +920,9 @@ void GeneratorEcsCpp::generateRemoveModelMethod(Model &model) {
             continue;
         auto fn = parse_function("fn void remove_self_from_model(" + _ecs_model_base_name + "* model_dungeon_class)");
         if (cls->name != _ecs_component_base_name) {
-            fn.body = format_indexes(R"(model_dungeon_class->remove<{0}>(this);)", cls->name);
+            if(cls->parent_class_name != _ecs_component_base_name)
+                fn.body += format_indexes(R"(model_dungeon_class->remove<{0}>(this);)", cls->parent_class_name);
+            fn.body += format_indexes(R"(model_dungeon_class->remove<{0}>(this);)", cls->name);
         } else {
             fn.is_abstract = true;
         }
