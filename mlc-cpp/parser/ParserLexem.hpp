@@ -34,10 +34,11 @@ private:
     std::vector<std::string> read_body();
     std::string_view skip_body();
     std::vector<Object> read_templates();
+    std::string read_argument_value();
 
 public:
     Model &_model;
-    Object parse_member(bool with_name, bool is_enum);
+    Object parse_member(bool with_name, bool is_enum, bool is_argument = false);
     void parse_constructor(Class &cls);
     Function parse_method();
     std::vector<Object> read_callable_args();

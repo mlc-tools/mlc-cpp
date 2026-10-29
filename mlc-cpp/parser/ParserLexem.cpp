@@ -272,7 +272,37 @@ std::vector<Object> ParserLexem::read_templates() {
     return params;
 }
 
-Object ParserLexem::parse_member(bool with_name, bool is_enum) {
+std::string ParserLexem::read_argument_value() {
+    const char *begin = cur.value.data();
+    const char *end = begin;
+    int parens = 0, braces = 0, brackets = 0, angles = 0;
+    while (cur.type != TokenType::Eof) {
+        const auto token = cur.value;
+        if (parens == 0 && braces == 0 && brackets == 0 &&
+            (token == ")" || token == ";" || (token == "," && angles == 0)))
+            break;
+        if (token == "(") ++parens;
+        else if (token == ")") --parens;
+        else if (token == "{") ++braces;
+        else if (token == "}") --braces;
+        else if (parens == 0 && braces == 0 && brackets == 0) {
+            if (token == "<") ++angles;
+            else if (token == ">" && angles > 0) --angles;
+        }
+        // The lexer may include square brackets in an identifier token.
+        if (!token.empty() && token.front() != '"' && token.front() != '\'') {
+            for (char ch : token) {
+                if (ch == '[') ++brackets;
+                else if (ch == ']') --brackets;
+            }
+        }
+        end = token.data() + token.size();
+        advance();
+    }
+    return std::string(begin, end);
+}
+
+Object ParserLexem::parse_member(bool with_name, bool is_enum, bool is_argument) {
     Object member;
     member.type = cur.value;
     advance();
@@ -314,6 +344,10 @@ Object ParserLexem::parse_member(bool with_name, bool is_enum) {
     std::string prefix;
     if (cur.type == TokenType::Symbol && cur.value == "=") {
         advance();
+        if (is_argument) {
+            member.value = read_argument_value();
+            return member;
+        }
         if (cur.type == TokenType::Symbol && cur.value == "-") {
             prefix += cur.value;
             advance();
@@ -400,7 +434,7 @@ std::vector<Object> ParserLexem::read_callable_args() {
                 advance();
                 continue;
             }
-            args.push_back(parse_member(true, false));
+            args.push_back(parse_member(true, false, true));
         }
         assert(cur.value == ")");
         advance(); // ')'
