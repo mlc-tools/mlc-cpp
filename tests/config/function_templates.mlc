@@ -10,6 +10,11 @@ class FunctionTemplates
         FunctionTemplatesSomeOtherClass obj;
         obj.some_method();
     }
+
+    function<T> T get_default(T value=default_value::value<T>()):cpp
+    {
+        return value;
+    }
 }
 
 class FunctionTemplatesSomeOtherClass
@@ -40,6 +45,12 @@ class TestFunctionTemplates<ITestFunctionTemplates>:test
     {
         FunctionTemplates f;
         f.use_other_class(0);
+    }
+    function void test_get_default():cpp
+    {
+        FunctionTemplates f;
+        this->assertEqual(f.get_default<std::string>(), "");
+        this->assertEqual(f.get_default<int>(), 0);
     }
 }
 

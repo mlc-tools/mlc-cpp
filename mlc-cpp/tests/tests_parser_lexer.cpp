@@ -316,7 +316,33 @@ void test_parse_functions() {
     assert(func.callable_args.at(0).is_rvalue == true);
 }
 
+void test_default_argument_expressions() {
+    const auto fn = parse_function(
+        "function<T> T get_default(T value=default_value::value<T>()):cpp { return value; }");
+    assert(fn.callable_args.size() == 1);
+    assert(fn.callable_args[0].name == "value");
+    assert(fn.callable_args[0].value == "default_value::value<T>()");
+    assert(fn.lang_specific.count("cpp") == 1);
+    assert(fn.body.find("return value;") != std::string::npos);
+
+    const auto nested = parse_function(
+        "fn void defaults(T value=factory::make<map<int, list<T>>>(other(1, 2), 3), "
+        "int count=(2 + 3) * 4, string text=\"a, b) <c>\", int index=items[choose(1, 2)]) {}");
+    assert(nested.callable_args.size() == 4);
+    assert(nested.callable_args[0].value == "factory::make<map<int, list<T>>>(other(1, 2), 3)");
+    assert(nested.callable_args[1].value == "(2 + 3) * 4");
+    assert(nested.callable_args[2].value == "\"a, b) <c>\"");
+    assert(nested.callable_args[3].value == "items[choose(1, 2)]");
+
+    const auto init = parse_function("fn void init(T value=T{1, 2}, bool flag=(1 < 2), int n=-1) {}");
+    assert(init.callable_args.size() == 3);
+    assert(init.callable_args[0].value == "T{1, 2}");
+    assert(init.callable_args[1].value == "(1 < 2)");
+    assert(init.callable_args[2].value == "-1");
+}
+
 void run() {
+    test_default_argument_expressions();
     test_lexer_basic_tokens();
     test_parser_simple_class();
     test_parser_remove_comments();

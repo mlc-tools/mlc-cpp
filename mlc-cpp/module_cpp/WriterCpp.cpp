@@ -702,6 +702,8 @@ WriterCpp::getIncludesForHeader(const std::shared_ptr<Class> &cls) {
 
     auto add_from_method = [&](const Function &fn) {
         for (auto &arg : fn.callable_args) {
+            auto defaults = getIncludesForMethod(*_model, cls, arg.value, inc);
+            inc.insert(defaults.begin(), defaults.end());
             auto &t = arg.type;
             if (stdIns.count(t))
                 addObj(inc, arg);
@@ -752,6 +754,8 @@ WriterCpp::getIncludesForMethod(const Model& model,
                                 const std::string &text,
                                 const std::set<std::string> &hppInc) {
     std::set<std::string> out;
+    if (text.find("default_value::") != std::string::npos)
+        out.insert("default_value");
     for (auto &cls : model.classes) {
         if(!cls || model.is_skip(*cls)){
             continue;
@@ -800,6 +804,7 @@ std::string WriterCpp::buildIncludes(const std::shared_ptr<Class> &cls, const st
         {"std::string", "<string>"},
         {"std::tuple", "<tuple>"},
         {"std::atomic", "<atomic>"},
+        {"default_value", "\"" + (use_path_to_root ? getPathToRoot(cls) : "") + "SerializerCommon.h\""},
         {"Json::Value", "\"jsoncpp/json.h\""},
         {"pugi::xml_node", "\"pugixml/pugixml.hpp\""},
         {"Observer", "\"Observer.h\""},
