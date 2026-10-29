@@ -102,7 +102,7 @@ class RegexPatternCpp {
 })",
              {"list_do"}});
         v.push_back({std::make_unique<RE2>(R"(throw new Exception\((.*?)\))"),
-                     R"(throw std::exception(\1);)",
+                     R"(throw Exception(\1);)",
                      {"throw "}});
         v.push_back({std::make_unique<RE2>(R"(\bnew\b\s*(\w+)\s*\((.*)\))"),
                      R"(make_intrusive<\1>(\2))",

@@ -249,9 +249,6 @@ std::string WriterCpp::writeCpp(const std::shared_ptr<Class> &cls,
         cls->has_method("get_type"))
         reg = "REGISTRATION_OBJECT(" + cn + ");\n";
 
-    // Includes
-    auto allInc = getIncludesForSource(cls, funcs, incs, fwd, fwdOut);
-
     // Constructor
     if (cls->name == "ConstructableClass") {
         std::cout << "";
@@ -265,6 +262,7 @@ std::string WriterCpp::writeCpp(const std::shared_ptr<Class> &cls,
     if(constructors.empty()){
         constructors = std::format("{0}::{0}()\n{1}\n{{\n}}\n", cls->name, inits);
     }
+    auto allInc = getIncludesForSource(cls, funcs + constructors + statics, incs, fwd, fwdOut);
 //    std::string ctorArgs, ctorBody;
 //    if (!cls->constructors.empty()) {
 //        ctorArgs = createFunctionCppArgs(cls->constructors.at(0));

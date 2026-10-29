@@ -1172,6 +1172,26 @@ namespace @{namespace}
 #endif
 )__EXT__";
 
+const std::string EXCEPTION_HPP = R"__EXT__(#pragma once
+
+#include <exception>
+#include <string>
+
+namespace @{namespace}
+{
+    class Exception : public std::exception
+    {
+    public:
+        Exception() = default;
+        explicit Exception(const std::string& message) : message_(message) {}
+        const char* what() const noexcept override { return message_.c_str(); }
+
+    private:
+        std::string message_;
+    };
+}
+)__EXT__";
+
 #pragma mark FILES_DICT
 const std::vector<std::pair<std::string, std::string>> FILES_DICT = {
     {"@{namespace}_extensions.h", EXTENSIONS_HPP},
@@ -1184,6 +1204,7 @@ const std::vector<std::pair<std::string, std::string>> FILES_DICT = {
     {"SerializerJson.cpp", SERIALIZER_JSON_CPP},
     {"SerializerCommon.h", SERIALIZER_COMMON},
     {"BaseEnum.h", BASE_ENUM_HPP},
+    {"Exception.h", EXCEPTION_HPP},
     {"Observable.h", OBSERVER_HPP},
 };
 

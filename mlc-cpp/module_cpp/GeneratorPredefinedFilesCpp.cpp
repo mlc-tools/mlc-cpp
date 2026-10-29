@@ -27,6 +27,12 @@ void GeneratorPredefinedFiles::generate(Model &model) {
     // создаём базовый класс BaseEnum
     generateBaseEnumClass(model);
 
+    auto exception = std::make_shared<Class>();
+    exception->name = "Exception";
+    exception->type = "class";
+    exception->auto_generated = false;
+    model.add_class(exception);
+
     // вставляем файлы из FILES_DICT
     for (auto &p : FILES_DICT) {
         std::string filename = p.first;
