@@ -43,6 +43,8 @@ static const std::unordered_map<Error::Code, std::string> kTexts = {
     {Error::MAP_TWO_ARGS, "Map have to have 2 arguments. [{}::{}]"},
     {Error::DUBLICATE_METHODS, "duplication function in one class [{}::{}]"},
     {Error::DUBLICATE_CLASS, "Duplication classes [{}]"},
+    {Error::CLASS_DECLARATION_CONFLICT,
+     "Conflicting declaration of class [{}]: {}. Files: [{}], [{}]"},
     {Error::UNKNOWN_SUPERCLASS, "Cannot find superclass class: {}<{}>"},
     {Error::UNKNOWN_CLASS, "Unknown class: {}"},
     {Error::CANNOT_FIND_CLASS_FOR_METHOD,

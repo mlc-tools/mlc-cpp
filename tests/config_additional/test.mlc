@@ -5,3 +5,24 @@ class DataAdd:storage
     {
     }
 }
+
+
+class data/DataUnit
+{
+    string add_member
+    fn void add_fn()
+    {
+        add_member = "123";
+    }
+}
+
+class TestDataUnit<ITestDataUnit>
+{
+    fn void test_add_member()
+    {
+        DataUnit unit;
+        this->assertEqual(unit.add_member, "");
+        unit.add_fn();
+        this->assertEqual(unit.add_member, "123");
+    }
+}

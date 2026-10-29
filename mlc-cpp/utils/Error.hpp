@@ -79,6 +79,7 @@ struct Error {
         ERROR_UNKNOWN_MODIFIER,
         
         ECS_ERROR_CANNOT_USE_INHERITANCE,
+        CLASS_DECLARATION_CONFLICT,
     };
 
     static void exit(Code code);

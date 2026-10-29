@@ -27,6 +27,7 @@ public:
     void parse_class(const std::shared_ptr<Class> &cls);
 
 private:
+    void addClass(const std::shared_ptr<Class> &cls);
     Model &_model;
     std::string _current_source_path;
 };

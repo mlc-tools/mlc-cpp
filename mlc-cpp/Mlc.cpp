@@ -14,6 +14,7 @@
 // #include "Language.hpp"
 #include "Error.hpp"
 #include "FileUtils.hpp"
+#include "ParserLexem.hpp"
 #include "SavePluginCpp.hpp"
 #include "SerializerCpp.hpp"
 #include "TranslatorCpp.hpp"
@@ -278,6 +279,27 @@ void Mlc::watchAndServe(unsigned poll_ms, unsigned debounce_ms) {
 
 void Mlc::generateIncremental(const std::vector<std::string> &changedFiles,
                               const std::vector<std::string> &removedFiles) {
+    // A partial class must be rebuilt from all of its source files.
+    std::unordered_set<std::string> sourceClasses;
+    for (auto &[path, names] : _model.source_to_classnames) {
+        for (auto &name : names) {
+            if (!sourceClasses.insert(name).second) {
+                generate();
+                return;
+            }
+        }
+    }
+    for (auto &path : changedFiles) {
+        auto text = Parser::removeComments(FileUtils::read(path));
+        ParserLexem parser(text, _model);
+        for (auto &cls : parser.parse_dict()) {
+            auto existing = _model.get_class(cls->name);
+            if (existing && existing->source_path != path) {
+                generate();
+                return;
+            }
+        }
+    }
     PROFILE_START(0, "Incremental generation start");
     // 1) Удалить классы из удалённых .mlc и собрать имена для удаления файлов
 
