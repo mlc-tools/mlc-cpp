@@ -131,7 +131,8 @@ class ecs/SystemAddMovement:cpp
 	}
 }
 
-class ecs/TestEcsModel<ITestEcsModel>
+// ECS code generation and its systems are implemented only for C++.
+class ecs/TestEcsModel<ITestEcsModel>:cpp
 {
 	@include Transform
 	@include Movement

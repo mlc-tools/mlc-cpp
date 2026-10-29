@@ -13,6 +13,7 @@
 namespace py_runtime {
 
 static const std::string META = R"__PY__(
+from collections import defaultdict
 
 class Meta(object):
     __base__ = object
@@ -24,6 +25,12 @@ class Meta(object):
         if isinstance(self.args[0], Meta):
             return self.args[0].build(value)
         return self.args[0](value)
+
+    def create_dict(self):
+        value = self.args[2]
+        if isinstance(value, Meta) and value.args[0] == dict:
+            return defaultdict(value.create_dict)
+        return {}
 )__PY__";
 
 static const std::string DATA_WRAPPER = R"__PY__(# -*- coding: utf-8 -*-
@@ -115,7 +122,7 @@ class SerializerXml(object):
             obj.serialize_xml(child)
         elif hasattr(obj, 'serialize_xml'):
             obj.serialize_xml(self.add_child(key))
-        elif isinstance(obj, list):
+        elif isinstance(obj, (list, set, frozenset)):
             self.serialize_list(obj, key)
         elif isinstance(obj, dict):
             self.serialize_dict(obj, key)
@@ -165,7 +172,7 @@ class SerializerXml(object):
                 obj.serialize_xml(self)
         elif hasattr(obj, 'serialize_xml'):
             self.serialize(obj, '')
-        elif isinstance(obj, list):
+        elif isinstance(obj, (list, set, frozenset)):
             self.serialize_list(obj, '')
         elif isinstance(obj, dict):
             self.serialize_dict(obj, '')
@@ -193,7 +200,7 @@ class DeserializerXml(object):
         if isinstance(meta, Meta):
             if meta.args[0] == dict:
                 return node.deserialize_dict('', meta)
-            if meta.args[0] == list:
+            if meta.args[0] in (list, set):
                 return node.deserialize_list('', meta)
             if meta.args[0] == DataWrapper:
                 from .DataStorage import DataStorage
@@ -235,9 +242,9 @@ class DeserializerXml(object):
 
     def deserialize_dict(self, key, meta):
         node = DeserializerXml(self.node) if not key else self.get_child(key)
+        result = meta.create_dict()
         if node.node is None:
-            return {}
-        result = {}
+            return result
         for item in node.node:
             k = DeserializerXml(item).deserialize_key(meta.args[1])
             v = DeserializerXml(item).deserialize_value(meta.args[2])
@@ -246,12 +253,12 @@ class DeserializerXml(object):
 
     def deserialize_list(self, key, meta):
         if self.node is None:
-            return []
+            return meta.args[0]()
         result = []
         for child in self.node:
             item = DeserializerXml(child).deserialize_list_item(meta.args[1])
-            result.append(item)
-        return result
+            result.append(frozenset(item) if meta.args[0] == set and isinstance(item, set) else item)
+        return meta.args[0](result)
 
     def get_child(self, key):
         return DeserializerXml(self.node.find(key) if (key and self.node is not None) else self.node)
@@ -270,9 +277,9 @@ class DeserializerXml(object):
             obj = meta()
             obj.deserialize_xml(self)
             return obj
-        elif isinstance(meta, list) or (isinstance(meta, Meta) and meta.args[0] == list):
+        elif isinstance(meta, Meta) and meta.args[0] in (list, set):
             return self.deserialize_list('', meta)
-        elif isinstance(meta, dict):
+        elif isinstance(meta, Meta) and meta.args[0] == dict:
             return self.deserialize_dict('', meta)
         elif isinstance(meta, Meta):
             if meta.args[0] == DataWrapper:
@@ -307,7 +314,7 @@ class SerializerJson(object):
             pass
         elif hasattr(obj, 'serialize_json'):
             obj.serialize_json(self.add_child(key))
-        elif isinstance(obj, list):
+        elif isinstance(obj, (list, set, frozenset)):
             self.serialize_list(obj, key)
         elif isinstance(obj, dict):
             self.serialize_dict(obj, key)
@@ -367,11 +374,12 @@ class SerializerJson(object):
             self.json[-1] = {}
             serializer = SerializerJson(self.json[-1])
             serializer.serialize(obj, '')
-        elif isinstance(obj, list):
+        elif isinstance(obj, (list, set, frozenset)):
             self.json[-1] = []
             SerializerJson(self.json[-1]).serialize_list(obj, '')
         elif isinstance(obj, dict):
-            self.serialize_dict(obj, '')
+            self.json[-1] = []
+            SerializerJson(self.json[-1]).serialize_dict(obj, '')
         else:
             self.json[-1] = obj
 )__PY__";
@@ -396,7 +404,7 @@ class DeserializerJson(object):
         if isinstance(meta, Meta):
             if meta.args[0] == dict:
                 return DeserializerJson(js).deserialize_dict('', meta)
-            if meta.args[0] == list:
+            if meta.args[0] in (list, set):
                 return DeserializerJson(js).deserialize_list('', meta)
             if meta.args[0] == DataWrapper:
                 from .DataStorage import DataStorage
@@ -427,10 +435,10 @@ class DeserializerJson(object):
 
     def deserialize_dict(self, key, meta):
         js = DeserializerJson(self.json) if not key else self.get_child_array(key)
+        result = meta.create_dict()
         if not js.json:
-            return {}
+            return result
         assert isinstance(js.json, list)
-        result = {}
         for item in js.json:
             k = DeserializerJson(item).deserialize_key(meta.args[1])
             v = DeserializerJson(item).deserialize_value(meta.args[2])
@@ -439,13 +447,13 @@ class DeserializerJson(object):
 
     def deserialize_list(self, key, meta):
         if not self.json:
-            return []
+            return meta.args[0]()
         assert isinstance(self.json, list)
         result = []
         for js in self.json:
             item = DeserializerJson(js).deserialize('', meta.args[1])
-            result.append(item)
-        return result
+            result.append(frozenset(item) if meta.args[0] == set and isinstance(item, set) else item)
+        return meta.args[0](result)
 
     def get_child_array(self, key):
         return DeserializerJson(self.json[key] if key in self.json else [])

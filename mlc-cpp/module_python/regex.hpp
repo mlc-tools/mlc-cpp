@@ -66,6 +66,8 @@ class RegexPatternPython {
 \1->\2;
 })",
                      {"?->"}});
+        v.push_back({std::make_unique<RE2>(R"(\breturn\s+\+\+([\w.>\-]+)\s*;)"),
+                     "\\1 += 1;\nreturn \\1;", {"return", "++"}});
         // var = (cond) ? a : b;
         v.push_back(
             {std::make_unique<RE2>(
@@ -274,7 +276,7 @@ for __index__ in range(len(\1)):
         v.push_back({std::make_unique<RE2>(R"((\b[-0-9]+)\.([-0-9]*)f\b)"),
                      R"(\1.\2)",
                      {}});
-        v.push_back({std::make_unique<RE2>(R"(([*+-/\s])log\((.+?)\))"),
+        v.push_back({std::make_unique<RE2>(R"(([*+\-/\s])log\((.+?)\))"),
                      R"(\1math.log(\2))",
                      {"log"}});
         v.push_back({std::make_unique<RE2>(R"(\brandom_float\(\))"),
@@ -321,26 +323,19 @@ for __index__ in range(len(\1)):
                      {"std::strcat"}});
         v.push_back(
             {std::make_unique<RE2>(R"(\.at\((.*?)\))"), R"([\1])", {"at"}});
-        // Exception try/catch
-        v.push_back(
-            {std::make_unique<RE2>(
-                 R"(\btry\n\s*{([\s\S.]+?)}\n\s*catch\(((\w+)\s*(\w*))\)\n\s+{([\s\S.]+?)})"),
-             R"__(try:
-{
-\1
-}
-except BaseException as \4:
-{
-\5
-}
-)__",
-             {"try"}});
+        // Translate block headers separately: bodies may contain nested blocks
+        // and protected string placeholders with braces.
+        v.push_back({std::make_unique<RE2>(R"(\btry\s*\{)"),
+                     "try:\n{", {"try"}});
+        v.push_back({std::make_unique<RE2>(
+                         R"(\bcatch\s*\(\s*(?:const\s+)?[\w:]+\s*&?\s+(\w+)\s*\))"),
+                     R"(except Exception as \1:)", {"catch"}});
         v.push_back({std::make_unique<RE2>(R"(\bthrow Exception\((.*?)\))"),
-                     R"(raise BaseException())",
+                     R"(raise Exception())",
                      {"throw"}});
         v.push_back(
             {std::make_unique<RE2>(R"(\bthrow make_intrusive\(Exception\))"),
-             R"(raise BaseException())",
+             R"(raise Exception())",
              {"throw"}});
         v.push_back({std::make_unique<RE2>(R"(mg_swap\((.+)\s*,\s*(.+)\))"),
                      R"(\1, \2 = \2, \1)",
@@ -382,6 +377,11 @@ except BaseException as \4:
         {"std.fabs", "abs"},
         {"std.ceil", "math.ceil"},
         {"std.floor", "math.floor"},
+        {"std.chrono.nanoseconds", "1"},
+        {"std.chrono.microseconds", "1000"},
+        {"std.chrono.milliseconds", "1000000"},
+        {"std.chrono.seconds", "1000000000"},
+        {"std.to_string", "str"},
         {"std.sqrt", "math.sqrt"},
         {"std.min", "min"},
         {"std.max", "max"},

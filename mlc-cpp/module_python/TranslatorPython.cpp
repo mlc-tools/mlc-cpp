@@ -13,6 +13,7 @@
 #include <iostream>
 #include <re2/re2.h>
 #include <sstream>
+#include <set>
 
 inline std::string indent_lines(const std::string &s, int spaces) {
     std::string out;
@@ -73,14 +74,38 @@ TranslatorPython::translateFunctionBody(Class &cls, Function &method,
 }
 
 std::string
-TranslatorPython::replaceByRegex(const std::string &body, Class & /*cls*/,
-                                 Function & /*method*/, Model & /*model*/,
-                                 const std::vector<Object> & /*args*/) {
+TranslatorPython::replaceByRegex(const std::string &body, Class &cls,
+                                 Function &method, Model &model,
+                                 const std::vector<Object> &args) {
     if (body.empty())
         return body;
     // Save string literals to avoid touching code inside quotes
     auto saved = saveStrings(body);
     std::string out = saved.first;
+
+    // C++ permits implicit member access; Python requires an explicit owner.
+    std::set<std::string> locals;
+    for (const auto &arg : args)
+        locals.insert(arg.name);
+    re2::StringPiece declarations(out);
+    RE2 declaration(R"(\b([\w:]+)(?:<[^;\n]+>)?\s*[*&]*\s+(\w+)\s*(?:=|;|:|\)))");
+    std::string type, name;
+    while (RE2::FindAndConsume(&declarations, declaration, &type, &name)) {
+        if (type == "auto" || type == "list" || type == "map" || type == "hash_map" ||
+            type == "set" || type == "hash_set" || Model::simpleTypes.count(type) ||
+            model.hasClass(type) || model.hasClass(cls.name + type))
+            locals.insert(name);
+    }
+    for (const Class *owner = &cls; owner; owner = owner->parent.lock().get()) {
+        for (const auto &member : owner->members) {
+            if (member.name.empty() || locals.count(member.name))
+                continue;
+            RE2 reference("(^|[^\\w.>:])\\b" + member.name + "\\b");
+            const auto prefix = member.is_static ? cls.name + "::" : "self.";
+            if (!method.is_static || member.is_static)
+                RE2::GlobalReplace(&out, reference, "\\1" + prefix + member.name);
+        }
+    }
 
     // Apply function patterns
     for (auto &pat : RegexPatternPython::functionPatterns) {

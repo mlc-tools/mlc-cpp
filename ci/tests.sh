@@ -24,6 +24,8 @@ python3 test_partial_classes.py ~/.local/bin/mlc
 python3 test_cpp.py xml
 python3 test_cpp.py json
 
+python3 test_py_nested_maps.py xml
+python3 test_py_nested_maps.py json
 python3 test_py.py xml
 python3 test_py.py json
 

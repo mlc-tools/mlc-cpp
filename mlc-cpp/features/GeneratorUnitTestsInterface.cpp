@@ -146,6 +146,21 @@ void GeneratorUnitTestsInterface::generateBaseClasses() {
     // Просто пропускаем BASE_CLASSES через парсер
     Parser parser(*_model);
     parser.parseText(BASE_CLASSES);
+    if (_model->config.language == "py") {
+        auto cls = _model->get_class("TestCase");
+        for (auto &member : cls->members) {
+            if (member.name == "_time") {
+                member.type = "int64_t";
+                member.value = "0";
+            }
+        }
+        auto start = cls->get_method("timepoint");
+        start->body = "        import time\n        self._time = time.perf_counter_ns()\n";
+        start->translated = true;
+        auto elapsed = cls->get_method("get_elapsed_time");
+        elapsed->body = "        import time\n        return (time.perf_counter_ns() - self._time) // T\n";
+        elapsed->translated = true;
+    }
 }
 
 shared_ptr<Class> GeneratorUnitTestsInterface::generateTestInterface(
@@ -160,7 +175,9 @@ shared_ptr<Class> GeneratorUnitTestsInterface::generateTestInterface(
     string test_interface_name = "ITest" + cls->name;
     // нет наследников — пропускаем
     auto subs = _model->getSubclassesOfClass(test_interface_name);
-    if (subs.empty())
+    subs.erase(std::remove_if(subs.begin(), subs.end(),
+                              [&](const auto &sub) { return _model->is_skip(*sub); }), subs.end());
+    if (_model->is_skip(*cls) || subs.empty())
         return nullptr;
 
     auto i_test_interface = make_shared<Class>();
@@ -195,7 +212,7 @@ shared_ptr<Class> GeneratorUnitTestsInterface::generateTestInterface(
     if (_model->hasClass(test_implementation_name)) {
         auto impl = _model->get_class(test_implementation_name);
         for (auto &f : impl->functions) {
-            if (f.name.find("test_", 0) == 0) {
+            if (!_model->is_skip(f) && f.name.find("test_", 0) == 0) {
                 // если нет в тестовом интерфейсе
                 auto it = find_if(i_test_interface->functions.begin(),
                                   i_test_interface->functions.end(),
@@ -217,23 +234,24 @@ shared_ptr<Class> GeneratorUnitTestsInterface::generateTestInterface(
     Function exec;
     exec.name = "execute";
     exec.return_type = Objects::VOID;
-    exec.body += "logger->message(\"--------------------[ Test" + cls->name + " begin: ]--------------------\");\n";
+    exec.body += "this->logger->message(\"--------------------[ Test" + cls->name + " begin: ]--------------------\");\n";
     for (auto &mf : i_test_interface->functions) {
         if (mf.name != "initialize" && mf.name != "execute") {
             exec.body += format_indexes(R"(try
                 {
                     this->{0}();
-                    logger->message("[ Ok ]: Test{1}::{0}");
+                    this->logger->message("[ Ok ]: Test{1}::{0}");
                 }
-                catch(const std::exception& e)
+                catch(Exception e)
                 {
-                    logger->message("[Fail]: Test{1}::{0}");
+                    this->result = false;
+                    this->logger->message("[Fail]: Test{1}::{0}");
                 }
                 )", mf.name, cls->name);
         }
     }
-    exec.body += "logger->message(\"--------------------[ Test" + cls->name + " end.  ]--------------------\");\n";
-    exec.body += "logger->message(\"\");\n";
+    exec.body += "this->logger->message(\"--------------------[ Test" + cls->name + " end.  ]--------------------\");\n";
+    exec.body += "this->logger->message(\"\");\n";
     i_test_interface->functions.push_back(std::move(exec));
 
     tests_.push_back(i_test_interface);
@@ -274,7 +292,7 @@ shared_ptr<Class> GeneratorUnitTestsInterface::generateAllTestsClass() {
     // Члены для каждого ITestX в tests_
     for (auto &t : tests_) {
         string bare = t->name.substr(1); // убрать ведущий 'I'
-        if (!_model->hasClass(bare))
+        if (!_model->hasClass(bare) || _model->is_skip(*_model->get_class(bare)))
             continue;
         Object m;
         m.type = bare;

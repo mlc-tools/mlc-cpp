@@ -1,8 +1,13 @@
 import os.path as fs
 import sys
+from pathlib import Path
 
 
 FORMAT = sys.argv[1] if len(sys.argv) > 1 else 'xml'
+
+# Validate every generated module, including ones not imported by the runner.
+for source in (Path(__file__).parent / 'generated_py' / FORMAT).glob('*.py'):
+    compile(source.read_text(encoding='utf-8'), str(source), 'exec')
 
 if FORMAT == 'xml':
     try:

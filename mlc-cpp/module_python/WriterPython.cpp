@@ -19,6 +19,7 @@ const std::string PATTERN_FILE = R"__(
 # -*- coding: utf-8 -*-
 import xml.etree.ElementTree as ET
 import json
+from collections import defaultdict
 from .mg_extensions import *
 {imports}
 class {name}:
@@ -132,6 +133,16 @@ WriterPython::writeClass(const std::shared_ptr<Class> &cls) {
     return {{cls->name + ".py", prepareFile(text)}};
 }
 
+static std::string mapInitialValue(const Object &obj) {
+    if (obj.template_args.size() == 2) {
+        const auto &value = obj.template_args[1];
+        if ((value.type == "map" || value.type == "hash_map") &&
+            !value.is_pointer && !value.is_raw_pointer && !value.is_link)
+            return "defaultdict(lambda: " + mapInitialValue(value) + ")";
+    }
+    return "{}";
+}
+
 // [imports, initialization, static_initialization]
 std::tuple<std::string, std::string, std::string>
 WriterPython::writeObject(const Object &obj) {
@@ -155,9 +166,9 @@ WriterPython::writeObject(const Object &obj) {
         if (type_ == "list")
             value = "[]";
         if (type_ == "map" || type_ == "hash_map")
-            value = "{}";
+            value = mapInitialValue(o);
         if (type_ == "set" || type_ == "hash_set")
-            value = "()";
+            value = "set()";
         if (value.empty()) {
             if (_model->hasClass(o.type) && currentClass_->name != o.type)
                 value = o.type + "()";
