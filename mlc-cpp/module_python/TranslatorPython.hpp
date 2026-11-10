@@ -23,9 +23,9 @@ public:
 
     virtual void convertToEnum(Class &cls) override;
 
-private:
     static std::string addImports(const Class &clsOwner,
                                   const std::string &func, const Model &model);
+private:
     static std::string removeDoubleEol(const std::string &func);
     static std::string convertBracesToTabs(const std::string &func);
     static std::string convertBraces(const std::string &body);

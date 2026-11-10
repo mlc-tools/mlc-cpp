@@ -11,9 +11,80 @@
 #include "../utils/Common.hpp"
 #include "regex.hpp"
 #include <iostream>
+#include <cctype>
 #include <re2/re2.h>
 #include <sstream>
 #include <set>
+
+// Translate calls with balanced arguments before the legacy regex rules.
+static std::string translateTemplateCalls(std::string text) {
+    RE2 call(R"(\b(\w+)<([\w:, *&]+)>\()");
+    re2::StringPiece rest(text);
+    std::string name, types;
+    size_t offset = 0;
+    while (RE2::FindAndConsume(&rest, call, &name, &types)) {
+        size_t open = text.size() - rest.size() - 1;
+        size_t start = open - name.size() - types.size() - 2;
+        size_t end = open + 1;
+        int depth = 1;
+        for (; end < text.size() && depth; ++end) {
+            if (text[end] == '(') ++depth;
+            if (text[end] == ')') --depth;
+        }
+        if (depth) break;
+        auto args = translateTemplateCalls(text.substr(open + 1, end - open - 2));
+        std::string replacement;
+        if (name == "min" || name == "max") {
+            replacement = name + "(" + args + ")";
+        } else if (name == "static_cast") {
+            if (types == "int64_t" || types == "unsigned" || types == "uint") types = "int";
+            replacement = types + "(" + args + ")";
+        } else if (name == "dynamic_pointer_cast_intrusive") {
+            types = types.substr(0, types.find(','));
+            replacement = "dynamic_pointer_cast_intrusive(" + args + ", " + types + ")";
+        } else {
+            replacement = name + "(" + args + (args.empty() ? "" : ", ") + types + ")";
+        }
+        text.replace(start, end - start, replacement);
+        offset = start + replacement.size();
+        rest = re2::StringPiece(text.data() + offset, text.size() - offset);
+    }
+    return text;
+}
+
+// Recursively translate conditional expressions, retaining nested call boundaries.
+static std::string translateConditional(std::string text) {
+    for (size_t i = 0; i < text.size(); ++i) {
+        if (text[i] != '(' && text[i] != '[') continue;
+        char close = text[i] == '(' ? ')' : ']';
+        int depth = 1;
+        size_t end = i + 1;
+        for (; end < text.size() && depth; ++end) {
+            if (text[end] == text[i]) ++depth;
+            if (text[end] == close) --depth;
+        }
+        if (depth) continue;
+        auto inner = translateConditional(text.substr(i + 1, end - i - 2));
+        text.replace(i + 1, end - i - 2, inner);
+        i += inner.size() + 1;
+    }
+    int depth = 0;
+    size_t question = std::string::npos, colon = std::string::npos;
+    for (size_t i = 0; i < text.size(); ++i) {
+        if (text[i] == '(' || text[i] == '[') ++depth;
+        if (text[i] == ')' || text[i] == ']') --depth;
+        if (depth) continue;
+        if (text[i] == '?' && question == std::string::npos) question = i;
+        else if (text[i] == ':' && question != std::string::npos) { colon = i; break; }
+    }
+    if (colon == std::string::npos) return text;
+    size_t start = 0;
+    auto assignment = text.find(" = ");
+    if (assignment < question) start = assignment + 3;
+    else if (text.find("return ") < question) start = text.find("return ") + 7;
+    return text.substr(0, start) + "(" + text.substr(question + 1, colon - question - 1) +
+        " if " + text.substr(start, question - start) + " else " + text.substr(colon + 1) + ")";
+}
 
 inline std::string indent_lines(const std::string &s, int spaces) {
     std::string out;
@@ -48,6 +119,19 @@ void TranslatorPython::translateFunction(Class &cls, Function &method,
 
     if (!method.translated) {
         std::string body = method.body;
+        if (body.find("@(get_components)") != std::string::npos) {
+            body.clear();
+            for (const auto &component : model.classes) {
+                bool skill = false;
+                for (auto base = component->parent.lock(); base; base = base->parent.lock())
+                    if (base->name == "ComponentSkillBase") skill = true;
+                if (!skill || !component->subclasses.empty()) continue;
+                std::string block = method.body;
+                replace_all(block, "@(get_components)", "get_components<" + component->name + ">()");
+                replace_all(block, "@(components)", component->name);
+                body += block + "\n";
+            }
+        }
         method.body = translateFunctionBody(cls, method, body, model,
                                             method.callable_args);
     } else if (method.body.empty()) {
@@ -68,7 +152,6 @@ TranslatorPython::translateFunctionBody(Class &cls, Function &method,
     //    out = replaceByRegex(out, cls, method, model, args);
     out = convertBracesToTabs(out);
     out = removeDoubleEol(out);
-    out = addImports(cls, out, model);
     out = convertBraces(out);
     return out;
 }
@@ -96,7 +179,27 @@ TranslatorPython::replaceByRegex(const std::string &body, Class &cls,
             model.hasClass(type) || model.hasClass(cls.name + type))
             locals.insert(name);
     }
+    re2::StringPiece bindings(out);
+    std::string first, second;
+    RE2 binding(R"(auto\s*&*\s*\[(\w+),\s*(\w+)\])");
+    while (RE2::FindAndConsume(&bindings, binding, &first, &second)) {
+        locals.insert(first);
+        locals.insert(second);
+    }
+    re2::StringPiece lambdas(out);
+    RE2 lambda(R"(\((\w+)(?:,\s*(\w+))?\s*:>)");
+    while (RE2::FindAndConsume(&lambdas, lambda, &first, &second)) {
+        locals.insert(first);
+        locals.insert(second);
+    }
     for (const Class *owner = &cls; owner; owner = owner->parent.lock().get()) {
+        for (const auto &function : owner->functions) {
+            if (function.name.empty() || locals.count(function.name)) continue;
+            RE2 reference("(^|[^\\w.>:])\\b" + function.name + "\\s*\\(");
+            auto prefix = function.is_static ? cls.name + "::" : "self.";
+            if (!method.is_static || function.is_static)
+                RE2::GlobalReplace(&out, reference, "\\1" + prefix + function.name + "(");
+        }
         for (const auto &member : owner->members) {
             if (member.name.empty() || locals.count(member.name))
                 continue;
@@ -107,6 +210,16 @@ TranslatorPython::replaceByRegex(const std::string &body, Class &cls,
         }
     }
 
+    RE2::GlobalReplace(&out, RE2(R"(\(void\)\w+;)"), "pass;");
+    RE2::GlobalReplace(&out, RE2(R"(std::numeric_limits<unsigned>::max\(\))"), "4294967295");
+    RE2::GlobalReplace(&out, RE2(R"(\breturn\s+([\w.]+)\s*=\s*([^=;][^;]*);)"), "\\1 = \\2;\nreturn \\1;");
+    RE2::GlobalReplace(&out, RE2(R"(\b[\w:]+\s*\*\s*(\w+)\s*=)"), "\\1 =");
+    // Preserve DataStorage's specialized getter before generic template calls.
+    RE2::GlobalReplace(&out, RE2(R"(DataStorage::shared\(\).get<(\w+)>)"), "DataStorage::shared().get\\1");
+    RE2::GlobalReplace(&out, RE2(R"(std::sort\((\w+)\.begin\(\),\s*\w+\.end\(\),\s*\[\]\(\w+\s*[*&]*\s+(\w+),\s*\w+\s*[*&]*\s+\w+\)\s*\{\s*return\s+\w+->(.+?)\s*>\s*[^;]+;\s*\}\))"),
+                       "\\1.sort(key=lambda \\2: \\2.\\3, reverse=True)");
+    out = translateTemplateCalls(out);
+
     // Apply function patterns
     for (auto &pat : RegexPatternPython::functionPatterns) {
         replacePattern(out, pat);
@@ -115,6 +228,12 @@ TranslatorPython::replaceByRegex(const std::string &body, Class &cls,
     for (auto &pr : RegexPatternPython::replaces) {
         replace_all(out, pr.first, pr.second);
     }
+
+    std::istringstream conditionalLines(out);
+    std::string line, conditionalResult;
+    while (std::getline(conditionalLines, line))
+        conditionalResult += translateConditional(line) + "\n";
+    out = conditionalResult;
 
     // Restore literals
     out = restoreStrings(out, saved.second);
@@ -135,7 +254,20 @@ std::string TranslatorPython::addImports(const Class &clsOwner,
         const Class &c = *cptr;
         if (c.name == clsOwner.name)
             continue;
-        if (func.find(c.name) != std::string::npos) {
+        auto isIdentifier = [](char ch) {
+            return std::isalnum(static_cast<unsigned char>(ch)) || ch == '_';
+        };
+        bool referenced = false;
+        for (size_t pos = func.find(c.name); pos != std::string::npos;
+             pos = func.find(c.name, pos + c.name.size())) {
+            const auto end = pos + c.name.size();
+            if ((pos == 0 || !isIdentifier(func[pos - 1])) &&
+                (end == func.size() || !isIdentifier(func[end]))) {
+                referenced = true;
+                break;
+            }
+        }
+        if (referenced) {
             imports.emplace_back("from ." + c.name + " import " + c.name);
         }
     }
@@ -149,6 +281,8 @@ std::string TranslatorPython::addImports(const Class &clsOwner,
     std::string out;
     std::string pad = getTabs(2);
     for (size_t i = 0; i < imports.size(); ++i) {
+        if (func.find(imports[i] + "\n") != std::string::npos)
+            continue;
         out += pad;
         out += imports[i];
         out.push_back('\n');
@@ -197,43 +331,38 @@ std::string TranslatorPython::convertBracesToTabs(const std::string &func) {
     }
 
     int tabs = 2;
-    bool next_tab = false;
-    auto ltrim = [](const std::string &s) {
-        size_t i = 0;
-        while (i < s.size() && (s[i] == ' ' || s[i] == '\t'))
-            ++i;
-        return s.substr(i);
-    };
-    for (size_t i = 0; i < lines.size(); ++i) {
-        std::string line = lines[i];
-        if (next_tab)
-            tabs += 1;
-        size_t pos;
-        if ((pos = line.find('{')) != std::string::npos) {
-            tabs += 1;
-            line.erase(pos, 1);
+    std::vector<bool> blocks;
+    bool control = false;
+    bool single = false;
+    for (auto &line : lines) {
+        auto start = line.find_first_not_of(" \t\r");
+        std::string stripped = start == std::string::npos ? "" : line.substr(start);
+        auto last = stripped.find_last_not_of(" \t\r");
+        if (last != std::string::npos) stripped.resize(last + 1);
+        if (stripped.empty()) { line.clear(); continue; }
+        if (stripped == "{") {
+            blocks.push_back(control);
+            if (control) ++tabs;
+            control = false;
+            line.clear();
+            continue;
         }
-        if ((pos = line.find('}')) != std::string::npos) {
-            tabs -= 1;
-            line.erase(pos, 1);
+        if (stripped == "}") {
+            if (!blocks.empty()) {
+                if (blocks.back()) --tabs;
+                blocks.pop_back();
+            }
+            control = false;
+            line.clear();
+            continue;
         }
-        std::string stripped = ltrim(line);
-        lines[i] = getTabs(tabs) + stripped;
-        if (next_tab) {
-            next_tab = false;
-            tabs -= 1;
-        }
-        bool starts_ctl = (stripped.rfind("for", 0) == 0) ||
-                          (stripped.rfind("if", 0) == 0) ||
-                          (stripped.rfind("else", 0) == 0) ||
-                          (stripped.rfind("elif", 0) == 0) ||
-                          (stripped.rfind("try:", 0) == 0) ||
-                          (stripped.rfind("except", 0) == 0);
-        if (starts_ctl && i + 1 < lines.size() &&
-            line.find('{') == std::string::npos) {
-            // trigger one-line block indentation on next line when no braces
-            next_tab = true;
-        }
+        single = control;
+        line = getTabs(tabs + (single ? 1 : 0)) + stripped;
+        control = stripped.back() == ':' &&
+            (stripped.rfind("for ", 0) == 0 || stripped.rfind("if ", 0) == 0 ||
+             stripped.rfind("elif ", 0) == 0 || stripped.rfind("else:", 0) == 0 ||
+             stripped.rfind("while", 0) == 0 || stripped.rfind("try:", 0) == 0 ||
+             stripped.rfind("except ", 0) == 0);
     }
     std::string out;
     for (size_t i = 0; i < lines.size(); ++i) {

@@ -35,14 +35,14 @@ std::string GeneratorDataStoragePython::getSharedMethodBody() {
 
 std::string GeneratorDataStoragePython::getPatternGetter() {
     return R"__(
-        if name == '':
+        if name is None or name == '':
             return None
         if not self._loaded and name not in self.{map}:
             from .{type} import {type}
             self.{map}[name] = {type}()
             self.{map}[name].name = name
         from .DataWrapper import DataWrapper
-        return DataWrapper(self.{map}[name] if name in self.{map} else None))__";
+        return DataWrapper(self.{map}[name]) if name in self.{map} else None)__";
 }
 
 std::string GeneratorDataStoragePython::getInitializeFunctionJsonBody() {

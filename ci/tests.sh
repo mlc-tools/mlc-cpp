@@ -20,6 +20,7 @@ build
 cd ../tests
 ~/.local/bin/mlc --config mlc.json
 python3 test_partial_classes.py ~/.local/bin/mlc
+python3 test_python_generation.py ~/.local/bin/mlc
 
 python3 test_cpp.py xml
 python3 test_cpp.py json

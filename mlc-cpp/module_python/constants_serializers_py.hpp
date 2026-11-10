@@ -466,6 +466,9 @@ class DeserializerJson(object):
 )__PY__";
 
 static const std::string MG_EXTENSIONS = R"__(
+def dynamic_pointer_cast_intrusive(value, cls):
+    return value if isinstance(value, cls) else None
+
 
 
 def strTo(value, class_):

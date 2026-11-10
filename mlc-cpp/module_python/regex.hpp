@@ -82,6 +82,16 @@ class RegexPatternPython {
 \1\2 = \5;
 })",
              {"?"}});
+        // Predicates may contain a local declaration before the result expression.
+        v.push_back({std::make_unique<RE2>(R"(map_remove_if\(([\w.>\-]+),\s*\((\w+),\s*(\w+)\s*:>\s*(auto\s+[^;\n]+;)\s*(.+)\)\))"),
+                     R"(for \2, \3 in list(\1.items()):
+{
+\4
+if(\5)
+{
+map_remove(\1, \2);
+}
+})", {"map_remove_if"}});
         // map_remove_if
         v.push_back(
             {std::make_unique<RE2>(
@@ -114,7 +124,7 @@ for \2 in __keys__:
         // list_do_if
         v.push_back(
             {std::make_unique<RE2>(
-                 R"(list_do_if\(([\w\d\-\>\.\[\]]+),\s*\((\w+)\s*:>\s*(.+?):>\s*(.+)\)\);)"),
+                 R"(list_do_if\((.+?),\s*\((\w+)\s*:>\s*(.+?):>\s*(.+)\)\);)"),
              R"__(
 __size__ = len(\1)
 __index__ = 0
@@ -154,6 +164,12 @@ for __index__ in range(len(\1)):
         v.push_back({std::make_unique<RE2>(R"(\bFactory::(.+)<\w+>)"),
                      R"(Factory.\1)",
                      {"Factory::"}});
+        v.push_back({std::make_unique<RE2>(R"(\bfor\s*\(\s*(?:int|auto)\s+(\w+)\s*=\s*([^;]+);\s*\w+\s*<=\s*([^;]+);\s*(?:\+\+\w+|\w+\+\+)\s*\))"),
+                     R"(for \1 in range(int(\2), int(\3) + 1):)", {"for"}});
+        v.push_back({std::make_unique<RE2>(R"(\bfor\s*\(\s*(?:int|auto)\s+(\w+)\s*=\s*([^;]+);\s*\w+\s*<\s*([^;]+);\s*(?:\+\+\w+|\w+\+\+)\s*\))"),
+                     R"(for \1 in range(int(\2), int(\3)):)", {"for"}});
+        v.push_back({std::make_unique<RE2>(R"(\bfor\s*\(\s*(?:int|auto)\s+(\w+)\s*=\s*([^;]+);\s*\w+\s*>=\s*([^;]+);\s*(?:--\w+|\w+--)\s*\))"),
+                     R"(for \1 in range(int(\2), int(\3) - 1, -1):)", {"for"}});
         // range-for and while/if/else
         v.push_back({std::make_unique<RE2>(
                          R"(\bfor\s*\(\s*\w+[\s&\*]*(\w+)\s*:\s*(.+)\s*\))"),
@@ -181,7 +197,7 @@ for __index__ in range(len(\1)):
              {"for"}});
         v.push_back(
             {std::make_unique<RE2>(
-                 R"(\bfor\s*\(auto&&\s*\[(\w+),\s*(\w+)\]\s*:\s*(.+)\))"),
+                 R"(\bfor\s*\(auto\s*&*\s*\[(\w+),\s*(\w+)\]\s*:\s*(.+)\))"),
              R"(for \1, \2 in \3.items():)",
              {"for"}});
         v.push_back({std::make_unique<RE2>(R"(\bwhile\s*\((.+)\))"),
@@ -223,7 +239,7 @@ for __index__ in range(len(\1)):
         // nullish coalescing operator: a ?? b
         v.push_back(
             {std::make_unique<RE2>(
-                 R"([\w\*]+ ([\w\->\.]+)\s*=\s*([\w\->\.]+)\s*\?\?\s*([\w\->\.]+))"),
+                 R"((?:[\w\*]+ )?([\w\->\.]+)\s*=\s*([\w\->\.]+)\s*\?\?\s*([\w\->\.]+))"),
              R"(\1 = (\2) if (\2 is not None) else (\3))",
              {"??"}});
         // simple type decorations removal
@@ -317,6 +333,10 @@ for __index__ in range(len(\1)):
         v.push_back({std::make_unique<RE2>(R"((\w+)<(.+?)>\((.+?)\))"),
                      R"(\1(\3, \2))",
                      {"<"}});
+        v.push_back({std::make_unique<RE2>(R"(([\w.>\-]+)\.empty\(\))"), R"((len(\1) == 0))", {".empty"}});
+        v.push_back({std::make_unique<RE2>(R"(([\w.>\-]+)\.size\(\))"), R"(len(\1))", {".size"}});
+        v.push_back({std::make_unique<RE2>(R"(([\w.>\-]+)\.begin\(\)(?:->|\.)first)"), R"(next(iter(\1)))", {"begin"}});
+        v.push_back({std::make_unique<RE2>(R"(([\w.>\-]+)\.insert\([\w.>\-]+\.end\(\),\s*([\w.>\-]+)\.begin\(\),\s*[\w.>\-]+\.end\(\)\))"), R"(\1.extend(\2))", {".insert"}});
         // strcat and .at()
         v.push_back({std::make_unique<RE2>(R"(std::strcat\((.+?),\s*(.+?)\))"),
                      R"(((\1)+(\2)))",

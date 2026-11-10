@@ -64,8 +64,13 @@ std::pair<std::string, std::string>
 WriterBase::getConstructorData(const std::shared_ptr<Class> &cls) {
     std::string args, body;
     if (!cls->constructors.empty()) {
-        args = createFunctionArgsString(cls->constructors.at(0));
-        body = cls->constructors.at(0).body;
+        for(auto& ctr : cls->constructors){
+            if(_model->is_skip(ctr))
+                continue;
+            args = createFunctionArgsString(ctr);
+            body = ctr.body;
+            break;
+        }
     }
     return {args, body};
 }

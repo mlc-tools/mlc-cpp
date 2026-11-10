@@ -65,7 +65,6 @@ void GeneratorVisitor::generate(Model &model) {
                               acceptorsInterfaces_.end(),
                               sup) != acceptorsInterfaces_.end()) {
                     overrideMethods(cls);
-                    break;
                 }
             }
         }

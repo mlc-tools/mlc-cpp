@@ -11,7 +11,9 @@
 #include "../models/Object.hpp"
 #include "Common.hpp"
 #include "SerializerPython.hpp"
+#include "TranslatorPython.hpp"
 
+#include <algorithm>
 #include <iostream>
 #include <sstream>
 
@@ -83,13 +85,63 @@ WriterPython::writeClass(const std::shared_ptr<Class> &cls) {
     }
     slots_line += "]";
 
+    std::map<std::string, size_t> overloads;
+    for (const auto &method : cls->functions)
+        if (!_model->is_skip(method)) ++overloads[method.name];
+    std::map<std::string, std::string> dispatch;
     std::string functions;
-    for (auto &method : cls->functions) {
-        if (_model->is_skip(method))
-            continue;
-        auto p = writeFunction(method);
-        functions += p.second;
+    size_t overloadIndex = 0;
+    auto methods = cls->functions;
+    auto specificity = [&](const Function &method) {
+        size_t depth = 0;
+        for (const auto &arg : method.callable_args) {
+            auto type = _model->get_class(arg.type);
+            for (; type; type = type->parent.lock()) ++depth;
+        }
+        return depth;
+    };
+    std::stable_sort(methods.begin(), methods.end(), [&](const Function &a, const Function &b) {
+        return specificity(a) > specificity(b);
+    });
+    for (auto method : methods) {
+        if (_model->is_skip(method)) continue;
+        if (overloads[method.name] > 1) {
+            const auto name = method.name;
+            method.name = "_" + name + "_overload_" + std::to_string(overloadIndex++);
+            auto &wrapper = dispatch[name];
+            if (wrapper.empty()) {
+                if (method.is_static) wrapper += "    @staticmethod\n";
+                wrapper += "    def " + name + "(" + (method.is_static ? "" : "self, ") + "*args, **kwargs):\n";
+            }
+            size_t required = 0;
+            for (const auto &arg : method.callable_args)
+                if (arg.value.empty()) ++required;
+            const auto count = method.callable_args.size() + method.template_args.size();
+            std::string checks;
+            for (size_t i = 0; i < method.callable_args.size(); ++i) {
+                const auto &arg = method.callable_args[i];
+                std::string type;
+                if (_model->hasClass(arg.type)) {
+                    type = arg.type;
+                    wrapper += "        from ." + type + " import " + type + "\n";
+                } else if (arg.type == "int" || arg.type == "bool" || arg.type == "float") type = arg.type;
+                else if (arg.type == "string") type = "str";
+                const auto index = std::to_string(i);
+                const auto supplied = "(len(args) > " + index + " or \"" + arg.name + "\" in kwargs)";
+                if (arg.value.empty()) checks += " and " + supplied;
+                if (!type.empty()) {
+                    const auto value = "(args[" + index + "] if len(args) > " + index + " else kwargs.get(\"" + arg.name + "\"))";
+                    checks += " and (not " + supplied + " or " +
+                        (arg.is_pointer ? value + " is None or " : "") + "isinstance(" + value + ", " + type + "))";
+                }
+            }
+            wrapper += "        if " + std::to_string(required) + " <= len(args) + len(kwargs) <= " + std::to_string(count) + checks + ":\n";
+            wrapper += "            return " + (method.is_static ? cls->name : "self") + "." + method.name + "(*args, **kwargs)\n";
+        }
+        functions += writeFunction(method).second;
     }
+    for (const auto &[name, wrapper] : dispatch)
+        functions += wrapper + "        raise TypeError(\"No matching overload for " + name + "\")\n";
 
     std::string imports = "from .common import *\n";
     if (cls->type != "enum" && cls->name != "BaseEnum") {
@@ -99,6 +151,15 @@ WriterPython::writeClass(const std::shared_ptr<Class> &cls) {
         imports += "from .DeserializerJson import DeserializerJson\n";
         imports += "from .IntrusivePtr import *\n";
         imports += "from .Meta import *\n";
+    }
+
+    // Static initializers execute in class scope.
+    std::istringstream staticImports(imports_in_static);
+    std::string staticImport;
+    while (std::getline(staticImports, staticImport)) {
+        auto start = staticImport.find_first_not_of(' ');
+        if (start != std::string::npos)
+            imports += staticImport.substr(start) + "\n";
     }
 
     std::string init_superclass;
@@ -114,9 +175,21 @@ WriterPython::writeClass(const std::shared_ptr<Class> &cls) {
 
     std::string constructor_body;
     auto [ctor_args, ctor_body] = getConstructorData(cls);
-    constructor_body += ctor_body;
+    constructor_body += TranslatorPython::addImports(*cls, ctor_body, *_model);
     if (ctor_args.empty())
         ctor_args = "self";
+
+    // Defaults are evaluated when the class is defined, before method-local imports.
+    std::string defaults = ctor_args;
+    for (const auto &method : cls->functions) {
+        if (!_model->is_skip(method))
+            defaults += ", " + createFunctionArgsString(method);
+    }
+    for (const auto &dependency : _model->classes) {
+        if (dependency->name != cls->name &&
+            defaults.find(dependency->name + ".") != std::string::npos)
+            imports += "from ." + dependency->name + " import " + dependency->name + "\n";
+    }
 
     std::string result = PATTERN_FILE;
     replace_all(result, "{name}", name);
@@ -209,7 +282,7 @@ WriterPython::writeFunction(const Function &fn) {
     for (auto &a : fn.callable_args) {
         std::string one = a.name;
         if (!a.value.empty())
-            one += "=" + a.value;
+            one += "=" + convertInitializeValue(a.value);
         parts.push_back(std::move(one));
     }
     for (auto &t : fn.template_args) {
@@ -225,10 +298,14 @@ WriterPython::writeFunction(const Function &fn) {
     if (fn.body.empty())
         body += "        pass\n";
     else
-        body += fn.body +
+        // Resolve dependencies after all generators have emitted their methods,
+        // including serializer methods whose bodies are already Python.
+        body += TranslatorPython::addImports(*currentClass_, fn.body, *_model) +
                 (fn.body.back() == '\n' ? std::string("") : std::string("\n"));
     body += "\n        pass\n";
     std::string method;
+    if (fn.is_static)
+        method += "    @staticmethod\n";
     method += ::format_indexes("    def {0}({1}):\n", fn.name, args);
     method += body + "\n";
     return {"", method};
