@@ -13,12 +13,12 @@
 
 namespace FileUtils {
 
-std::vector<std::string>
-listFilesRecursive(const std::string &directory,
-                   const std::vector<std::string> &extensions) {
+std::vector<std::string> listFilesRecursive(const std::string &directory, const std::vector<std::string> &extensions) {
     std::vector<std::string> files;
-    for (const auto &entry :
-         std::filesystem::recursive_directory_iterator(directory)) {
+    if(!std::filesystem::is_directory(directory)){
+        return {};
+    }
+    for (const auto &entry : std::filesystem::recursive_directory_iterator(directory)) {
         if (!entry.is_regular_file())
             continue;
         if (!extensions.empty()) {
