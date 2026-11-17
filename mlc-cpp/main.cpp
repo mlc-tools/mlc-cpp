@@ -87,14 +87,13 @@ bool try_load_config(Mlc &app, Cli::ArgParser &args) {
         else
             config_data = cfg_path;
 
-        auto config = Config::loadString(config_data, err);
-        if (!config) {
-            //            std::cerr << "Failed to parse config '" << cfg_path <<
-            //            "': " << err << std::endl;
+        auto configs = Config::loadString(config_data, err);
+        if (configs.empty()) {
+            std::cerr << "Failed to parse config '" << cfg_path << "': " << err << std::endl;
             return false;
         }
 
-        if (fileExist) {
+        for(auto& config : configs) {
             auto root = FileUtils::directory_of_file(cfg_path);
             if (!root.empty())
                 root += "/";
@@ -108,12 +107,13 @@ bool try_load_config(Mlc &app, Cli::ArgParser &args) {
                     job.out_data_directory = FileUtils::normalizePath(root + job.out_data_directory) + "/";
             }
         }
-
-        app.get_model().configuration = config;
-        if (!config.jobs.empty())
-            app.get_model().config = config.jobs.at(0);
-        else
-            return false;
+        
+        app.get_model().all_configurations = configs;
+//        app.get_model().configuration = config;
+//        if (!config.jobs.empty())
+//            app.get_model().config = config.jobs.at(0);
+//        else
+//            return false;
         return true;
     }
     return false;
@@ -126,8 +126,7 @@ bool try_load_argc(Mlc &app, Cli::ArgParser &args) {
                                    "language"};
     for (auto key : required_opts) {
         if (args.getAll(key).empty() && !args.has(key)) {
-            std::cerr << "Missing required option --" << key << "\n\n"
-                      << args.help("mlc") << std::endl;
+            std::cerr << "Missing required option --" << key << "\n\n" << args.help("mlc") << std::endl;
             return 1;
         }
     }
@@ -318,8 +317,14 @@ int main(int argc, char **argv) {
             if (app.get_model().config.only_data) {
                 app.generateData();
             } else {
-                app.generate();
-                app.generateData();
+                for(auto& config : app.get_model().all_configurations){
+                    app.get_model().configuration = config;
+                    if(!app.get_model().configuration.jobs.empty())
+                        app.get_model().config = app.get_model().configuration.jobs.front();
+                    app.get_model().clearData();
+                    app.generate();
+                    app.generateData();
+                }
             }
         }
     }

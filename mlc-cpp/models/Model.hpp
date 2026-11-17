@@ -81,6 +81,7 @@ class Model {
     std::unordered_set<std::string> includes;
 
     // Конфигурация запуска (вместо отдельных флагов)
+    std::vector<Config> all_configurations;
     Config configuration;
     Job config;
     std::vector<std::shared_ptr<FeatureGenerator>> feature_generators;

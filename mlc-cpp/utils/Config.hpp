@@ -11,6 +11,7 @@
 #include <string>
 #include <variant>
 #include <vector>
+#include "jsoncpp/json.h"
 
 #include "../models/Object.hpp"    // Side
 #include "../models/Serialize.hpp" // SerializeFormat
@@ -120,8 +121,10 @@ public:
     std::vector<Job> jobs;
 
     // Загрузка конфигурации из JSON-файла. Возвращает набор задач.
-    static Config loadFile(const std::string &path, std::string &err);
-    static Config loadString(const std::string &content, std::string &err);
+    static std::vector<Config> loadFile(const std::string &path, std::string &err);
+    static std::vector<Config> loadString(const std::string &content, std::string &err);
+private:
+    static Config loadConfig(const Json::Value& js, std::string &err);
 private:
     bool _initialized = false;
 };

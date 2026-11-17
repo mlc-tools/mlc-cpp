@@ -80,26 +80,47 @@ void load_dirs(const Json::Value &v, std::vector<std::string> &out) {
     }
 }
 
-Config Config::loadFile(const std::string &path, std::string &err) {
+std::vector<Config> Config::loadFile(const std::string &path, std::string &err) {
     auto content = FileUtils::read(path);
     if (content.empty()) {
         err = "Config is empty or not found: " + path;
-        return Config();
+        return {};
     }
     return loadString(content, err);
 }
 
-Config Config::loadString(const std::string &content, std::string &err) {
-    Config config;
+std::vector<Config> Config::loadString(const std::string &content, std::string &err) {
     Json::CharReaderBuilder b;
     std::string errs;
     std::unique_ptr<Json::CharReader> rdr(b.newCharReader());
     Json::Value root;
-    if (!rdr->parse(content.data(), content.data() + content.size(), &root,
-                    &errs)) {
+    if (!rdr->parse(content.data(), content.data() + content.size(), &root, &errs)) {
         err = errs;
-        return config;
+        return {};
     }
+    
+    std::vector<Config> configs;
+    if(root.isArray()){
+        for(auto& node : root){
+            std::string configError;
+            auto config = loadConfig(node, configError);
+            if(config){
+                configs.push_back(std::move(config));
+            } else {
+                err += configError + "\n";
+            }
+        }
+    } else {
+        auto config = loadConfig(root, err);
+        if(config){
+            configs.push_back(std::move(config));
+        }
+    }
+    return configs;
+}
+Config Config::loadConfig(const Json::Value& root, std::string &err){
+    
+    Config config;
     
     // Gather global sources
     std::vector<std::string> src_cfgs, src_data;
